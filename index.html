@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LTD Recrutement - Simulateur Directeur de Projet Travaux</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-slate-900 text-white overflow-x-hidden">
+
+    <div id="app-container" class="relative min-h-screen w-full flex items-center justify-center p-2 sm:p-4">
+
+        <!-- Start Screen -->
+        <div id="startScreen" class="screen absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-gradient-to-br from-slate-900 to-slate-800 animated-gradient z-30 opacity-100 scale-100">
+            <h1 class="text-5xl md:text-6xl font-extrabold text-blue-400 mb-4">LTD Recrutement</h1>
+            <h2 class="text-2xl md:text-3xl font-semibold text-slate-300 mb-6">
+                <span class="text-4xl">🏗️</span> Simulateur Directeur de Projet Travaux
+            </h2>
+            <p class="max-w-2xl text-lg text-slate-400 mb-10 leading-relaxed">
+                La marge de manœuvre est réduite. Gérez un budget de 150M€ où chaque décision impacte directement votre rentabilité, la satisfaction client et la sécurité.
+            </p>
+            <button onclick="startGame()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-10 rounded-xl text-xl shadow-lg shadow-blue-600/30 transform hover:scale-105 transition-all duration-300">
+                Relever le Défi
+            </button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="gameScreen" class="screen absolute inset-0 flex flex-col w-full max-w-7xl mx-auto p-2 sm:p-4 opacity-0 -z-10 transform scale-95">
+            <header class="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-4 mb-4 shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="text-xl font-bold text-blue-300">Simulation Directeur de Projet Travaux</div>
+                <div class="flex items-center gap-4 md:gap-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-40 h-3 bg-slate-700 rounded-full overflow-hidden">
+                            <div id="progressBar" class="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-500" style="width: 0%;"></div>
+                        </div>
+                        <div class="text-sm font-medium text-slate-300">Scénario <span id="currentScenario">1</span>/<span id="totalScenarios">10</span></div>
+                    </div>
+                    <div id="timerDisplay" class="text-lg font-bold text-amber-400">⏱️ 0:00</div>
+                </div>
+            </header>
+
+            <main class="flex-grow bg-slate-800/50 backdrop-blur-sm rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg mb-4">
+                <div class="flex items-start gap-4 mb-4">
+                    <div id="scenarioIcon" class="text-4xl">🎯</div>
+                    <h2 id="scenarioTitle" class="text-2xl md:text-3xl font-bold text-slate-100"></h2>
+                </div>
+                <p id="scenarioText" class="text-slate-300 text-lg leading-relaxed mb-8"></p>
+                <div id="choicesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </main>
+
+            <footer id="metricsContainer" class="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-4 shadow-lg grid grid-cols-2 sm:grid-cols-4 gap-3"></footer>
+
+            <div class="power-ups fixed bottom-4 right-4 flex flex-col gap-3 z-20"></div>
+            <div id="hintMessage" class="fixed bottom-24 right-4 bg-slate-900/80 backdrop-blur-md text-white px-4 py-2 rounded-lg text-sm shadow-xl opacity-0 transform translate-y-4 transition-all duration-300 z-20"></div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="resultScreen" class="screen absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-gradient-to-br from-slate-900 to-slate-800 animated-gradient opacity-0 -z-10 transform scale-95">
+             <h1 class="text-5xl md:text-6xl font-extrabold text-blue-400 mb-4">LTD Recrutement</h1>
+            <h2 class="text-3xl font-semibold text-slate-300 mb-4">🏆 Bilan de Mission 🏆</h2>
+            <div id="finalScore" class="text-8xl font-bold my-4 bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-yellow-300">0</div>
+            <h3 id="resultCategory" class="text-2xl font-semibold text-slate-100 mb-2"></h3>
+            <p id="resultDescription" class="max-w-2xl text-lg text-slate-400 mb-8 leading-relaxed"></p>
+            <div id="scoreBreakdown" class="w-full max-w-lg bg-slate-800/50 rounded-xl p-6 mb-8 text-left"></div>
+            <button onclick="restartGame()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-xl text-lg shadow-lg shadow-blue-600/30 transform hover:scale-105 transition-all duration-300">
+                Nouvelle Simulation
+            </button>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="modalOverlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div id="modal" class="bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg p-6 transform scale-95 transition-all duration-300">
+            <h3 id="feedbackTitle" class="text-2xl font-bold text-center mb-4"></h3>
+            <p id="feedbackText" class="text-slate-300 text-center mb-6"></p>
+            <div id="impactList" class="space-y-2 mb-6 max-h-60 overflow-y-auto custom-scrollbar pr-2"></div>
+            <button id="modalContinueBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg text-lg transform hover:scale-105 transition-all duration-300">
+                Continuer
+            </button>
+        </div>
+    </div>
+
+    <script src="js/game.js"></script>
+</body>
+</html>
