@@ -80,6 +80,31 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
         }
+
+        /* Quick Event Modal Specific Styles */
+        .quick-event-modal-content {
+            background-image: linear-gradient(to bottom right, #334155, #1e293b); /* Darker, more intense gradient */
+            border: 2px solid #ef4444; /* Red border for urgency */
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4); /* Red glow */
+        }
+        .quick-event-modal-title {
+            color: #fca5a5; /* Lighter red for title */
+            text-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
+        }
+        .quick-event-modal-timer {
+            color: #f87171; /* Even brighter red for timer */
+            text-shadow: 0 0 10px rgba(248, 113, 113, 0.9);
+        }
+        .quick-event-choice-card {
+            background-color: #475569; /* Slightly lighter slate for choices */
+            border: 1px solid #ef4444; /* Red border */
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+        }
+        .quick-event-choice-card:hover {
+            background-color: #64748b;
+            border-color: #f87171;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
     </style>
 </head>
 <body class="bg-slate-900 text-white overflow-x-hidden">
@@ -164,6 +189,19 @@
         </div>
     </div>
 
+    <!-- Quick Event Modal -->
+    <div id="quickEventModalOverlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div id="quickEventModal" class="quick-event-modal-content rounded-2xl shadow-2xl w-full max-w-xl p-6 transform scale-95 transition-all duration-300">
+            <h3 id="quickEventTitle" class="quick-event-modal-title text-3xl font-bold text-center mb-4 flex items-center justify-center gap-3">
+                <span id="quickEventIcon" class="text-4xl"></span>
+                <span></span>
+            </h3>
+            <p id="quickEventText" class="text-slate-200 text-center mb-6 leading-relaxed opacity-90"></p>
+            <div id="quickEventTimerDisplay" class="text-4xl font-extrabold text-center mb-6 quick-event-modal-timer"></div>
+            <div id="quickEventChoicesContainer" class="grid grid-cols-1 gap-4"></div>
+        </div>
+    </div>
+
     <script>
         // --- DOM Elements ---
         const DOMElements = {
@@ -192,6 +230,13 @@
             impactList: document.getElementById('impactList'),
             modalContinueBtn: document.getElementById('modalContinueBtn'),
             projectHealthChartCanvas: document.getElementById('projectHealthChart'),
+            quickEventModalOverlay: document.getElementById('quickEventModalOverlay'),
+            quickEventModal: document.getElementById('quickEventModal'),
+            quickEventTitle: document.getElementById('quickEventTitle').querySelector('span:last-child'),
+            quickEventIcon: document.getElementById('quickEventIcon'),
+            quickEventText: document.getElementById('quickEventText'),
+            quickEventTimerDisplay: document.getElementById('quickEventTimerDisplay'),
+            quickEventChoicesContainer: document.getElementById('quickEventChoicesContainer'),
         };
 
         // --- Game Configuration ---
@@ -213,11 +258,13 @@
             },
             timeBonusThreshold: 20,
             timeBonusPoints: 50,
+            quickEventChance: 0.3, // 30% chance after each regular scenario
         };
 
         // --- Game State ---
         let state = {};
         let projectHealthChart; // Chart.js instance
+        let quickEventTimerInterval;
 
         // --- Scenarios Data (Expert Mode) ---
         const scenarios = [
@@ -282,7 +329,7 @@
                 ]
             },
             {
-                title: "Accident sur le Chantier", icon: "🚑", timeLimit: 30,
+                title: "Accident sur le Chantier", icon: "�", timeLimit: 30,
                 text: "Un accident grave vient de se produire sur le chantier, impliquant un ouvrier. Les secours sont en route. L'inspection du travail sera là sous peu.",
                 choices: [
                     { text: "Assurer la prise en charge médicale et la sécurité du site, puis communiquer avec transparence", impacts: { securite: 40, equipe: 20, client: 15, couts: 300000, marge: -0.2 }, feedback: "Priorité à l'humain et à la transparence. Cela renforce la confiance mais a un coût financier et d'image initial. La sécurité est primordiale." },
@@ -343,7 +390,7 @@
                 ]
             },
             {
-                title: "Changement de Réglementation Urbaine", icon: "�", timeLimit: 50,
+                title: "Changement de Réglementation Urbaine", icon: "📜", timeLimit: 50,
                 text: "Une nouvelle réglementation urbaine est votée, imposant des normes environnementales plus strictes (ex: isolation thermique) non prévues au budget.",
                 choices: [
                     { text: "Mettre le projet en conformité, en chiffrant un avenant au client", impacts: { couts: 2500000, delais: -20, client: 0, qualite: 15, marge: -1.8 }, feedback: "La solution légale et responsable. Le client paiera le surcoût, mais les délais sont impactés. La qualité environnementale du projet est améliorée, mais la marge est sous pression." },
@@ -378,7 +425,7 @@
                 choices: [
                     { text: "Engager un nouveau bureau d'études pour corriger et refaire les calculs", impacts: { couts: 2500000, delais: -30, qualite: 15, securite: 15, marge: -1.8 }, feedback: "La solution la plus sûre pour la qualité et la sécurité, mais elle est très coûteuse et entraîne des retards importants. Le client appréciera la rigueur, mais la marge est sous pression." },
                     { text: "Tenter de masquer l'erreur et de renforcer la structure discrètement", impacts: { securite: -70, qualite: -60, client: -50, couts: 1500000, marge: -1.2 }, feedback: "Extrêmement risqué et illégal. Cela met en péril la sécurité du bâtiment, la qualité est compromise et si découvert, les conséquences légales et de réputation seront catastrophiques et irréversibles." },
-                    { text: "Négocier avec le client un partage des coûts et des délais", impacts: { client: -20, couts: 1500000, delais: -15, marge: -1.0 }, feedback: "Une approche honnête mais difficile. Le client sera mécontent de devoir payer pour une erreur initiale, mais cela permet de limiter vos pertes. La relation est tendue." },
+                    { text: "Négocier avec le client un partage des coûts et des délais", impacts: { client: -20, couts: 1500000, delais: -15, marge: -1.0 }, feedback: "Une approche honnête mais difficile. Le client sera mécontent de devoir payer pour une erreur initiale, but cela permet de limiter vos pertes. La relation est tendue." },
                     { text: "Blâmer le bureau d'études initial et lancer une procédure", impacts: { delais: -70, client: -30, couts: 700000, marge: -0.5 }, feedback: "Une bataille juridique longue et incertaine qui paralyse le projet. Le client est frustré et les coûts indirects augmentent considérablement. Le projet est à l'arrêt." }
                 ]
             },
@@ -424,6 +471,100 @@
             }
         ];
 
+        // --- Quick Events Data ---
+        const quickEvents = [
+            {
+                title: "Panne de Courant Générale !", icon: "⚡", timeLimit: 15,
+                text: "Une panne de courant imprévue paralyse le chantier. Les grues sont à l'arrêt, les systèmes de sécurité hors service. Panique générale !",
+                choices: [
+                    { text: "Activer les groupes électrogènes de secours", impacts: { couts: 500000, delais: -5, securite: 10, equipe: 5 }, feedback: "Les systèmes reprennent, mais le coût du carburant et de l'activation est élevé. L'équipe est rassurée, mais un léger retard est inévitable." },
+                    { text: "Envoyer l'équipe à la maison en attendant le rétablissement", impacts: { delais: -20, equipe: -10, couts: 100000, client: -10 }, feedback: "Vous évitez les risques, mais les délais s'y allongent considérablement et le moral de l'équipe est affecté. Le client est mécontent du retard." },
+                    { text: "Tenter de réparer manuellement les systèmes électriques", impacts: { securite: -40, equipe: -20, delais: -15, qualite: -10 }, feedback: "Extrêmement dangereux et inefficace. Vous risquez des accidents graves et des dégâts supplémentaires. Une décision irresponsable." }
+                ]
+            },
+            {
+                title: "Visite Impromptue d'un Investisseur", icon: "🤵", timeLimit: 10,
+                text: "Un investisseur majeur arrive sur le chantier pour une visite surprise. Le site n'est pas impeccable.",
+                choices: [
+                    { text: "Accueillir chaleureusement et présenter les points forts", impacts: { client: 15, equipe: 5, couts: -50000 }, feedback: "Malgré l'imprévu, votre professionnalisme impressionne. L'équipe est motivée par la reconnaissance." },
+                    { text: "Demander 15 minutes pour 'préparer' la visite", impacts: { client: -10, delais: 0, equipe: -5 }, feedback: "L'investisseur est agacé par l'attente et perçoit un manque de préparation. L'image est légèrement ternie." },
+                    { text: "Éviter la visite en prétextant une urgence", impacts: { client: -30, marge: -0.1 }, feedback: "L'investisseur se sent ignoré et perd confiance. Cela pourrait avoir des conséquences financières à long terme." }
+                ]
+            },
+            {
+                title: "Fuite d'Eau Majeure !", icon: "💧", timeLimit: 20,
+                text: "Une conduite d'eau principale vient de céder, inondant une partie des fondations. L'eau monte rapidement !",
+                choices: [
+                    { text: "Couper l'arrivée d'eau et mobiliser les pompes", impacts: { couts: 700000, delais: -10, qualite: -5, securite: 5 }, feedback: "Action rapide qui limite les dégâts, mais la réparation est coûteuse et un léger impact sur la qualité des fondations est possible." },
+                    { text: "Attendre l'arrivée des secours spécialisés", impacts: { delais: -30, couts: 100000, securite: -15, qualite: -20 }, feedback: "L'attente aggrave la situation. Les dégâts sont plus importants, les délais s'allongent et la sécurité est compromise." },
+                    { text: "Tenter de colmater la fuite avec les moyens du bord", impacts: { securite: -30, qualite: -25, couts: 200000, marge: -0.2 }, feedback: "Extrêmement dangereux et inefficace. Vous risquez des accidents et des dégâts irréparables. Une décision imprudente." }
+                ]
+            },
+            {
+                title: "Drone de Surveillance Étranger", icon: "🚁", timeLimit: 12,
+                text: "Un drone inconnu survole le chantier, semblant prendre des photos. Risque d'espionnage industriel ou de violation de la vie privée.",
+                choices: [
+                    { text: "Contacter les autorités et tenter d'identifier l'opérateur", impacts: { client: -5, securite: 5, delais: 0 }, feedback: "La bonne procédure. Cela peut prendre du temps mais protège les intérêts du projet. Le client pourrait être légèrement inquiet." },
+                    { text: "Tenter de le faire atterrir ou de le neutraliser", impacts: { securite: -20, equipe: -10, couts: 100000, marge: -0.1 }, feedback: "Action risquée et potentiellement illégale. Vous mettez l'équipe en danger et risquez des problèmes juridiques." },
+                    { text: "Ignorer le drone et continuer les travaux", impacts: { securite: -10, client: -15, qualite: -5, marge: -0.05 }, feedback: "Vous ignorez une menace potentielle. Des informations sensibles pourraient être compromises, affectant la sécurité et la réputation du projet." }
+                ]
+            },
+            {
+                title: "Problème de Logistique : Camion en Panne", icon: "🚚", timeLimit: 18,
+                text: "Un camion transportant des éléments essentiels pour la structure est tombé en panne à 2h du chantier. Le temps presse.",
+                choices: [
+                    { text: "Envoyer un autre camion de remplacement en urgence", impacts: { couts: 300000, delais: -5, qualite: 0 }, feedback: "Solution coûteuse mais efficace pour limiter le retard. La marge est impactée." },
+                    { text: "Attendre la réparation du camion initial", impacts: { delais: -20, couts: 50000, client: -10 }, feedback: "Moins coûteux, mais le retard est significatif et le client est mécontent." },
+                    { text: "Modifier le planning pour travailler sur d'autres tâches", impacts: { delais: -10, equipe: 5, couts: -20000 }, feedback: "Une bonne gestion des imprévus. Vous minimisez le retard et maintenez le moral de l'équipe, avec un léger gain financier." }
+                ]
+            },
+            {
+                title: "Menace Météorologique Imminente", icon: "⛈️", timeLimit: 15,
+                text: "Une alerte météo annonce une tempête violente dans les prochaines heures. Le chantier est exposé.",
+                choices: [
+                    { text: "Sécuriser immédiatement le site et mettre à l'abri le matériel", impacts: { couts: 400000, securite: 15, delais: -5 }, feedback: "Action préventive coûteuse mais essentielle pour la sécurité. Un léger retard est à prévoir." },
+                    { text: "Continuer les travaux en espérant que la tempête épargne le site", impacts: { securite: -50, qualite: -30, delais: 0, couts: 1000000 }, feedback: "Extrêmement risqué. Vous exposez l'équipe et le matériel à des dégâts majeurs. Une décision irresponsable." },
+                    { text: "Évacuer le personnel et fermer le chantier sans sécurisation", impacts: { securite: -20, delais: -10, client: -10, couts: 100000 }, feedback: "Vous protégez le personnel, mais le matériel est exposé aux dégâts, entraînant des coûts et des retards." }
+                ]
+            },
+            {
+                title: "Découverte de Documents Sensibles", icon: "📁", timeLimit: 10,
+                text: "Un ouvrier trouve des documents confidentiels de la concurrence sur le chantier. Que faites-vous ?",
+                choices: [
+                    { text: "Les remettre immédiatement à votre direction juridique", impacts: { securite: 5, equipe: 0, client: 0 }, feedback: "La bonne conduite éthique et légale. Vous protégez l'entreprise et l'équipe." },
+                    { text: "Les consulter pour obtenir des informations stratégiques", impacts: { client: -20, securite: -10, marge: -0.1 }, feedback: "Action illégale et risquée. Si découvert, cela pourrait entraîner des poursuites et nuire gravement à la réputation de l'entreprise." },
+                    { text: "Les détruire sans en parler à personne", impacts: { securite: -15, equipe: -5, marge: -0.05 }, feedback: "Vous tentez de cacher l'incident, mais cela pourrait créer des problèmes internes et des soupçons si l'information fuite." }
+                ]
+            },
+            {
+                title: "Problème de Communication avec une Partie Prenante", icon: "💬", timeLimit: 15,
+                text: "Un partenaire clé (ex: architecte) se plaint d'un manque de communication et menace de ralentir sa collaboration.",
+                choices: [
+                    { text: "Organiser une réunion d'urgence pour clarifier la situation", impacts: { client: 10, equipe: 5, delais: -5 }, feedback: "Une approche proactive qui renforce la relation. Un léger retard est possible, mais la collaboration est améliorée." },
+                    { text: "Répondre par email en minimisant le problème", impacts: { client: -15, equipe: -5, marge: -0.05 }, feedback: "La réponse est perçue comme un manque de considération, aggravant la situation et dégradant la relation." },
+                    { text: "Ignorer la plainte en espérant que ça passe", impacts: { client: -30, delais: -10, qualite: -10, marge: -0.2 }, feedback: "Une décision désastreuse. Le partenaire cessera de collaborer efficacement, entraînant des retards, des problèmes de qualité et un client très mécontent." }
+                ]
+            },
+            {
+                title: "Panne Matériel Critique", icon: "⚙️", timeLimit: 20,
+                text: "Une machine essentielle (ex: grue, foreuse) tombe en panne, menaçant d'arrêter une phase cruciale des travaux.",
+                choices: [
+                    { text: "Commander une pièce de rechange en urgence et louer une machine temporaire", impacts: { couts: 800000, delais: -5, equipe: 5, marge: -0.6 }, feedback: "Solution coûteuse mais efficace pour minimiser l'impact sur les délais. L'équipe peut continuer à travailler." },
+                    { text: "Tenter une réparation sur site avec l'équipe de maintenance", impacts: { couts: 200000, delais: -15, qualite: -10, securite: -5 }, feedback: "Moins coûteux, mais la réparation peut être longue et risquée, entraînant des retards significatifs et des problèmes potentiels de sécurité." },
+                    { text: "Redistribuer les tâches et attendre la réparation complète", impacts: { delais: -25, equipe: -10, client: -15, couts: 100000 }, feedback: "Vous minimisez les coûts directs, mais les délais s'allongent considérablement, l'équipe est démotivée et le client est mécontent." }
+                ]
+            },
+            {
+                title: "Fuite d'Informations Confidentielles", icon: "🔒", timeLimit: 10,
+                text: "Des informations confidentielles sur le projet (ex: budget détaillé) semblent avoir fuité dans la presse. Réaction immédiate requise !",
+                choices: [
+                    { text: "Mener une enquête interne et communiquer avec transparence", impacts: { securite: 10, client: -5, equipe: 5, couts: 200000 }, feedback: "Une approche responsable. Les coûts sont liés à l'enquête, mais la transparence peut limiter les dégâts à long terme. Le client est légèrement inquiet." },
+                    { text: "Nier les faits et menacer de poursuites les médias", impacts: { client: -30, equipe: -15, securite: -10, marge: -0.2 }, feedback: "Une réaction agressive qui peut envenimer la situation et nuire gravement à la réputation. L'équipe perd confiance." },
+                    { text: "Ignorer la fuite en espérant qu'elle n'ait pas d'impact", impacts: { client: -50, securite: -30, marge: -0.5 }, feedback: "Une décision désastreuse. La fuite peut être exploitée par la concurrence ou nuire aux négociations, entraînant des pertes financières et de réputation irréparables." }
+                ]
+            }
+        ];
+
         // --- Game Logic ---
         function formatCurrency(value) {
             return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value);
@@ -439,6 +580,7 @@
                 timeLeft: 0,
                 isModalOpen: false,
                 auditActive: false,
+                quickEventActive: false, // New state for quick event
             };
             recalculateMargin();
             initProjectHealthChart(); // Initialize the chart
@@ -510,12 +652,14 @@
             startTimer(scenario.timeLimit);
         }
 
-        function handleChoice(choiceIndex) {
-            if (state.isModalOpen) return;
-            clearInterval(state.timerInterval);
+        function handleChoice(choiceIndex, isQuickEvent = false) {
+            if (state.isModalOpen && !isQuickEvent) return; // Prevent interaction with game screen if modal is open
 
-            const scenario = scenarios[state.currentScenarioIndex];
-            const choice = scenario.choices[choiceIndex];
+            clearInterval(state.timerInterval); // Stop main game timer
+            clearInterval(quickEventTimerInterval); // Stop quick event timer
+
+            const currentScenario = isQuickEvent ? state.currentQuickEvent : scenarios[state.currentScenarioIndex];
+            const choice = currentScenario.choices[choiceIndex];
             const impacts = choice.impacts;
             
             for (const key in impacts) {
@@ -523,11 +667,28 @@
             }
             recalculateMargin();
 
-            if (state.timeLeft >= CONFIG.timeBonusThreshold) {
+            if (!isQuickEvent && state.timeLeft >= CONFIG.timeBonusThreshold) {
                 state.score += CONFIG.timeBonusPoints;
             }
             
-            showFeedbackModal(choice, impacts);
+            if (isQuickEvent) {
+                closeQuickEventModal();
+                // After a quick event, show feedback then proceed to the next regular scenario
+                showFeedbackModal(choice, impacts, () => {
+                    loadScenario(state.currentScenarioIndex + 1);
+                    updateProjectHealthChart();
+                });
+            } else {
+                // After a regular scenario choice, check for quick event
+                showFeedbackModal(choice, impacts, () => {
+                    if (Math.random() < CONFIG.quickEventChance) {
+                        showQuickEventModal();
+                    } else {
+                        loadScenario(state.currentScenarioIndex + 1);
+                        updateProjectHealthChart();
+                    }
+                });
+            }
         }
 
         function updateMetric(key, change) {
@@ -546,27 +707,32 @@
             showMetricChangeIndicator(key, change, metric.isCurrency);
         }
 
-        function startTimer(duration) {
+        function startTimer(duration, isQuickEvent = false) {
             state.timeLeft = duration;
-            clearInterval(state.timerInterval);
+            const timerDisplayElement = isQuickEvent ? DOMElements.quickEventTimerDisplay : DOMElements.timerDisplay;
+            const timerIntervalVar = isQuickEvent ? 'quickEventTimerInterval' : 'timerInterval';
+
+            clearInterval(state[timerIntervalVar]);
             const update = () => {
-                DOMElements.timerDisplay.textContent = `⏱️ 0:${state.timeLeft.toString().padStart(2, '0')}`;
-                DOMElements.timerDisplay.classList.toggle('text-red-500', state.timeLeft <= 10);
-                DOMElements.timerDisplay.classList.toggle('critical-time', state.timeLeft <= 10);
-                DOMElements.timerDisplay.classList.toggle('text-amber-400', state.timeLeft > 10);
+                timerDisplayElement.textContent = `⏱️ 0:${state.timeLeft.toString().padStart(2, '0')}`;
+                timerDisplayElement.classList.toggle('text-red-500', state.timeLeft <= 5); // More critical time for quick events
+                timerDisplayElement.classList.toggle('critical-time', state.timeLeft <= 5);
+                timerDisplayElement.classList.toggle('text-amber-400', state.timeLeft > 5);
+
                 if (state.timeLeft <= 0) {
-                    clearInterval(state.timerInterval);
+                    clearInterval(state[timerIntervalVar]);
                     // If time runs out, choose a random option
-                    handleChoice(Math.floor(Math.random() * scenarios[state.currentScenarioIndex].choices.length));
+                    const currentEventChoices = isQuickEvent ? state.currentQuickEvent.choices : scenarios[state.currentScenarioIndex].choices;
+                    handleChoice(Math.floor(Math.random() * currentEventChoices.length), isQuickEvent);
                 }
                 state.timeLeft--;
             };
             update();
-            state.timerInterval = setInterval(update, 1000);
+            state[timerIntervalVar] = setInterval(update, 1000);
         }
 
         function usePowerUp(type) {
-            if (state.powerUps[type].count <= 0 || state.isModalOpen) return;
+            if (state.powerUps[type].count <= 0 || state.isModalOpen || state.quickEventActive) return; // Cannot use during quick event
             state.powerUps[type].count--;
 
             switch (type) {
@@ -577,8 +743,6 @@
                     DOMElements.hintMessage.classList.add('opacity-100', 'translate-y-0');
                     break;
                 case 'negociation':
-                    // This would require a more complex UI to select which impact to reduce.
-                    // For now, let's just boost the 'client' metric as a negotiation success.
                     updateMetric('client', 15);
                     DOMElements.hintMessage.textContent = "Négociation réussie ! La satisfaction client augmente.";
                     DOMElements.hintMessage.classList.add('opacity-100', 'translate-y-0');
@@ -601,23 +765,19 @@
             let bestScore = -Infinity;
             let bestIndex = -1;
             choices.forEach((choice, index) => {
-                // Calculate a score based on the sum of impacts, giving more weight to positive impacts
-                // and considering financial impacts appropriately.
                 let currentScore = 0;
                 for (const key in choice.impacts) {
                     const change = choice.impacts[key];
                     const metric = CONFIG.initialMetrics[key];
                     if (metric.isCurrency) {
-                        // For currency, positive change in CA is good, positive change in costs is bad.
-                        currentScore += (key === 'chiffreAffaires' ? change : -change) / 100000; // Normalize large currency values
+                        currentScore += (key === 'chiffreAffaires' ? change : -change) / 100000;
                     } else if (metric.isPercentage) {
-                        currentScore += change * 2; // Percentage changes are often significant
+                        currentScore += change * 2;
                     } else {
                         currentScore += change;
                     }
                 }
 
-                // Add a small bonus for positive overall impact to break ties or favor generally good choices
                 if (currentScore > 0) {
                     currentScore += 1;
                 }
@@ -630,7 +790,7 @@
             return { ...choices[bestIndex], index: bestIndex };
         }
 
-        function showFeedbackModal(choice, impacts) {
+        function showFeedbackModal(choice, impacts, callback) {
             state.isModalOpen = true;
             DOMElements.feedbackTitle.textContent = choice.text ? `Conséquences de la décision` : "Rapport de situation";
             DOMElements.feedbackText.textContent = choice.feedback;
@@ -658,8 +818,7 @@
             
             DOMElements.modalContinueBtn.onclick = () => {
                 closeFeedbackModal();
-                loadScenario(state.currentScenarioIndex + 1);
-                updateProjectHealthChart(); // Update chart after each scenario
+                if (callback) callback();
             };
         }
 
@@ -667,6 +826,36 @@
             state.isModalOpen = false;
             DOMElements.modalOverlay.classList.add('pointer-events-none', 'opacity-0');
             DOMElements.modal.classList.add('scale-95');
+        }
+
+        function showQuickEventModal() {
+            state.quickEventActive = true;
+            state.isModalOpen = true; // Block main game interaction
+            const randomEvent = quickEvents[Math.floor(Math.random() * quickEvents.length)];
+            state.currentQuickEvent = randomEvent; // Store current quick event
+
+            DOMElements.quickEventIcon.textContent = randomEvent.icon;
+            DOMElements.quickEventTitle.textContent = randomEvent.title;
+            DOMElements.quickEventText.textContent = randomEvent.text;
+            
+            DOMElements.quickEventChoicesContainer.innerHTML = randomEvent.choices.map((choice, index) => `
+                <button onclick="handleChoice(${index}, true)" class="quick-event-choice-card bg-slate-700/50 hover:bg-slate-700 border-2 border-transparent hover:border-red-500 rounded-xl p-4 cursor-pointer transition-all duration-200 transform hover:-translate-y-1 shadow-md hover:shadow-red-500/20 text-slate-100 font-semibold">
+                    ${choice.text}
+                </button>
+            `).join('');
+
+            DOMElements.quickEventModalOverlay.classList.remove('pointer-events-none', 'opacity-0');
+            DOMElements.quickEventModal.classList.remove('scale-95');
+
+            startTimer(randomEvent.timeLimit, true);
+        }
+
+        function closeQuickEventModal() {
+            state.quickEventActive = false;
+            state.isModalOpen = false; // Allow main game interaction again
+            clearInterval(quickEventTimerInterval);
+            DOMElements.quickEventModalOverlay.classList.add('pointer-events-none', 'opacity-0');
+            DOMElements.quickEventModal.classList.add('scale-95');
         }
 
         function endGame() {
@@ -856,25 +1045,17 @@
         }
 
         function renderChoices(choices) {
-            DOMElements.choicesContainer.innerHTML = choices.map((choice, index) => {
-                let financialPreview = '';
-                if (state.auditActive) {
-                    const costImpact = choice.impacts.couts || 0;
-                    const caImpact = choice.impacts.chiffreAffaires || 0;
-                    financialPreview = `
+            DOMElements.choicesContainer.innerHTML = choices.map((choice, index) => `
+                <div id="choice-${index}" onclick="handleChoice(${index})" class="group bg-slate-700/50 hover:bg-slate-700 border-2 border-transparent hover:border-blue-500 rounded-xl p-5 cursor-pointer transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-blue-500/20 choice-card">
+                    <p class="text-slate-100 font-semibold text-lg">${choice.text}</p>
+                    ${state.auditActive ? `
                         <div class="text-xs mt-2">
-                            <span class="text-red-400">Coût: ${formatCurrency(costImpact)}</span> | 
-                            <span class="text-green-400">C.A.: ${formatCurrency(caImpact)}</span>
+                            <span class="text-red-400">Coût: ${formatCurrency(choice.impacts.couts || 0)}</span> | 
+                            <span class="text-green-400">C.A.: ${formatCurrency(choice.impacts.chiffreAffaires || 0)}</span>
                         </div>
-                    `;
-                }
-                return `
-                    <div id="choice-${index}" onclick="handleChoice(${index})" class="group bg-slate-700/50 hover:bg-slate-700 border-2 border-transparent hover:border-blue-500 rounded-xl p-5 cursor-pointer transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-blue-500/20 choice-card">
-                        <p class="text-slate-100 font-semibold text-lg">${choice.text}</p>
-                        ${financialPreview}
-                    </div>
-                `;
-            }).join('');
+                    ` : ''}
+                </div>
+            `).join('');
         }
 
         function renderMetrics() {
