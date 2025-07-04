@@ -169,7 +169,7 @@
                 equipe: { name: "Équipe", icon: "👥", value: 80 },
             },
             initialPowerUps: {
-                audit: { name: "Audit Financier", icon: "�", count: 1, description: "Révèle les impacts financiers exacts de chaque choix." },
+                audit: { name: "Audit Financier", icon: "💸", count: 1, description: "Révèle les impacts financiers exacts de chaque choix." },
                 negociation: { name: "Négociation", icon: "🗣️", count: 1, description: "Permet de réduire un impact négatif majeur." },
                 xray: { name: "Analyse Risques", icon: "🔍", count: 1, description: "Surligne le choix le moins dommageable pour le projet." },
             },
@@ -209,7 +209,7 @@
                 choices: [
                     { text: "Refuser catégoriquement en citant le contrat", impacts: { client: -60, equipe: 5, marge: 0.0 }, feedback: "Vous êtes dans votre droit, mais la relation client est durablement et gravement endommagée. Cela pourrait compromettre la réception du chantier, les projets futurs et votre réputation. Pas de marge de manœuvre." },
                     { text: "Accepter, en espérant vous rattraper sur d'autres postes", impacts: { couts: 5000000, client: 25, qualite: -30, equipe: -30, marge: -3.0 }, feedback: "Geste commercial très apprécié mais qui anéantit votre marge, dégrade la qualité du projet et démotive l'équipe. Une décision financièrement suicidaire." },
-                    { text: "Chiffrer un avenant détaillé (coûts + marge) et le défendre fermement", impacts: { chiffreAffaires: 3500000, couts: 2800000, client: 10, delais: -15, marge: 0.5 }, feedback: "La seule approche professionnelle. La négociation sera très tendue mais vous préservez votre marge et la rigueur du projet, bien qu'avec un retard significatif." },
+                    { text: "Chiffrer un avenant détaillé (coûts + marge) et le défendre fermement", impacts: { chiffreAffaires: 3500000, couts: 2800000, client: 10, delais: -15, marge: 0.5 }, feedback: "La seule approche professionnelle. La négociation sera très tendue mais vous préservez votre marge et la rigueur du projet, bien qu'avec un léger retard." },
                     { text: "Proposer une alternative moins chère qui répond partiellement au besoin", impacts: { client: -25, qualite: -25, couts: 1500000, marge: -1.0 }, feedback: "Un compromis qui ne satisfait personne. Le client se sent floué, la solution technique est sous-optimale et la qualité est fortement dégradée. Coûts élevés pour un résultat médiocre." }
                 ]
             },
@@ -281,6 +281,107 @@
                     { text: "Sous-traiter la partie BIM à une entreprise spécialisée", impacts: { couts: 1200000, delais: 0, qualite: 10, client: 0, marge: -0.8 }, feedback: "Solution rapide pour répondre au besoin, mais vous perdez en compétence interne et le coût est élevé, impactant la marge." },
                     { text: "Refuser l'intégration en expliquant les contraintes de délai et budget", impacts: { client: -40, qualite: -20, equipe: -10, couts: 0, marge: 0.0 }, feedback: "Vous protégez votre budget, mais le client sera très déçu, le projet moins moderne et l'équipe peut se sentir dévalorisée. La qualité perçue diminue." },
                     { text: "Proposer une intégration partielle ou progressive de la technologie", impacts: { client: 15, qualite: 15, couts: 600000, delais: -8, marge: -0.3 }, feedback: "Un compromis qui satisfait partiellement le client et limite les coûts et délais. Une approche pragmatique avec un impact positif sur la qualité." }
+                ]
+            },
+            // 10 nouvelles questions ajoutées ici
+            {
+                title: "Découverte de Contaminants du Sol", icon: "☢️", timeLimit: 60,
+                text: "Lors des excavations, des traces de contaminants chimiques sont découvertes, nécessitant une dépollution coûteuse et un arrêt du chantier.",
+                choices: [
+                    { text: "Engager une entreprise spécialisée en dépollution d'urgence", impacts: { couts: 3000000, delais: -20, securite: 20, marge: -2.0 }, feedback: "Action rapide pour la sécurité et la conformité, mais avec un coût très élevé et un impact significatif sur les délais." },
+                    { text: "Tenter de confiner la zone et de poursuivre les travaux ailleurs", impacts: { couts: 1000000, securite: -40, qualite: -20, delais: -10, marge: -0.8 }, feedback: "Solution moins coûteuse à court terme, mais extrêmement risquée pour la sécurité des travailleurs et la qualité finale du projet. Peut entraîner des poursuites." },
+                    { text: "Négocier avec les autorités pour une solution moins contraignante", impacts: { delais: -30, client: -20, couts: 500000, marge: -0.3 }, feedback: "Approche diplomatique qui peut réduire les coûts, mais prolonge l'arrêt du chantier et frustre le client. Le résultat est incertain." },
+                    { text: "Déclarer le site non constructible et abandonner le projet", impacts: { couts: 10000000, delais: -100, client: -70, marge: -10.0 }, feedback: "La décision la plus drastique, entraînant des pertes financières massives, la rupture totale avec le client et la ruine de la réputation de l'entreprise. Une catastrophe absolue." }
+                ]
+            },
+            {
+                title: "Problème de Qualité des Matériaux Livrés", icon: "❌", timeLimit: 40,
+                text: "Une cargaison importante de matériaux de construction (ex: poutres en acier) est livrée avec des défauts majeurs, ne respectant pas les normes requises.",
+                choices: [
+                    { text: "Refuser la livraison et exiger un remplacement immédiat", impacts: { delais: -20, couts: 0, qualite: 10, client: 5, marge: 0.0 }, feedback: "La bonne décision pour la qualité, mais cela entraîne des retards importants sur le chantier. Le fournisseur est en faute." },
+                    { text: "Accepter les matériaux avec une décote et tenter de les réparer sur site", impacts: { couts: 500000, qualite: -30, securite: -15, client: -20, marge: -0.4 }, feedback: "Solution rapide mais qui compromet gravement la qualité et la sécurité. Le client sera mécontent et des problèmes futurs sont probables." },
+                    { text: "Utiliser les matériaux défectueux en renforçant la structure ailleurs", impacts: { qualite: -50, securite: -40, client: -30, couts: 1000000, marge: -0.8 }, feedback: "Extrêmement dangereux et irresponsable. Cela met en péril la sécurité du bâtiment et des occupants, et la qualité est inacceptable. Des poursuites judiciaires sont inévitables." },
+                    { text: "Lancer une procédure juridique contre le fournisseur", impacts: { delais: -50, couts: 200000, client: -10, marge: -0.1 }, feedback: "Une action nécessaire mais longue et coûteuse. Le chantier sera à l'arrêt pendant la procédure, impactant lourdement les délais et la relation client." }
+                ]
+            },
+            {
+                title: "Changement de Réglementation Urbaine", icon: "📜", timeLimit: 50,
+                text: "Une nouvelle réglementation urbaine est votée, imposant des normes environnementales plus strictes (ex: isolation thermique) non prévues au budget.",
+                choices: [
+                    { text: "Mettre le projet en conformité, en chiffrant un avenant au client", impacts: { couts: 2000000, delais: -15, client: 0, qualite: 10, marge: -1.2 }, feedback: "La solution légale et responsable. Le client paiera le surcoût, mais les délais sont impactés. La qualité environnementale du projet est améliorée." },
+                    { text: "Tenter d'obtenir une dérogation ou un délai d'application", impacts: { delais: -25, couts: 100000, client: -10, marge: -0.1 }, feedback: "Une tentative risquée qui prolonge l'incertitude et peut échouer, entraînant des retards supplémentaires et la frustration du client." },
+                    { text: "Ignorer la nouvelle réglementation et poursuivre les travaux", impacts: { securite: -60, qualite: -50, client: -40, couts: 5000000, marge: -5.0 }, feedback: "Illégal et extrêmement dangereux. Vous risquez des amendes colossales, l'arrêt définitif du chantier, des poursuites pénales et la destruction de votre réputation. Le projet est invendable." },
+                    { text: "Proposer une solution alternative moins coûteuse mais moins performante", impacts: { qualite: -20, client: -15, couts: 800000, marge: -0.5 }, feedback: "Un compromis qui ne respecte pas pleinement la nouvelle norme. Le client est déçu et le projet est moins valorisé. Des problèmes futurs sont possibles." }
+                ]
+            },
+            {
+                title: "Actes de Vandalisme sur le Chantier", icon: "💥", timeLimit: 35,
+                text: "Le chantier a été la cible d'actes de vandalisme importants pendant la nuit, entraînant des dégâts matériels et des retards.",
+                choices: [
+                    { text: "Renforcer la sécurité du site et réparer les dégâts en urgence", impacts: { couts: 1000000, delais: -5, securite: 10, equipe: 5, marge: -0.7 }, feedback: "Action nécessaire pour reprendre les travaux rapidement et protéger le site. Coûts élevés mais essentiels. L'équipe se sent plus en sécurité." },
+                    { text: "Déclarer le sinistre à l'assurance et attendre l'expertise", impacts: { delais: -30, couts: 0, client: -20, marge: 0.0 }, feedback: "La procédure standard, mais elle entraîne un arrêt prolongé du chantier, frustrant le client et impactant les délais. Vous ne payez pas directement mais perdez du temps." },
+                    { text: "Tenter de minimiser les dégâts et de ne pas les déclarer", impacts: { securite: -30, qualite: -20, client: -10, couts: -200000, marge: 0.1 }, feedback: "Risqué et irresponsable. Cela peut compromettre la sécurité et la qualité du projet, et si découvert, entraîner des problèmes légaux et de réputation." },
+                    { text: "Blâmer l'équipe de sécurité et la remplacer immédiatement", impacts: { equipe: -20, securite: -10, delais: -10, couts: 50000, marge: -0.05 }, feedback: "Une décision hâtive qui démotive l'équipe restante et ne garantit pas une meilleure sécurité. Peut entraîner des problèmes de personnel." }
+                ]
+            },
+            {
+                title: "Démission en Chaîne de l'Équipe Clé", icon: "🚪", timeLimit: 45,
+                text: "Plusieurs membres clés de votre équipe (chefs de chantier, ingénieurs) démissionnent subitement pour la concurrence, menaçant la continuité du projet.",
+                choices: [
+                    { text: "Recruter des remplaçants expérimentés à prix fort", impacts: { couts: 1500000, delais: -10, equipe: -5, qualite: -5, marge: -1.0 }, feedback: "Solution rapide mais coûteuse. Les nouveaux venus mettront du temps à s'intégrer, impactant légèrement la qualité et le moral de l'équipe restante." },
+                    { text: "Promouvoir des talents internes et réorganiser l'équipe", impacts: { couts: 300000, equipe: 20, delais: -20, qualite: -10, marge: -0.2 }, feedback: "Moins coûteux et valorisant pour l'équipe, mais cela prend du temps et peut entraîner une baisse temporaire de la productivité et de la qualité." },
+                    { text: "Faire appel à des consultants externes pour pallier l'urgence", impacts: { couts: 2500000, delais: -5, equipe: -10, marge: -1.5 }, feedback: "Solution très coûteuse qui permet de limiter les retards, mais qui ne résout pas le problème de fond de la rétention des talents et peut démotiver l'équipe interne." },
+                    { text: "Ignorer les démissions et surcharger l'équipe restante", impacts: { equipe: -50, qualite: -30, securite: -20, delais: -30, marge: -2.0 }, feedback: "Une décision désastreuse. L'équipe restante sera épuisée et démotivée, entraînant des erreurs, des problèmes de sécurité et des retards massifs. Risque de nouvelles démissions." }
+                ]
+            },
+            {
+                title: "Découverte d'Erreur de Conception Majeure", icon: "📐", timeLimit: 50,
+                text: "Un audit externe révèle une erreur de conception majeure dans les plans initiaux, nécessitant des modifications structurelles coûteuses et complexes.",
+                choices: [
+                    { text: "Engager un nouveau bureau d'études pour corriger et refaire les calculs", impacts: { couts: 2000000, delais: -25, qualite: 10, securite: 10, marge: -1.5 }, feedback: "La solution la plus sûre pour la qualité et la sécurité, mais elle est très coûteuse et entraîne des retards importants. Le client appréciera la rigueur." },
+                    { text: "Tenter de masquer l'erreur et de renforcer la structure discrètement", impacts: { securite: -50, qualite: -40, client: -30, couts: 1000000, marge: -0.8 }, feedback: "Extrêmement risqué et illégal. Cela met en péril la sécurité du bâtiment, la qualité est compromise et si découvert, les conséquences légales et de réputation seront catastrophiques." },
+                    { text: "Négocier avec le client un partage des coûts et des délais", impacts: { client: -15, couts: 1000000, delais: -10, marge: -0.7 }, feedback: "Une approche honnête mais difficile. Le client sera mécontent de devoir payer pour une erreur initiale, mais cela permet de limiter vos pertes." },
+                    { text: "Blâmer le bureau d'études initial et lancer une procédure", impacts: { delais: -60, client: -20, couts: 500000, marge: -0.3 }, feedback: "Une bataille juridique longue et incertaine qui paralyse le projet. Le client est frustré et les coûts indirects augmentent." }
+                ]
+            },
+            {
+                title: "Pression Accrue pour Réduire les Coûts", icon: "✂️", timeLimit: 30,
+                text: "La direction vous impose une réduction drastique des coûts de 10% sur le budget restant, menaçant la qualité et les délais si mal gérée.",
+                choices: [
+                    { text: "Identifier des postes de dépenses non essentiels et négocier avec les fournisseurs", impacts: { couts: -1500000, qualite: -5, delais: -5, marge: 1.0 }, feedback: "Une approche pragmatique. Vous réduisez les coûts, mais cela peut légèrement impacter la qualité et les délais. Nécessite des négociations serrées." },
+                    { text: "Réduire la qualité des matériaux et des finitions", impacts: { qualite: -40, client: -30, couts: -2000000, marge: 1.5 }, feedback: "Solution risquée qui compromet gravement la qualité et la satisfaction client. Le projet sera moins valorisé et des problèmes futurs sont probables." },
+                    { text: "Compresser les délais et augmenter la charge de travail de l'équipe", impacts: { delais: 20, equipe: -30, securite: -15, couts: -500000, marge: 0.3 }, feedback: "Extrêmement dangereux pour l'équipe et la sécurité. Le moral chute, les erreurs augmentent et le risque d'accident est élevé. Gain financier minime pour un risque humain majeur." },
+                    { text: "Présenter une analyse détaillée montrant l'impossibilité sans compromis majeurs", impacts: { client: -10, equipe: 0, couts: 0, marge: 0.0 }, feedback: "Honnête mais peut être mal perçu par la direction. Vous ne réduisez pas les coûts, mais vous protégez la qualité et l'équipe. La relation avec la direction peut être tendue." }
+                ]
+            },
+            {
+                title: "Catastrophe Naturelle Imprévue", icon: "🌪️", timeLimit: 90,
+                text: "Une tempête majeure frappe la région, causant des dégâts importants sur le chantier et retardant considérablement les travaux.",
+                choices: [
+                    { text: "Évaluer les dégâts, sécuriser le site et mobiliser les équipes de réparation", impacts: { couts: 4000000, delais: -50, securite: 30, marge: -3.0 }, feedback: "Action immédiate et essentielle. Les coûts sont énormes et les retards inévitables, mais la sécurité est rétablie et les réparations commencent." },
+                    { text: "Tenter de faire passer les dégâts pour des problèmes préexistants", impacts: { securite: -70, client: -60, couts: 1000000, marge: -0.8 }, feedback: "Illégal et moralement répréhensible. Vous risquez des poursuites judiciaires, la rupture avec le client et la destruction de votre réputation. Gain financier minime pour un risque immense." },
+                    { text: "Déclarer la force majeure et demander un arrêt complet du projet", impacts: { delais: -90, client: -50, couts: 2000000, marge: -1.5 }, feedback: "Une solution légale mais qui entraîne un arrêt très long et coûteux. Le client sera très frustré et le projet pourrait être abandonné." },
+                    { text: "Optimiser les réparations pour minimiser les coûts et délais", impacts: { couts: 3000000, delais: -40, qualite: -10, marge: -2.0 }, feedback: "Une approche pragmatique pour limiter les dégâts, mais cela peut compromettre légèrement la qualité des réparations et les délais restent importants." }
+                ]
+            },
+            {
+                title: "Problème d'Image Publique du Projet", icon: "📰", timeLimit: 40,
+                text: "Un article de presse négatif est publié, dénonçant l'impact environnemental ou social de votre projet, créant une mauvaise image publique.",
+                choices: [
+                    { text: "Organiser une campagne de communication proactive et transparente", impacts: { client: 20, equipe: 10, couts: 500000, marge: -0.3 }, feedback: "Une réponse rapide et honnête peut restaurer la confiance du public et des parties prenantes. Coûts de communication mais bénéfices à long terme." },
+                    { text: "Ignorer l'article et espérer que ça passe", impacts: { client: -40, equipe: -20, marge: -0.5 }, feedback: "Une stratégie risquée. Le silence peut être interprété comme un aveu de culpabilité, dégradant gravement l'image du projet et le moral de l'équipe." },
+                    { text: "Lancer une action en justice pour diffamation", impacts: { couts: 800000, delais: -10, client: -10, marge: -0.5 }, feedback: "Une action coûteuse et longue qui peut envenimer la situation. Le résultat est incertain et le projet reste sous le feu des critiques." },
+                    { text: "Mettre en place des actions correctives environnementales/sociales immédiates", impacts: { couts: 1500000, qualite: 10, client: 15, marge: -1.0 }, feedback: "Une réponse forte et concrète. Vous investissez pour améliorer l'image et la qualité du projet, mais avec un coût financier significatif." }
+                ]
+            },
+            {
+                title: "Cyberattaque sur les Systèmes de Gestion", icon: "💻", timeLimit: 55,
+                text: "Les systèmes informatiques de gestion de projet (plannings, budgets) sont paralysés par une cyberattaque, menaçant la coordination et le suivi.",
+                choices: [
+                    { text: "Engager des experts en cybersécurité pour restaurer les systèmes", impacts: { couts: 2000000, delais: -20, securite: 20, marge: -1.5 }, feedback: "La solution essentielle pour récupérer les données et sécuriser les systèmes. Coûts élevés et retards importants, mais la continuité est assurée à terme." },
+                    { text: "Tenter de gérer le projet manuellement (papier/téléphone)", impacts: { delais: -40, equipe: -30, qualite: -20, couts: 500000, marge: -0.8 }, feedback: "Une solution temporaire inefficace. La coordination devient chaotique, les erreurs se multiplient et les délais explosent. Coûts indirects élevés." },
+                    { text: "Payer la rançon exigée par les hackers", impacts: { couts: 1000000, securite: -50, client: -30, marge: -0.7 }, feedback: "Solution rapide mais risquée. Rien ne garantit la restitution des données, et vous encouragez d'autres attaques. La sécurité est gravement compromise." },
+                    { text: "Reconstruire les systèmes à partir de zéro avec de nouvelles mesures de sécurité", impacts: { couts: 3000000, delais: -50, securite: 30, marge: -2.0 }, feedback: "La solution la plus sûre à long terme, mais extrêmement coûteuse et longue. Le projet sera paralysé pendant une longue période." }
                 ]
             }
         ];
@@ -825,4 +926,3 @@
     </script>
 </body>
 </html>
-�
