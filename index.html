@@ -149,7 +149,7 @@
         // --- Game Configuration ---
         const CONFIG = {
             initialMetrics: {
-                chiffreAffaires: { name: "Chiffre d'Affaires", icon: "�", value: 150000000, isCurrency: true },
+                chiffreAffaires: { name: "Chiffre d'Affaires", icon: "📈", value: 150000000, isCurrency: true },
                 couts: { name: "Coûts", icon: "📉", value: 135000000, isCurrency: true },
                 marge: { name: "Marge", icon: "📊", value: 10, isPercentage: true },
                 delais: { name: "Délais", icon: "⏱️", value: 80 },
@@ -176,100 +176,100 @@
                 title: "Défaillance Fournisseur Critique", icon: "🏭", timeLimit: 45,
                 text: "Votre fournisseur principal de béton préfabriqué, crucial pour la phase actuelle, vient de déposer le bilan. Le chantier risque d'être à l'arrêt complet d'ici 48h.",
                 choices: [
-                    { text: "Signer avec un fournisseur local plus cher en urgence", impacts: { couts: 750000, delais: 5, qualite: -5, client: 10 }, feedback: "Vous sauvez les délais mais le surcoût est important et la qualité de ce fournisseur est moins réputée. Le client apprécie votre réactivité." },
-                    { text: "Lancer un appel d'offres accéléré (1 semaine)", impacts: { couts: 250000, delais: -15, equipe: -10, client: -5 }, feedback: "Solution financièrement prudente, mais une semaine d'arrêt pèse sur les délais et le moral de l'équipe." },
-                    { text: "Utiliser une technologie alternative (béton coulé sur place)", impacts: { couts: 1200000, securite: -10, qualite: 10, delais: -5 }, feedback: "Innovant mais très coûteux et techniquement risqué. La qualité pourrait être supérieure, si tout se passe bien." },
-                    { text: "Tenter de racheter le stock du fournisseur défaillant via l'administrateur judiciaire", impacts: { couts: -100000, delais: -10, client: -10, securite: -5 }, feedback: "Un pari audacieux. Si ça marche, vous faites une bonne affaire. Si ça échoue, vous perdez un temps précieux. C'est un risque juridique." }
+                    { text: "Signer avec un fournisseur local plus cher en urgence", impacts: { couts: 1500000, delais: 10, qualite: -10, client: 5 }, feedback: "Vous sauvez les délais mais le surcoût est important et la qualité de ce fournisseur est moins réputée. Le client apprécie votre réactivité, mais la marge est impactée." },
+                    { text: "Lancer un appel d'offres accéléré (1 semaine)", impacts: { couts: 500000, delais: -25, equipe: -20, client: -15 }, feedback: "Solution financièrement prudente, mais une semaine d'arrêt pèse lourdement sur les délais et le moral de l'équipe, et le client est mécontent." },
+                    { text: "Utiliser une technologie alternative (béton coulé sur place)", impacts: { couts: 2500000, securite: -20, qualite: 5, delais: -15 }, feedback: "Innovant mais très coûteux et techniquement risqué. La qualité pourrait être supérieure, si tout se passe bien, mais la sécurité est une préoccupation majeure." },
+                    { text: "Tenter de racheter le stock du fournisseur défaillant via l'administrateur judiciaire", impacts: { couts: -200000, delais: -20, client: -25, securite: -15 }, feedback: "Un pari audacieux. Si ça marche, vous faites une bonne affaire. Si ça échoue, vous perdez un temps précieux et la relation client se dégrade fortement. C'est un risque juridique et de sécurité." }
                 ]
             },
             {
                 title: "Conflit Social sur le Chantier", icon: "🔥", timeLimit: 60,
                 text: "Une grève surprise éclate sur le chantier suite à un désaccord sur les conditions de travail. Le piquet de grève bloque l'accès au site. La presse locale est déjà là.",
                 choices: [
-                    { text: "Négocier immédiatement avec les syndicats, quitte à céder sur des primes", impacts: { couts: 500000, equipe: 15, delais: 5, client: -5 }, feedback: "Le conflit est résolu rapidement, l'équipe est satisfaite, mais cela crée un précédent coûteux pour l'avenir." },
-                    { text: "Faire appel à un huissier pour constater le blocage et menacer d'actions légales", impacts: { equipe: -25, delais: -15, client: -10, securite: -5 }, feedback: "La ligne dure. Vous envenimez les relations sociales et risquez un arrêt prolongé. L'image du projet en pâtit." },
-                    { text: "Organiser une table ronde avec la direction, les syndicats et un médiateur", impacts: { delais: -5, equipe: 5, couts: 50000 }, feedback: "Approche diplomatique mais lente. Montre votre volonté de dialogue, mais chaque jour de négociation est un jour de retard." },
-                    { text: "Ignorer le piquet et tenter de faire entrer des non-grévistes par une autre entrée", impacts: { securite: -30, equipe: -20, delais: -20, qualite: -15 }, feedback: "Extrêmement dangereux. Vous risquez l'escalade, des accidents et des défauts de qualité catastrophiques. Une très mauvaise décision." }
+                    { text: "Négocier immédiatement avec les syndicats, quitte à céder sur des primes", impacts: { couts: 1000000, equipe: 10, delais: 10, client: -10 }, feedback: "Le conflit est résolu rapidement, l'équipe est satisfaite, mais cela crée un précédent coûteux pour l'avenir et le client est agacé par les retards." },
+                    { text: "Faire appel à un huissier pour constater le blocage et menacer d'actions légales", impacts: { equipe: -40, delais: -30, client: -25, securite: -15 }, feedback: "La ligne dure. Vous envenimez les relations sociales, risquez un arrêt prolongé et des accidents. L'image du projet en pâtit gravement." },
+                    { text: "Organiser une table ronde avec la direction, les syndicats et un médiateur", impacts: { delais: -10, equipe: 10, couts: 100000 }, feedback: "Approche diplomatique mais lente. Montre votre volonté de dialogue, mais chaque jour de négociation est un jour de retard coûteux." },
+                    { text: "Ignorer le piquet et tenter de faire entrer des non-grévistes par une autre entrée", impacts: { securite: -50, equipe: -40, delais: -40, qualite: -30 }, feedback: "Extrêmement dangereux et irresponsable. Vous risquez l'escalade, des accidents graves, des défauts de qualité catastrophiques et des poursuites judiciaires. Une décision désastreuse." }
                 ]
             },
             {
                 title: "Modification Majeure du Client", icon: "✍️", timeLimit: 50,
                 text: "À mi-projet, le client demande une modification de conception majeure qui impacte la structure porteuse. Il souhaite que cela soit inclus dans le budget initial.",
                 choices: [
-                    { text: "Refuser catégoriquement en citant le contrat", impacts: { client: -25, equipe: 5 }, feedback: "Vous êtes dans votre droit, mais la relation client est durablement endommagée. Cela pourrait compliquer la réception du chantier." },
-                    { text: "Accepter, en espérant vous rattraper sur d'autres postes", impacts: { couts: 1500000, client: 15, qualite: -10, equipe: -10 }, feedback: "Geste commercial très apprécié mais qui anéantit votre marge. L'équipe est démotivée par ce travail 'gratuit'." },
-                    { text: "Chiffrer un avenant détaillé (coûts + marge) et le défendre fermement", impacts: { chiffreAffaires: 1800000, couts: 1500000, client: 5, delais: -5 }, feedback: "La seule approche professionnelle. La négociation sera tendue mais vous préservez votre marge et la rigueur du projet." },
-                    { text: "Proposer une alternative moins chère qui répond partiellement au besoin", impacts: { client: -5, qualite: -5, couts: 400000 }, feedback: "Un compromis qui ne satisfait personne. Le client se sent floué et la solution technique est sous-optimale." }
+                    { text: "Refuser catégoriquement en citant le contrat", impacts: { client: -40, equipe: 10 }, feedback: "Vous êtes dans votre droit, mais la relation client est durablement et gravement endommagée. Cela pourrait compliquer la réception du chantier et les projets futurs." },
+                    { text: "Accepter, en espérant vous rattraper sur d'autres postes", impacts: { couts: 3000000, client: 20, qualite: -20, equipe: -20 }, feedback: "Geste commercial très apprécié mais qui anéantit votre marge et la qualité du projet. L'équipe est démotivée par ce travail 'gratuit' et bâclé." },
+                    { text: "Chiffrer un avenant détaillé (coûts + marge) et le défendre fermement", impacts: { chiffreAffaires: 2500000, couts: 2000000, client: 10, delais: -10 }, feedback: "La seule approche professionnelle. La négociation sera très tendue mais vous préservez votre marge et la rigueur du projet, bien qu'avec un léger retard." },
+                    { text: "Proposer une alternative moins chère qui répond partiellement au besoin", impacts: { client: -15, qualite: -15, couts: 800000 }, feedback: "Un compromis qui ne satisfait personne. Le client se sent floué, la solution technique est sous-optimale et la qualité est dégradée." }
                 ]
             },
             {
                 title: "Problème Géotechnique Imprévu", icon: "⛰️", timeLimit: 40,
                 text: "Les fondations révèlent une poche d'argile non détectée par les études de sol initiales. La stabilité d'une aile du bâtiment est compromise.",
                 choices: [
-                    { text: "Mettre en place des fondations spéciales (micropieux)", impacts: { couts: 2000000, delais: -15, securite: 20 }, feedback: "La solution la plus sûre et la plus pérenne, mais son coût est exorbitant et impacte lourdement les délais." },
-                    { text: "Réaliser une injection de résine pour stabiliser le sol", impacts: { couts: 800000, delais: -5, securite: 5, qualite: -5 }, feedback: "Une solution technique plus rapide et moins chère, mais dont la durabilité à long terme est sujette à débat. Un risque calculé." },
-                    { text: "Alléger la structure du bâtiment concerné pour réduire la charge", impacts: { qualite: -15, client: -10, couts: 250000 }, feedback: "Vous traitez le symptôme, pas la cause. Le client n'apprécie pas la réduction de la qualité et la sécurité reste une préoccupation." },
-                    { text: "Mettre en cause le bureau d'études géotechniques pour prise en charge", impacts: { delais: -25, client: -15, couts: 100000 }, feedback: "Vous lancez une bataille juridique qui paralysera le projet pendant des mois. Les chances de succès sont incertaines." }
+                    { text: "Mettre en place des fondations spéciales (micropieux)", impacts: { couts: 4000000, delais: -25, securite: 30 }, feedback: "La solution la plus sûre et la plus pérenne, mais son coût est exorbitant et impacte lourdement les délais. La sécurité est assurée." },
+                    { text: "Réaliser une injection de résine pour stabiliser le sol", impacts: { couts: 1500000, delais: -10, securite: 10, qualite: -10 }, feedback: "Une solution technique plus rapide et moins chère, mais dont la durabilité à long terme est sujette à débat. Un risque calculé sur la qualité et la sécurité." },
+                    { text: "Alléger la structure du bâtiment concerné pour réduire la charge", impacts: { qualite: -30, client: -20, couts: 500000, securite: -20 }, feedback: "Vous traitez le symptôme, pas la cause. Le client n'apprécie pas la réduction de la qualité, la sécurité reste une préoccupation majeure et les coûts augmentent." },
+                    { text: "Mettre en cause le bureau d'études géotechniques pour prise en charge", impacts: { delais: -40, client: -30, couts: 200000 }, feedback: "Vous lancez une bataille juridique qui paralysera le projet pendant des mois avec des coûts importants. Les chances de succès sont incertaines et le client est furieux." }
                 ]
             },
             {
                 title: "Pénurie de Main-d'œuvre Qualifiée", icon: "👷", timeLimit: 55,
                 text: "Une pénurie inattendue de main-d'œuvre qualifiée (soudeurs certifiés) menace l'avancement des travaux structurels. Les délais sont déjà serrés.",
                 choices: [
-                    { text: "Recruter des intérimaires à prix d'or", impacts: { couts: 900000, delais: 5, qualite: -5, equipe: -5 }, feedback: "Solution rapide mais coûteuse, et la qualité peut être impactée par le manque de familiarité avec le projet." },
-                    { text: "Mettre en place un programme de formation accélérée pour l'équipe existante", impacts: { couts: 300000, delais: -10, equipe: 15, qualite: 5 }, feedback: "Investissement à long terme pour l'équipe, mais cela retarde le projet à court terme. La qualité s'améliore à terme." },
-                    { text: "Sous-traiter la tâche à une entreprise externe avec des équipes disponibles", impacts: { couts: 700000, delais: 0, qualite: 0, client: -5 }, feedback: "Permet de maintenir les délais, mais la coordination est plus complexe et le client peut percevoir un manque de contrôle." },
-                    { text: "Négocier avec le client un ajustement des délais en expliquant la situation", impacts: { client: -10, delais: -5, couts: -50000 }, feedback: "Honnête but risque de mécontenter le client. Vous évitez des coûts supplémentaires mais perdez en réputation." }
+                    { text: "Recruter des intérimaires à prix d'or", impacts: { couts: 1800000, delais: 10, qualite: -15, equipe: -10 }, feedback: "Solution rapide mais extrêmement coûteuse, et la qualité peut être fortement impactée par le manque de familiarité avec le projet et la démotivation de l'équipe." },
+                    { text: "Mettre en place un programme de formation accélérée pour l'équipe existante", impacts: { couts: 600000, delais: -20, equipe: 20, qualite: 10 }, feedback: "Investissement à long terme pour l'équipe, mais cela retarde significativement le projet à court terme. La qualité s'améliore à terme, mais le coût est élevé." },
+                    { text: "Sous-traiter la tâche à une entreprise externe avec des équipes disponibles", impacts: { couts: 1400000, delais: 0, qualite: -5, client: -10 }, feedback: "Permet de maintenir les délais, mais la coordination est plus complexe, la qualité peut être légèrement inférieure et le client peut percevoir un manque de contrôle." },
+                    { text: "Négocier avec le client un ajustement des délais en expliquant la situation", impacts: { client: -20, delais: -15, couts: -100000 }, feedback: "Honnête mais risque de mécontenter fortement le client. Vous évitez des coûts supplémentaires mais perdez en réputation et en confiance." }
                 ]
             },
             {
                 title: "Découverte Archéologique", icon: "🏺", timeLimit: 70,
                 text: "Lors des terrassements, des vestiges archéologiques importants sont découverts. Le site est immédiatement gelé par les autorités culturelles.",
                 choices: [
-                    { text: "Financer des fouilles accélérées pour minimiser l'arrêt", impacts: { couts: 1500000, delais: -20, client: 5, securite: 0 }, feedback: "Solution coûteuse mais proactive. Vous montrez votre engagement et minimisez l'impact sur le client." },
-                    { text: "Tenter de dévier le projet pour contourner la zone", impacts: { couts: 2000000, delais: -30, qualite: -10, client: -15 }, feedback: "Extrêmement coûteux et complexe, cela peut compromettre la conception initiale et la satisfaction client." },
-                    { text: "Négocier avec les autorités pour une intervention minimale", impacts: { delais: -10, securite: -5, client: -5, couts: 200000 }, feedback: "Vous essayez de limiter les dégâts, mais cela peut entraîner des compromis sur la conservation et des retards persistants." },
-                    { text: "Mettre le chantier en pause indéfinie en attendant une décision officielle", impacts: { couts: 1000000, delais: -50, equipe: -20, client: -20 }, feedback: "La pire des solutions. Coûts d'immobilisation énormes, moral de l'équipe au plus bas et client furieux." }
+                    { text: "Financer des fouilles accélérées pour minimiser l'arrêt", impacts: { couts: 3000000, delais: -30, client: 10, securite: 0 }, feedback: "Solution coûteuse mais proactive. Vous montrez votre engagement et minimisez l'impact sur le client, mais les délais sont fortement impactés." },
+                    { text: "Tenter de dévier le projet pour contourner la zone", impacts: { couts: 4000000, delais: -50, qualite: -20, client: -30 }, feedback: "Extrêmement coûteux et complexe, cela peut compromettre gravement la conception initiale, la qualité et la satisfaction client. Retards massifs." },
+                    { text: "Négocier avec les autorités pour une intervention minimale", impacts: { delais: -20, securite: -10, client: -15, couts: 400000 }, feedback: "Vous essayez de limiter les dégâts, mais cela peut entraîner des compromis sur la conservation, des retards persistants et des coûts additionnels." },
+                    { text: "Mettre le chantier en pause indéfinie en attendant une décision officielle", impacts: { couts: 2000000, delais: -70, equipe: -30, client: -35 }, feedback: "La pire des solutions. Coûts d'immobilisation énormes, moral de l'équipe au plus bas, client furieux et projet potentiellement abandonné." }
                 ]
             },
             {
                 title: "Accident sur le Chantier", icon: "🚑", timeLimit: 30,
                 text: "Un accident grave vient de se produire sur le chantier, impliquant un ouvrier. Les secours sont en route. L'inspection du travail sera là sous peu.",
                 choices: [
-                    { text: "Assurer la prise en charge médicale et la sécurité du site, puis communiquer avec transparence", impacts: { securite: 20, equipe: 10, client: 5, couts: 100000 }, feedback: "Priorité à l'humain et à la transparence. Cela renforce la confiance mais a un coût financier et d'image initial." },
-                    { text: "Tenter de minimiser les faits et de cacher certaines informations", impacts: { securite: -30, equipe: -25, client: -20, couts: 500000 }, feedback: "Extrêmement risqué et irresponsable. Cela peut mener à des poursuites judiciaires et détruire la réputation de l'entreprise." },
-                    { text: "Mettre en place immédiatement un audit de sécurité complet", impacts: { securite: 15, equipe: 5, delais: -5, couts: 200000 }, feedback: "Action forte pour la sécurité, mais cela peut entraîner un ralentissement temporaire du chantier." },
-                    { text: "Blâmer l'ouvrier pour négligence sans investigation", impacts: { equipe: -30, securite: -10, client: -10, couts: -50000 }, feedback: "Injuste et démoralisant pour l'équipe. Cela crée un climat de peur et n'améliore pas la sécurité." }
+                    { text: "Assurer la prise en charge médicale et la sécurité du site, puis communiquer avec transparence", impacts: { securite: 30, equipe: 15, client: 10, couts: 200000 }, feedback: "Priorité à l'humain et à la transparence. Cela renforce la confiance mais a un coût financier et d'image initial. La sécurité est primordiale." },
+                    { text: "Tenter de minimiser les faits et de cacher certaines informations", impacts: { securite: -50, equipe: -40, client: -35, couts: 1000000 }, feedback: "Extrêmement risqué et irresponsable. Cela peut mener à des poursuites judiciaires lourdes, détruire la réputation de l'entreprise et causer des pertes humaines. Une décision catastrophique." },
+                    { text: "Mettre en place immédiatement un audit de sécurité complet", impacts: { securite: 25, equipe: 10, delais: -10, couts: 400000 }, feedback: "Action forte pour la sécurité, mais cela peut entraîner un ralentissement temporaire du chantier et des coûts importants." },
+                    { text: "Blâmer l'ouvrier pour négligence sans investigation", impacts: { equipe: -50, securite: -20, client: -25, couts: -100000 }, feedback: "Injuste et démoralisant pour l'équipe. Cela crée un climat de peur, n'améliore pas la sécurité et peut entraîner des démissions massives." }
                 ]
             },
             {
                 title: "Fluctuation des Prix des Matières Premières", icon: "💰", timeLimit: 45,
                 text: "Le prix de l'acier, un composant majeur de votre projet, a subitement augmenté de 25%. Votre budget est sous pression.",
                 choices: [
-                    { text: "Acheter en grande quantité maintenant pour bloquer le prix", impacts: { couts: 700000, delais: 5, qualite: 0, client: 0 }, feedback: "Bonne stratégie pour limiter la hausse, mais cela immobilise du capital et augmente les coûts de stockage." },
-                    { text: "Revoir les spécifications techniques pour utiliser moins d'acier ou un substitut", impacts: { qualite: -10, couts: -300000, client: -10, delais: -5 }, feedback: "Solution économique mais qui peut compromettre la qualité et la satisfaction client. Nécessite l'accord du client." },
-                    { text: "Négocier des conditions de paiement plus favorables avec le fournisseur", impacts: { couts: 100000, client: 0, delais: 0, chiffreAffaires: 0 }, feedback: "Peut alléger la trésorerie à court terme, mais ne résout pas le problème du coût total." },
-                    { text: "Demander un avenant au client pour couvrir la hausse des coûts", impacts: { client: -15, couts: 0, chiffreAffaires: 700000 }, feedback: "La solution la plus directe pour votre marge, mais risque de tendre la relation client." }
+                    { text: "Acheter en grande quantité maintenant pour bloquer le prix", impacts: { couts: 1500000, delais: 10, qualite: 0, client: 0 }, feedback: "Bonne stratégie pour limiter la hausse, mais cela immobilise beaucoup de capital et augmente les coûts de stockage et de délais." },
+                    { text: "Revoir les spécifications techniques pour utiliser moins d'acier ou un substitut", impacts: { qualite: -20, couts: -600000, client: -20, delais: -10 }, feedback: "Solution économique mais qui peut compromettre gravement la qualité et la satisfaction client. Nécessite l'accord du client et entraîne des retards." },
+                    { text: "Négocier des conditions de paiement plus favorables avec le fournisseur", impacts: { couts: 200000, client: 0, delais: 0, chiffreAffaires: 0 }, feedback: "Peut alléger la trésorerie à court terme, mais ne résout pas le problème du coût total et n'a pas d'impact majeur." },
+                    { text: "Demander un avenant au client pour couvrir la hausse des coûts", impacts: { client: -30, couts: 0, chiffreAffaires: 1500000 }, feedback: "La solution la plus directe pour votre marge, mais risque de tendre fortement la relation client et de compromettre les futurs contrats." }
                 ]
             },
             {
                 title: "Problème de Permis de Construire", icon: "📄", timeLimit: 60,
                 text: "Un recours de dernière minute contre le permis de construire est déposé par une association de quartier. Le chantier est menacé d'un arrêt administratif.",
                 choices: [
-                    { text: "Engager un avocat spécialisé et défendre le permis en urgence", impacts: { couts: 400000, delais: -10, client: 5, securite: 0 }, feedback: "La meilleure approche légale, mais coûteuse et le délai de résolution est incertain." },
-                    { text: "Tenter de négocier directement avec l'association pour trouver un compromis", impacts: { couts: 100000, delais: -5, client: 0, equipe: 0 }, feedback: "Approche diplomatique qui peut éviter un long conflit, mais nécessite des concessions." },
-                    { text: "Ignorer le recours et continuer les travaux (risque pénal)", impacts: { securite: -20, delais: -30, client: -20, couts: 1000000 }, feedback: "Extrêmement risqué. Vous vous exposez à de lourdes amendes et à l'arrêt définitif du chantier." },
-                    { text: "Revoir le projet pour intégrer les demandes de l'association", impacts: { couts: 800000, delais: -15, client: 10, qualite: -5 }, feedback: "Coûteux et long, mais peut désamorcer le conflit et améliorer l'image du projet. La qualité peut être compromise." }
+                    { text: "Engager un avocat spécialisé et défendre le permis en urgence", impacts: { couts: 800000, delais: -20, client: 10, securite: 0 }, feedback: "La meilleure approche légale, mais coûteuse et le délai de résolution est incertain. Le client apprécie votre proactivité." },
+                    { text: "Tenter de négocier directement avec l'association pour trouver un compromis", impacts: { couts: 200000, delais: -10, client: 0, equipe: 0 }, feedback: "Approche diplomatique qui peut éviter un long conflit, mais nécessite des concessions coûteuses et des retards." },
+                    { text: "Ignorer le recours et continuer les travaux (risque pénal)", impacts: { securite: -40, delais: -50, client: -40, couts: 2000000 }, feedback: "Extrêmement risqué. Vous vous exposez à de lourdes amendes, à l'arrêt définitif du chantier, à des poursuites pénales et à la ruine de votre réputation." },
+                    { text: "Revoir le projet pour intégrer les demandes de l'association", impacts: { couts: 1600000, delais: -30, client: 20, qualite: -10 }, feedback: "Coûteux et long, mais peut désamorcer le conflit et améliorer l'image du projet. La qualité peut être compromise et les délais sont importants." }
                 ]
             },
             {
                 title: "Innovation Technologique Imposée", icon: "💡", timeLimit: 50,
                 text: "Le client souhaite intégrer une nouvelle technologie de gestion des bâtiments (BIM avancé) qui n'était pas prévue initialement et demande une adaptation rapide.",
                 choices: [
-                    { text: "Investir dans la formation de l'équipe et l'achat de logiciels", impacts: { couts: 600000, equipe: 15, qualite: 10, delais: -5 }, feedback: "Coûteux à court terme, mais un investissement pour l'avenir de l'entreprise et la satisfaction client." },
-                    { text: "Sous-traiter la partie BIM à une entreprise spécialisée", impacts: { couts: 400000, delais: 0, qualite: 5, client: 0 }, feedback: "Solution rapide pour répondre au besoin, mais vous perdez en compétence interne." },
-                    { text: "Refuser l'intégration en expliquant les contraintes de délai et budget", impacts: { client: -15, qualite: -5, equipe: 0, couts: 0 }, feedback: "Vous protégez votre budget, mais le client sera déçu et le projet moins moderne." },
-                    { text: "Proposer une intégration partielle ou progressive de la technologie", impacts: { client: 5, qualite: 5, couts: 200000, delais: -2 }, feedback: "Un compromis qui satisfait partiellement le client et limite les coûts et délais. Une approche pragmatique." }
+                    { text: "Investir dans la formation de l'équipe et l'achat de logiciels", impacts: { couts: 1200000, equipe: 20, qualite: 15, delais: -10 }, feedback: "Coûteux à court terme, mais un investissement majeur pour l'avenir de l'entreprise et la satisfaction client. Entraîne des retards initiaux." },
+                    { text: "Sous-traiter la partie BIM à une entreprise spécialisée", impacts: { couts: 800000, delais: 0, qualite: 10, client: 0 }, feedback: "Solution rapide pour répondre au besoin, mais vous perdez en compétence interne et le coût est élevé." },
+                    { text: "Refuser l'intégration en expliquant les contraintes de délai et budget", impacts: { client: -30, qualite: -10, equipe: -5, couts: 0 }, feedback: "Vous protégez votre budget, mais le client sera très déçu, le projet moins moderne et l'équipe peut se sentir dévalorisée." },
+                    { text: "Proposer une intégration partielle ou progressive de la technologie", impacts: { client: 10, qualite: 10, couts: 400000, delais: -5 }, feedback: "Un compromis qui satisfait partiellement le client et limite les coûts et délais. Une approche pragmatique avec un impact positif sur la qualité." }
                 ]
             }
         ];
@@ -479,7 +479,7 @@
         function showFeedbackModal(choice, impacts) {
             state.isModalOpen = true;
             DOMElements.feedbackTitle.textContent = choice.text ? `Conséquences de la décision` : "Rapport de situation";
-            DOMElements.feedbackText.textContent = choice.feedback; // Corrected typo here
+            DOMElements.feedbackText.textContent = choice.feedback;
             
             let impactHTML = '';
             for (const key in impacts) {
@@ -529,25 +529,46 @@
 
             const finalMargin = state.metrics.marge.value;
             // Calculate total score based on margin, client satisfaction, and quality
-            const totalScore = Math.round(finalMargin * 1000 + state.metrics.client.value * 50 + state.metrics.qualite.value * 50);
+            // Adjusted scoring to make it harder to get high scores with bad decisions
+            const totalScore = Math.round(
+                (finalMargin * 100) + // Margin is now more impactful
+                (state.metrics.client.value * 20) + // Client satisfaction contribution
+                (state.metrics.qualite.value * 20) + // Quality contribution
+                (state.metrics.securite.value * 10) + // Safety contribution
+                (state.metrics.equipe.value * 5) // Team morale contribution
+            );
             DOMElements.finalScore.textContent = totalScore;
 
             let category, description;
-            if (finalMargin >= 10) {
-                category = "Maître d'Œuvre d'Exception";
+            let contactMessage = '';
+
+            if (totalScore >= 15000) {
+                category = "Légende de la Gestion de Projet ! 🚀";
+                description = "Votre performance est absolument exceptionnelle, digne des plus grands. Une maîtrise parfaite de tous les aspects. Postulez sans hésiter !";
+                contactMessage = `<p class="mt-4 text-lg text-amber-300 font-bold">Votre score est incroyable ! Nous vous encourageons vivement à postuler chez LTD Recrutement.</p><p class="text-md text-amber-300">Envoyez votre candidature à <a href="mailto:l.amara@ltd-international.com" class="underline text-blue-400 hover:text-blue-300">l.amara@ltd-international.com</a></p>`;
+            } else if (totalScore >= 10000) {
+                category = "Maître d'Œuvre d'Exception ! 🏆";
                 description = "Rentabilité exceptionnelle, projet mené de main de maître. Votre gestion financière et stratégique est un cas d'école. Bravo !";
-            } else if (finalMargin >= 5) {
-                category = "Directeur de Projet chevronné";
-                description = "Vous avez su préserver la rentabilité face à l'adversité. Une performance solide qui démontre une grande expérience.";
-            } else if (finalMargin > 0) {
+                contactMessage = `<p class="mt-4 text-lg text-amber-300 font-bold">Votre score est excellent ! Nous serions ravis d'étudier votre profil chez LTD Recrutement.</p><p class="text-md text-amber-300">Envoyez votre candidature à <a href="mailto:l.amara@ltd-international.com" class="underline text-blue-400 hover:text-blue-300">l.amara@ltd-international.com</a></p>`;
+            } else if (totalScore >= 7500) {
+                category = "Directeur de Projet Élite ! ✨";
+                description = "Une performance supérieure à la moyenne, démontrant une grande expertise et une capacité à gérer des défis complexes avec succès.";
+            } else if (totalScore >= 5000) {
+                category = "Directeur de Projet Confirmé";
+                description = "Vous avez su préserver la rentabilité face à l'adversité. Une performance solide qui démontre une bonne expérience.";
+            } else if (totalScore >= 2500) {
                 category = "Gestionnaire Prudent";
                 description = "Le projet est rentable, c'est l'essentiel. Des optimisations sont possibles, mais vous avez évité la catastrophe. Mission accomplie.";
-            } else {
+            } else if (totalScore >= 0) {
                 category = "Projet en Difficulté";
-                description = "La rentabilité n'est pas au rendez-vous. Cette simulation difficile est riche d'enseignements pour affiner votre gestion des risques.";
+                description = "La rentabilité est faible ou nulle. Cette simulation difficile est riche d'enseignements pour affiner votre gestion des risques et éviter les pertes.";
+            } else {
+                category = "Catastrophe de Projet ! 🚨";
+                description = "Le projet a subi des pertes importantes. Une analyse approfondie des décisions est nécessaire pour éviter de telles situations à l'avenir.";
             }
+
             DOMElements.resultCategory.textContent = category;
-            DOMElements.resultDescription.textContent = description;
+            DOMElements.resultDescription.innerHTML = description + contactMessage; // Use innerHTML to allow HTML tags for the contact message
 
             let breakdownHTML = `<h4 class="text-lg font-bold text-center text-blue-300 mb-4">Bilan Financier & Opérationnel</h4>`;
             for (const key in state.metrics) {
@@ -634,7 +655,7 @@
             let valueColorClass = 'text-slate-200';
             if (key === 'marge') {
                 valueColorClass = metric.value > 10 ? 'text-green-400' : metric.value > 0 ? 'text-amber-400' : 'text-red-400';
-            } else if (!metric.isCurrency && !metric.isPercentage) { // For other non-currency, non-percentage metrics
+            } else if (!metric.isCurrency) { // For non-currency, non-percentage metrics
                 valueColorClass = metric.value > 70 ? 'text-green-400' : metric.value > 40 ? 'text-amber-400' : 'text-red-400';
             } else if (key === 'couts') { // For costs, lower is better
                 valueColorClass = metric.value < CONFIG.initialMetrics.couts.value * 0.9 ? 'text-green-400' : metric.value > CONFIG.initialMetrics.couts.value * 1.1 ? 'text-red-400' : 'text-amber-400';
@@ -684,4 +705,3 @@
     </script>
 </body>
 </html>
-�
