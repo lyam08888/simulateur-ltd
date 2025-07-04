@@ -149,7 +149,7 @@
         // --- Game Configuration ---
         const CONFIG = {
             initialMetrics: {
-                chiffreAffaires: { name: "Chiffre d'Affaires", icon: "📈", value: 150000000, isCurrency: true },
+                chiffreAffaires: { name: "Chiffre d'Affaires", icon: "�", value: 150000000, isCurrency: true },
                 couts: { name: "Coûts", icon: "📉", value: 135000000, isCurrency: true },
                 marge: { name: "Marge", icon: "📊", value: 10, isPercentage: true },
                 delais: { name: "Délais", icon: "⏱️", value: 80 },
@@ -183,7 +183,7 @@
                 ]
             },
             {
-                title: "Conflit Social", icon: "🔥", timeLimit: 60,
+                title: "Conflit Social sur le Chantier", icon: "🔥", timeLimit: 60,
                 text: "Une grève surprise éclate sur le chantier suite à un désaccord sur les conditions de travail. Le piquet de grève bloque l'accès au site. La presse locale est déjà là.",
                 choices: [
                     { text: "Négocier immédiatement avec les syndicats, quitte à céder sur des primes", impacts: { couts: 500000, equipe: 15, delais: 5, client: -5 }, feedback: "Le conflit est résolu rapidement, l'équipe est satisfaite, mais cela crée un précédent coûteux pour l'avenir." },
@@ -212,11 +212,67 @@
                     { text: "Mettre en cause le bureau d'études géotechniques pour prise en charge", impacts: { delais: -25, client: -15, couts: 100000 }, feedback: "Vous lancez une bataille juridique qui paralysera le projet pendant des mois. Les chances de succès sont incertaines." }
                 ]
             },
+            {
+                title: "Pénurie de Main-d'œuvre Qualifiée", icon: "👷", timeLimit: 55,
+                text: "Une pénurie inattendue de main-d'œuvre qualifiée (soudeurs certifiés) menace l'avancement des travaux structurels. Les délais sont déjà serrés.",
+                choices: [
+                    { text: "Recruter des intérimaires à prix d'or", impacts: { couts: 900000, delais: 5, qualite: -5, equipe: -5 }, feedback: "Solution rapide mais coûteuse, et la qualité peut être impactée par le manque de familiarité avec le projet." },
+                    { text: "Mettre en place un programme de formation accélérée pour l'équipe existante", impacts: { couts: 300000, delais: -10, equipe: 15, qualite: 5 }, feedback: "Investissement à long terme pour l'équipe, mais cela retarde le projet à court terme. La qualité s'améliore à terme." },
+                    { text: "Sous-traiter la tâche à une entreprise externe avec des équipes disponibles", impacts: { couts: 700000, delais: 0, qualite: 0, client: -5 }, feedback: "Permet de maintenir les délais, mais la coordination est plus complexe et le client peut percevoir un manque de contrôle." },
+                    { text: "Négocier avec le client un ajustement des délais en expliquant la situation", impacts: { client: -10, delais: -5, couts: -50000 }, feedback: "Honnête but risque de mécontenter le client. Vous évitez des coûts supplémentaires mais perdez en réputation." }
+                ]
+            },
+            {
+                title: "Découverte Archéologique", icon: "🏺", timeLimit: 70,
+                text: "Lors des terrassements, des vestiges archéologiques importants sont découverts. Le site est immédiatement gelé par les autorités culturelles.",
+                choices: [
+                    { text: "Financer des fouilles accélérées pour minimiser l'arrêt", impacts: { couts: 1500000, delais: -20, client: 5, securite: 0 }, feedback: "Solution coûteuse mais proactive. Vous montrez votre engagement et minimisez l'impact sur le client." },
+                    { text: "Tenter de dévier le projet pour contourner la zone", impacts: { couts: 2000000, delais: -30, qualite: -10, client: -15 }, feedback: "Extrêmement coûteux et complexe, cela peut compromettre la conception initiale et la satisfaction client." },
+                    { text: "Négocier avec les autorités pour une intervention minimale", impacts: { delais: -10, securite: -5, client: -5, couts: 200000 }, feedback: "Vous essayez de limiter les dégâts, mais cela peut entraîner des compromis sur la conservation et des retards persistants." },
+                    { text: "Mettre le chantier en pause indéfinie en attendant une décision officielle", impacts: { couts: 1000000, delais: -50, equipe: -20, client: -20 }, feedback: "La pire des solutions. Coûts d'immobilisation énormes, moral de l'équipe au plus bas et client furieux." }
+                ]
+            },
+            {
+                title: "Accident sur le Chantier", icon: "🚑", timeLimit: 30,
+                text: "Un accident grave vient de se produire sur le chantier, impliquant un ouvrier. Les secours sont en route. L'inspection du travail sera là sous peu.",
+                choices: [
+                    { text: "Assurer la prise en charge médicale et la sécurité du site, puis communiquer avec transparence", impacts: { securite: 20, equipe: 10, client: 5, couts: 100000 }, feedback: "Priorité à l'humain et à la transparence. Cela renforce la confiance mais a un coût financier et d'image initial." },
+                    { text: "Tenter de minimiser les faits et de cacher certaines informations", impacts: { securite: -30, equipe: -25, client: -20, couts: 500000 }, feedback: "Extrêmement risqué et irresponsable. Cela peut mener à des poursuites judiciaires et détruire la réputation de l'entreprise." },
+                    { text: "Mettre en place immédiatement un audit de sécurité complet", impacts: { securite: 15, equipe: 5, delais: -5, couts: 200000 }, feedback: "Action forte pour la sécurité, mais cela peut entraîner un ralentissement temporaire du chantier." },
+                    { text: "Blâmer l'ouvrier pour négligence sans investigation", impacts: { equipe: -30, securite: -10, client: -10, couts: -50000 }, feedback: "Injuste et démoralisant pour l'équipe. Cela crée un climat de peur et n'améliore pas la sécurité." }
+                ]
+            },
+            {
+                title: "Fluctuation des Prix des Matières Premières", icon: "💰", timeLimit: 45,
+                text: "Le prix de l'acier, un composant majeur de votre projet, a subitement augmenté de 25%. Votre budget est sous pression.",
+                choices: [
+                    { text: "Acheter en grande quantité maintenant pour bloquer le prix", impacts: { couts: 700000, delais: 5, qualite: 0, client: 0 }, feedback: "Bonne stratégie pour limiter la hausse, mais cela immobilise du capital et augmente les coûts de stockage." },
+                    { text: "Revoir les spécifications techniques pour utiliser moins d'acier ou un substitut", impacts: { qualite: -10, couts: -300000, client: -10, delais: -5 }, feedback: "Solution économique mais qui peut compromettre la qualité et la satisfaction client. Nécessite l'accord du client." },
+                    { text: "Négocier des conditions de paiement plus favorables avec le fournisseur", impacts: { couts: 100000, client: 0, delais: 0, chiffreAffaires: 0 }, feedback: "Peut alléger la trésorerie à court terme, mais ne résout pas le problème du coût total." },
+                    { text: "Demander un avenant au client pour couvrir la hausse des coûts", impacts: { client: -15, couts: 0, chiffreAffaires: 700000 }, feedback: "La solution la plus directe pour votre marge, mais risque de tendre la relation client." }
+                ]
+            },
+            {
+                title: "Problème de Permis de Construire", icon: "📄", timeLimit: 60,
+                text: "Un recours de dernière minute contre le permis de construire est déposé par une association de quartier. Le chantier est menacé d'un arrêt administratif.",
+                choices: [
+                    { text: "Engager un avocat spécialisé et défendre le permis en urgence", impacts: { couts: 400000, delais: -10, client: 5, securite: 0 }, feedback: "La meilleure approche légale, mais coûteuse et le délai de résolution est incertain." },
+                    { text: "Tenter de négocier directement avec l'association pour trouver un compromis", impacts: { couts: 100000, delais: -5, client: 0, equipe: 0 }, feedback: "Approche diplomatique qui peut éviter un long conflit, mais nécessite des concessions." },
+                    { text: "Ignorer le recours et continuer les travaux (risque pénal)", impacts: { securite: -20, delais: -30, client: -20, couts: 1000000 }, feedback: "Extrêmement risqué. Vous vous exposez à de lourdes amendes et à l'arrêt définitif du chantier." },
+                    { text: "Revoir le projet pour intégrer les demandes de l'association", impacts: { couts: 800000, delais: -15, client: 10, qualite: -5 }, feedback: "Coûteux et long, mais peut désamorcer le conflit et améliorer l'image du projet. La qualité peut être compromise." }
+                ]
+            },
+            {
+                title: "Innovation Technologique Imposée", icon: "💡", timeLimit: 50,
+                text: "Le client souhaite intégrer une nouvelle technologie de gestion des bâtiments (BIM avancé) qui n'était pas prévue initialement et demande une adaptation rapide.",
+                choices: [
+                    { text: "Investir dans la formation de l'équipe et l'achat de logiciels", impacts: { couts: 600000, equipe: 15, qualite: 10, delais: -5 }, feedback: "Coûteux à court terme, mais un investissement pour l'avenir de l'entreprise et la satisfaction client." },
+                    { text: "Sous-traiter la partie BIM à une entreprise spécialisée", impacts: { couts: 400000, delais: 0, qualite: 5, client: 0 }, feedback: "Solution rapide pour répondre au besoin, mais vous perdez en compétence interne." },
+                    { text: "Refuser l'intégration en expliquant les contraintes de délai et budget", impacts: { client: -15, qualite: -5, equipe: 0, couts: 0 }, feedback: "Vous protégez votre budget, mais le client sera déçu et le projet moins moderne." },
+                    { text: "Proposer une intégration partielle ou progressive de la technologie", impacts: { client: 5, qualite: 5, couts: 200000, delais: -2 }, feedback: "Un compromis qui satisfait partiellement le client et limite les coûts et délais. Une approche pragmatique." }
+                ]
+            }
         ];
-        // For demonstration, we'll duplicate scenarios to reach 10 total
-        while (scenarios.length < 10) {
-            scenarios.push(...scenarios.slice(0, 10 - scenarios.length));
-        }
 
         // --- Game Logic ---
         function formatCurrency(value) {
@@ -346,6 +402,7 @@
                 DOMElements.timerDisplay.classList.toggle('text-amber-400', state.timeLeft > 10);
                 if (state.timeLeft <= 0) {
                     clearInterval(state.timerInterval);
+                    // If time runs out, choose a random option
                     handleChoice(Math.floor(Math.random() * scenarios[state.currentScenarioIndex].choices.length));
                 }
                 state.timeLeft--;
@@ -366,8 +423,8 @@
                     DOMElements.hintMessage.classList.add('opacity-100', 'translate-y-0');
                     break;
                 case 'negociation':
-                     // This would require a more complex UI to select which impact to reduce.
-                     // For now, let's just boost the 'client' metric as a negotiation success.
+                    // This would require a more complex UI to select which impact to reduce.
+                    // For now, let's just boost the 'client' metric as a negotiation success.
                     updateMetric('client', 15);
                     DOMElements.hintMessage.textContent = "Négociation réussie ! La satisfaction client augmente.";
                     DOMElements.hintMessage.classList.add('opacity-100', 'translate-y-0');
@@ -377,6 +434,8 @@
                     if (bestChoiceElement) {
                         bestChoiceElement.classList.add('highlight-choice');
                     }
+                    DOMElements.hintMessage.textContent = "Analyse Risques : Le choix le plus avantageux est mis en évidence.";
+                    DOMElements.hintMessage.classList.add('opacity-100', 'translate-y-0');
                     break;
             }
             setTimeout(() => { DOMElements.hintMessage.classList.remove('opacity-100', 'translate-y-0'); }, 4000);
@@ -388,9 +447,29 @@
             let bestScore = -Infinity;
             let bestIndex = -1;
             choices.forEach((choice, index) => {
-                const score = Object.values(choice.impacts).reduce((sum, val) => sum + val, 0);
-                if (score > bestScore) {
-                    bestScore = score;
+                // Calculate a score based on the sum of impacts, giving more weight to positive impacts
+                // and considering financial impacts appropriately.
+                let currentScore = 0;
+                for (const key in choice.impacts) {
+                    const change = choice.impacts[key];
+                    const metric = CONFIG.initialMetrics[key];
+                    if (metric.isCurrency) {
+                        // For currency, positive change in CA is good, positive change in costs is bad.
+                        currentScore += (key === 'chiffreAffaires' ? change : -change) / 100000; // Normalize large currency values
+                    } else if (metric.isPercentage) {
+                        currentScore += change * 2; // Percentage changes are often significant
+                    } else {
+                        currentScore += change;
+                    }
+                }
+
+                // Add a small bonus for positive overall impact to break ties or favor generally good choices
+                if (currentScore > 0) {
+                    currentScore += 1;
+                }
+
+                if (currentScore > bestScore) {
+                    bestScore = currentScore;
                     bestIndex = index;
                 }
             });
@@ -400,7 +479,7 @@
         function showFeedbackModal(choice, impacts) {
             state.isModalOpen = true;
             DOMElements.feedbackTitle.textContent = choice.text ? `Conséquences de la décision` : "Rapport de situation";
-            DOMElements.feedbackText.textContent = choice.feedback;
+            DOMElements.feedbackText.textContent = choice.feedback; // Corrected typo here
             
             let impactHTML = '';
             for (const key in impacts) {
@@ -449,6 +528,7 @@
             DOMElements.resultScreen.classList.add('opacity-100', 'z-10', 'scale-100');
 
             const finalMargin = state.metrics.marge.value;
+            // Calculate total score based on margin, client satisfaction, and quality
             const totalScore = Math.round(finalMargin * 1000 + state.metrics.client.value * 50 + state.metrics.qualite.value * 50);
             DOMElements.finalScore.textContent = totalScore;
 
@@ -475,6 +555,9 @@
                 const value = metric.isCurrency ? formatCurrency(metric.value) : metric.isPercentage ? `${metric.value.toFixed(2)}%` : `${metric.value}/100`;
                 let colorClass = 'text-white';
                 if(key === 'marge') colorClass = metric.value > 10 ? 'text-green-400' : metric.value > 0 ? 'text-amber-400' : 'text-red-400';
+                else if (!metric.isCurrency) { // For non-currency, non-percentage metrics (like quality, safety)
+                    colorClass = metric.value > 70 ? 'text-green-400' : metric.value > 40 ? 'text-amber-400' : 'text-red-400';
+                }
                 
                 breakdownHTML += `
                     <div class="flex justify-between items-center py-2 border-b border-slate-700 last:border-b-0">
@@ -521,7 +604,7 @@
         function renderMetric(key) {
             const metricElement = document.getElementById(`metric-${key}`);
             if (metricElement) metricElement.outerHTML = createMetricHTML(key);
-            else renderMetrics();
+            else renderMetrics(); // Fallback if element not found (e.g., initial render)
         }
 
         function createMetricHTML(key) {
@@ -529,56 +612,76 @@
             let valueDisplay, barDisplay = '';
             
             if (metric.isCurrency) {
-                valueDisplay = formatCurrency(metric.value).replace(/\s/g, ' ').replace('€', ' €');
+                valueDisplay = formatCurrency(metric.value);
             } else if (metric.isPercentage) {
-                valueDisplay = `${metric.value.toFixed(1)}%`;
-                const colorClass = metric.value > 10 ? 'bg-green-500' : metric.value > 0 ? 'bg-amber-500' : 'bg-red-500';
-                barDisplay = `<div class="w-full h-1.5 bg-slate-600 rounded-full mt-1"><div class="h-full ${colorClass}" style="width: ${Math.max(0, metric.value * 5 + 50)}%;"></div></div>`;
+                valueDisplay = `${metric.value.toFixed(2)}%`;
+                const barColor = metric.value > 75 ? 'bg-green-500' : metric.value > 40 ? 'bg-amber-500' : 'bg-red-500';
+                barDisplay = `
+                    <div class="w-full h-2 bg-slate-600 rounded-full mt-1">
+                        <div class="h-full ${barColor} rounded-full" style="width: ${Math.max(0, Math.min(100, metric.value))}%;"></div>
+                    </div>
+                `;
             } else {
-                valueDisplay = metric.value;
-                const colorClass = metric.value > 70 ? 'bg-green-500' : metric.value > 40 ? 'bg-amber-500' : 'bg-red-500';
-                barDisplay = `<div class="w-full h-1.5 bg-slate-600 rounded-full mt-1"><div class="h-full ${colorClass}" style="width: ${metric.value}%;"></div></div>`;
+                valueDisplay = `${metric.value}/100`;
+                const barColor = metric.value > 75 ? 'bg-green-500' : metric.value > 40 ? 'bg-amber-500' : 'bg-red-500';
+                barDisplay = `
+                    <div class="w-full h-2 bg-slate-600 rounded-full mt-1">
+                        <div class="h-full ${barColor} rounded-full" style="width: ${Math.max(0, Math.min(100, metric.value))}%;"></div>
+                    </div>
+                `;
+            }
+
+            let valueColorClass = 'text-slate-200';
+            if (key === 'marge') {
+                valueColorClass = metric.value > 10 ? 'text-green-400' : metric.value > 0 ? 'text-amber-400' : 'text-red-400';
+            } else if (!metric.isCurrency && !metric.isPercentage) { // For other non-currency, non-percentage metrics
+                valueColorClass = metric.value > 70 ? 'text-green-400' : metric.value > 40 ? 'text-amber-400' : 'text-red-400';
+            } else if (key === 'couts') { // For costs, lower is better
+                valueColorClass = metric.value < CONFIG.initialMetrics.couts.value * 0.9 ? 'text-green-400' : metric.value > CONFIG.initialMetrics.couts.value * 1.1 ? 'text-red-400' : 'text-amber-400';
+            } else if (key === 'chiffreAffaires') { // For revenue, higher is better
+                valueColorClass = metric.value > CONFIG.initialMetrics.chiffreAffaires.value * 1.1 ? 'text-green-400' : metric.value < CONFIG.initialMetrics.chiffreAffaires.value * 0.9 ? 'text-red-400' : 'text-amber-400';
             }
 
             return `
-                <div id="metric-${key}" class="relative bg-slate-700/50 rounded-xl p-2 text-center transition-all duration-300">
-                    <div class="text-xs text-slate-400 font-medium">${metric.icon} ${CONFIG.initialMetrics[key].name}</div>
-                    <div class="text-lg sm:text-xl font-bold text-white">${valueDisplay}</div>
+                <div id="metric-${key}" class="bg-slate-700/50 rounded-lg p-3 flex flex-col items-center justify-center relative overflow-hidden">
+                    <span class="text-2xl mb-1">${metric.icon}</span>
+                    <span class="text-sm text-slate-400 font-medium">${metric.name}</span>
+                    <span class="text-lg font-bold ${valueColorClass}">${valueDisplay}</span>
                     ${barDisplay}
                 </div>
             `;
         }
-        
-        function showMetricChangeIndicator(key, change, isCurrency = false) {
+
+        function showMetricChangeIndicator(key, change, isCurrency) {
             const metricElement = document.getElementById(`metric-${key}`);
             if (!metricElement) return;
+
             const indicator = document.createElement('div');
-            const isCost = key === 'couts';
-            const colorClass = change > 0 ? (isCost ? 'text-red-400' : 'text-green-400') : (isCost ? 'text-green-400' : 'text-red-400');
-            indicator.className = `metric-change absolute top-0 right-2 text-lg font-bold ${colorClass}`;
+            indicator.className = `absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xl font-bold metric-change ${change > 0 ? (key === 'couts' ? 'text-red-400' : 'text-green-400') : (key === 'couts' ? 'text-green-400' : 'text-red-400')}`;
             indicator.textContent = `${change > 0 ? '+' : ''}${isCurrency ? formatCurrency(change) : change}`;
             metricElement.appendChild(indicator);
-            setTimeout(() => indicator.remove(), 1500);
+
+            indicator.addEventListener('animationend', () => {
+                indicator.remove();
+            });
         }
 
         function renderPowerUps() {
-            DOMElements.powerUpContainer.innerHTML = Object.keys(state.powerUps).map(key => {
-                const pu = state.powerUps[key];
-                const isDisabled = pu.count <= 0;
+            DOMElements.powerUpContainer.innerHTML = Object.keys(state.powerUps).map(type => {
+                const powerUp = state.powerUps[type];
+                const isDisabled = powerUp.count <= 0 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110 cursor-pointer';
                 return `
-                    <button onclick="usePowerUp('${key}')" title="${pu.description} (${pu.count} restants)" 
-                            class="relative w-14 h-14 rounded-full flex items-center justify-center text-2xl transition-all duration-300 transform hover:scale-110
-                                   ${isDisabled ? 'bg-slate-700 text-slate-500 cursor-not-allowed' : 'bg-amber-500 hover:bg-amber-400 text-white shadow-lg shadow-amber-500/30'}">
-                        ${pu.icon}
-                        ${!isDisabled ? `<span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">${pu.count}</span>` : ''}
+                    <button onclick="usePowerUp('${type}')" class="bg-blue-700 text-white rounded-full p-3 shadow-lg flex items-center justify-center transition-all duration-200 ${isDisabled}" title="${powerUp.description}" ${powerUp.count <= 0 ? 'disabled' : ''}>
+                        <span class="text-2xl">${powerUp.icon}</span>
+                        <span class="absolute top-0 right-0 -mt-1 -mr-1 bg-amber-500 text-slate-900 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">${powerUp.count}</span>
                     </button>
                 `;
             }).join('');
         }
 
-        window.onload = () => {
-            DOMElements.startScreen.classList.add('opacity-100');
-        };
+        // Initial setup
+        initializeGame();
     </script>
 </body>
 </html>
+�
