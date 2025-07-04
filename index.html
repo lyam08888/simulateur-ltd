@@ -12,7 +12,11 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js library for graphs -->
 
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            /* Enhanced background with a subtle diagonal gradient and dark tones */
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+        }
         .animated-gradient {
             background-size: 200% 200%;
             animation: gradient-animation 20s ease-in-out infinite;
@@ -22,7 +26,11 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-        .screen { transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; }
+        .screen { 
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; 
+            /* Consistent rounded corners for main screens */
+            border-radius: 1.5rem; /* rounded-3xl */
+        }
         @keyframes pulse-timer {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
@@ -38,10 +46,40 @@
             to { box-shadow: 0 0 30px #facc15, 0 0 45px #f59e0b; }
         }
         .highlight-choice { animation: highlight-pulse 1.5s infinite alternate; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #475569; border-radius: 3px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; } /* Wider scrollbar */
+        .custom-scrollbar::-webkit-scrollbar-track { background: #334155; border-radius: 4px; } /* Darker track */
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #64748b; border-radius: 4px; } /* Lighter thumb */
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; } /* Even lighter on hover */
+
+        /* Custom glow for buttons/interactive elements */
+        .button-glow {
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); /* blue-600 with opacity */
+            transition: all 0.3s ease-in-out;
+        }
+        .button-glow:hover {
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6), 0 0 30px rgba(96, 165, 250, 0.8); /* blue-500 with more glow */
+        }
+        .choice-card {
+            border: 2px solid transparent;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .choice-card:hover {
+            border-color: #3b82f6; /* blue-500 */
+            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3);
+            transform: translateY(-3px);
+        }
+        .metric-card {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(71, 85, 105, 0.5); /* slate-600 with opacity */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease-in-out;
+        }
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
     </style>
 </head>
 <body class="bg-slate-900 text-white overflow-x-hidden">
@@ -49,66 +87,66 @@
     <div id="app-container" class="relative min-h-screen w-full flex items-center justify-center p-2 sm:p-4">
 
         <!-- Start Screen -->
-        <div id="startScreen" class="screen absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-gradient-to-br from-slate-900 to-slate-800 animated-gradient z-30 opacity-100 scale-100">
-            <h1 class="text-5xl md:text-6xl font-extrabold text-blue-400 mb-4">LTD Recrutement</h1>
-            <h2 class="text-2xl md:text-3xl font-semibold text-slate-300 mb-6">
+        <div id="startScreen" class="screen absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-gradient-to-br from-slate-900 to-slate-800 animated-gradient z-30 opacity-100 scale-100 shadow-2xl">
+            <h1 class="text-5xl md:text-6xl font-extrabold text-blue-400 mb-4 drop-shadow-lg">LTD Recrutement</h1>
+            <h2 class="text-2xl md:text-3xl font-semibold text-slate-300 mb-6 drop-shadow">
                 <span class="text-4xl">🏗️</span> Simulateur Directeur de Projet Travaux
             </h2>
-            <p class="max-w-2xl text-lg text-slate-400 mb-10 leading-relaxed">
+            <p class="max-w-2xl text-lg text-slate-400 mb-10 leading-relaxed opacity-90">
                 La marge de manœuvre est réduite. Gérez un budget de 150M€ où chaque décision impacte directement votre rentabilité, la satisfaction client et la sécurité.
             </p>
-            <button onclick="startGame()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-10 rounded-xl text-xl shadow-lg shadow-blue-600/30 transform hover:scale-105 transition-all duration-300">
+            <button onclick="startGame()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-10 rounded-xl text-xl shadow-lg shadow-blue-600/30 transform hover:scale-105 transition-all duration-300 button-glow">
                 Relever le Défi
             </button>
         </div>
 
         <!-- Game Screen -->
-        <div id="gameScreen" class="screen absolute inset-0 flex flex-col w-full max-w-7xl mx-auto p-2 sm:p-4 opacity-0 -z-10 transform scale-95">
-            <header class="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-4 mb-4 shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="text-xl font-bold text-blue-300">Simulation Directeur de Projet Travaux</div>
+        <div id="gameScreen" class="screen absolute inset-0 flex flex-col w-full max-w-7xl mx-auto p-2 sm:p-4 opacity-0 -z-10 transform scale-95 bg-slate-900/70 backdrop-blur-lg rounded-3xl shadow-2xl border border-slate-700">
+            <header class="bg-slate-800/70 backdrop-blur-md rounded-2xl p-4 mb-4 shadow-xl flex flex-col md:flex-row justify-between items-center gap-4 border border-slate-700">
+                <div class="text-xl font-bold text-blue-300 drop-shadow">Simulation Directeur de Projet Travaux</div>
                 <div class="flex items-center gap-4 md:gap-6">
-                    <div class="flex items-center gap-3">
-                        <div class="w-40 h-3 bg-slate-700 rounded-full overflow-hidden">
-                            <div id="progressBar" class="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-500" style="width: 0%;"></div>
+                    <div class="flex items-center gap-3 bg-slate-700/50 rounded-full px-4 py-2 shadow-inner">
+                        <div class="w-40 h-3 bg-slate-600 rounded-full overflow-hidden">
+                            <div id="progressBar" class="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-500 rounded-full" style="width: 0%;"></div>
                         </div>
                         <div class="text-sm font-medium text-slate-300">Scénario <span id="currentScenario">1</span>/<span id="totalScenarios">10</span></div>
                     </div>
-                    <div id="timerDisplay" class="text-lg font-bold text-amber-400">⏱️ 0:00</div>
+                    <div id="timerDisplay" class="text-lg font-bold text-amber-400 bg-slate-700/50 rounded-full px-4 py-2 shadow-inner">⏱️ 0:00</div>
                 </div>
             </header>
 
-            <main class="flex-grow bg-slate-800/50 backdrop-blur-sm rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg mb-4">
+            <main class="flex-grow bg-slate-800/70 backdrop-blur-md rounded-2xl p-4 sm:p-6 md:p-8 shadow-xl mb-4 border border-slate-700">
                 <div class="flex items-start gap-4 mb-4">
-                    <div id="scenarioIcon" class="text-4xl">🎯</div>
-                    <h2 id="scenarioTitle" class="text-2xl md:text-3xl font-bold text-slate-100"></h2>
+                    <div id="scenarioIcon" class="text-4xl text-amber-400 drop-shadow-md">🎯</div>
+                    <h2 id="scenarioTitle" class="text-2xl md:text-3xl font-bold text-slate-100 leading-tight drop-shadow"></h2>
                 </div>
-                <p id="scenarioText" class="text-slate-300 text-lg leading-relaxed mb-8"></p>
-                <div id="choicesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                <p id="scenarioText" class="text-slate-300 text-lg leading-relaxed mb-8 opacity-90"></p>
+                <div id="choicesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
                 
                 <!-- Project Health Chart -->
-                <div class="mt-8">
-                    <h3 class="text-xl font-bold text-slate-100 mb-4 text-center">État de Santé du Projet</h3>
-                    <div class="bg-slate-700/50 rounded-xl p-4">
+                <div class="mt-10">
+                    <h3 class="text-xl font-bold text-slate-100 mb-5 text-center drop-shadow">État de Santé du Projet</h3>
+                    <div class="bg-slate-700/50 rounded-xl p-5 shadow-inner border border-slate-600">
                         <canvas id="projectHealthChart"></canvas>
                     </div>
                 </div>
             </main>
 
-            <footer id="metricsContainer" class="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-4 shadow-lg grid grid-cols-2 sm:grid-cols-4 gap-3"></footer>
+            <footer id="metricsContainer" class="bg-slate-800/70 backdrop-blur-md rounded-2xl p-4 shadow-xl grid grid-cols-2 sm:grid-cols-4 gap-4 border border-slate-700"></footer>
 
-            <div class="power-ups fixed bottom-4 right-4 flex flex-col gap-3 z-20"></div>
-            <div id="hintMessage" class="fixed bottom-24 right-4 bg-slate-900/80 backdrop-blur-md text-white px-4 py-2 rounded-lg text-sm shadow-xl opacity-0 transform translate-y-4 transition-all duration-300 z-20"></div>
+            <div class="power-ups fixed bottom-4 right-4 flex flex-col gap-4 z-20"></div>
+            <div id="hintMessage" class="fixed bottom-24 right-4 bg-blue-900/80 backdrop-blur-md text-white px-4 py-2 rounded-lg text-sm shadow-xl opacity-0 transform translate-y-4 transition-all duration-300 z-20 border border-blue-700"></div>
         </div>
 
         <!-- Result Screen -->
-        <div id="resultScreen" class="screen absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-gradient-to-br from-slate-900 to-slate-800 animated-gradient opacity-0 -z-10 transform scale-95">
-             <h1 class="text-5xl md:text-6xl font-extrabold text-blue-400 mb-4">LTD Recrutement</h1>
-            <h2 class="text-3xl font-semibold text-slate-300 mb-4">🏆 Bilan de Mission 🏆</h2>
-            <div id="finalScore" class="text-8xl font-bold my-4 bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-yellow-300">0</div>
-            <h3 id="resultCategory" class="text-2xl font-semibold text-slate-100 mb-2"></h3>
-            <p id="resultDescription" class="max-w-2xl text-lg text-slate-400 mb-8 leading-relaxed"></p>
-            <div id="scoreBreakdown" class="w-full max-w-lg bg-slate-800/50 rounded-xl p-6 mb-8 text-left"></div>
-            <button onclick="restartGame()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-xl text-lg shadow-lg shadow-blue-600/30 transform hover:scale-105 transition-all duration-300">
+        <div id="resultScreen" class="screen absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-gradient-to-br from-slate-900 to-slate-800 animated-gradient opacity-0 -z-10 transform scale-95 shadow-2xl">
+             <h1 class="text-5xl md:text-6xl font-extrabold text-blue-400 mb-4 drop-shadow-lg">LTD Recrutement</h1>
+            <h2 class="text-3xl font-semibold text-slate-300 mb-4 drop-shadow">🏆 Bilan de Mission 🏆</h2>
+            <div id="finalScore" class="text-8xl font-bold my-4 bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-yellow-300 drop-shadow-2xl">0</div>
+            <h3 id="resultCategory" class="text-2xl font-semibold text-slate-100 mb-2 drop-shadow"></h3>
+            <p id="resultDescription" class="max-w-2xl text-lg text-slate-400 mb-8 leading-relaxed opacity-90"></p>
+            <div id="scoreBreakdown" class="w-full max-w-lg bg-slate-800/70 rounded-xl p-6 mb-8 text-left shadow-xl border border-slate-700"></div>
+            <button onclick="restartGame()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-xl text-lg shadow-lg shadow-blue-600/30 transform hover:scale-105 transition-all duration-300 button-glow">
                 Nouvelle Simulation
             </button>
         </div>
@@ -116,11 +154,11 @@
 
     <!-- Feedback Modal -->
     <div id="modalOverlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
-        <div id="modal" class="bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg p-6 transform scale-95 transition-all duration-300">
-            <h3 id="feedbackTitle" class="text-2xl font-bold text-center mb-4"></h3>
-            <p id="feedbackText" class="text-slate-300 text-center mb-6"></p>
-            <div id="impactList" class="space-y-2 mb-6 max-h-60 overflow-y-auto custom-scrollbar pr-2"></div>
-            <button id="modalContinueBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg text-lg transform hover:scale-105 transition-all duration-300">
+        <div id="modal" class="bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg p-6 transform scale-95 transition-all duration-300 border border-slate-700">
+            <h3 id="feedbackTitle" class="text-2xl font-bold text-center mb-4 text-blue-300 drop-shadow"></h3>
+            <p id="feedbackText" class="text-slate-300 text-center mb-6 opacity-90"></p>
+            <div id="impactList" class="space-y-3 mb-6 max-h-60 overflow-y-auto custom-scrollbar pr-2"></div>
+            <button id="modalContinueBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg text-lg transform hover:scale-105 transition-all duration-300 button-glow">
                 Continuer
             </button>
         </div>
@@ -288,100 +326,100 @@
                 title: "Découverte de Contaminants du Sol", icon: "☢️", timeLimit: 60,
                 text: "Lors des excavations, des traces de contaminants chimiques sont découvertes, nécessitant une dépollution coûteuse et un arrêt du chantier.",
                 choices: [
-                    { text: "Engager une entreprise spécialisée en dépollution d'urgence", impacts: { couts: 3000000, delais: -20, securite: 20, marge: -2.0 }, feedback: "Action rapide pour la sécurité et la conformité, mais avec un coût très élevé et un impact significatif sur les délais." },
-                    { text: "Tenter de confiner la zone et de poursuivre les travaux ailleurs", impacts: { couts: 1000000, securite: -40, qualite: -20, delais: -10, marge: -0.8 }, feedback: "Solution moins coûteuse à court terme, mais extrêmement risquée pour la sécurité des travailleurs et la qualité finale du projet. Peut entraîner des poursuites." },
-                    { text: "Négocier avec les autorités pour une solution moins contraignante", impacts: { delais: -30, client: -20, couts: 500000, marge: -0.3 }, feedback: "Approche diplomatique qui peut réduire les coûts, mais prolonge l'arrêt du chantier et frustre le client. Le résultat est incertain." },
-                    { text: "Déclarer le site non constructible et abandonner le projet", impacts: { couts: 10000000, delais: -100, client: -70, marge: -10.0 }, feedback: "La décision la plus drastique, entraînant des pertes financières massives, la rupture totale avec le client et la ruine de la réputation de l'entreprise. Une catastrophe absolue." }
+                    { text: "Engager une entreprise spécialisée en dépollution d'urgence", impacts: { couts: 4000000, delais: -25, securite: 25, marge: -2.5 }, feedback: "Action rapide pour la sécurité et la conformité, mais avec un coût très élevé et un impact significatif sur les délais." },
+                    { text: "Tenter de confiner la zone et de poursuivre les travaux ailleurs", impacts: { couts: 1500000, securite: -50, qualite: -30, delais: -15, marge: -1.2 }, feedback: "Solution moins coûteuse à court terme, mais extrêmement risquée pour la sécurité des travailleurs et la qualité finale du projet. Peut entraîner des poursuites graves." },
+                    { text: "Négocier avec les autorités pour une solution moins contraignante", impacts: { delais: -35, client: -25, couts: 700000, marge: -0.5 }, feedback: "Approche diplomatique qui peut réduire les coûts, mais prolonge l'arrêt du chantier et frustre le client. Le résultat est incertain et les risques demeurent." },
+                    { text: "Déclarer le site non constructible et abandonner le projet", impacts: { couts: 12000000, delais: -120, client: -80, marge: -12.0 }, feedback: "La décision la plus drastique, entraînant des pertes financières massives, la rupture totale avec le client et la ruine de la réputation de l'entreprise. Une catastrophe absolue et irréversible." }
                 ]
             },
             {
                 title: "Problème de Qualité des Matériaux Livrés", icon: "❌", timeLimit: 40,
                 text: "Une cargaison importante de matériaux de construction (ex: poutres en acier) est livrée avec des défauts majeurs, ne respectant pas les normes requises.",
                 choices: [
-                    { text: "Refuser la livraison et exiger un remplacement immédiat", impacts: { delais: -20, couts: 0, qualite: 10, client: 5, marge: 0.0 }, feedback: "La bonne décision pour la qualité, mais cela entraîne des retards importants sur le chantier. Le fournisseur est en faute." },
-                    { text: "Accepter les matériaux avec une décote et tenter de les réparer sur site", impacts: { couts: 500000, qualite: -30, securite: -15, client: -20, marge: -0.4 }, feedback: "Solution rapide mais qui compromet gravement la qualité et la sécurité. Le client sera mécontent et des problèmes futurs sont probables." },
-                    { text: "Utiliser les matériaux défectueux en renforçant la structure ailleurs", impacts: { qualite: -50, securite: -40, client: -30, couts: 1000000, marge: -0.8 }, feedback: "Extrêmement dangereux et irresponsable. Cela met en péril la sécurité du bâtiment et des occupants, et la qualité est inacceptable. Des poursuites judiciaires sont inévitables." },
-                    { text: "Lancer une procédure juridique contre le fournisseur", impacts: { delais: -50, couts: 200000, client: -10, marge: -0.1 }, feedback: "Une action nécessaire mais longue et coûteuse. Le chantier sera à l'arrêt pendant la procédure, impactant lourdement les délais et la relation client." }
+                    { text: "Refuser la livraison et exiger un remplacement immédiat", impacts: { delais: -25, couts: 0, qualite: 15, client: 10, marge: 0.0 }, feedback: "La bonne décision pour la qualité, mais cela entraîne des retards importants sur le chantier. Le fournisseur est en faute, mais vous subissez les conséquences." },
+                    { text: "Accepter les matériaux avec une décote et tenter de les réparer sur site", impacts: { couts: 700000, qualite: -40, securite: -20, client: -30, marge: -0.6 }, feedback: "Solution rapide mais qui compromet gravement la qualité et la sécurité. Le client sera très mécontent et des problèmes structurels futurs sont probables." },
+                    { text: "Utiliser les matériaux défectueux en renforçant la structure ailleurs", impacts: { qualite: -70, securite: -60, client: -50, couts: 1500000, marge: -1.2 }, feedback: "Extrêmement dangereux et irresponsable. Cela met en péril la sécurité du bâtiment et des occupants, et la qualité est inacceptable. Des poursuites judiciaires et des catastrophes sont inévitables." },
+                    { text: "Lancer une procédure juridique contre le fournisseur", impacts: { delais: -60, couts: 300000, client: -15, marge: -0.2 }, feedback: "Une action nécessaire mais longue et coûteuse. Le chantier sera à l'arrêt pendant la procédure, impactant lourdement les délais et la relation client." }
                 ]
             },
             {
-                title: "Changement de Réglementation Urbaine", icon: "📜", timeLimit: 50,
+                title: "Changement de Réglementation Urbaine", icon: "�", timeLimit: 50,
                 text: "Une nouvelle réglementation urbaine est votée, imposant des normes environnementales plus strictes (ex: isolation thermique) non prévues au budget.",
                 choices: [
-                    { text: "Mettre le projet en conformité, en chiffrant un avenant au client", impacts: { couts: 2000000, delais: -15, client: 0, qualite: 10, marge: -1.2 }, feedback: "La solution légale et responsable. Le client paiera le surcoût, mais les délais sont impactés. La qualité environnementale du projet est améliorée." },
-                    { text: "Tenter d'obtenir une dérogation ou un délai d'application", impacts: { delais: -25, couts: 100000, client: -10, marge: -0.1 }, feedback: "Une tentative risquée qui prolonge l'incertitude et peut échouer, entraînant des retards supplémentaires et la frustration du client." },
-                    { text: "Ignorer la nouvelle réglementation et poursuivre les travaux", impacts: { securite: -60, qualite: -50, client: -40, couts: 5000000, marge: -5.0 }, feedback: "Illégal et extrêmement dangereux. Vous risquez des amendes colossales, l'arrêt définitif du chantier, des poursuites pénales et la destruction de votre réputation. Le projet est invendable." },
-                    { text: "Proposer une solution alternative moins coûteuse mais moins performante", impacts: { qualite: -20, client: -15, couts: 800000, marge: -0.5 }, feedback: "Un compromis qui ne respecte pas pleinement la nouvelle norme. Le client est déçu et le projet est moins valorisé. Des problèmes futurs sont possibles." }
+                    { text: "Mettre le projet en conformité, en chiffrant un avenant au client", impacts: { couts: 2500000, delais: -20, client: 0, qualite: 15, marge: -1.8 }, feedback: "La solution légale et responsable. Le client paiera le surcoût, mais les délais sont impactés. La qualité environnementale du projet est améliorée, mais la marge est sous pression." },
+                    { text: "Tenter d'obtenir une dérogation ou un délai d'application", impacts: { delais: -30, couts: 150000, client: -15, marge: -0.2 }, feedback: "Une tentative risquée qui prolonge l'incertitude et peut échouer, entraînant des retards supplémentaires et la frustration du client." },
+                    { text: "Ignorer la nouvelle réglementation et poursuivre les travaux", impacts: { securite: -80, qualite: -70, client: -60, couts: 7000000, marge: -7.0 }, feedback: "Illégal et extrêmement dangereux. Vous risquez des amendes colossales, l'arrêt définitif du chantier, des poursuites pénales et la destruction de votre réputation. Le projet est invendable et votre carrière est finie." },
+                    { text: "Proposer une solution alternative moins coûteuse mais moins performante", impacts: { qualite: -30, client: -20, couts: 1000000, marge: -0.7 }, feedback: "Un compromis qui ne respecte pas pleinement la nouvelle norme. Le client est déçu et le projet est moins valorisé. Des problèmes futurs et des pénalités sont possibles." }
                 ]
             },
             {
                 title: "Actes de Vandalisme sur le Chantier", icon: "💥", timeLimit: 35,
                 text: "Le chantier a été la cible d'actes de vandalisme importants pendant la nuit, entraînant des dégâts matériels et des retards.",
                 choices: [
-                    { text: "Renforcer la sécurité du site et réparer les dégâts en urgence", impacts: { couts: 1000000, delais: -5, securite: 10, equipe: 5, marge: -0.7 }, feedback: "Action nécessaire pour reprendre les travaux rapidement et protéger le site. Coûts élevés mais essentiels. L'équipe se sent plus en sécurité." },
-                    { text: "Déclarer le sinistre à l'assurance et attendre l'expertise", impacts: { delais: -30, couts: 0, client: -20, marge: 0.0 }, feedback: "La procédure standard, mais elle entraîne un arrêt prolongé du chantier, frustrant le client et impactant les délais. Vous ne payez pas directement mais perdez du temps." },
-                    { text: "Tenter de minimiser les dégâts et de ne pas les déclarer", impacts: { securite: -30, qualite: -20, client: -10, couts: -200000, marge: 0.1 }, feedback: "Risqué et irresponsable. Cela peut compromettre la sécurité et la qualité du projet, et si découvert, entraîner des problèmes légaux et de réputation." },
-                    { text: "Blâmer l'équipe de sécurité et la remplacer immédiatement", impacts: { equipe: -20, securite: -10, delais: -10, couts: 50000, marge: -0.05 }, feedback: "Une décision hâtive qui démotive l'équipe restante et ne garantit pas une meilleure sécurité. Peut entraîner des problèmes de personnel." }
+                    { text: "Renforcer la sécurité du site et réparer les dégâts en urgence", impacts: { couts: 1500000, delais: -10, securite: 15, equipe: 10, marge: -1.0 }, feedback: "Action nécessaire pour reprendre les travaux rapidement et protéger le site. Coûts élevés mais essentiels. L'équipe se sent plus en sécurité, mais la marge est impactée." },
+                    { text: "Déclarer le sinistre à l'assurance et attendre l'expertise", impacts: { delais: -40, couts: 0, client: -25, marge: 0.0 }, feedback: "La procédure standard, mais elle entraîne un arrêt prolongé du chantier, frustrant le client et impactant lourdement les délais. Vous ne payez pas directement mais perdez un temps précieux." },
+                    { text: "Tenter de minimiser les dégâts et de ne pas les déclarer", impacts: { securite: -40, qualite: -30, client: -20, couts: -300000, marge: 0.2 }, feedback: "Risqué et irresponsable. Cela peut compromettre gravement la sécurité et la qualité du projet, et si découvert, entraîner des problèmes légaux et de réputation irréparables." },
+                    { text: "Blâmer l'équipe de sécurité et la remplacer immédiatement", impacts: { equipe: -30, securite: -15, delais: -15, couts: 80000, marge: -0.1 }, feedback: "Une décision hâtive qui démotive l'équipe restante et ne garantit pas une meilleure sécurité. Peut entraîner des problèmes de personnel et de nouvelles failles de sécurité." }
                 ]
             },
             {
                 title: "Démission en Chaîne de l'Équipe Clé", icon: "🚪", timeLimit: 45,
                 text: "Plusieurs membres clés de votre équipe (chefs de chantier, ingénieurs) démissionnent subitement pour la concurrence, menaçant la continuité du projet.",
                 choices: [
-                    { text: "Recruter des remplaçants expérimentés à prix fort", impacts: { couts: 1500000, delais: -10, equipe: -5, qualite: -5, marge: -1.0 }, feedback: "Solution rapide mais coûteuse. Les nouveaux venus mettront du temps à s'intégrer, impactant légèrement la qualité et le moral de l'équipe restante." },
-                    { text: "Promouvoir des talents internes et réorganiser l'équipe", impacts: { couts: 300000, equipe: 20, delais: -20, qualite: -10, marge: -0.2 }, feedback: "Moins coûteux et valorisant pour l'équipe, mais cela prend du temps et peut entraîner une baisse temporaire de la productivité et de la qualité." },
-                    { text: "Faire appel à des consultants externes pour pallier l'urgence", impacts: { couts: 2500000, delais: -5, equipe: -10, marge: -1.5 }, feedback: "Solution très coûteuse qui permet de limiter les retards, mais qui ne résout pas le problème de fond de la rétention des talents et peut démotiver l'équipe interne." },
-                    { text: "Ignorer les démissions et surcharger l'équipe restante", impacts: { equipe: -50, qualite: -30, securite: -20, delais: -30, marge: -2.0 }, feedback: "Une décision désastreuse. L'équipe restante sera épuisée et démotivée, entraînant des erreurs, des problèmes de sécurité et des retards massifs. Risque de nouvelles démissions." }
+                    { text: "Recruter des remplaçants expérimentés à prix fort", impacts: { couts: 2000000, delais: -15, equipe: -10, qualite: -10, marge: -1.5 }, feedback: "Solution rapide mais très coûteuse. Les nouveaux venus mettront du temps à s'intégrer, impactant la qualité et le moral de l'équipe restante. La marge est sévèrement touchée." },
+                    { text: "Promouvoir des talents internes et réorganiser l'équipe", impacts: { couts: 500000, equipe: 25, delais: -25, qualite: -15, marge: -0.4 }, feedback: "Moins coûteux et valorisant pour l'équipe, mais cela prend du temps et peut entraîner une baisse temporaire de la productivité et de la qualité. Les délais sont critiques." },
+                    { text: "Faire appel à des consultants externes pour pallier l'urgence", impacts: { couts: 3500000, delais: -10, equipe: -15, marge: -2.0 }, feedback: "Solution extrêmement coûteuse qui permet de limiter les retards, mais qui ne résout pas le problème de fond de la rétention des talents et peut démotiver l'équipe interne. La marge est gravement impactée." },
+                    { text: "Ignorer les démissions et surcharger l'équipe restante", impacts: { equipe: -70, qualite: -50, securite: -30, delais: -40, marge: -3.0 }, feedback: "Une décision désastreuse. L'équipe restante sera épuisée, démotivée, et le risque d'erreurs, de problèmes de sécurité et de nouvelles démissions est maximal. Le projet est en péril." }
                 ]
             },
             {
                 title: "Découverte d'Erreur de Conception Majeure", icon: "📐", timeLimit: 50,
                 text: "Un audit externe révèle une erreur de conception majeure dans les plans initiaux, nécessitant des modifications structurelles coûteuses et complexes.",
                 choices: [
-                    { text: "Engager un nouveau bureau d'études pour corriger et refaire les calculs", impacts: { couts: 2000000, delais: -25, qualite: 10, securite: 10, marge: -1.5 }, feedback: "La solution la plus sûre pour la qualité et la sécurité, mais elle est très coûteuse et entraîne des retards importants. Le client appréciera la rigueur." },
-                    { text: "Tenter de masquer l'erreur et de renforcer la structure discrètement", impacts: { securite: -50, qualite: -40, client: -30, couts: 1000000, marge: -0.8 }, feedback: "Extrêmement risqué et illégal. Cela met en péril la sécurité du bâtiment, la qualité est compromise et si découvert, les conséquences légales et de réputation seront catastrophiques." },
-                    { text: "Négocier avec le client un partage des coûts et des délais", impacts: { client: -15, couts: 1000000, delais: -10, marge: -0.7 }, feedback: "Une approche honnête mais difficile. Le client sera mécontent de devoir payer pour une erreur initiale, mais cela permet de limiter vos pertes." },
-                    { text: "Blâmer le bureau d'études initial et lancer une procédure", impacts: { delais: -60, client: -20, couts: 500000, marge: -0.3 }, feedback: "Une bataille juridique longue et incertaine qui paralyse le projet. Le client est frustré et les coûts indirects augmentent." }
+                    { text: "Engager un nouveau bureau d'études pour corriger et refaire les calculs", impacts: { couts: 2500000, delais: -30, qualite: 15, securite: 15, marge: -1.8 }, feedback: "La solution la plus sûre pour la qualité et la sécurité, mais elle est très coûteuse et entraîne des retards importants. Le client appréciera la rigueur, mais la marge est sous pression." },
+                    { text: "Tenter de masquer l'erreur et de renforcer la structure discrètement", impacts: { securite: -70, qualite: -60, client: -50, couts: 1500000, marge: -1.2 }, feedback: "Extrêmement risqué et illégal. Cela met en péril la sécurité du bâtiment, la qualité est compromise et si découvert, les conséquences légales et de réputation seront catastrophiques et irréversibles." },
+                    { text: "Négocier avec le client un partage des coûts et des délais", impacts: { client: -20, couts: 1500000, delais: -15, marge: -1.0 }, feedback: "Une approche honnête mais difficile. Le client sera mécontent de devoir payer pour une erreur initiale, mais cela permet de limiter vos pertes. La relation est tendue." },
+                    { text: "Blâmer le bureau d'études initial et lancer une procédure", impacts: { delais: -70, client: -30, couts: 700000, marge: -0.5 }, feedback: "Une bataille juridique longue et incertaine qui paralyse le projet. Le client est frustré et les coûts indirects augmentent considérablement. Le projet est à l'arrêt." }
                 ]
             },
             {
                 title: "Pression Accrue pour Réduire les Coûts", icon: "✂️", timeLimit: 30,
                 text: "La direction vous impose une réduction drastique des coûts de 10% sur le budget restant, menaçant la qualité et les délais si mal gérée.",
                 choices: [
-                    { text: "Identifier des postes de dépenses non essentiels et négocier avec les fournisseurs", impacts: { couts: -1500000, qualite: -5, delais: -5, marge: 1.0 }, feedback: "Une approche pragmatique. Vous réduisez les coûts, mais cela peut légèrement impacter la qualité et les délais. Nécessite des négociations serrées." },
-                    { text: "Réduire la qualité des matériaux et des finitions", impacts: { qualite: -40, client: -30, couts: -2000000, marge: 1.5 }, feedback: "Solution risquée qui compromet gravement la qualité et la satisfaction client. Le projet sera moins valorisé et des problèmes futurs sont probables." },
-                    { text: "Compresser les délais et augmenter la charge de travail de l'équipe", impacts: { delais: 20, equipe: -30, securite: -15, couts: -500000, marge: 0.3 }, feedback: "Extrêmement dangereux pour l'équipe et la sécurité. Le moral chute, les erreurs augmentent et le risque d'accident est élevé. Gain financier minime pour un risque humain majeur." },
-                    { text: "Présenter une analyse détaillée montrant l'impossibilité sans compromis majeurs", impacts: { client: -10, equipe: 0, couts: 0, marge: 0.0 }, feedback: "Honnête mais peut être mal perçu par la direction. Vous ne réduisez pas les coûts, mais vous protégez la qualité et l'équipe. La relation avec la direction peut être tendue." }
+                    { text: "Identifier des postes de dépenses non essentiels et négocier avec les fournisseurs", impacts: { couts: -2000000, qualite: -10, delais: -10, marge: 1.5 }, feedback: "Une approche pragmatique. Vous réduisez les coûts, mais cela peut impacter la qualité et les délais. Nécessite des négociations serrées et des compromis." },
+                    { text: "Réduire la qualité des matériaux et des finitions", impacts: { qualite: -50, client: -40, couts: -3000000, marge: 2.0 }, feedback: "Solution risquée qui compromet gravement la qualité et la satisfaction client. Le projet sera dévalorisé, des problèmes futurs sont très probables et votre réputation est en jeu." },
+                    { text: "Compresser les délais et augmenter la charge de travail de l'équipe", impacts: { delais: 25, equipe: -40, securite: -20, couts: -700000, marge: 0.5 }, feedback: "Extrêmement dangereux pour l'équipe et la sécurité. Le moral chute drastiquement, les erreurs augmentent et le risque d'accident est très élevé. Gain financier minime pour un risque humain majeur." },
+                    { text: "Présenter une analyse détaillée montrant l'impossibilité sans compromis majeurs", impacts: { client: -15, equipe: 0, couts: 0, marge: 0.0 }, feedback: "Honnête mais peut être mal perçu par la direction. Vous ne réduisez pas les coûts, mais vous protégez la qualité et l'équipe. La relation avec la direction peut être très tendue." }
                 ]
             },
             {
                 title: "Catastrophe Naturelle Imprévue", icon: "🌪️", timeLimit: 90,
                 text: "Une tempête majeure frappe la région, causant des dégâts importants sur le chantier et retardant considérablement les travaux.",
                 choices: [
-                    { text: "Évaluer les dégâts, sécuriser le site et mobiliser les équipes de réparation", impacts: { couts: 4000000, delais: -50, securite: 30, marge: -3.0 }, feedback: "Action immédiate et essentielle. Les coûts sont énormes et les retards inévitables, mais la sécurité est rétablie et les réparations commencent." },
-                    { text: "Tenter de faire passer les dégâts pour des problèmes préexistants", impacts: { securite: -70, client: -60, couts: 1000000, marge: -0.8 }, feedback: "Illégal et moralement répréhensible. Vous risquez des poursuites judiciaires, la rupture avec le client et la destruction de votre réputation. Gain financier minime pour un risque immense." },
-                    { text: "Déclarer la force majeure et demander un arrêt complet du projet", impacts: { delais: -90, client: -50, couts: 2000000, marge: -1.5 }, feedback: "Une solution légale mais qui entraîne un arrêt très long et coûteux. Le client sera très frustré et le projet pourrait être abandonné." },
-                    { text: "Optimiser les réparations pour minimiser les coûts et délais", impacts: { couts: 3000000, delais: -40, qualite: -10, marge: -2.0 }, feedback: "Une approche pragmatique pour limiter les dégâts, mais cela peut compromettre légèrement la qualité des réparations et les délais restent importants." }
+                    { text: "Évaluer les dégâts, sécuriser le site et mobiliser les équipes de réparation", impacts: { couts: 5000000, delais: -60, securite: 40, marge: -4.0 }, feedback: "Action immédiate et essentielle. Les coûts sont énormes et les retards inévitables, mais la sécurité est rétablie et les réparations commencent. La marge est gravement impactée." },
+                    { text: "Tenter de faire passer les dégâts pour des problèmes préexistants", impacts: { securite: -80, client: -70, couts: 1500000, marge: -1.2 }, feedback: "Illégal et moralement répréhensible. Vous risquez des poursuites judiciaires, la rupture avec le client et la destruction de votre réputation. Gain financier minime pour un risque immense et une carrière brisée." },
+                    { text: "Déclarer la force majeure et demander un arrêt complet du projet", impacts: { delais: -100, client: -60, couts: 3000000, marge: -2.0 }, feedback: "Une solution légale mais qui entraîne un arrêt très long et coûteux. Le client sera très frustré et le projet pourrait être abandonné. Les pertes financières sont importantes." },
+                    { text: "Optimiser les réparations pour minimiser les coûts et délais", impacts: { couts: 4000000, delais: -50, qualite: -15, marge: -2.5 }, feedback: "Une approche pragmatique pour limiter les dégâts, mais cela peut compromettre la qualité des réparations et les délais restent très importants. La marge est sévèrement touchée." }
                 ]
             },
             {
                 title: "Problème d'Image Publique du Projet", icon: "📰", timeLimit: 40,
                 text: "Un article de presse négatif est publié, dénonçant l'impact environnemental ou social de votre projet, créant une mauvaise image publique.",
                 choices: [
-                    { text: "Organiser une campagne de communication proactive et transparente", impacts: { client: 20, equipe: 10, couts: 500000, marge: -0.3 }, feedback: "Une réponse rapide et honnête peut restaurer la confiance du public et des parties prenantes. Coûts de communication mais bénéfices à long terme." },
-                    { text: "Ignorer l'article et espérer que ça passe", impacts: { client: -40, equipe: -20, marge: -0.5 }, feedback: "Une stratégie risquée. Le silence peut être interprété comme un aveu de culpabilité, dégradant gravement l'image du projet et le moral de l'équipe." },
-                    { text: "Lancer une action en justice pour diffamation", impacts: { couts: 800000, delais: -10, client: -10, marge: -0.5 }, feedback: "Une action coûteuse et longue qui peut envenimer la situation. Le résultat est incertain et le projet reste sous le feu des critiques." },
-                    { text: "Mettre en place des actions correctives environnementales/sociales immédiates", impacts: { couts: 1500000, qualite: 10, client: 15, marge: -1.0 }, feedback: "Une réponse forte et concrète. Vous investissez pour améliorer l'image et la qualité du projet, mais avec un coût financier significatif." }
+                    { text: "Organiser une campagne de communication proactive et transparente", impacts: { client: 25, equipe: 15, couts: 700000, marge: -0.5 }, feedback: "Une réponse rapide et honnête peut restaurer la confiance du public et des parties prenantes. Coûts de communication mais bénéfices à long terme pour l'image et le moral de l'équipe." },
+                    { text: "Ignorer l'article et espérer que ça passe", impacts: { client: -50, equipe: -30, marge: -0.8 }, feedback: "Une stratégie risquée. Le silence peut être interprété comme un aveu de culpabilité, dégradant gravement l'image du projet, le moral de l'équipe et la relation client." },
+                    { text: "Lancer une action en justice pour diffamation", impacts: { couts: 1000000, delais: -15, client: -15, marge: -0.7 }, feedback: "Une action coûteuse et longue qui peut envenimer la situation. Le résultat est incertain et le projet reste sous le feu des critiques. Les délais sont impactés." },
+                    { text: "Mettre en place des actions correctives environnementales/sociales immédiates", impacts: { couts: 2000000, qualite: 15, client: 20, marge: -1.5 }, feedback: "Une réponse forte et concrète. Vous investissez pour améliorer l'image et la qualité du projet, mais avec un coût financier significatif qui pèse sur la marge." }
                 ]
             },
             {
                 title: "Cyberattaque sur les Systèmes de Gestion", icon: "💻", timeLimit: 55,
                 text: "Les systèmes informatiques de gestion de projet (plannings, budgets) sont paralysés par une cyberattaque, menaçant la coordination et le suivi.",
                 choices: [
-                    { text: "Engager des experts en cybersécurité pour restaurer les systèmes", impacts: { couts: 2000000, delais: -20, securite: 20, marge: -1.5 }, feedback: "La solution essentielle pour récupérer les données et sécuriser les systèmes. Coûts élevés et retards importants, mais la continuité est assurée à terme." },
-                    { text: "Tenter de gérer le projet manuellement (papier/téléphone)", impacts: { delais: -40, equipe: -30, qualite: -20, couts: 500000, marge: -0.8 }, feedback: "Une solution temporaire inefficace. La coordination devient chaotique, les erreurs se multiplient et les délais explosent. Coûts indirects élevés." },
-                    { text: "Payer la rançon exigée par les hackers", impacts: { couts: 1000000, securite: -50, client: -30, marge: -0.7 }, feedback: "Solution rapide mais risquée. Rien ne garantit la restitution des données, et vous encouragez d'autres attaques. La sécurité est gravement compromise." },
-                    { text: "Reconstruire les systèmes à partir de zéro avec de nouvelles mesures de sécurité", impacts: { couts: 3000000, delais: -50, securite: 30, marge: -2.0 }, feedback: "La solution la plus sûre à long terme, mais extrêmement coûteuse et longue. Le projet sera paralysé pendant une longue période." }
+                    { text: "Engager des experts en cybersécurité pour restaurer les systèmes", impacts: { couts: 2500000, delais: -25, securite: 25, marge: -1.8 }, feedback: "La solution essentielle pour récupérer les données et sécuriser les systèmes. Coûts élevés et retards importants, mais la continuité est assurée à terme. La marge est sous pression." },
+                    { text: "Tenter de gérer le projet manuellement (papier/téléphone)", impacts: { delais: -50, equipe: -40, qualite: -30, couts: 700000, marge: -1.0 }, feedback: "Une solution temporaire inefficace. La coordination devient chaotique, les erreurs se multiplient et les délais explosent. Coûts indirects élevés et qualité dégradée." },
+                    { text: "Payer la rançon exigée par les hackers", impacts: { couts: 1500000, securite: -60, client: -40, marge: -1.0 }, feedback: "Solution rapide mais extrêmement risquée. Rien ne garantit la restitution des données, et vous encouragez d'autres attaques. La sécurité est gravement compromise et la réputation est en jeu." },
+                    { text: "Reconstruire les systèmes à partir de zéro avec de nouvelles mesures de sécurité", impacts: { couts: 4000000, delais: -60, securite: 40, marge: -2.5 }, feedback: "La solution la plus sûre à long terme, mais extrêmement coûteuse et longue. Le projet sera paralysé pendant une longue période, avec un impact majeur sur la marge." }
                 ]
             }
         ];
@@ -693,7 +731,7 @@
                 const value = metric.isCurrency ? formatCurrency(metric.value) : metric.isPercentage ? `${metric.value.toFixed(2)}%` : `${metric.value}/100`;
                 let colorClass = 'text-white';
                 if(key === 'marge') colorClass = metric.value > 10 ? 'text-green-400' : metric.value > 0 ? 'text-amber-400' : 'text-red-400';
-                else if (!metric.isCurrency) { // For non-currency, non-percentage metrics (like quality, safety)
+                else if (!metric.isCurrency) { // For non-currency, non-percentage metrics
                     colorClass = metric.value > 70 ? 'text-green-400' : metric.value > 40 ? 'text-amber-400' : 'text-red-400';
                 }
                 
@@ -831,7 +869,7 @@
                     `;
                 }
                 return `
-                    <div id="choice-${index}" onclick="handleChoice(${index})" class="group bg-slate-700/50 hover:bg-slate-700 border-2 border-transparent hover:border-blue-500 rounded-xl p-5 cursor-pointer transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-blue-500/20">
+                    <div id="choice-${index}" onclick="handleChoice(${index})" class="group bg-slate-700/50 hover:bg-slate-700 border-2 border-transparent hover:border-blue-500 rounded-xl p-5 cursor-pointer transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-blue-500/20 choice-card">
                         <p class="text-slate-100 font-semibold text-lg">${choice.text}</p>
                         ${financialPreview}
                     </div>
@@ -885,7 +923,7 @@
             }
 
             return `
-                <div id="metric-${key}" class="bg-slate-700/50 rounded-lg p-3 flex flex-col items-center justify-center relative overflow-hidden">
+                <div id="metric-${key}" class="bg-slate-700/50 rounded-lg p-3 flex flex-col items-center justify-center relative overflow-hidden metric-card">
                     <span class="text-2xl mb-1">${metric.icon}</span>
                     <span class="text-sm text-slate-400 font-medium">${metric.name}</span>
                     <span class="text-lg font-bold ${valueColorClass}">${valueDisplay}</span>
@@ -913,7 +951,7 @@
                 const powerUp = state.powerUps[type];
                 const isDisabled = powerUp.count <= 0 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110 cursor-pointer';
                 return `
-                    <button onclick="usePowerUp('${type}')" class="bg-blue-700 text-white rounded-full p-3 shadow-lg flex items-center justify-center transition-all duration-200 ${isDisabled}" title="${powerUp.description}" ${powerUp.count <= 0 ? 'disabled' : ''}>
+                    <button onclick="usePowerUp('${type}')" class="bg-blue-700 text-white rounded-full p-3 shadow-lg flex items-center justify-center transition-all duration-200 ${isDisabled} button-glow" title="${powerUp.description}" ${powerUp.count <= 0 ? 'disabled' : ''}>
                         <span class="text-2xl">${powerUp.icon}</span>
                         <span class="absolute top-0 right-0 -mt-1 -mr-1 bg-amber-500 text-slate-900 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">${powerUp.count}</span>
                     </button>
@@ -926,3 +964,4 @@
     </script>
 </body>
 </html>
+�
