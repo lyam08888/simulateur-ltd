@@ -242,6 +242,31 @@
             color: #ffdd00; /* Yellow for high contrast */
         }
 
+        /* Market Event Modal Styling */
+        #market-event-modal-overlay {
+            background: rgba(0, 0, 0, 0.8);
+        }
+        #market-event-modal {
+            background: linear-gradient(160deg, #3a3a3a, #1a1a1a); /* Dark grey gradient */
+            border: 2px solid #63b3ed; /* Light blue border */
+            box-shadow: 0 15px 30px rgba(99, 179, 237, 0.4); /* Blue glow */
+        }
+        #market-event-timer-display {
+            animation: pulse-blue 1s infinite alternate;
+            color: #63b3ed;
+        }
+        @keyframes pulse-blue {
+            from {
+                transform: scale(1);
+                opacity: 1;
+            }
+            to {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+
+
         /* Floating Power-ups Container */
         #floating-power-ups {
             position: absolute;
@@ -458,6 +483,21 @@
         </div>
     </div>
 
+    <!-- Market Event Modal (New) -->
+    <div id="market-event-modal-overlay" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 transition-opacity duration-300 modal-hidden">
+        <div id="market-event-modal" class="card p-8 max-w-xl w-full text-center transform scale-95 transition-transform duration-300 modal-content-hidden">
+            <h2 class="text-4xl font-extrabold mb-4 text-blue-400 flex items-center justify-center">
+                <span id="market-event-icon" class="mr-3 text-5xl"></span>
+                <span id="market-event-title">Fluctuation du Marché !</span>
+            </h2>
+            <p id="market-event-text" class="text-lg text-slate-300 mb-6"></p>
+            <div id="market-impact-list" class="space-y-3 mb-8 text-left" role="status" aria-live="polite">
+                <!-- Market impacts will be rendered here -->
+            </div>
+            <div id="market-event-timer-display" class="text-3xl font-bold text-blue-500">⏱️ 0:05</div>
+        </div>
+    </div>
+
     <!-- Result Screen -->
     <div id="result-screen" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 bg-opacity-90 z-10 transition-all duration-500 ease-in-out screen-hidden">
         <div class="card p-8 text-center max-w-lg w-full">
@@ -490,10 +530,12 @@
             let mainTimerInterval = null;
             let quickEventTimerInterval = null;
             let catastropheTimerInterval = null; // New timer for catastrophes
+            let marketEventTimerInterval = null; // New timer for market events
             let currentScenarioIndex = 0;
             let timerCountdown = 0;
             let isQuickEventActive = false;
             let isCatastropheActive = false; // New flag for catastrophes
+            let isMarketEventActive = false; // New flag for market events
             let activePowerUp = null; // To track which power-up is active
 
             // Tone.js Synths for sound effects
@@ -535,6 +577,11 @@
                 envelope: { attack: 0.005, decay: 0.2, sustain: 0.0, release: 0.5 },
                 volume: -10
             }).toDestination(); // New sound for catastrophes
+            const marketSound = new Tone.Synth({
+                oscillator: { type: "sine" },
+                envelope: { attack: 0.02, decay: 0.1, sustain: 0.1, release: 0.2 },
+                volume: -10
+            }).toDestination(); // New sound for market events
 
             // Play sound functions
             const playClick = () => {
@@ -568,6 +615,10 @@
             const playCatastropheSound = () => {
                 if (Tone.context.state !== 'running') { Tone.start(); }
                 catastropheSound.triggerAttackRelease("8n");
+            }
+            const playMarketSound = () => {
+                if (Tone.context.state !== 'running') { Tone.start(); }
+                marketSound.triggerAttackRelease("D5", "8n");
             }
 
             let timerWarningLoop = null;
@@ -604,12 +655,15 @@
                     audit: { name: "Audit Financier", icon: "📈", count: 1, description: "Révèle les impacts financiers exacts d'un choix." },
                     negociation: { name: "Négociation Client", icon: "🗣️", count: 1, description: "Augmente la satisfaction client." },
                     xray: { name: "Analyse Risques", icon: "💡", count: 1, description: "Met en évidence le meilleur choix." },
+                    training: { name: "Formation Équipe", icon: "📚", count: 1, description: "Améliore le moral et la qualité de l'équipe." }, // New power-up
                 },
                 timeBonusThreshold: 10, // Seconds remaining for bonus
                 timeBonusPoints: 500, // Points for time bonus
                 quickEventChance: 0.3, // 30% chance of a quick event after a main scenario
                 catastropheChance: 0.1, // 10% chance of a major catastrophe
+                marketFluctuationChance: 0.2, // 20% chance of a market fluctuation event (New)
                 timerWarningThreshold: 10, // Seconds left to start warning sound/animation
+                marketEventDisplayDuration: 5 // Duration for market event modal display in seconds
             };
 
             // DOM Elements mapping
@@ -651,6 +705,13 @@
                 catastropheText: document.getElementById('catastrophe-text'), // New
                 catastropheChoicesContainer: document.getElementById('catastrophe-choices-container'), // New
                 catastropheTimerDisplay: document.getElementById('catastrophe-timer-display'), // New
+                marketEventModalOverlay: document.getElementById('market-event-modal-overlay'), // New
+                marketEventModal: document.getElementById('market-event-modal'), // New
+                marketEventIcon: document.getElementById('market-event-icon'), // New
+                marketEventTitle: document.getElementById('market-event-title'), // New
+                marketEventText: document.getElementById('market-event-text'), // New
+                marketImpactList: document.getElementById('market-impact-list'), // New
+                marketEventTimerDisplay: document.getElementById('market-event-timer-display'), // New
                 finalScore: document.getElementById('final-score'),
                 resultCategory: document.getElementById('result-category'),
                 resultDescription: document.getElementById('result-description'),
@@ -717,9 +778,9 @@
                     title: "Incident de Sécurité Majeur sur le Chantier", icon: "🚨", timeLimit: 70,
                     text: "Un incident de sécurité majeur se produit sur le chantier (ex: effondrement partiel d'une structure, accident grave avec blessés), entraînant une suspension immédiate des travaux et une enquête approfondie.",
                     choices: [
-                        { text: "Renforcer massivement les protocoles de sécurité et auditer le site", impacts: { couts: 13500000, securite: 25, delais: 15, client: -7, marge: -1.35 }, feedback: "Mesure drastique mais nécessaire pour la sécurité, avec des coûts et un impact sur le délai." },
-                        { text: "Minimiser l'incident pour éviter des retards (risque légal et humain)", impacts: { securite: -30, client: -20, qualite: -15, marge: -0.75 }, feedback: "Économise de l'argent à court terme, mais risque de compromettre davantage la sécurité, la réputation et d'entraîner des poursuites." },
-                        { text: "Informer immédiatement les autorités et le maître d'ouvrage avec transparence", impacts: { client: -15, securite: 7, equipe: -7, marge: -0.15 }, feedback: "Transparence qui peut nuire à la satisfaction du maître d'ouvrage, mais renforce la confiance à long terme et la sécurité." },
+                        { text: "Renforcer massivement les protocoles de sécurité et auditer le site", impacts: { couts: 13500000, securite: 25, delais: 15, client: -7, marge: -1.35 }, feedback: "Mesure drastique but nécessaire pour la sécurité, avec des coûts et un impact sur le délai." },
+                        { text: "Minimiser l'incident pour éviter des retards (risque légal et humain)", impacts: { securite: -30, client: -20, qualite: -15, marge: -0.75 }, feedback: "Économise de l'argent à court terme, but risque de compromettre davantage la sécurité, la réputation et d'entraîner des poursuites." },
+                        { text: "Informer immédiatement les autorités et le maître d'ouvrage avec transparence", impacts: { client: -15, securite: 7, equipe: -7, marge: -0.15 }, feedback: "Transparence qui peut nuire à la satisfaction du maître d'ouvrage, but renforce la confiance à long terme et la sécurité." },
                         { text: "Mettre en place des formations de sécurité intensives et obligatoires pour toute l'équipe", impacts: { couts: 3000000, securite: 15, delais: 0, marge: -0.3 }, feedback: "Un investissement pour l'avenir, améliorant la sécurité sans impact immédiat majeur sur le projet en cours." }
                     ]
                 },
@@ -727,27 +788,27 @@
                     title: "Dépassement Budgétaire Critique", icon: "💸", timeLimit: 60,
                     text: "Les dépenses du projet ont dépassé les prévisions de manière critique, menaçant la viabilité globale du Canal Seine-Nord Europe.",
                     choices: [
-                        { text: "Réduire drastiquement les finitions non essentielles ou les aménagements paysagers", impacts: { qualite: -15, client: -15, couts: -7500000, marge: 0.75 }, feedback: "Réduit les coûts de manière significative, mais peut décevoir le maître d'ouvrage et impacter sévèrement la qualité perçue de l'ouvrage." },
-                        { text: "Demander un budget supplémentaire d'urgence au maître d'ouvrage (très difficile à obtenir)", impacts: { chiffreAffaires: 0, couts: 7500000, client: -7, marge: -0.75 }, feedback: "Peut résoudre le problème de budget, mais risque de nuire gravement à la relation avec le maître d'ouvrage et à la marge." },
+                        { text: "Réduire drastiquement les finitions non essentielles ou les aménagements paysagers", impacts: { qualite: -15, client: -15, couts: -7500000, marge: 0.75 }, feedback: "Réduit les coûts de manière significative, but peut décevoir le maître d'ouvrage et impacter sévèrement la qualité perçue de l'ouvrage." },
+                        { text: "Demander un budget supplémentaire d'urgence au maître d'ouvrage (très difficile à obtenir)", impacts: { chiffreAffaires: 0, couts: 7500000, client: -7, marge: -0.75 }, feedback: "Peut résoudre le problème de budget, but risque de nuire gravement à la relation avec le maître d'ouvrage et à la marge." },
                         { text: "Optimiser les processus de construction et renégocier les contrats fournisseurs", impacts: { couts: -4500000, equipe: 7, qualite: 7, marge: 0.45 }, feedback: "Une approche saine qui réduit les coûts tout en améliorant l'efficacité et le moral de l'équipe." },
-                        { text: "Utiliser des matériaux de substitution moins chers (qualité et sécurité compromises)", impacts: { qualite: -20, securite: -10, client: -20, marge: 0.3 }, feedback: "Solution rapide pour les coûts, mais compromet gravement la qualité, la sécurité et la satisfaction du maître d'ouvrage." }
+                        { text: "Utiliser des matériaux de substitution moins chers (qualité et sécurité compromises)", impacts: { qualite: -20, securite: -10, client: -20, marge: 0.3 }, feedback: "Solution rapide pour les coûts, but compromet gravement la qualité, la sécurité et la satisfaction du maître d'ouvrage." }
                     ]
                 },
                 {
                     title: "Conflit Majeur au sein de l'Équipe Chantier", icon: "🗣️", timeLimit: 40,
                     text: "Des tensions extrêmes éclatent au sein de l'équipe de construction, entraînant des blocages et une chute drastique de la productivité et du moral sur le terrain.",
                     choices: [
-                        { text: "Organiser une médiation professionnelle immédiate sur site", impacts: { equipe: 20, delais: 7, couts: 750000, marge: -0.075 }, feedback: "Investissement qui résout les conflits majeurs, améliore le moral mais coûte un peu de temps et d'argent." },
+                        { text: "Organiser une médiation professionnelle immédiate sur site", impacts: { equipe: 20, delais: 7, couts: 750000, marge: -0.075 }, feedback: "Investissement qui résout les conflits majeurs, améliore le moral but coûte un peu de temps et d'argent." },
                         { text: "Laisser l'équipe gérer le problème elle-même (risque d'escalade)", impacts: { equipe: -30, qualite: -15, delais: 15, marge: 0 }, feedback: "Peut empirer la situation de manière incontrôlable, réduisant le moral et la productivité à néant." },
                         { text: "Réaffecter les membres en conflit à d'autres tâches ou les écarter", impacts: { equipe: 7, qualite: -7, delais: 7, marge: 0 }, feedback: "Solution temporaire qui peut créer de nouvelles frictions et impacter la qualité." },
-                        { text: "Organiser un événement de cohésion d'équipe majeur (coût, mais renforce les liens)", impacts: { couts: 1500000, equipe: 15, marge: -0.15 }, feedback: "Un investissement significatif dans l'équipe qui peut améliorer la cohésion et le moral à long terme." }
+                        { text: "Organiser un événement de cohésion d'équipe majeur (coût, but renforce les liens)", impacts: { couts: 1500000, equipe: 15, marge: -0.15 }, feedback: "Un investissement significatif dans l'équipe qui peut améliorer la cohésion et le moral à long terme." }
                     ]
                 },
                 {
                     title: "Modifications de Conception Drastiques Demandées par le Maître d'Ouvrage", icon: "❓", timeLimit: 50,
                     text: "Le maître d'ouvrage exprime des demandes de modifications de conception de dernière minute et d'envergure (ex: changement complet du tracé sur une section), rendant la poursuite des travaux extrêmement difficile.",
                     choices: [
-                        { text: "Organiser un atelier de clarification intensif avec le maître d'ouvrage et renégocier", impacts: { client: 15, delais: 10, qualite: 15, couts: 750000, marge: -0.075 }, feedback: "Prend du temps et coûte un peu, mais assure une meilleure compréhension et un ouvrage final de meilleure qualité." },
+                        { text: "Organiser un atelier de clarification intensif avec le maître d'ouvrage et renégocier", impacts: { client: 15, delais: 10, qualite: 15, couts: 750000, marge: -0.075 }, feedback: "Prend du temps et coûte un peu, but assure une meilleure compréhension et un ouvrage final de meilleure qualité." },
                         { text: "Faire des hypothèses et continuer la construction (risque de non-conformité)", impacts: { client: -30, qualite: -20, couts: 3000000, marge: -0.3 }, feedback: "Risque extrêmement élevé de livrer un ouvrage qui ne correspond pas aux attentes, entraînant des retouches massives et des pénalités." },
                         { text: "Proposer des plans de modification rapides et coûteux pour validation", impacts: { client: 20, qualite: 7, delais: 0, couts: 1500000, marge: -0.15 }, feedback: "Bonne méthode pour valider les exigences, satisfait le maître d'ouvrage et maintient la qualité." },
                         { text: "Ignorer les demandes et suivre le plan initial (rupture de contrat)", impacts: { client: -40, qualite: -30, chiffreAffaires: -7500000, marge: -0.75 }, feedback: "Une approche désastreuse qui mènera à l'insatisfaction du maître d'ouvrage, à la rupture de contrat et à des pertes financières massives." }
@@ -755,10 +816,10 @@
                 },
                 {
                     title: "Nouvelle Technologie de Construction Révolutionnaire", icon: "💡", timeLimit: 45,
-                    text: "Une nouvelle technologie de construction (ex: robotisation avancée pour le bétonnage) prometteuse émerge, offrant une opportunité d'améliorer significativement l'efficacité ou la durabilité de l'ouvrage, mais avec des risques d'intégration.",
+                    text: "Une nouvelle technologie de construction (ex: robotisation avancée pour le bétonnage) prometteuse émerge, offrant une opportunité d'améliorer significativement l'efficacité ou la durabilité de l'ouvrage, but avec des risques d'intégration.",
                     choices: [
-                        { text: "Intégrer la nouvelle technologie (coût élevé, délai, formation)", impacts: { couts: 4500000, delais: 15, qualite: 25, client: 20, marge: -0.45 }, feedback: "Un investissement qui peut révolutionner la construction, mais avec des coûts et des retards." },
-                        { text: "Continuer avec la technologie actuelle", impacts: { qualite: -7, client: -7, marge: 0 }, feedback: "Moins risqué à court terme, mais l'ouvrage pourrait être moins performant à long terme." },
+                        { text: "Intégrer la nouvelle technologie (coût élevé, délai, formation)", impacts: { couts: 4500000, delais: 15, qualite: 25, client: 20, marge: -0.45 }, feedback: "Un investissement qui peut révolutionner la construction, but avec des coûts et des retards." },
+                        { text: "Continuer avec la technologie actuelle", impacts: { qualite: -7, client: -7, marge: 0 }, feedback: "Moins risqué à court terme, but l'ouvrage pourrait être moins performant à long terme." },
                         { text: "Mettre en place une petite équipe de R&D dédiée à l'étude approfondie", impacts: { couts: 2250000, equipe: 7, delais: 7, marge: -0.225 }, feedback: "Permet d'explorer l'innovation sans perturber le projet principal, avec un coût modéré." },
                         { text: "Ignorer l'opportunité", impacts: { client: -15, qualite: -15, chiffreAffaires: -3000000, marge: -0.3 }, feedback: "Manque une opportunité majeure, le projet risque de perdre en compétitivité ou en durabilité sur le long terme." }
                     ]
@@ -767,39 +828,39 @@
                     title: "Fuite de Données Stratégiques du Chantier", icon: " leaked", timeLimit: 65,
                     text: "Des informations hautement sensibles concernant les plans de sécurité ou les méthodes de construction innovantes du Canal ont été divulguées publiquement, menaçant la réputation et la sécurité du projet.",
                     choices: [
-                        { text: "Lancer une enquête interne massive et renforcer drastiquement la cybersécurité", impacts: { securite: 25, equipe: -7, client: -15, couts: 6000000, marge: -0.6 }, feedback: "Mesure essentielle pour la sécurité et la réputation, mais coûteuse et peut impacter le moral." },
+                        { text: "Lancer une enquête interne massive et renforcer drastiquement la cybersécurité", impacts: { securite: 25, equipe: -7, client: -15, couts: 6000000, marge: -0.6 }, feedback: "Mesure essentielle pour la sécurité et la réputation, but coûteuse et peut impacter le moral." },
                         { text: "Minimiser l'incident publiquement (risque de scandale)", impacts: { client: -30, securite: -15, chiffreAffaires: -7500000, marge: -0.75 }, feedback: "Peut aggraver la situation, entraînant une perte de confiance et des pénalités massives." },
                         { text: "Informer les parties prenantes concernées avec transparence et proposer des mesures correctives", impacts: { client: -7, securite: 7, marge: 0 }, feedback: "La transparence peut atténuer l'impact négatif et renforcer la confiance à long terme." },
-                        { text: "Mettre en place une campagne de communication de crise pour restaurer l'image du projet", impacts: { couts: 4500000, client: 7, marge: -0.45 }, feedback: "Un investissement pour restaurer la confiance, mais ne résout pas le problème de sécurité sous-jacent." }
+                        { text: "Mettre en place une campagne de communication de crise pour restaurer l'image du projet", impacts: { couts: 4500000, client: 7, marge: -0.45 }, feedback: "Un investissement pour restaurer la confiance, but ne résout pas le problème de sécurité sous-jacent." }
                     ]
                 },
                 {
                     title: "Problème Géotechnique Critique et Inattendu", icon: "⚙️", timeLimit: 50,
                     text: "Un problème géotechnique complexe et imprévu (ex: découverte d'une nappe phréatique non cartographiée, sol instable) bloque une étape cruciale de l'excavation du canal, menaçant la stabilité de l'ouvrage.",
                     choices: [
-                        { text: "Engager des experts géotechniciens externes de renommée mondiale (très coûteux, rapide)", impacts: { couts: 7500000, delais: -7, qualite: 15, marge: -0.75 }, feedback: "Résout le problème rapidement et efficacement, mais à un coût très élevé." },
-                        { text: "Laisser l'équipe interne résoudre le problème (délai incertain, risque élevé)", impacts: { delais: 20, equipe: 7, qualite: 0, marge: 0 }, feedback: "Moins coûteux, mais le délai est incertain et peut frustrer l'équipe, avec un risque d'aggravation." },
-                        { text: "Simplifier drastiquement la conception de l'ouvrage pour contourner le problème", impacts: { qualite: -15, client: -7, delais: -7, marge: 0.15 }, feedback: "Solution rapide, mais compromet gravement la qualité et la satisfaction du maître d'ouvrage." },
-                        { text: "Rechercher des solutions innovantes de stabilisation des sols (temps, mais économique)", impacts: { delais: 15, couts: -750000, qualite: 0, marge: 0.075 }, feedback: "Économique, mais prend du temps et la solution peut ne pas être parfaitement adaptée." }
+                        { text: "Engager des experts géotechniciens externes de renommée mondiale (très coûteux, rapide)", impacts: { couts: 7500000, delais: -7, qualite: 15, marge: -0.75 }, feedback: "Résout le problème rapidement et efficacement, but à un coût très élevé." },
+                        { text: "Laisser l'équipe interne résoudre le problème (délai incertain, risque élevé)", impacts: { delais: 20, equipe: 7, qualite: 0, marge: 0 }, feedback: "Moins coûteux, but le délai est incertain et peut frustrer l'équipe, avec un risque d'aggravation." },
+                        { text: "Simplifier drastiquement la conception de l'ouvrage pour contourner le problème", impacts: { qualite: -15, client: -7, delais: -7, marge: 0.15 }, feedback: "Solution rapide, but compromet gravement la qualité et la satisfaction du maître d'ouvrage." },
+                        { text: "Rechercher des solutions innovantes de stabilisation des sols (temps, but économique)", impacts: { delais: 15, couts: -750000, qualite: 0, marge: 0.075 }, feedback: "Économique, but prend du temps et la solution peut ne pas être parfaitement adaptée." }
                     ]
                 },
                 {
                     title: "Pression Politique Extrême pour Accélérer les Travaux", icon: "⏱️", timeLimit: 55,
                     text: "Le maître d'ouvrage et les autorités locales exercent une pression politique extrême pour accélérer le calendrier des travaux du Canal, en raison d'élections ou d'engagements publics, menaçant des pénalités massives en cas de retard.",
                     choices: [
-                        { text: "Augmenter massivement les équipes et les heures de travail (coût, risque de qualité)", impacts: { qualite: -15, equipe: -15, delais: -15, marge: 0 }, feedback: "Accélère les travaux, mais peut compromettre la qualité et le moral de l'équipe." },
+                        { text: "Augmenter massivement les équipes et les heures de travail (coût, risque de qualité)", impacts: { qualite: -15, equipe: -15, delais: -15, marge: 0 }, feedback: "Accélère les travaux, but peut compromettre la qualité et le moral de l'équipe." },
                         { text: "Optimiser la planification et les ressources existantes avec des outils avancés", impacts: { couts: 0, delais: -7, equipe: 7, marge: 0.75 }, feedback: "Améliore l'efficacité sans coûts supplémentaires, maintient le moral." },
-                        { text: "Refuser la demande d'accélération en justifiant les risques techniques et légaux", impacts: { client: -15, delais: 0, marge: 0 }, feedback: "Maintient la qualité et la sécurité, mais peut créer des tensions majeures avec le maître d'ouvrage et les autorités." },
-                        { text: "Introduire des technologies de construction ultra-rapide (coût exorbitant)", impacts: { couts: 6000000, delais: -20, qualite: 7, marge: -0.6 }, feedback: "Permet une accélération significative, mais à un coût important." }
+                        { text: "Refuser la demande d'accélération en justifiant les risques techniques et légaux", impacts: { client: -15, delais: 0, marge: 0 }, feedback: "Maintient la qualité et la sécurité, but peut créer des tensions majeures avec le maître d'ouvrage et les autorités." },
+                        { text: "Introduire des technologies de construction ultra-rapide (coût exorbitant)", impacts: { couts: 6000000, delais: -20, qualite: 7, marge: -0.6 }, feedback: "Permet une accélération significative, but à un coût important." }
                     ]
                 },
                 {
                     title: "Crise de Relations Publiques Majeure", icon: "📰", timeLimit: 60,
                     text: "Une mauvaise publicité ou un scandale éclate (ex: accusations de corruption, impact environnemental non déclaré), affectant l'image de l'entreprise et la perception du projet à l'échelle nationale.",
                     choices: [
-                        { text: "Publier une déclaration officielle transparente et s'excuser publiquement", impacts: { client: 7, equipe: 7, couts: 1000000, marge: -0.1 }, feedback: "Une communication transparente peut aider à restaurer la confiance, mais à un coût." },
+                        { text: "Publier une déclaration officielle transparente et s'excuser publiquement", impacts: { client: 7, equipe: 7, couts: 1000000, marge: -0.1 }, feedback: "Une communication transparente peut aider à restaurer la confiance, but à un coût." },
                         { text: "Ignorer la crise et espérer qu'elle passe (risque de catastrophe médiatique)", impacts: { client: -35, chiffreAffaires: -15000000, marge: -1.5 }, feedback: "Peut aggraver la situation de manière incontrôlable, entraînant une perte massive de clients et de revenus, et des poursuites." },
-                        { text: "Lancer une campagne de communication positive massive et coûteuse", impacts: { couts: 7500000, client: 15, marge: -0.75 }, feedback: "Un investissement pour améliorer l'image, mais coûteux." },
+                        { text: "Lancer une campagne de communication positive massive et coûteuse", impacts: { couts: 7500000, client: 15, marge: -0.75 }, feedback: "Un investissement pour améliorer l'image, but coûteux." },
                         { text: "Identifier la source du problème et y remédier activement avec une communication proactive", impacts: { client: 20, qualite: 15, securite: 15, couts: 4500000, marge: -0.45 }, feedback: "S'attaquer à la racine du problème est la meilleure solution à long terme, même si cela prend du temps et de l'argent." }
                     ]
                 },
@@ -807,9 +868,9 @@
                     title: "Nouvelle Opportunité Commerciale Stratégique", icon: "🤝", timeLimit: 40,
                     text: "Un client important propose un partenariat lucratif pour un nouveau projet d'infrastructure majeur, but cela demanderait des ressources importantes et pourrait impacter le projet actuel.",
                     choices: [
-                        { text: "Accepter le nouveau projet (surcharge extrême des équipes)", impacts: { chiffreAffaires: 22500000, couts: 10500000, equipe: -20, delais: 15, marge: 0.75 }, feedback: "Augmente massivement les revenus, mais peut surcharger l'équipe et impacter lourdement les délais du projet actuel." },
-                        { text: "Refuser le nouveau projet pour se concentrer sur l'actuel", impacts: { chiffreAffaires: 0, equipe: 7, delais: -7, marge: 0 }, feedback: "Maintient la concentration sur le projet actuel, mais manque une opportunité de croissance majeure." },
-                        { text: "Recruter temporairement pour le nouveau projet (coût élevé)", impacts: { couts: 6000000, chiffreAffaires: 15000000, equipe: 0, delais: 0, marge: 0.5 }, feedback: "Permet de saisir l'opportunité sans impacter l'équipe actuelle, mais à un coût." },
+                        { text: "Accepter le nouveau projet (surcharge extrême des équipes)", impacts: { chiffreAffaires: 22500000, couts: 10500000, equipe: -20, delais: 15, marge: 0.75 }, feedback: "Augmente massivement les revenus, but peut surcharger l'équipe et impacter lourdement les délais du projet actuel." },
+                        { text: "Refuser le nouveau projet pour se concentrer sur l'actuel", impacts: { chiffreAffaires: 0, equipe: 7, delais: -7, marge: 0 }, feedback: "Maintient la concentration sur le projet actuel, but manque une opportunité de croissance majeure." },
+                        { text: "Recruter temporairement pour le nouveau projet (coût élevé)", impacts: { couts: 6000000, chiffreAffaires: 15000000, equipe: 0, delais: 0, marge: 0.5 }, feedback: "Permet de saisir l'opportunité sans impacter l'équipe actuelle, but à un coût." },
                         { text: "Négocier un démarrage différé pour le nouveau projet", impacts: { client: 7, delais: 7, marge: 0 }, feedback: "Une approche équilibrée qui permet de saisir l'opportunité sans perturber immédiatement le projet en cours." }
                     ]
                 }
@@ -821,24 +882,24 @@
                     title: "Panne d'Équipement Majeur sur Site !", icon: "⚡", timeLimit: 15,
                     text: "Une pelleteuse critique vient de tomber en panne au milieu du chantier. Vous avez peu de temps pour réagir !",
                     choices: [
-                        { text: "Réparer en urgence avec des équipes dédiées (solution rapide, coût élevé)", impacts: { delais: 7, qualite: -7, securite: -7, marge: -0.15 }, feedback: "L'équipement est relancé, mais il y a un risque notable de qualité et de sécurité due à la précipitation." },
-                        { text: "Louer un équipement de remplacement (plus lent, plus sûr, plus cher)", impacts: { delais: 15, qualite: 0, securite: 7, marge: -0.075 }, feedback: "Plus sûr à long terme, mais le temps d'arrêt est plus long et coûte plus cher." }
+                        { text: "Réparer en urgence avec des équipes dédiées (solution rapide, coût élevé)", impacts: { delais: 7, qualite: -7, securite: -7, marge: -0.15 }, feedback: "L'équipement est relancé, but il y a un risque notable de qualité et de sécurité due à la précipitation." },
+                        { text: "Louer un équipement de remplacement (plus lent, plus sûr, plus cher)", impacts: { delais: 15, qualite: 0, securite: 7, marge: -0.075 }, feedback: "Plus sûr à long terme, but le temps d'arrêt est plus long et coûte plus cher." }
                     ]
                 },
                 {
                     title: "Urgence Sécurité sur le Chantier !", icon: "📞", timeLimit: 10,
                     text: "Un petit incident de sécurité nécessite une attention immédiate pour éviter un accident majeur.",
                     choices: [
-                        { text: "Intervenir personnellement et stopper la zone (impacte le délai et moral)", impacts: { securite: 15, delais: 7, equipe: -7, marge: 0 }, feedback: "La sécurité est assurée, mais le projet prend un léger retard et l'équipe est sous pression." },
-                        { text: "Déléguer à un chef d'équipe (risque d'escalade et de réputation)", impacts: { securite: -15, delais: -7, equipe: 7, marge: 0 }, feedback: "Le projet avance, mais le risque d'accident est plus élevé et la réputation peut en pâtir." }
+                        { text: "Intervenir personnellement et stopper la zone (impacte le délai et moral)", impacts: { securite: 15, delais: 7, equipe: -7, marge: 0 }, feedback: "La sécurité est assurée, but le projet prend un léger retard et l'équipe est sous pression." },
+                        { text: "Déléguer à un chef d'équipe (risque d'escalade et de réputation)", impacts: { securite: -15, delais: -7, equipe: 7, marge: 0 }, feedback: "Le projet avance, but le risque d'accident est plus élevé et la réputation peut en pâtir." }
                     ]
                 },
                 {
                     title: "Erreur de Mesure Critique !", icon: "🐞", timeLimit: 20,
                     text: "Une erreur de mesure cruciale a été découverte dans les plans de terrassement. Elle doit être corrigée rapidement.",
                     choices: [
-                        { text: "Assigner les topographes les plus expérimentés (coût élevé, rapidité)", impacts: { couts: 1500000, qualite: 15, delais: 0, marge: -0.15 }, feedback: "L'erreur est corrigée rapidement et la qualité est assurée, mais cela coûte cher." },
-                        { text: "Demander à l'équipe actuelle de la corriger (délai, moral, risque de qualité)", impacts: { qualite: 7, delais: 7, equipe: -7, marge: 0 }, feedback: "L'erreur est corrigée, mais cela prend plus de temps et peut affecter le moral de l'équipe, avec un risque de qualité résiduel." }
+                        { text: "Assigner les topographes les plus expérimentés (coût élevé, rapidité)", impacts: { couts: 1500000, qualite: 15, delais: 0, marge: -0.15 }, feedback: "L'erreur est corrigée rapidement et la qualité est assurée, but cela coûte cher." },
+                        { text: "Demander à l'équipe actuelle de la corriger (délai, moral, risque de qualité)", impacts: { qualite: 7, delais: 7, equipe: -7, marge: 0 }, feedback: "L'erreur est corrigée, but cela prend plus de temps et peut affecter le moral de l'équipe, avec un risque de qualité résiduel." }
                     ]
                 }
             ];
@@ -849,15 +910,15 @@
                     title: "Effondrement Majeur d'une Section du Canal !", icon: "💥", timeLimit: 8,
                     text: "Une section du canal en construction vient de s'effondrer suite à un mouvement de terrain imprévu. Des blessés sont à déplorer et les travaux sont à l'arrêt total. Vous devez agir IMMÉDIATEMENT !",
                     choices: [
-                        { text: "Déployer les équipes de secours et d'ingénierie d'urgence (coût colossal, délai énorme)", impacts: { couts: 30000000, delais: 50, securite: 30, qualite: -20, client: -30, marge: -3 }, feedback: "Vous sauvez des vies et assurez la sécurité, mais le coût et le retard sont astronomiques. La qualité perçue et la satisfaction du maître d'ouvrage sont gravement touchées." },
-                        { text: "Prioriser la stabilisation du site pour limiter les dégâts (coût très élevé, risque)", impacts: { couts: 20000000, securite: 15, delais: 30, qualite: -10, client: -20, marge: -2 }, feedback: "Vous tentez de contenir la catastrophe, mais les impacts financiers, sur les délais et la réputation sont immenses." }
+                        { text: "Déployer les équipes de secours et d'ingénierie d'urgence (coût colossal, délai énorme)", impacts: { couts: 30000000, delais: 50, securite: 30, qualite: -20, client: -30, marge: -3 }, feedback: "Vous sauvez des vies et assurez la sécurité, but le coût et le retard sont astronomiques. La qualité perçue et la satisfaction du maître d'ouvrage sont gravement touchées." },
+                        { text: "Prioriser la stabilisation du site pour limiter les dégâts (coût très élevé, risque)", impacts: { couts: 20000000, securite: 15, delais: 30, qualite: -10, client: -20, marge: -2 }, feedback: "Vous tentez de contenir la catastrophe, but les impacts financiers, sur les délais et la réputation sont immenses." }
                     ]
                 },
                 {
                     title: "Scandale de Corruption Révélé !", icon: "📰", timeLimit: 7,
                     text: "Une enquête journalistique majeure révèle des allégations de corruption au sein de la gestion du projet. La réputation de l'entreprise est en jeu, les investisseurs paniquent et le financement est menacé. Réagissez VITE !",
                     choices: [
-                        { text: "Lancer une enquête interne indépendante et coopérer pleinement avec la justice (coût, impact réputationnel initial)", impacts: { couts: 15000000, client: -25, chiffreAffaires: -20000000, equipe: -15, marge: -2.5 }, feedback: "Une action forte pour la transparence, mais qui expose initialement le projet à des pertes financières et de réputation massives." },
+                        { text: "Lancer une enquête interne indépendante et coopérer pleinement avec la justice (coût, impact réputationnel initial)", impacts: { couts: 15000000, client: -25, chiffreAffaires: -20000000, equipe: -15, marge: -2.5 }, feedback: "Une action forte pour la transparence, but qui expose initialement le projet à des pertes financières et de réputation massives." },
                         { text: "Nier les allégations et lancer une contre-campagne médiatique (risque d'aggravation)", impacts: { client: -40, chiffreAffaires: -30000000, equipe: -25, marge: -3.5 }, feedback: "Une stratégie risquée qui peut entraîner une perte totale de confiance, des poursuites judiciaires et l'arrêt du projet." }
                     ]
                 },
@@ -865,11 +926,46 @@
                     title: "Crise Écologique Majeure Imprévue !", icon: "☣️", timeLimit: 10,
                     text: "La construction a déclenché une pollution environnementale imprévue (ex: fuite de produit toxique, destruction d'un habitat protégé) avec des conséquences désastreuses. Les autorités menacent d'arrêter le chantier. AGISSEZ !",
                     choices: [
-                        { text: "Mettre en œuvre des mesures de dépollution d'urgence et des compensations écologiques (coût exorbitant, délai)", impacts: { couts: 25000000, delais: 40, client: -20, securite: 20, marge: -3 }, feedback: "Vous tentez de réparer les dégâts écologiques, mais le coût est colossal et le projet subit un retard majeur. La réputation est gravement entachée." },
+                        { text: "Mettre en œuvre des mesures de dépollution d'urgence et des compensations écologiques (coût exorbitant, délai)", impacts: { couts: 25000000, delais: 40, client: -20, securite: 20, marge: -3 }, feedback: "Vous tentez de réparer les dégâts écologiques, but le coût est colossal et le projet subit un retard majeur. La réputation est gravement entachée." },
                         { text: "Contester les accusations et continuer les travaux (risque légal et d'image)", impacts: { client: -35, securite: -25, chiffreAffaires: -25000000, marge: -3.5 }, feedback: "Une approche agressive qui peut entraîner des amendes massives, des poursuites et l'arrêt définitif du projet par décision de justice." }
                     ]
                 }
             ];
+
+            // Market Events data (new)
+            const marketEvents = [
+                {
+                    title: "Augmentation des Coûts des Matières Premières", icon: "📈",
+                    text: "Le prix mondial de l'acier et du ciment a soudainement grimpé en flèche, augmentant vos coûts de construction.",
+                    impacts: { couts: 5000000, marge: -0.5 },
+                    feedback: "Les coûts des matériaux ont augmenté, impactant votre budget."
+                },
+                {
+                    title: "Baisse des Taux d'Intérêt", icon: "📉",
+                    text: "La banque centrale a baissé les taux d'intérêt, réduisant le coût de votre financement de projet.",
+                    impacts: { couts: -2000000, marge: 0.2 },
+                    feedback: "Une bonne nouvelle pour vos finances ! Les coûts de financement diminuent."
+                },
+                {
+                    title: "Nouvelles Subventions Gouvernementales", icon: "💰",
+                    text: "Le gouvernement annonce des subventions inattendues pour les projets d'infrastructure verte, bénéficiant à votre canal.",
+                    impacts: { chiffreAffaires: 7500000, marge: 0.75 },
+                    feedback: "Des subventions inattendues améliorent la rentabilité de votre projet !"
+                },
+                {
+                    title: "Ralentissement Économique Général", icon: "🐌",
+                    text: "Un ralentissement économique global réduit la demande pour de futurs projets, mais n'impacte pas directement le projet en cours.",
+                    impacts: { chiffreAffaires: -5000000, marge: -0.5 }, // Can impact future revenue, but for simplicity, let's impact current CA
+                    feedback: "Le contexte économique se durcit, soyez vigilant pour l'avenir."
+                },
+                {
+                    title: "Innovation en Logistique", icon: "📦",
+                    text: "Une nouvelle méthode logistique permet de réduire significativement les coûts de transport des matériaux.",
+                    impacts: { couts: -1000000, marge: 0.1 },
+                    feedback: "Vos coûts logistiques sont réduits grâce à une nouvelle innovation."
+                }
+            ];
+
 
             // --- Helper Functions ---
 
@@ -988,6 +1084,7 @@
                 currentScenarioIndex = 0;
                 isQuickEventActive = false;
                 isCatastropheActive = false; // Reset catastrophe flag
+                isMarketEventActive = false; // Reset market event flag
                 activePowerUp = null;
                 stopTimers();
                 renderMetrics();
@@ -1086,11 +1183,89 @@
                     // Apply immediate effects or modify next choice display
                     if (powerUpKey === 'xray') {
                         highlightBestChoice();
+                    } else if (powerUpKey === 'training') {
+                        // Apply direct impacts for training
+                        const trainingImpacts = {
+                            equipe: 10,
+                            qualite: 10
+                        };
+                        applyDirectImpacts(trainingImpacts, "L'équipe a suivi une formation intensive ! Moral et qualité améliorés.", "Formation Complétée !");
                     }
                 } else {
                     updateCharacterSpeech('🤔', "Vous n'avez plus de ce bonus !", 2000);
                 }
             };
+
+            /**
+             * Applies impacts directly without a choice context, used for power-ups or timed events.
+             * @param {object} impacts - The impacts object.
+             * @param {string} feedbackMessage - Message for the feedback modal.
+             * @param {string} feedbackTitleText - Title for the feedback modal.
+             * @param {HTMLElement} [impactListElement=DOMElements.impactList] - The element to render impacts into.
+             */
+            const applyDirectImpacts = (impacts, feedbackMessage, feedbackTitleText, impactListElement = DOMElements.impactList) => {
+                const changesMade = {};
+                impactListElement.innerHTML = ''; // Clear previous impacts
+
+                for (const key in impacts) {
+                    let changeAmount = impacts[key];
+                    const metric = state.metrics[key];
+
+                    if (metric) {
+                        let impactText = '';
+                        let icon = '';
+
+                        if (key === 'chiffreAffaires' || key === 'couts') {
+                            metric.value += changeAmount;
+                            impactText = `${metric.name}: ${changeAmount > 0 ? '+' : ''}${formatCurrency(changeAmount)}`;
+                            icon = changeAmount > 0 ? '⬆️' : '⬇️';
+                        } else if (key === 'marge') {
+                            metric.value += changeAmount;
+                            impactText = `${metric.name}: ${changeAmount > 0 ? '+' : ''}${changeAmount.toFixed(1)}%`;
+                            icon = changeAmount > 0 ? '⬆️' : '⬇️';
+                        } else {
+                            metric.value += changeAmount;
+                            impactText = `${metric.name}: ${changeAmount > 0 ? '+' : ''}${changeAmount}`;
+                            icon = changeAmount > 0 ? '⬆️' : '⬇️';
+                        }
+
+                        if (key !== 'chiffreAffaires' && key !== 'couts') {
+                            metric.value = Math.max(0, Math.min(100, metric.value)); 
+                        }
+                        if (key === 'marge') {
+                            metric.value = Math.max(0, Math.min(100, metric.value));
+                        }
+
+                        changesMade[key] = changeAmount;
+
+                        const impactItem = document.createElement('li');
+                        impactItem.className = `flex items-center text-lg ${changeAmount > 0 ? 'text-green-400' : (changeAmount < 0 ? 'text-red-400' : 'text-slate-300')}`;
+                        impactItem.innerHTML = `<span class="mr-2">${icon}</span> ${impactText}`;
+                        impactListElement.appendChild(impactItem);
+                    }
+                }
+                renderMetrics(changesMade); // Re-render metrics with changes
+                updateProgressBar();
+
+                // Determine character mood and speech for direct impacts
+                let characterEmoji = '👨‍💼';
+                let characterSpeech = 'Impact appliqué !';
+                if (Object.values(impacts).some(val => val > 0)) {
+                    characterEmoji = '👍';
+                    characterSpeech = 'Un impact positif !';
+                    playPositive();
+                } else if (Object.values(impacts).some(val => val < 0)) {
+                    characterEmoji = '👎';
+                    characterSpeech = 'Un impact négatif...';
+                    playNegative();
+                }
+                updateCharacterSpeech(characterEmoji, characterSpeech, 4000);
+
+                DOMElements.feedbackTitle.textContent = feedbackTitleText;
+                DOMEElements.feedbackText.textContent = feedbackMessage;
+                showModal(DOMElements.modalOverlay, DOMElements.feedbackModal);
+            };
+
 
             /**
              * Highlights the best choice based on calculated score.
@@ -1142,6 +1317,7 @@
                 playScenarioStart();
                 isQuickEventActive = false; // Ensure quick event state is off
                 isCatastropheActive = false; // Ensure catastrophe state is off
+                isMarketEventActive = false; // Ensure market event state is off
                 activePowerUp = null; // Reset active power-up
                 renderPowerUps(); // Re-render power-ups to clear highlight
 
@@ -1200,9 +1376,11 @@
                 clearInterval(mainTimerInterval);
                 clearInterval(quickEventTimerInterval);
                 clearInterval(catastropheTimerInterval); // Clear catastrophe timer
+                clearInterval(marketEventTimerInterval); // Clear market event timer
                 mainTimerInterval = null;
                 quickEventTimerInterval = null;
                 catastropheTimerInterval = null;
+                marketEventTimerInterval = null;
                 stopTimerWarning();
             };
 
@@ -1364,7 +1542,12 @@
                 // Then check for quick event chance
                 else if (Math.random() < CONFIG.quickEventChance && currentScenarioIndex < scenarios.length) {
                     triggerQuickEvent();
-                } else if (currentScenarioIndex < scenarios.length) {
+                }
+                // Then check for market fluctuation chance
+                else if (Math.random() < CONFIG.marketFluctuationChance && currentScenarioIndex < scenarios.length) {
+                    triggerMarketEvent(); // New market event trigger
+                }
+                else if (currentScenarioIndex < scenarios.length) {
                     loadScenario();
                 } else {
                     gameOver();
@@ -1512,6 +1695,97 @@
                 applyImpacts(impacts, feedbackText, timeTaken, feedbackTitleText);
                 isCatastropheActive = false; // Reset catastrophe flag
                 // After catastrophe, continueGame will be called from modal continue button
+            };
+
+            /**
+             * Triggers a random market fluctuation event. (New Function)
+             */
+            const triggerMarketEvent = () => {
+                isMarketEventActive = true;
+                const marketEvent = marketEvents[Math.floor(Math.random() * marketEvents.length)];
+
+                playMarketSound(); // Play market sound
+
+                DOMElements.marketEventIcon.textContent = marketEvent.icon;
+                DOMElements.marketEventTitle.textContent = marketEvent.title;
+                DOMElements.marketEventText.textContent = marketEvent.text;
+
+                // Render market specific impacts
+                const changesMade = {};
+                DOMElements.marketImpactList.innerHTML = '';
+                for (const key in marketEvent.impacts) {
+                    let changeAmount = marketEvent.impacts[key];
+                    const metric = state.metrics[key];
+
+                    if (metric) {
+                        let impactText = '';
+                        let icon = '';
+
+                        if (key === 'chiffreAffaires' || key === 'couts') {
+                            metric.value += changeAmount;
+                            impactText = `${metric.name}: ${changeAmount > 0 ? '+' : ''}${formatCurrency(changeAmount)}`;
+                            icon = changeAmount > 0 ? '⬆️' : '⬇️';
+                        } else if (key === 'marge') {
+                            metric.value += changeAmount;
+                            impactText = `${metric.name}: ${changeAmount > 0 ? '+' : ''}${changeAmount.toFixed(1)}%`;
+                            icon = changeAmount > 0 ? '⬆️' : '⬇️';
+                        } else {
+                            metric.value += changeAmount;
+                            impactText = `${metric.name}: ${changeAmount > 0 ? '+' : ''}${changeAmount}`;
+                            icon = changeAmount > 0 ? '⬆️' : '⬇️';
+                        }
+
+                        if (key !== 'chiffreAffaires' && key !== 'couts') {
+                            metric.value = Math.max(0, Math.min(100, metric.value)); 
+                        }
+                        if (key === 'marge') {
+                            metric.value = Math.max(0, Math.min(100, metric.value));
+                        }
+                        changesMade[key] = changeAmount;
+
+                        const impactItem = document.createElement('li');
+                        impactItem.className = `flex items-center text-lg ${changeAmount > 0 ? 'text-green-400' : (changeAmount < 0 ? 'text-red-400' : 'text-slate-300')}`;
+                        impactItem.innerHTML = `<span class="mr-2">${icon}</span> ${impactText}`;
+                        DOMElements.marketImpactList.appendChild(impactItem);
+                    }
+                }
+                renderMetrics(changesMade); // Update main metrics display
+
+                showModal(DOMElements.marketEventModalOverlay, DOMElements.marketEventModal);
+                startMarketEventTimer(CONFIG.marketEventDisplayDuration);
+                updateCharacterSpeech('📊', 'Le marché a fluctué ! Voyez l\'impact.', 4000);
+            };
+
+            /**
+             * Starts the market event timer. (New Function)
+             * @param {number} duration - Duration in seconds.
+             */
+            const startMarketEventTimer = (duration) => {
+                timerCountdown = duration; // Reuse timerCountdown for simplicity, but it's a display timer here
+                DOMElements.marketEventTimerDisplay.textContent = `⏱️ 0:${String(timerCountdown).padStart(2, '0')}`;
+
+                marketEventTimerInterval = setInterval(() => {
+                    timerCountdown--;
+                    DOMElements.marketEventTimerDisplay.textContent = `⏱️ 0:${String(timerCountdown).padStart(2, '0')}`;
+
+                    if (timerCountdown <= 0) {
+                        stopTimers();
+                        hideModal(DOMElements.marketEventModalOverlay, DOMElements.marketEventModal);
+                        isMarketEventActive = false; // Reset flag
+                        continueGameAfterMarketEvent(); // Proceed to next scenario or game over
+                    }
+                }, 1000);
+            };
+
+            /**
+             * Continues the game after a market event. (New Function)
+             */
+            const continueGameAfterMarketEvent = () => {
+                if (currentScenarioIndex < scenarios.length) {
+                    loadScenario();
+                } else {
+                    gameOver();
+                }
             };
 
 
