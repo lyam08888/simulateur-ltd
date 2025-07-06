@@ -458,7 +458,7 @@
     <!-- Game Screen -->
     <div id="game-screen" class="relative w-full max-w-6xl h-[90vh] grid grid-rows-[auto_1fr] md:grid-rows-1 md:grid-cols-[1fr_2fr] gap-6 p-6 bg-slate-800/80 rounded-3xl shadow-2xl transition-all duration-500 ease-in-out screen-hidden">
         
-        <!-- Left Panel: Metrics and Chart -->
+        <!-- Left Panel: Metrics -->
         <div class="flex flex-col space-y-6 overflow-y-auto pr-2">
             <div class="card p-6 flex-grow">
                 <h2 class="text-2xl font-bold mb-4 text-amber-400">Statistiques du Projet</h2>
@@ -466,20 +466,11 @@
                     <!-- Metrics will be rendered here by JS -->
                 </div>
             </div>
-
-            <!-- News Feed -->
-            <div class="card p-6 mt-6">
-                <h2 class="text-2xl font-bold mb-4 text-cyan-400">Fil d'Actualités</h2>
-                <div id="news-feed-display" class="space-y-2">
-                    <!-- News items will be rendered here by JS -->
-                </div>
-            </div>
-
-            <button id="back-to-main-menu-game-btn" class="btn btn-back-to-menu mt-4">Retour au Menu Principal</button>
+            <!-- News Feed and Back to Main Menu button moved to Right Panel -->
         </div>
 
-        <!-- Right Panel: Scenario and Choices -->
-        <div class="flex flex-col space-y-6">
+        <!-- Right Panel: Scenario, Choices, News Feed and Back to Main Menu -->
+        <div class="flex flex-col space-y-6 overflow-y-auto"> <!-- Added overflow-y-auto here -->
             <div class="card p-6 flex items-center justify-between">
                 <div class="text-xl font-semibold">
                     Scénario <span id="current-scenario-display">1</span> / <span id="total-scenarios-display">15</span>
@@ -504,6 +495,17 @@
                     <!-- Choices will be rendered here by JS -->
                 </div>
             </div>
+
+            <!-- News Feed moved here -->
+            <div class="card p-6 mt-6">
+                <h2 class="text-2xl font-bold mb-4 text-cyan-400">Fil d'Actualités</h2>
+                <div id="news-feed-display" class="space-y-2">
+                    <!-- News items will be rendered here by JS -->
+                </div>
+            </div>
+
+            <!-- Back to Main Menu button moved here -->
+            <button id="back-to-main-menu-game-btn" class="btn btn-back-to-menu mt-4">Retour au Menu Principal</button>
         </div>
 
         <!-- Character and Speech Bubble Container -->
@@ -613,7 +615,7 @@
 
     <!-- Result Screen -->
     <div id="result-screen" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 bg-opacity-90 z-10 transition-all duration-500 ease-in-out screen-hidden">
-        <div class="card p-8 text-center max-w-lg w-full">
+        <div class="card p-8 text-center max-w-lg w-full max-h-[90vh] overflow-y-auto">
             <h1 class="text-5xl font-extrabold text-white mb-6">Simulation Terminée !</h1>
             <p class="text-lg text-slate-300 mb-4">Votre score final : <span id="final-score" class="text-amber-400 text-4xl font-bold">0</span></p>
             <p class="text-lg text-slate-300 mb-4">Meilleur Score : <span id="final-high-score" class="text-yellow-300 text-3xl font-bold">0</span></p>
@@ -1133,7 +1135,7 @@
                     body: "Cher Directeur des Travaux, nous avons besoin d'une mise à jour détaillée sur l'avancement du projet et les éventuels défis rencontrés. Merci de nous fournir un rapport d'ici la fin de la semaine.",
                     choices: [
                         { text: "Envoyer un rapport détaillé et transparent", impacts: { client: 10, delais: 5, equipe: -5, marge: -0.05 }, feedback: "Le ministère est satisfait de votre transparence, mais la préparation du rapport a pris du temps à l'équipe." },
-                        { text: "Envoyer un rapport sommaire pour gagner du temps", impacts: { client: -10, equipe: 5, marge: 0.05 }, feedback: "Vous avez gagné du temps, mais le ministère est déçu par le manque de détails, impactant la satisfaction client." }
+                        { text: "Envoyer un rapport sommaire pour gagner du temps", impacts: { client: -10, equipe: 5, marge: 0.05 }, feedback: "Vous avez gagné du temps, but le ministère est déçu par le manque de détails, impactant la satisfaction client." }
                     ]
                 },
                 {
@@ -1166,7 +1168,7 @@
                     message: "Directeur, nous avons un problème majeur sur le secteur 3 ! Un glissement de terrain imprévu bloque l'accès et menace une partie de l'ouvrage. Que faisons-nous ?",
                     choices: [
                         { text: "Envoyer immédiatement une équipe d'intervention d'urgence (coût, sécurité)", impacts: { couts: 2000000, securite: 15, delais: 10, marge: -0.2 }, feedback: "Vous agissez vite pour sécuriser le site, mais cela entraîne des coûts et un léger retard." },
-                        { text: "Évaluer la situation à distance avant d'agir (risque d'aggravation)", impacts: { securite: -10, delais: 20, marge: -0.1 }, feedback: "Prendre du recul peut être sage, mais le risque d'aggravation est réel et le retard s'accumule." }
+                        { text: "Évaluer la situation à distance avant d'agir (risque d'aggravation)", impacts: { securite: -10, delais: 20, marge: -0.1 }, feedback: "Prendre du recul peut être sage, but le risque d'aggravation est réel et le retard s'accumule." }
                     ]
                 },
                 {
@@ -1621,7 +1623,7 @@
                 addNewsItem(`${feedbackTitleText}: ${feedbackMessage}`, newsType);
 
                 if (DOMElements.feedbackTitle) DOMElements.feedbackTitle.textContent = feedbackTitleText;
-                if (DOMElements.feedbackText) DOMElements.feedbackText.textContent = feedbackMessage; /* Fix: Changed feedbackText to feedbackMessage */
+                if (DOMElements.feedbackText) DOMElements.feedbackText.textContent = feedbackMessage;
                 if (DOMElements.modalOverlay && DOMElements.feedbackModal) {
                     showModal(DOMElements.modalOverlay, DOMElements.feedbackModal);
                 }
@@ -2166,7 +2168,7 @@
                     } else if (timerCountdown <= 0) {
                         stopTimers();
                         stopTimerWarning();
-                        if (DOMElements.catastropheTimerDisplay) DOMElements.catastropheTimerDisplay.classList.remove('critical-time');
+                        if (DOMElements.catastropheTimerDisplay) DOMEElements.catastropheTimerDisplay.classList.remove('critical-time');
                         handleCatastropheChoice(null, 0); // Handle timeout
                     }
                 }, 1000);
