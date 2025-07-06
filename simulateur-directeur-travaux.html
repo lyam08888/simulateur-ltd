@@ -383,8 +383,24 @@
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
 
+    <!-- Start Screen -->
+    <div id="start-screen" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 bg-opacity-90 z-10 transition-all duration-500 ease-in-out screen-visible">
+        <div class="card p-8 text-center max-w-lg w-full">
+            <h1 class="text-5xl font-extrabold text-white mb-6">Simulateur de Gestion de Projet</h1>
+            <p class="text-lg text-slate-300 mb-8">
+                Devenez Directeur des Travaux et gérez la construction du Canal Seine-Nord Europe.
+                Chaque décision compte !
+            </p>
+            <h2 class="text-3xl font-bold text-amber-400 mb-4">Choisissez votre Difficulté :</h2>
+            <div id="difficulty-selection" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <!-- Difficulty buttons will be rendered here by JS -->
+            </div>
+            <p class="text-lg text-slate-300">Meilleur Score : <span id="high-score-display" class="text-amber-400 font-bold">0</span></p>
+        </div>
+    </div>
+
     <!-- Game Screen -->
-    <div id="game-screen" class="relative w-full max-w-6xl h-[90vh] grid grid-rows-[auto_1fr] md:grid-rows-1 md:grid-cols-[1fr_2fr] gap-6 p-6 bg-slate-800/80 rounded-3xl shadow-2xl transition-all duration-500 ease-in-out screen-visible">
+    <div id="game-screen" class="relative w-full max-w-6xl h-[90vh] grid grid-rows-[auto_1fr] md:grid-rows-1 md:grid-cols-[1fr_2fr] gap-6 p-6 bg-slate-800/80 rounded-3xl shadow-2xl transition-all duration-500 ease-in-out screen-hidden">
         
         <!-- Left Panel: Metrics and Chart -->
         <div class="flex flex-col space-y-6 overflow-y-auto pr-2">
@@ -434,7 +450,7 @@
     </div>
 
     <!-- Floating Power-Ups Container -->
-    <div id="floating-power-ups" class="screen-visible">
+    <div id="floating-power-ups" class="screen-hidden">
         <h2 class="text-lg font-bold text-purple-300 mb-2 text-center hidden md:block">Bonus</h2>
         <div id="power-ups-display" class="grid grid-cols-3 gap-2 md:grid-cols-1 md:gap-4">
             <!-- Power-ups will be rendered here by JS -->
@@ -503,6 +519,7 @@
         <div class="card p-8 text-center max-w-lg w-full">
             <h1 class="text-5xl font-extrabold text-white mb-6">Simulation Terminée !</h1>
             <p class="text-lg text-slate-300 mb-4">Votre score final : <span id="final-score" class="text-amber-400 text-4xl font-bold">0</span></p>
+            <p class="text-lg text-slate-300 mb-4">Meilleur Score : <span id="final-high-score" class="text-yellow-300 text-3xl font-bold">0</span></p>
             <h2 id="result-category" class="text-3xl font-bold text-green-400 mb-4"></h2>
             <p id="result-description" class="text-md text-slate-300 mb-8"></p>
             
@@ -657,6 +674,12 @@
                     xray: { name: "Analyse Risques", icon: "💡", count: 1, description: "Met en évidence le meilleur choix." },
                     training: { name: "Formation Équipe", icon: "📚", count: 1, description: "Améliore le moral et la qualité de l'équipe." }, // New power-up
                 },
+                difficultySettings: { // New difficulty settings
+                    facile: { name: "Facile", timeMultiplier: 1.2 },
+                    normal: { name: "Normal", timeMultiplier: 1.0 },
+                    difficile: { name: "Difficile", timeMultiplier: 0.8 },
+                    expert: { name: "Expert", timeMultiplier: 0.5 }
+                },
                 timeBonusThreshold: 10, // Seconds remaining for bonus
                 timeBonusPoints: 500, // Points for time bonus
                 quickEventChance: 0.3, // 30% chance of a quick event after a main scenario
@@ -668,6 +691,9 @@
 
             // DOM Elements mapping
             const DOMElements = {
+                startScreen: document.getElementById('start-screen'), // New
+                difficultySelection: document.getElementById('difficulty-selection'), // New
+                highScoreDisplay: document.getElementById('high-score-display'), // New
                 gameScreen: document.getElementById('game-screen'),
                 resultScreen: document.getElementById('result-screen'),
                 restartGameBtn: document.getElementById('restart-game-btn'),
@@ -713,6 +739,7 @@
                 marketImpactList: document.getElementById('market-impact-list'), // New
                 marketEventTimerDisplay: document.getElementById('market-event-timer-display'), // New
                 finalScore: document.getElementById('final-score'),
+                finalHighScore: document.getElementById('final-high-score'), // New
                 resultCategory: document.getElementById('result-category'),
                 resultDescription: document.getElementById('result-description'),
                 metricAnalysisResults: document.getElementById('metric-analysis-results'), // New
@@ -994,7 +1021,7 @@
              * @param {HTMLElement} screenToShow
              */
             const showScreen = (screenToShow) => {
-                const screens = [DOMElements.gameScreen, DOMElements.resultScreen]; 
+                const screens = [DOMElements.startScreen, DOMElements.gameScreen, DOMElements.resultScreen]; 
                 screens.forEach(screen => {
                     if (screen) { // Check if element exists
                         screen.classList.remove('screen-visible');
@@ -1005,6 +1032,19 @@
                 if (screenToShow) { // Check if element exists
                     screenToShow.classList.remove('screen-hidden');
                     screenToShow.classList.add('screen-visible');
+                }
+
+                // Manage visibility of floating elements
+                if (screenToShow === DOMElements.gameScreen) {
+                    DOMElements.floatingPowerUps.classList.remove('screen-hidden');
+                    DOMElements.floatingPowerUps.classList.add('screen-visible');
+                    DOMElements.characterContainer.classList.remove('screen-hidden');
+                    DOMElements.characterContainer.classList.add('screen-visible');
+                } else {
+                    DOMElements.floatingPowerUps.classList.remove('screen-visible');
+                    DOMElements.floatingPowerUps.classList.add('screen-hidden');
+                    DOMElements.characterContainer.classList.remove('screen-visible');
+                    DOMElements.characterContainer.classList.add('screen-hidden');
                 }
             };
 
@@ -1072,34 +1112,64 @@
             // --- Game Logic Functions ---
 
             /**
-             * Initializes or resets the game state.
+             * Resets game state and displays the start screen.
              */
-            const initGame = () => {
+            const resetGameAndShowStartScreen = () => {
                 state = {
                     score: 0,
                     metrics: JSON.parse(JSON.stringify(CONFIG.initialMetrics)), // Deep copy
                     initialMetricsSnapshot: JSON.parse(JSON.stringify(CONFIG.initialMetrics)), // Snapshot for end-game analysis
                     powerUps: JSON.parse(JSON.stringify(CONFIG.initialPowerUps)), // Deep copy
+                    currentDifficulty: null, // Reset difficulty
+                    highScore: parseInt(localStorage.getItem('highScore') || '0', 10) // Load high score
                 };
                 currentScenarioIndex = 0;
                 isQuickEventActive = false;
-                isCatastropheActive = false; // Reset catastrophe flag
-                isMarketEventActive = false; // Reset market event flag
+                isCatastropheActive = false;
+                isMarketEventActive = false;
                 activePowerUp = null;
                 stopTimers();
+                
+                DOMElements.highScoreDisplay.textContent = state.highScore; // Update high score on start screen
+                renderDifficultySelection(); // Render difficulty buttons
+                showScreen(DOMElements.startScreen);
+            };
+
+            /**
+             * Renders difficulty selection buttons.
+             */
+            const renderDifficultySelection = () => {
+                DOMElements.difficultySelection.innerHTML = '';
+                for (const key in CONFIG.difficultySettings) {
+                    const difficulty = CONFIG.difficultySettings[key];
+                    const button = document.createElement('button');
+                    button.className = 'btn w-full text-xl py-3 px-4 rounded-xl shadow-md transition-all duration-200 ease-in-out hover:scale-[1.01]';
+                    button.textContent = difficulty.name;
+                    button.onclick = () => startGame(key);
+                    DOMElements.difficultySelection.appendChild(button);
+                }
+            };
+
+            /**
+             * Starts the game with the selected difficulty.
+             * @param {string} difficultyKey
+             */
+            const startGame = (difficultyKey) => {
+                state.currentDifficulty = CONFIG.difficultySettings[difficultyKey];
+                // Re-initialize metrics and power-ups for a fresh start after difficulty selection
+                state.metrics = JSON.parse(JSON.stringify(CONFIG.initialMetrics));
+                state.initialMetricsSnapshot = JSON.parse(JSON.stringify(CONFIG.initialMetrics));
+                state.powerUps = JSON.parse(JSON.stringify(CONFIG.initialPowerUps));
+                state.score = 0; // Reset score for new game
+
                 renderMetrics();
                 renderPowerUps();
                 updateProgressBar();
-                
-                // Show game screen
+                triggerNextEventOrScenario(); // Start the game loop by checking for random events or loading first scenario
                 showScreen(DOMElements.gameScreen);
-                // Explicitly show floating power-ups as they are part of the game view
-                DOMElements.floatingPowerUps.classList.remove('screen-hidden');
-                DOMElements.floatingPowerUps.classList.add('screen-visible');
-
-                loadScenario(); // Load the first scenario
-                updateCharacterSpeech('👋', 'Bienvenue, Directeur des Travaux ! La simulation du Canal Seine-Nord Europe commence !', 4000);
+                updateCharacterSpeech('🚀', `Début de la simulation en mode ${state.currentDifficulty.name} !`, 4000);
             };
+
 
             /**
              * Renders the current metrics in the UI.
@@ -1262,7 +1332,7 @@
                 updateCharacterSpeech(characterEmoji, characterSpeech, 4000);
 
                 DOMElements.feedbackTitle.textContent = feedbackTitleText;
-                DOMEElements.feedbackText.textContent = feedbackMessage;
+                DOMElements.feedbackText.textContent = feedbackMessage;
                 showModal(DOMElements.modalOverlay, DOMElements.feedbackModal);
             };
 
@@ -1315,9 +1385,6 @@
                 }
 
                 playScenarioStart();
-                isQuickEventActive = false; // Ensure quick event state is off
-                isCatastropheActive = false; // Ensure catastrophe state is off
-                isMarketEventActive = false; // Ensure market event state is off
                 activePowerUp = null; // Reset active power-up
                 renderPowerUps(); // Re-render power-ups to clear highlight
 
@@ -1349,7 +1416,7 @@
              * @param {number} duration - Duration in seconds.
              */
             const startMainTimer = (duration) => {
-                timerCountdown = duration;
+                timerCountdown = Math.round(duration * state.currentDifficulty.timeMultiplier); // Apply difficulty multiplier
                 DOMElements.timerDisplay.classList.remove('critical-time');
                 DOMElements.timerDisplay.textContent = `⏱️ 0:${String(timerCountdown).padStart(2, '0')}`;
 
@@ -1482,7 +1549,7 @@
                 
                 // Add time bonus if applicable
                 const currentEvent = isCatastropheActive ? catastrophes[state.catastropheIndex] : (isQuickEventActive ? quickEvents[state.quickEventIndex] : scenarios[currentScenarioIndex]);
-                if (currentEvent && (currentEvent.timeLimit - timeTaken) >= CONFIG.timeBonusThreshold) {
+                if (currentEvent && (currentEvent.timeLimit * state.currentDifficulty.timeMultiplier - timeTaken) >= CONFIG.timeBonusThreshold) { // Use adjusted time limit
                     state.score += CONFIG.timeBonusPoints;
                     const timeBonusItem = document.createElement('li');
                     timeBonusItem.className = `flex items-center text-lg text-amber-400`;
@@ -1529,27 +1596,44 @@
             };
 
             /**
-             * Handles the continuation after a scenario.
+             * Handles the continuation after a scenario or event.
+             * This function is called after the main feedback modal is closed.
              */
             const continueGame = () => {
                 hideModal(DOMElements.modalOverlay, DOMElements.feedbackModal);
-                currentScenarioIndex++;
 
-                // Check for catastrophe chance first
-                if (Math.random() < CONFIG.catastropheChance && currentScenarioIndex < scenarios.length) {
-                    triggerCatastrophe();
-                } 
-                // Then check for quick event chance
-                else if (Math.random() < CONFIG.quickEventChance && currentScenarioIndex < scenarios.length) {
-                    triggerQuickEvent();
+                // Only increment main scenario index if a main scenario was just completed
+                // and no random event was active.
+                if (!isQuickEventActive && !isCatastropheActive && !isMarketEventActive) {
+                    currentScenarioIndex++;
                 }
-                // Then check for market fluctuation chance
-                else if (Math.random() < CONFIG.marketFluctuationChance && currentScenarioIndex < scenarios.length) {
-                    triggerMarketEvent(); // New market event trigger
-                }
-                else if (currentScenarioIndex < scenarios.length) {
-                    loadScenario();
+
+                // Reset random event flags for the next iteration
+                isQuickEventActive = false;
+                isCatastropheActive = false;
+                isMarketEventActive = false;
+
+                triggerNextEventOrScenario();
+            };
+
+            /**
+             * Determines whether to trigger a random event or load the next main scenario.
+             */
+            const triggerNextEventOrScenario = () => {
+                if (currentScenarioIndex < scenarios.length) {
+                    // Random event chances are checked BEFORE loading the next main scenario
+                    if (Math.random() < CONFIG.catastropheChance) {
+                        triggerCatastrophe();
+                    } else if (Math.random() < CONFIG.quickEventChance) {
+                        triggerQuickEvent();
+                    } else if (Math.random() < CONFIG.marketFluctuationChance) {
+                        triggerMarketEvent();
+                    } else {
+                        // No random event, proceed to the next main scenario
+                        loadScenario();
+                    }
                 } else {
+                    // All main scenarios are done
                     gameOver();
                 }
             };
@@ -1585,7 +1669,7 @@
              * @param {number} duration - Duration in seconds.
              */
             const startQuickEventTimer = (duration) => {
-                timerCountdown = duration;
+                timerCountdown = Math.round(duration * state.currentDifficulty.timeMultiplier); // Apply difficulty multiplier
                 DOMElements.quickEventTimerDisplay.classList.remove('critical-time');
                 DOMElements.quickEventTimerDisplay.textContent = `⏱️ 0:${String(timerCountdown).padStart(2, '0')}`;
 
@@ -1621,7 +1705,7 @@
                 let feedbackTitleText = chosenChoice ? "Conséquences de la décision" : "Temps écoulé !"; // Determine title here
 
                 applyImpacts(impacts, feedbackText, timeTaken, feedbackTitleText); // Use the same impact application
-                // After quick event, continueGame will be called from modal continue button
+                // isQuickEventActive remains true, so continueGame knows not to increment main scenario index
             };
 
             /**
@@ -1657,7 +1741,7 @@
              * @param {number} duration - Duration in seconds.
              */
             const startCatastropheTimer = (duration) => {
-                timerCountdown = duration;
+                timerCountdown = Math.round(duration * state.currentDifficulty.timeMultiplier); // Apply difficulty multiplier
                 DOMElements.catastropheTimerDisplay.classList.remove('critical-time');
                 DOMElements.catastropheTimerDisplay.textContent = `⏱️ 0:${String(timerCountdown).padStart(2, '0')}`;
 
@@ -1693,8 +1777,7 @@
                 let feedbackTitleText = chosenChoice ? "Conséquences de la décision" : "Échec Catastrophique !";
 
                 applyImpacts(impacts, feedbackText, timeTaken, feedbackTitleText);
-                isCatastropheActive = false; // Reset catastrophe flag
-                // After catastrophe, continueGame will be called from modal continue button
+                // isCatastropheActive remains true, so continueGame knows not to increment main scenario index
             };
 
             /**
@@ -1769,23 +1852,31 @@
                     DOMElements.marketEventTimerDisplay.textContent = `⏱️ 0:${String(timerCountdown).padStart(2, '0')}`;
 
                     if (timerCountdown <= 0) {
-                        stopTimers();
-                        hideModal(DOMElements.marketEventModalOverlay, DOMElements.marketEventModal);
-                        isMarketEventActive = false; // Reset flag
-                        continueGameAfterMarketEvent(); // Proceed to next scenario or game over
+                        handleMarketEventCompletion(); // Call the new completion handler
                     }
                 }, 1000);
             };
 
             /**
-             * Continues the game after a market event. (New Function)
+             * Handles the completion of a market event. (New Function)
              */
-            const continueGameAfterMarketEvent = () => {
-                if (currentScenarioIndex < scenarios.length) {
-                    loadScenario();
-                } else {
-                    gameOver();
-                }
+            const handleMarketEventCompletion = () => {
+                stopTimers(); // Timer already stopped by startMarketEventTimer
+                hideModal(DOMElements.marketEventModalOverlay, DOMElements.marketEventModal);
+
+                // Impacts for market event are already applied in triggerMarketEvent
+                // We just need to show the main feedback modal to allow continuation.
+                const feedbackText = "L'impact des fluctuations du marché a été enregistré.";
+                const feedbackTitleText = "Événement de Marché Terminé";
+                
+                // Re-render metrics with current state (no new changes, just update display)
+                renderMetrics({}); // Pass empty changes to just refresh display
+
+                DOMElements.feedbackTitle.textContent = feedbackTitleText;
+                DOMElements.feedbackText.textContent = feedbackText;
+                DOMElements.impactList.innerHTML = ''; // No new impacts to list here, they were shown in market modal
+                showModal(DOMElements.modalOverlay, DOMElements.feedbackModal);
+                isMarketEventActive = true; // Keep this true so continueGame knows it was a random event
             };
 
 
@@ -1795,11 +1886,16 @@
             const gameOver = () => {
                 stopTimers();
                 showScreen(DOMElements.resultScreen);
-                // Explicitly hide floating power-ups when game is over
-                DOMElements.floatingPowerUps.classList.remove('screen-visible');
-                DOMElements.floatingPowerUps.classList.add('screen-hidden');
                 
                 DOMElements.finalScore.textContent = state.score;
+
+                // Update high score
+                if (state.score > state.highScore) {
+                    state.highScore = state.score;
+                    localStorage.setItem('highScore', state.highScore);
+                }
+                DOMElements.finalHighScore.textContent = state.highScore;
+
 
                 let resultCategory = "";
                 let resultDescription = "";
@@ -1894,21 +1990,21 @@
 
             // --- Event Listeners ---
             document.addEventListener('DOMContentLoaded', () => {
-                initGame(); // Initialize game on load, which now directly starts the game
+                resetGameAndShowStartScreen(); // Initialize game to start screen on load
 
                 DOMElements.restartGameBtn.addEventListener('click', () => {
                     playClick();
-                    initGame(); // Restart the game from the beginning
+                    resetGameAndShowStartScreen(); // Restart the game from the difficulty selection
                 });
 
                 DOMElements.backToMainMenuGameBtn.addEventListener('click', () => {
                     playClick();
-                    initGame(); // Go back to the start of the game (which is now the game screen)
+                    resetGameAndShowStartScreen(); // Go back to the start screen
                 });
 
                 DOMElements.backToMainMenuResultBtn.addEventListener('click', () => {
                     playClick();
-                    initGame(); // Go back to the start of the game (which is now the game screen)
+                    resetGameAndShowStartScreen(); // Go back to the start screen
                 });
 
                 DOMElements.modalContinueBtn.addEventListener('click', () => {
@@ -1919,7 +2015,7 @@
                 DOMElements.shareResultsBtn.addEventListener('click', () => {
                     playClick();
                     // Construct share text with detailed analysis
-                    let shareText = `J'ai terminé le Project Manager Simulator avec un score de ${state.score} ! Catégorie : ${DOMElements.resultCategory.textContent}.\n\n`;
+                    let shareText = `J'ai terminé le Project Manager Simulator avec un score de ${state.score} (Meilleur : ${state.highScore}) ! Catégorie : ${DOMElements.resultCategory.textContent}.\n\n`;
                     shareText += `Analyse des Indicateurs Clés :\n`;
                     for (const key in state.metrics) {
                         const initialMetric = state.initialMetricsSnapshot[key];
