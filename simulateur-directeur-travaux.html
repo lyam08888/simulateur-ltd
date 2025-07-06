@@ -1,717 +1,1678 @@
-diff --git a/simulateur-directeur-travaux.html b/simulateur-directeur-travaux.html
-index 6f63aa79d986561548c691dd8b6a86a2fbab9f2e..92c360f9d07eb0985227a2ea5e1f1314528ecc52 100644
---- a/simulateur-directeur-travaux.html
-+++ b/simulateur-directeur-travaux.html
-@@ -1,31 +1,35 @@
- <!DOCTYPE html>
- <html lang="fr">
- <head>
-     <meta charset="UTF-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-+    <meta name="description" content="Simulation interactive pour directeurs de travaux">
-+    <meta name="robots" content="index,follow">
-+    <link rel="canonical" href="https://ltd-simulator.example.com/simulateur-directeur-travaux.html">
-     <title>LTD Recrutement - Simulateur Directeur de Projet Travaux</title>
-+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Ctext y='96' font-size='96'%3E%F0%9F%9A%A7%3C/text%3E%3C/svg%3E">
-     
-     <script src="https://cdn.tailwindcss.com"></script>
-     <link rel="preconnect" href="https://fonts.googleapis.com">
-     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js library for graphs -->
- 
-     <style>
-         body { 
-             font-family: 'Inter', sans-serif; 
-             /* Enhanced background with a subtle diagonal gradient and dark tones */
-             background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
-         }
-         .animated-gradient {
-             background-size: 200% 200%;
-             animation: gradient-animation 20s ease-in-out infinite;
-         }
-         @keyframes gradient-animation {
-             0% { background-position: 0% 50%; }
-             50% { background-position: 100% 50%; }
-             100% { background-position: 0% 50%; }
-         }
-         .screen { 
-             transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; 
-             /* Consistent rounded corners for main screens */
-diff --git a/simulateur-directeur-travaux.html b/simulateur-directeur-travaux.html
-index 6f63aa79d986561548c691dd8b6a86a2fbab9f2e..92c360f9d07eb0985227a2ea5e1f1314528ecc52 100644
---- a/simulateur-directeur-travaux.html
-+++ b/simulateur-directeur-travaux.html
-@@ -83,50 +87,132 @@
- 
-         /* Quick Event Modal Specific Styles */
-         .quick-event-modal-content {
-             background-image: linear-gradient(to bottom right, #334155, #1e293b); /* Darker, more intense gradient */
-             border: 2px solid #ef4444; /* Red border for urgency */
-             box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4); /* Red glow */
-         }
-         .quick-event-modal-title {
-             color: #fca5a5; /* Lighter red for title */
-             text-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
-         }
-         .quick-event-modal-timer {
-             color: #f87171; /* Even brighter red for timer */
-             text-shadow: 0 0 10px rgba(248, 113, 113, 0.9);
-         }
-         .quick-event-choice-card {
-             background-color: #475569; /* Slightly lighter slate for choices */
-             border: 1px solid #ef4444; /* Red border */
-             box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
-         }
-         .quick-event-choice-card:hover {
-             background-color: #64748b;
-             border-color: #f87171;
-             box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
-         }
-+
-+        .back-button {
-+            position: fixed;
-+            top: 20px;
-+            left: 20px;
-+            padding: 10px 20px;
-+            background: linear-gradient(45deg, #3498db, #2c7be5);
-+            color: white;
-+            border: none;
-+            border-radius: 8px;
-+            cursor: pointer;
-+            font-size: 16px;
-+            z-index: 1000;
-+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-+            transition: transform 0.3s ease, box-shadow 0.3s ease;
-+        }
-+
-+        .back-button:hover {
-+            transform: scale(1.05);
-+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-+        }
-+
-+        .sound-toggle {
-+            position: fixed;
-+            top: 20px;
-+            right: 20px;
-+            padding: 10px 20px;
-+            background: linear-gradient(45deg, #34d399, #38b2ac);
-+            color: white;
-+            border: none;
-+            border-radius: 8px;
-+            cursor: pointer;
-+            font-size: 18px;
-+            z-index: 1000;
-+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-+            transition: transform 0.3s ease, box-shadow 0.3s ease;
-+        }
-+
-+        .sound-toggle:hover {
-+            transform: scale(1.05);
-+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-+        }
-+
-+        .mascot {
-+            position: fixed;
-+            bottom: 90px;
-+            right: 20px;
-+            display: flex;
-+            align-items: flex-end;
-+            z-index: 60;
-+        }
-+
-+        .mascot-icon {
-+            font-size: 2.5em;
-+            margin-left: 8px;
-+            animation: mascot-hop 2s infinite ease-in-out;
-+        }
-+
-+        @keyframes mascot-hop {
-+            0%, 100% { transform: translateY(0); }
-+            50% { transform: translateY(-6px); }
-+        }
-+
-+        .speech-bubble {
-+            background: white;
-+            color: #333;
-+            padding: 8px 12px;
-+            border-radius: 10px;
-+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-+            position: relative;
-+            font-size: 0.9em;
-+        }
-+
-+        .speech-bubble::after {
-+            content: '';
-+            position: absolute;
-+            bottom: -8px;
-+            right: 10px;
-+            border-width: 8px 8px 0 8px;
-+            border-style: solid;
-+            border-color: white transparent transparent transparent;
-+        }
-     </style>
- </head>
- <body class="bg-slate-900 text-white overflow-x-hidden">
- 
-     <div id="app-container" class="relative min-h-screen w-full flex items-center justify-center p-2 sm:p-4">
- 
-         <!-- Start Screen -->
-         <div id="startScreen" class="screen absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-gradient-to-br from-slate-900 to-slate-800 animated-gradient z-30 opacity-100 scale-100 shadow-2xl">
-             <h1 class="text-5xl md:text-6xl font-extrabold text-blue-400 mb-4 drop-shadow-lg">LTD Recrutement</h1>
-             <h2 class="text-2xl md:text-3xl font-semibold text-slate-300 mb-6 drop-shadow">
-                 <span class="text-4xl">🏗️</span> Simulateur Directeur de Projet Travaux
-             </h2>
-             <p class="max-w-2xl text-lg text-slate-400 mb-10 leading-relaxed opacity-90">
-                 La marge de manœuvre est réduite. Gérez un budget de 150M€ où chaque décision impacte directement votre rentabilité, la satisfaction client et la sécurité.
-             </p>
-             <button onclick="startGame()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-10 rounded-xl text-xl shadow-lg shadow-blue-600/30 transform hover:scale-105 transition-all duration-300 button-glow">
-                 Relever le Défi
-             </button>
-         </div>
- 
-         <!-- Game Screen -->
-         <div id="gameScreen" class="screen absolute inset-0 flex flex-col w-full max-w-7xl mx-auto p-2 sm:p-4 opacity-0 -z-10 transform scale-95 bg-slate-900/70 backdrop-blur-lg rounded-3xl shadow-2xl border border-slate-700">
-             <header class="bg-slate-800/70 backdrop-blur-md rounded-2xl p-4 mb-4 shadow-xl flex flex-col md:flex-row justify-between items-center gap-4 border border-slate-700">
-                 <div class="text-xl font-bold text-blue-300 drop-shadow">Simulation Directeur de Projet Travaux</div>
-                 <div class="flex items-center gap-4 md:gap-6">
-diff --git a/simulateur-directeur-travaux.html b/simulateur-directeur-travaux.html
-index 6f63aa79d986561548c691dd8b6a86a2fbab9f2e..92c360f9d07eb0985227a2ea5e1f1314528ecc52 100644
---- a/simulateur-directeur-travaux.html
-+++ b/simulateur-directeur-travaux.html
-@@ -152,50 +238,53 @@
-                 <div class="mt-10">
-                     <h3 class="text-xl font-bold text-slate-100 mb-5 text-center drop-shadow">État de Santé du Projet</h3>
-                     <div class="bg-slate-700/50 rounded-xl p-5 shadow-inner border border-slate-600">
-                         <canvas id="projectHealthChart"></canvas>
-                     </div>
-                 </div>
-             </main>
- 
-             <footer id="metricsContainer" class="bg-slate-800/70 backdrop-blur-md rounded-2xl p-4 shadow-xl grid grid-cols-2 sm:grid-cols-4 gap-4 border border-slate-700"></footer>
- 
-             <div class="power-ups fixed bottom-4 right-4 flex flex-col gap-4 z-20"></div>
-             <div id="hintMessage" class="fixed bottom-24 right-4 bg-blue-900/80 backdrop-blur-md text-white px-4 py-2 rounded-lg text-sm shadow-xl opacity-0 transform translate-y-4 transition-all duration-300 z-20 border border-blue-700"></div>
-         </div>
- 
-         <!-- Result Screen -->
-         <div id="resultScreen" class="screen absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-gradient-to-br from-slate-900 to-slate-800 animated-gradient opacity-0 -z-10 transform scale-95 shadow-2xl">
-              <h1 class="text-5xl md:text-6xl font-extrabold text-blue-400 mb-4 drop-shadow-lg">LTD Recrutement</h1>
-             <h2 class="text-3xl font-semibold text-slate-300 mb-4 drop-shadow">🏆 Bilan de Mission 🏆</h2>
-             <div id="finalScore" class="text-8xl font-bold my-4 bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-yellow-300 drop-shadow-2xl">0</div>
-             <h3 id="resultCategory" class="text-2xl font-semibold text-slate-100 mb-2 drop-shadow"></h3>
-             <p id="resultDescription" class="max-w-2xl text-lg text-slate-400 mb-8 leading-relaxed opacity-90"></p>
-             <div id="scoreBreakdown" class="w-full max-w-lg bg-slate-800/70 rounded-xl p-6 mb-8 text-left shadow-xl border border-slate-700"></div>
-             <button onclick="restartGame()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-xl text-lg shadow-lg shadow-blue-600/30 transform hover:scale-105 transition-all duration-300 button-glow">
-                 Nouvelle Simulation
-             </button>
-+            <button onclick="shareResults()" class="mt-4 bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-8 rounded-xl text-lg shadow-lg shadow-green-600/30 transform hover:scale-105 transition-all duration-300 button-glow">
-+                Partager mes scores
-+            </button>
-         </div>
-     </div>
- 
-     <!-- Feedback Modal -->
-     <div id="modalOverlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
-         <div id="modal" class="bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg p-6 transform scale-95 transition-all duration-300 border border-slate-700">
-             <h3 id="feedbackTitle" class="text-2xl font-bold text-center mb-4 text-blue-300 drop-shadow"></h3>
-             <p id="feedbackText" class="text-slate-300 text-center mb-6 opacity-90"></p>
-             <div id="impactList" class="space-y-3 mb-6 max-h-60 overflow-y-auto custom-scrollbar pr-2"></div>
-             <button id="modalContinueBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg text-lg transform hover:scale-105 transition-all duration-300 button-glow">
-                 Continuer
-             </button>
-         </div>
-     </div>
- 
-     <!-- Quick Event Modal -->
-     <div id="quickEventModalOverlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
-         <div id="quickEventModal" class="quick-event-modal-content rounded-2xl shadow-2xl w-full max-w-xl p-6 transform scale-95 transition-all duration-300">
-             <h3 id="quickEventTitle" class="quick-event-modal-title text-3xl font-bold text-center mb-4 flex items-center justify-center gap-3">
-                 <span id="quickEventIcon" class="text-4xl"></span>
-                 <span></span>
-             </h3>
-             <p id="quickEventText" class="text-slate-200 text-center mb-6 leading-relaxed opacity-90"></p>
-             <div id="quickEventTimerDisplay" class="text-4xl font-extrabold text-center mb-6 quick-event-modal-timer"></div>
-             <div id="quickEventChoicesContainer" class="grid grid-cols-1 gap-4"></div>
-diff --git a/simulateur-directeur-travaux.html b/simulateur-directeur-travaux.html
-index 6f63aa79d986561548c691dd8b6a86a2fbab9f2e..92c360f9d07eb0985227a2ea5e1f1314528ecc52 100644
---- a/simulateur-directeur-travaux.html
-+++ b/simulateur-directeur-travaux.html
-@@ -217,66 +306,86 @@
-             scenarioText: document.getElementById('scenarioText'),
-             choicesContainer: document.getElementById('choicesContainer'),
-             metricsContainer: document.getElementById('metricsContainer'),
-             powerUpContainer: document.querySelector('.power-ups'),
-             hintMessage: document.getElementById('hintMessage'),
-             finalScore: document.getElementById('finalScore'),
-             resultCategory: document.getElementById('resultCategory'),
-             resultDescription: document.getElementById('resultDescription'),
-             scoreBreakdown: document.getElementById('scoreBreakdown'),
-             modalOverlay: document.getElementById('modalOverlay'),
-             modal: document.getElementById('modal'),
-             feedbackTitle: document.getElementById('feedbackTitle'),
-             feedbackText: document.getElementById('feedbackText'),
-             impactList: document.getElementById('impactList'),
-             modalContinueBtn: document.getElementById('modalContinueBtn'),
-             projectHealthChartCanvas: document.getElementById('projectHealthChart'),
-             quickEventModalOverlay: document.getElementById('quickEventModalOverlay'),
-             quickEventModal: document.getElementById('quickEventModal'),
-             quickEventTitle: document.getElementById('quickEventTitle').querySelector('span:last-child'),
-             quickEventIcon: document.getElementById('quickEventIcon'),
-             quickEventText: document.getElementById('quickEventText'),
-             quickEventTimerDisplay: document.getElementById('quickEventTimerDisplay'),
-             quickEventChoicesContainer: document.getElementById('quickEventChoicesContainer'),
-         };
- 
-+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-+        let isMuted = false;
-+        function playBeep(freq = 440, duration = 0.15) {
-+            if (isMuted) return;
-+            const osc = audioCtx.createOscillator();
-+            const gain = audioCtx.createGain();
-+            osc.type = 'sine';
-+            osc.frequency.value = freq;
-+            osc.connect(gain);
-+            gain.connect(audioCtx.destination);
-+            osc.start();
-+            osc.stop(audioCtx.currentTime + duration);
-+        }
-+
-+        function toggleSound() {
-+            isMuted = !isMuted;
-+            document.getElementById('soundToggle').textContent = isMuted ? '🔇' : '🔊';
-+        }
-+
-         // --- Game Configuration ---
-         const CONFIG = {
-             initialMetrics: {
-                 chiffreAffaires: { name: "Chiffre d'Affaires", icon: "📈", value: 150000000, isCurrency: true },
-                 couts: { name: "Coûts", icon: "📉", value: 135000000, isCurrency: true },
-                 marge: { name: "Marge", icon: "📊", value: 10, isPercentage: true },
-                 delais: { name: "Délais", icon: "⏱️", value: 80 },
-                 qualite: { name: "Qualité", icon: "⭐", value: 80 },
-                 securite: { name: "Sécurité", icon: "🛡️", value: 80 },
-                 client: { name: "Client", icon: "🤝", value: 80 },
-                 equipe: { name: "Équipe", icon: "👥", value: 80 },
-             },
-             initialPowerUps: {
-                 audit: { name: "Audit Financier", icon: "💸", count: 1, description: "Révèle les impacts financiers exacts de chaque choix." },
-                 negociation: { name: "Négociation", icon: "🗣️", count: 1, description: "Permet de réduire un impact négatif majeur." },
-                 xray: { name: "Analyse Risques", icon: "🔍", count: 1, description: "Surligne le choix le moins dommageable pour le projet." },
-+                timeFreeze: { name: "Pause", icon: "⏸️", count: 1, description: "Ajoute 10s au chrono en cours." },
-             },
-             timeBonusThreshold: 20,
-             timeBonusPoints: 50,
-             quickEventChance: 0.3, // 30% chance after each regular scenario
-         };
- 
-         // --- Game State ---
-         let state = {};
-         let projectHealthChart; // Chart.js instance
-         let quickEventTimerInterval;
- 
-         // --- Scenarios Data (Expert Mode) ---
-         const scenarios = [
-             {
-                 title: "Défaillance Fournisseur Critique", icon: "🏭", timeLimit: 45,
-                 text: "Votre fournisseur principal de béton préfabriqué, crucial pour la phase actuelle, vient de déposer le bilan. Le chantier risque d'être à l'arrêt complet d'ici 48h.",
-                 choices: [
-                     { text: "Signer avec un fournisseur local plus cher en urgence", impacts: { couts: 2500000, delais: -15, qualite: -15, client: 5, marge: -1.5 }, feedback: "Vous sauvez les délais mais le surcoût est important et la qualité de ce fournisseur est moins réputée. Le client apprécie votre réactivité, mais la marge est fortement impactée." },
-                     { text: "Lancer un appel d'offres accéléré (1 semaine)", impacts: { couts: 800000, delais: -35, equipe: -30, client: -25, marge: -0.5 }, feedback: "Solution financièrement prudente, mais une semaine d'arrêt pèse lourdement sur les délais et le moral de l'équipe, et le client est très mécontent." },
-                     { text: "Utiliser une technologie alternative (béton coulé sur place)", impacts: { couts: 4000000, securite: -30, qualite: 0, delais: -25, marge: -2.5 }, feedback: "Innovant mais extrêmement coûteux et techniquement risqué. La qualité pourrait être similaire, si tout se passe bien, mais la sécurité est une préoccupation majeure et la marge est dévastée." },
-                     { text: "Tenter de racheter le stock du fournisseur défaillant via l'administrateur judiciaire", impacts: { couts: -300000, delais: -30, client: -40, securite: -25, marge: 0.2 }, feedback: "Un pari audacieux. Si ça marche, vous faites une bonne affaire. Si ça échoue, vous perdez un temps précieux, la relation client se dégrade fortement et la sécurité est compromise. C'est un risque juridique et de sécurité élevé." }
-                 ]
-             },
-             {
-                 title: "Conflit Social sur le Chantier", icon: "🔥", timeLimit: 60,
-diff --git a/simulateur-directeur-travaux.html b/simulateur-directeur-travaux.html
-index 6f63aa79d986561548c691dd8b6a86a2fbab9f2e..92c360f9d07eb0985227a2ea5e1f1314528ecc52 100644
---- a/simulateur-directeur-travaux.html
-+++ b/simulateur-directeur-travaux.html
-@@ -307,51 +416,51 @@
-                     { text: "Alléger la structure du bâtiment concerné pour réduire la charge", impacts: { qualite: -50, client: -30, couts: 1000000, securite: -30, marge: -0.8 }, feedback: "Vous traitez le symptôme, pas la cause. Le client n'apprécie pas la réduction de la qualité, la sécurité reste une préoccupation majeure et les coûts augmentent. Une décision dangereuse." },
-                     { text: "Mettre en cause le bureau d'études géotechniques pour prise en charge", impacts: { delais: -60, client: -40, couts: 500000, marge: -0.5 }, feedback: "Vous lancez une bataille juridique qui paralysera le projet pendant des mois avec des coûts importants. Les chances de succès sont incertaines et le client est furieux. Le projet est à l'arrêt." }
-                 ]
-             },
-             {
-                 title: "Pénurie de Main-d'œuvre Qualifiée", icon: "👷", timeLimit: 55,
-                 text: "Une pénurie inattendue de main-d'œuvre qualifiée (soudeurs certifiés) menace l'avancement des travaux structurels. Les délais sont déjà serrés.",
-                 choices: [
-                     { text: "Recruter des intérimaires à prix d'or", impacts: { couts: 2800000, delais: 15, qualite: -20, equipe: -15, marge: -1.8 }, feedback: "Solution rapide mais extrêmement coûteuse, et la qualité peut être fortement impactée par le manque de familiarité avec le projet et la démotivation de l'équipe. La marge est sévèrement touchée." },
-                     { text: "Mettre en place un programme de formation accélérée pour l'équipe existante", impacts: { couts: 1000000, delais: -30, equipe: 25, qualite: 10, marge: -0.7 }, feedback: "Investissement à long terme pour l'équipe, mais cela retarde significativement le projet à court terme. La qualité s'améliore à terme, mais le coût est élevé et les délais sont critiques." },
-                     { text: "Sous-traiter la tâche à une entreprise externe avec des équipes disponibles", impacts: { couts: 2000000, delais: 0, qualite: -10, client: -15, marge: -1.2 }, feedback: "Permet de maintenir les délais, but la coordination est plus complexe, la qualité peut être légèrement inférieure et le client peut percevoir un manque de contrôle. Coûts élevés." },
-                     { text: "Négocier avec le client un ajustement des délais en expliquant la situation", impacts: { client: -30, delais: -25, couts: -200000, marge: 0.1 }, feedback: "Honnête mais risque de mécontenter fortement le client. Vous évitez des coûts supplémentaires mais perdez en réputation et en confiance. Les délais sont très impactés." }
-                 ]
-             },
-             {
-                 title: "Découverte Archéologique", icon: "🏺", timeLimit: 70,
-                 text: "Lors des terrassements, des vestiges archéologiques importants sont découverts. Le site est immédiatement gelé par les autorités culturelles.",
-                 choices: [
-                     { text: "Financer des fouilles accélérées pour minimiser l'arrêt", impacts: { couts: 5000000, delais: -40, client: 10, securite: 0, marge: -3.0 }, feedback: "Solution coûteuse mais proactive. Vous montrez votre engagement et minimisez l'impact sur le client, mais les délais sont fortement impactés et la marge est en chute libre." },
-                     { text: "Tenter de dévier le projet pour contourner la zone", impacts: { couts: 7000000, delais: -70, qualite: -30, client: -40, marge: -5.0 }, feedback: "Extrêmement coûteux et complexe, cela peut compromettre gravement la conception initiale, la qualité et la satisfaction client. Retards massifs et marge anéantie." },
-                     { text: "Négocier avec les autorités pour une intervention minimale", impacts: { delais: -30, securite: -15, client: -25, couts: 800000, marge: -0.8 }, feedback: "Vous essayez de limiter les dégâts, mais cela peut entraîner des compromis sur la conservation, des retards persistants et des coûts additionnels importants." },
-                     { text: "Mettre le chantier en pause indéfinie en attendant une décision officielle", impacts: { couts: 3500000, delais: -90, equipe: -40, client: -50, marge: -2.5 }, feedback: "La pire des solutions. Coûts d'immobilisation énormes, moral de l'équipe au plus bas, client furieux et projet potentiellement abandonné. Une catastrophe totale." }
-                 ]
-             },
-             {
--                title: "Accident sur le Chantier", icon: "�", timeLimit: 30,
-+                title: "Accident sur le Chantier", icon: "⚠️", timeLimit: 30,
-                 text: "Un accident grave vient de se produire sur le chantier, impliquant un ouvrier. Les secours sont en route. L'inspection du travail sera là sous peu.",
-                 choices: [
-                     { text: "Assurer la prise en charge médicale et la sécurité du site, puis communiquer avec transparence", impacts: { securite: 40, equipe: 20, client: 15, couts: 300000, marge: -0.2 }, feedback: "Priorité à l'humain et à la transparence. Cela renforce la confiance mais a un coût financier et d'image initial. La sécurité est primordiale." },
-                     { text: "Tenter de minimiser les faits et de cacher certaines informations", impacts: { securite: -80, equipe: -70, client: -60, couts: 2000000, marge: -4.0 }, feedback: "Extrêmement risqué et irresponsable. Cela peut mener à des poursuites judiciaires lourdes, détruire la réputation de l'entreprise, causer des pertes humaines et des scandales médiatiques. Une décision catastrophique et criminelle." },
-                     { text: "Mettre en place immédiatement un audit de sécurité complet", impacts: { securite: 35, equipe: 15, delais: -15, couts: 600000, marge: -0.5 }, feedback: "Action forte pour la sécurité, mais cela peut entraîner un ralentissement temporaire du chantier et des coûts importants. L'équipe est rassurée." },
-                     { text: "Blâmer l'ouvrier pour négligence sans investigation", impacts: { equipe: -70, securite: -30, client: -40, couts: -150000, marge: 0.1 }, feedback: "Injuste et démoralisant pour l'équipe. Cela crée un climat de peur, n'améliore pas la sécurité et peut entraîner des démissions massives et des conflits sociaux. Gain financier minime pour un désastre humain." }
-                 ]
-             },
-             {
-                 title: "Fluctuation des Prix des Matières Premières", icon: "💰", timeLimit: 45,
-                 text: "Le prix de l'acier, un composant majeur de votre projet, a subitement augmenté de 25%. Votre budget est sous pression.",
-                 choices: [
-                     { text: "Acheter en grande quantité maintenant pour bloquer le prix", impacts: { couts: 2500000, delais: 15, qualite: 0, client: 0, marge: -1.5 }, feedback: "Bonne stratégie pour limiter la hausse, mais cela immobilise beaucoup de capital et augmente les coûts de stockage et de délais. La marge est fortement impactée." },
-                     { text: "Revoir les spécifications techniques pour utiliser moins d'acier ou un substitut", impacts: { qualite: -30, couts: -1000000, client: -30, delais: -20, marge: 0.5 }, feedback: "Solution économique mais qui peut compromettre gravement la qualité et la satisfaction client. Nécessite l'accord du client et entraîne des retards significatifs." },
-                     { text: "Négocier des conditions de paiement plus favorables avec le fournisseur", impacts: { couts: 300000, client: 0, delais: 0, chiffreAffaires: 0, marge: -0.1 }, feedback: "Peut alléger la trésorerie à court terme, mais ne résout pas le problème du coût total et n'a qu'un impact mineur sur la marge." },
-                     { text: "Demander un avenant au client pour couvrir la hausse des coûts", impacts: { client: -40, couts: 0, chiffreAffaires: 2500000, marge: 1.0 }, feedback: "La solution la plus directe pour votre marge, mais risque de tendre fortement la relation client et de compromettre les futurs contrats. Le client sera très mécontent." }
-                 ]
-             },
-             {
-                 title: "Problème de Permis de Construire", icon: "📄", timeLimit: 60,
-                 text: "Un recours de dernière minute contre le permis de construire est déposé par une association de quartier. Le chantier est menacé d'un arrêt administratif.",
-                 choices: [
-                     { text: "Engager un avocat spécialisé et défendre le permis en urgence", impacts: { couts: 1500000, delais: -30, client: 10, securite: 0, marge: -1.0 }, feedback: "La meilleure approche légale, mais coûteuse et le délai de résolution est incertain. Le client apprécie votre proactivité, mais les délais sont très impactés." },
-                     { text: "Tenter de négocier directement avec l'association pour trouver un compromis", impacts: { couts: 400000, delais: -15, client: 0, equipe: 0, marge: -0.2 }, feedback: "Approche diplomatique qui peut éviter un long conflit, mais nécessite des concessions coûteuses et des retards. Le résultat est incertain." },
-                     { text: "Ignorer le recours et continuer les travaux (risque pénal)", impacts: { securite: -60, delais: -70, client: -60, couts: 4000000, marge: -6.0 }, feedback: "Extrêmement risqué. Vous vous exposez à de lourdes amendes, à l'arrêt définitif du chantier, à des poursuites pénales, à la ruine de votre réputation et à des pertes financières colossales. Une décision illégale et désastreuse." },
-diff --git a/simulateur-directeur-travaux.html b/simulateur-directeur-travaux.html
-index 6f63aa79d986561548c691dd8b6a86a2fbab9f2e..92c360f9d07eb0985227a2ea5e1f1314528ecc52 100644
---- a/simulateur-directeur-travaux.html
-+++ b/simulateur-directeur-travaux.html
-@@ -576,107 +685,131 @@
-                 score: 0,
-                 metrics: JSON.parse(JSON.stringify(CONFIG.initialMetrics)),
-                 powerUps: JSON.parse(JSON.stringify(CONFIG.initialPowerUps)),
-                 timerInterval: null,
-                 timeLeft: 0,
-                 isModalOpen: false,
-                 auditActive: false,
-                 quickEventActive: false, // New state for quick event
-             };
-             recalculateMargin();
-             initProjectHealthChart(); // Initialize the chart
-         }
-         
-         function recalculateMargin() {
-             const ca = state.metrics.chiffreAffaires.value;
-             const costs = state.metrics.couts.value;
-             if (ca > 0) {
-                 state.metrics.marge.value = ((ca - costs) / ca) * 100;
-             } else {
-                 state.metrics.marge.value = 0;
-             }
-         }
- 
-         function startGame() {
-             initializeGame();
-+
-+            audioCtx.resume().catch(() => {});
-+            playBeep(440, 0.2);
-             
-             // Fade out start screen
-             DOMElements.startScreen.classList.remove('opacity-100', 'scale-100');
-             DOMElements.startScreen.classList.add('opacity-0', 'scale-95');
-             // After transition, move it to the back
-             setTimeout(() => {
-                 DOMElements.startScreen.classList.remove('z-30');
-                 DOMElements.startScreen.classList.add('-z-10');
-             }, 500); // Match CSS transition duration
- 
-             // Fade in game screen
-             DOMElements.gameScreen.classList.remove('opacity-0', '-z-10', 'scale-95');
-             DOMElements.gameScreen.classList.add('opacity-100', 'z-10', 'scale-100');
- 
-             DOMElements.totalScenariosDisplay.textContent = scenarios.length;
-             renderAll();
-             loadScenario(state.currentScenarioIndex);
-             updateProjectHealthChart(); // Initial chart render
-+            mascotSpeak("C'est parti ! Utilise tes bonus à bon escient.");
-         }
- 
-         function restartGame() {
-             // Fade out result screen
-             DOMElements.resultScreen.classList.remove('opacity-100', 'scale-100');
-             DOMElements.resultScreen.classList.add('opacity-0', 'scale-95');
-              // After transition, move it to the back
-             setTimeout(() => {
-                 DOMElements.resultScreen.classList.remove('z-10');
-                 DOMElements.resultScreen.classList.add('-z-10');
-             }, 500);
- 
-             // Fade in start screen
-             DOMElements.startScreen.classList.remove('opacity-0', '-z-10', 'scale-95');
-             DOMElements.startScreen.classList.add('opacity-100', 'z-30', 'scale-100');
-+            mascotSpeak('Nouvelle simulation en cours !');
-+        }
-+
-+        function shareResults() {
-+            const score = DOMElements.finalScore.textContent;
-+            if (navigator.share) {
-+                navigator.share({
-+                    title: 'Mon score sur LTd Simulator',
-+                    text: `Je viens de faire ${score} points !`,
-+                    url: window.location.href
-+                }).then(() => mascotSpeak('Merci pour le partage !'))
-+                  .catch(() => {});
-+            } else {
-+                navigator.clipboard.writeText(window.location.href);
-+                mascotSpeak('Lien copié !');
-+            }
-         }
- 
-         function loadScenario(index) {
-             state.auditActive = false; // Reset audit on new scenario
-             if (index >= scenarios.length) {
-                 endGame();
-                 return;
-             }
-+            playBeep(660, 0.1);
-             state.currentScenarioIndex = index;
-             const scenario = scenarios[index];
-             DOMElements.choicesContainer.querySelectorAll('.highlight-choice').forEach(el => el.classList.remove('highlight-choice'));
-             DOMElements.hintMessage.classList.remove('opacity-100', 'translate-y-0');
-             DOMElements.currentScenarioDisplay.textContent = index + 1;
-             DOMElements.progressBar.style.width = `${((index + 1) / scenarios.length) * 100}%`;
-             DOMElements.scenarioIcon.textContent = scenario.icon;
-             DOMElements.scenarioTitle.textContent = scenario.title;
-             DOMElements.scenarioText.textContent = scenario.text;
-             renderChoices(scenario.choices);
-             startTimer(scenario.timeLimit);
-+            mascotSpeak(`Scénario ${index + 1} : ${scenario.title}`, 4000);
-         }
- 
-         function handleChoice(choiceIndex, isQuickEvent = false) {
-             if (state.isModalOpen && !isQuickEvent) return; // Prevent interaction with game screen if modal is open
- 
-+            playBeep(520);
-+
-             clearInterval(state.timerInterval); // Stop main game timer
-             clearInterval(quickEventTimerInterval); // Stop quick event timer
- 
-             const currentScenario = isQuickEvent ? state.currentQuickEvent : scenarios[state.currentScenarioIndex];
-             const choice = currentScenario.choices[choiceIndex];
-             const impacts = choice.impacts;
-             
-             for (const key in impacts) {
-                 updateMetric(key, impacts[key]);
-             }
-             recalculateMargin();
- 
-             if (!isQuickEvent && state.timeLeft >= CONFIG.timeBonusThreshold) {
-                 state.score += CONFIG.timeBonusPoints;
-             }
-             
-             if (isQuickEvent) {
-                 closeQuickEventModal();
-                 // After a quick event, show feedback then proceed to the next regular scenario
-                 showFeedbackModal(choice, impacts, () => {
-                     loadScenario(state.currentScenarioIndex + 1);
-                     updateProjectHealthChart();
-                 });
-             } else {
-                 // After a regular scenario choice, check for quick event
-diff --git a/simulateur-directeur-travaux.html b/simulateur-directeur-travaux.html
-index 6f63aa79d986561548c691dd8b6a86a2fbab9f2e..92c360f9d07eb0985227a2ea5e1f1314528ecc52 100644
---- a/simulateur-directeur-travaux.html
-+++ b/simulateur-directeur-travaux.html
-@@ -733,50 +866,55 @@
- 
-         function usePowerUp(type) {
-             if (state.powerUps[type].count <= 0 || state.isModalOpen || state.quickEventActive) return; // Cannot use during quick event
-             state.powerUps[type].count--;
- 
-             switch (type) {
-                 case 'audit':
-                     state.auditActive = true;
-                     renderChoices(scenarios[state.currentScenarioIndex].choices);
-                     DOMElements.hintMessage.textContent = "Audit activé : Impacts financiers révélés.";
-                     DOMElements.hintMessage.classList.add('opacity-100', 'translate-y-0');
-                     break;
-                 case 'negociation':
-                     updateMetric('client', 15);
-                     DOMElements.hintMessage.textContent = "Négociation réussie ! La satisfaction client augmente.";
-                     DOMElements.hintMessage.classList.add('opacity-100', 'translate-y-0');
-                     break;
-                 case 'xray':
-                     const bestChoiceElement = document.getElementById(`choice-${findBestChoice().index}`);
-                     if (bestChoiceElement) {
-                         bestChoiceElement.classList.add('highlight-choice');
-                     }
-                     DOMElements.hintMessage.textContent = "Analyse Risques : Le choix le plus avantageux est mis en évidence.";
-                     DOMElements.hintMessage.classList.add('opacity-100', 'translate-y-0');
-                     break;
-+                case 'timeFreeze':
-+                    state.timeLeft += 10;
-+                    DOMElements.hintMessage.textContent = "Pause activée : +10 secondes.";
-+                    DOMElements.hintMessage.classList.add('opacity-100', 'translate-y-0');
-+                    break;
-             }
-             setTimeout(() => { DOMElements.hintMessage.classList.remove('opacity-100', 'translate-y-0'); }, 4000);
-             renderPowerUps();
-         }
- 
-         function findBestChoice() {
-             const choices = scenarios[state.currentScenarioIndex].choices;
-             let bestScore = -Infinity;
-             let bestIndex = -1;
-             choices.forEach((choice, index) => {
-                 let currentScore = 0;
-                 for (const key in choice.impacts) {
-                     const change = choice.impacts[key];
-                     const metric = CONFIG.initialMetrics[key];
-                     if (metric.isCurrency) {
-                         currentScore += (key === 'chiffreAffaires' ? change : -change) / 100000;
-                     } else if (metric.isPercentage) {
-                         currentScore += change * 2;
-                     } else {
-                         currentScore += change;
-                     }
-                 }
- 
-                 if (currentScore > 0) {
-                     currentScore += 1;
-diff --git a/simulateur-directeur-travaux.html b/simulateur-directeur-travaux.html
-index 6f63aa79d986561548c691dd8b6a86a2fbab9f2e..92c360f9d07eb0985227a2ea5e1f1314528ecc52 100644
---- a/simulateur-directeur-travaux.html
-+++ b/simulateur-directeur-travaux.html
-@@ -837,61 +975,63 @@
-             DOMElements.quickEventIcon.textContent = randomEvent.icon;
-             DOMElements.quickEventTitle.textContent = randomEvent.title;
-             DOMElements.quickEventText.textContent = randomEvent.text;
-             
-             DOMElements.quickEventChoicesContainer.innerHTML = randomEvent.choices.map((choice, index) => `
-                 <button onclick="handleChoice(${index}, true)" class="quick-event-choice-card bg-slate-700/50 hover:bg-slate-700 border-2 border-transparent hover:border-red-500 rounded-xl p-4 cursor-pointer transition-all duration-200 transform hover:-translate-y-1 shadow-md hover:shadow-red-500/20 text-slate-100 font-semibold">
-                     ${choice.text}
-                 </button>
-             `).join('');
- 
-             DOMElements.quickEventModalOverlay.classList.remove('pointer-events-none', 'opacity-0');
-             DOMElements.quickEventModal.classList.remove('scale-95');
- 
-             startTimer(randomEvent.timeLimit, true);
-         }
- 
-         function closeQuickEventModal() {
-             state.quickEventActive = false;
-             state.isModalOpen = false; // Allow main game interaction again
-             clearInterval(quickEventTimerInterval);
-             DOMElements.quickEventModalOverlay.classList.add('pointer-events-none', 'opacity-0');
-             DOMElements.quickEventModal.classList.add('scale-95');
-         }
- 
-         function endGame() {
-+            playBeep(700, 0.3);
-             // Fade out game screen
-             DOMElements.gameScreen.classList.remove('opacity-100', 'scale-100');
-             DOMElements.gameScreen.classList.add('opacity-0', 'scale-95');
-             setTimeout(() => {
-                 DOMElements.gameScreen.classList.remove('z-10');
-                 DOMElements.gameScreen.classList.add('-z-10');
-             }, 500);
- 
-             // Fade in result screen
-             DOMElements.resultScreen.classList.remove('opacity-0', '-z-10', 'scale-95');
-             DOMElements.resultScreen.classList.add('opacity-100', 'z-10', 'scale-100');
-+            mascotSpeak('Bravo ! Consulte ton résultat.');
- 
-             const finalMargin = state.metrics.marge.value;
-             // Calculate total score based on margin, client satisfaction, and quality
-             // Adjusted scoring to make it harder to get high scores with bad decisions
-             const totalScore = Math.round(
-                 (finalMargin * 100) + // Margin is now more impactful
-                 (state.metrics.client.value * 20) + // Client satisfaction contribution
-                 (state.metrics.qualite.value * 20) + // Quality contribution
-                 (state.metrics.securite.value * 10) + // Safety contribution
-                 (state.metrics.equipe.value * 5) // Team morale contribution
-             );
-             DOMElements.finalScore.textContent = totalScore;
- 
-             let category, description;
-             let contactMessage = '';
- 
-             if (totalScore >= 15000) {
-                 category = "Légende de la Gestion de Projet ! 🚀";
-                 description = "Votre performance est absolument exceptionnelle, digne des plus grands. Une maîtrise parfaite de tous les aspects. Postulez sans hésiter !";
-                 contactMessage = `<p class="mt-4 text-lg text-amber-300 font-bold">Votre score est incroyable ! Nous vous encourageons vivement à postuler chez LTD Recrutement.</p><p class="text-md text-amber-300">Envoyez votre candidature à <a href="mailto:l.amara@ltd-international.com" class="underline text-blue-400 hover:text-blue-300">l.amara@ltd-international.com</a></p>`;
-             } else if (totalScore >= 10000) {
-                 category = "Maître d'Œuvre d'Exception ! 🏆";
-                 description = "Rentabilité exceptionnelle, projet mené de main de maître. Votre gestion financière et stratégique est un cas d'école. Bravo !";
-                 contactMessage = `<p class="mt-4 text-lg text-amber-300 font-bold">Votre score est excellent ! Nous serions ravis d'étudier votre profil chez LTD Recrutement.</p><p class="text-md text-amber-300">Envoyez votre candidature à <a href="mailto:l.amara@ltd-international.com" class="underline text-blue-400 hover:text-blue-300">l.amara@ltd-international.com</a></p>`;
-             } else if (totalScore >= 7500) {
-diff --git a/simulateur-directeur-travaux.html b/simulateur-directeur-travaux.html
-index 6f63aa79d986561548c691dd8b6a86a2fbab9f2e..92c360f9d07eb0985227a2ea5e1f1314528ecc52 100644
---- a/simulateur-directeur-travaux.html
-+++ b/simulateur-directeur-travaux.html
-@@ -1120,45 +1260,48 @@
-             const indicator = document.createElement('div');
-             indicator.className = `absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xl font-bold metric-change ${change > 0 ? (key === 'couts' ? 'text-red-400' : 'text-green-400') : (key === 'couts' ? 'text-green-400' : 'text-red-400')}`;
-             indicator.textContent = `${change > 0 ? '+' : ''}${isCurrency ? formatCurrency(change) : change}`;
-             metricElement.appendChild(indicator);
- 
-             indicator.addEventListener('animationend', () => {
-                 indicator.remove();
-             });
-         }
- 
-         function renderPowerUps() {
-             DOMElements.powerUpContainer.innerHTML = Object.keys(state.powerUps).map(type => {
-                 const powerUp = state.powerUps[type];
-                 const isDisabled = powerUp.count <= 0 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110 cursor-pointer';
-                 return `
-                     <button onclick="usePowerUp('${type}')" class="bg-blue-700 text-white rounded-full p-3 shadow-lg flex items-center justify-center transition-all duration-200 ${isDisabled} button-glow" title="${powerUp.description}" ${powerUp.count <= 0 ? 'disabled' : ''}>
-                         <span class="text-2xl">${powerUp.icon}</span>
-                         <span class="absolute top-0 right-0 -mt-1 -mr-1 bg-amber-500 text-slate-900 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">${powerUp.count}</span>
-                     </button>
-                 `;
-             }).join('');
-         }
- 
-         // Initial setup
-         initializeGame();
-+
-+        function mascotSpeak(message, duration = 5000) {
-+            const bubble = document.getElementById('mascot-bubble');
-+            bubble.textContent = message;
-+            bubble.style.display = 'block';
-+            setTimeout(() => { bubble.style.display = 'none'; }, duration);
-+        }
-+
-+        window.addEventListener('load', () => {
-+            mascotSpeak('Bienvenue dans la simulation !', 6000);
-+        });
-     </script>
--    <button onclick="window.location.href='index.html'" style="
--    position: fixed;
--    top: 20px;
--    left: 20px;
--    padding: 10px 20px;
--    background: #3498db;
--    color: white;
--    border: none;
--    border-radius: 5px;
--    cursor: pointer;
--    font-size: 16px;
--    z-index: 1000;
--    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
--">
--    ← Retour au menu
--</button>
-+    <button onclick="window.location.href='index.html'" class="back-button">
-+        ← Retour au menu
-+    </button>
-+    <button id="soundToggle" onclick="toggleSound()" class="sound-toggle">🔊</button>
-+    <div class="mascot" id="mascot">
-+        <div class="speech-bubble" id="mascot-bubble">Bon courage&nbsp;!</div>
-+        <div class="mascot-icon" role="img" aria-label="Mascotte">👷‍♂️</div>
-+    </div>
- </body>
- </html>
--�
-+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Manager Simulator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Tone.js for sound effects -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+    <style>
+        /* Import Inter font from Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a202c, #2d3748); /* Dark gradient background */
+            color: #e2e8f0; /* Light gray text */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; /* Hide overflow for transitions */
+        }
+        .card {
+            background-color: #2d3748; /* Slightly lighter dark background for cards */
+            border-radius: 1.5rem; /* More rounded corners */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* Stronger shadow */
+            backdrop-filter: blur(10px); /* Glassmorphism effect */
+            border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border */
+            transition: all 0.3s ease-in-out; /* Smooth transition for cards */
+        }
+        .btn {
+            background-color: #4299e1; /* Blue button */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 10px rgba(66, 153, 225, 0.3);
+        }
+        .btn:hover {
+            background-color: #3182ce; /* Darker blue on hover */
+            transform: translateY(-2px) scale(1.02); /* Added scale on hover */
+            box-shadow: 0 6px 15px rgba(66, 153, 225, 0.4);
+        }
+        .metric-value {
+            transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        .metric-change-indicator {
+            position: absolute;
+            font-weight: bold;
+            opacity: 0;
+            transform: translateY(0);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .metric-change-indicator.show {
+            opacity: 1;
+            transform: translateY(-10px);
+            animation: bounce-fade 1s forwards; /* New bounce-fade animation */
+        }
+        @keyframes bounce-fade {
+            0% { opacity: 0; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-25px); }
+        }
+        .positive-change {
+            color: #48bb78; /* Green for positive */
+        }
+        .negative-change {
+            color: #ef4444; /* Red for negative */
+        }
+        .highlight-choice {
+            border-color: #fcd34d !important; /* Yellow border for highlighted choice */
+            box-shadow: 0 0 15px rgba(252, 211, 77, 0.5) !important;
+        }
+        .critical-time {
+            animation: pulse-red 1s infinite alternate;
+        }
+        @keyframes pulse-red {
+            from {
+                transform: scale(1);
+                opacity: 1;
+            }
+            to {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+        /* Screen transition classes */
+        .screen-hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+            z-index: -10;
+        }
+        .screen-visible {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+            z-index: 20; /* Ensure game screen is above start/result */
+        }
+        /* Modal transition classes */
+        .modal-hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .modal-visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content-hidden {
+            transform: scale(0.95);
+        }
+        .modal-content-visible {
+            transform: scale(1);
+        }
+
+        /* Enhanced Power-up Buttons */
+        .btn-power-up {
+            background: linear-gradient(145deg, #6b46c1, #805ad5); /* Purple gradient */
+            color: white;
+            box-shadow: 0 5px 15px rgba(107, 70, 193, 0.4);
+            border: none;
+            position: relative;
+            overflow: hidden;
+            width: 80px; /* Smaller size for bubble */
+            height: 80px; /* Smaller size for bubble */
+            border-radius: 50%; /* Circular shape */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem; /* Smaller font for text */
+            line-height: 1;
+            text-align: center;
+            padding: 0.5rem;
+        }
+        .btn-power-up:hover {
+            background: linear-gradient(145deg, #805ad5, #9f7aea);
+            transform: translateY(-3px) scale(1.05); /* Added scale on hover */
+            box-shadow: 0 8px 20px rgba(107, 70, 193, 0.6);
+        }
+        .btn-power-up:disabled {
+            background: #4a5568;
+            box-shadow: none;
+            transform: none;
+            cursor: not-allowed;
+        }
+        .btn-power-up::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            z-index: 1;
+            border-radius: 50%; /* Ensure overlay is also circular */
+        }
+        .btn-power-up:hover::before {
+            opacity: 1;
+        }
+        .btn-power-up > * {
+            position: relative;
+            z-index: 2;
+        }
+        .btn-power-up .text-4xl { /* Adjust icon size within bubble */
+            font-size: 2rem; /* Smaller icon */
+            margin-bottom: 0.25rem;
+        }
+        .btn-power-up .font-semibold {
+            font-size: 0.875rem; /* Smaller text */
+        }
+        .btn-power-up .text-sm {
+            font-size: 0.65rem; /* Even smaller text for count */
+        }
+        .btn-power-up .text-xs {
+            display: none; /* Hide description in bubble for brevity */
+        }
+
+
+        /* Share button styling */
+        .btn-share {
+            background-color: #38b2ac; /* Teal */
+            box-shadow: 0 4px 10px rgba(56, 178, 172, 0.3);
+        }
+        .btn-share:hover {
+            background-color: #319795; /* Darker teal */
+            transform: translateY(-2px) scale(1.02); /* Added scale on hover */
+            box-shadow: 0 6px 15px rgba(56, 178, 172, 0.4);
+        }
+
+        /* Back to main menu button */
+        .btn-back-to-menu {
+            background-color: #a0aec0; /* Gray */
+            color: #2d3748;
+            box-shadow: 0 4px 10px rgba(160, 174, 192, 0.3);
+        }
+        .btn-back-to-menu:hover {
+            background-color: #718096; /* Darker gray */
+            transform: translateY(-2px) scale(1.02); /* Added scale on hover */
+            box-shadow: 0 6px 15px rgba(160, 174, 192, 0.4);
+        }
+
+        /* Quick Event Modal specific styling */
+        #quick-event-modal {
+            background: linear-gradient(160deg, #4a5568, #2d3748); /* Darker gradient for quick event */
+            border: 2px solid #ef4444; /* Red border for urgency */
+            box-shadow: 0 15px 30px rgba(239, 68, 68, 0.4); /* Red glow effect */
+        }
+        #quick-event-timer-display {
+            animation: pulse-red 0.8s infinite alternate; /* More intense pulse for quick event timer */
+        }
+
+        /* Catastrophe Modal Styling */
+        #catastrophe-modal-overlay {
+            background: rgba(0, 0, 0, 0.9); /* Even darker, more opaque background */
+        }
+        #catastrophe-modal {
+            background: linear-gradient(160deg, #330000, #660000); /* Deep red gradient */
+            border: 3px solid #ff0000; /* Bright red border */
+            box-shadow: 0 20px 40px rgba(255, 0, 0, 0.6); /* Intense red glow */
+            animation: shake 0.5s infinite alternate; /* Shaking effect for urgency */
+        }
+        @keyframes shake {
+            0% { transform: translateX(0) scale(0.95); }
+            25% { transform: translateX(-5px) scale(0.95); }
+            50% { transform: translateX(0) scale(0.95); }
+            75% { transform: translateX(5px) scale(0.95); }
+            100% { transform: translateX(0) scale(0.95); }
+        }
+        #catastrophe-modal.modal-content-visible {
+            animation: shake 0.5s infinite alternate, pop-in 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+        }
+        #catastrophe-timer-display {
+            animation: pulse-red 0.5s infinite alternate; /* Very fast pulse for catastrophe timer */
+            color: #ffdd00; /* Yellow for high contrast */
+        }
+
+        /* Floating Power-ups Container */
+        #floating-power-ups {
+            position: absolute;
+            right: 1rem; /* 16px from the right */
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 15; /* Above game content, below modals */
+            display: flex;
+            flex-direction: column;
+            gap: 1rem; /* Space between bubbles */
+            padding: 1rem;
+            background-color: rgba(45, 55, 72, 0.7); /* Semi-transparent background */
+            border-radius: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        @media (max-width: 768px) { /* Adjust for smaller screens */
+            #floating-power-ups {
+                position: fixed; /* Fixed position for mobile */
+                bottom: 1rem;
+                top: auto;
+                left: 50%;
+                right: auto;
+                transform: translateX(-50%);
+                flex-direction: row; /* Row for mobile */
+                width: auto;
+                padding: 0.75rem;
+            }
+            .btn-power-up {
+                width: 60px;
+                height: 60px;
+            }
+            .btn-power-up .text-4xl {
+                font-size: 1.5rem;
+            }
+            .btn-power-up .font-semibold, .btn-power-up .text-sm {
+                display: none; /* Hide text on mobile for bubbles */
+            }
+        }
+
+        /* Character and Speech Bubble Styling */
+        #character-container {
+            position: absolute; /* Changed from fixed to absolute for relative positioning to parent */
+            bottom: 4rem; /* 4rem from the bottom */
+            right: 4rem; /* 4rem from the right */
+            left: auto; /* Ensure left is not set */
+            z-index: 30;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center items horizontally */
+            transition: transform 0.3s ease-out;
+        }
+        #character-avatar {
+            font-size: 6rem; /* Large emoji */
+            line-height: 1;
+            animation: float 3s ease-in-out infinite alternate; /* Subtle floating animation */
+            transition: transform 0.3s ease-out, font-size 0.3s ease-out; /* Smooth transition for emoji changes */
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        #speech-bubble {
+            background-color: #4a5568; /* Darker grey for bubble */
+            color: #e2e8f0;
+            border-radius: 1rem;
+            padding: 1rem;
+            position: relative;
+            margin-bottom: 1rem; /* Space between bubble and character */
+            opacity: 0;
+            transform: translateY(10px) scale(0.9);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            min-width: 150px;
+            max-width: 250px;
+            text-align: center; /* Center text within the bubble */
+        }
+        #speech-bubble.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            animation: pop-in 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards; /* Pop-in animation */
+        }
+        @keyframes pop-in {
+            0% { opacity: 0; transform: translateY(10px) scale(0.5); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        #speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px; /* Position the pointer */
+            right: 50%; /* Pointer from the right side */
+            transform: translateX(50%) rotate(-45deg); /* Adjust rotation and translation for right side */
+            width: 20px;
+            height: 20px;
+            background-color: #4a5568; /* Match bubble background */
+            border-radius: 3px;
+            z-index: -1; /* Behind the bubble content */
+        }
+
+        /* Scenario icon animation */
+        .scenario-icon-animate {
+            animation: bounce-in 0.8s ease-out;
+        }
+        @keyframes bounce-in {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="relative w-full max-w-6xl h-[90vh] grid grid-rows-[auto_1fr] md:grid-rows-1 md:grid-cols-[1fr_2fr] gap-6 p-6 bg-slate-800/80 rounded-3xl shadow-2xl transition-all duration-500 ease-in-out screen-visible">
+        
+        <!-- Left Panel: Metrics and Chart -->
+        <div class="flex flex-col space-y-6 overflow-y-auto pr-2">
+            <div class="card p-6 flex-grow">
+                <h2 class="text-2xl font-bold mb-4 text-amber-400">Statistiques du Projet</h2>
+                <div id="metrics-display" class="space-y-3" role="status" aria-live="polite">
+                    <!-- Metrics will be rendered here by JS -->
+                </div>
+            </div>
+
+            <button id="back-to-main-menu-game-btn" class="btn btn-back-to-menu mt-4">Retour au Menu Principal</button>
+        </div>
+
+        <!-- Right Panel: Scenario and Choices -->
+        <div class="flex flex-col space-y-6">
+            <div class="card p-6 flex items-center justify-between">
+                <div class="text-xl font-semibold">
+                    Scénario <span id="current-scenario-display">1</span> / <span id="total-scenarios-display">15</span>
+                </div>
+                <div class="w-1/2 bg-slate-700 rounded-full h-3">
+                    <div id="progress-bar" class="bg-green-500 h-full rounded-full transition-all duration-300 ease-out"></div>
+                </div>
+                <div id="timer-display" class="text-2xl font-bold text-amber-400">⏱️ 0:60</div>
+            </div>
+
+            <div class="card p-6 flex-grow flex flex-col justify-between">
+                <div>
+                    <h2 class="text-4xl font-extrabold mb-4 text-white flex items-center">
+                        <span id="scenario-icon" class="mr-3 text-5xl"></span>
+                        <span id="scenario-title">Titre du Scénario</span>
+                    </h2>
+                    <p id="scenario-text" class="text-lg text-slate-300 mb-6">
+                        Description du scénario.
+                    </p>
+                </div>
+                <div id="choices-container" class="grid grid-cols-1 gap-4">
+                    <!-- Choices will be rendered here by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Character and Speech Bubble Container -->
+        <div id="character-container" class="absolute bottom-4 right-4 z-30 flex flex-col items-center">
+            <div id="speech-bubble" class="speech-bubble card p-4 mb-2 text-sm max-w-xs relative opacity-0 transform -translate-y-2"></div>
+            <div id="character-avatar" class="text-6xl">👨‍💼</div> <!-- Project Manager Emoji -->
+        </div>
+    </div>
+
+    <!-- Floating Power-Ups Container -->
+    <div id="floating-power-ups" class="screen-visible">
+        <h2 class="text-lg font-bold text-purple-300 mb-2 text-center hidden md:block">Bonus</h2>
+        <div id="power-ups-display" class="grid grid-cols-3 gap-2 md:grid-cols-1 md:gap-4">
+            <!-- Power-ups will be rendered here by JS -->
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40 transition-opacity duration-300 modal-hidden">
+        <div id="feedback-modal" class="card p-8 max-w-xl w-full text-center transform scale-95 transition-transform duration-300 modal-content-hidden">
+            <h2 id="feedback-title" class="text-3xl font-bold mb-4 text-white">Conséquences de la décision</h2>
+            <p id="feedback-text" class="text-lg text-slate-300 mb-6"></p>
+            <div id="impact-list" class="space-y-3 mb-8 text-left" role="status" aria-live="polite">
+                <!-- Impacts will be rendered here -->
+            </div>
+            <button id="modal-continue-btn" class="btn">Continuer</button>
+        </div>
+    </div>
+
+    <!-- Quick Event Modal -->
+    <div id="quick-event-modal-overlay" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 transition-opacity duration-300 modal-hidden">
+        <div id="quick-event-modal" class="card p-8 max-w-xl w-full text-center transform scale-95 transition-transform duration-300 modal-content-hidden">
+            <h2 class="text-4xl font-extrabold mb-4 text-red-400 flex items-center justify-center">
+                <span id="quick-event-icon" class="mr-3 text-5xl"></span>
+                <span id="quick-event-title">Événement Rapide !</span>
+            </h2>
+            <p id="quick-event-text" class="text-lg text-slate-300 mb-6"></p>
+            <div id="quick-event-choices-container" class="grid grid-cols-1 gap-4 mb-6">
+                <!-- Quick event choices will be rendered here -->
+            </div>
+            <div id="quick-event-timer-display" class="text-3xl font-bold text-red-500">⏱️ 0:15</div>
+        </div>
+    </div>
+
+    <!-- Catastrophe Modal -->
+    <div id="catastrophe-modal-overlay" class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 transition-opacity duration-300 modal-hidden">
+        <div id="catastrophe-modal" class="card p-8 max-w-xl w-full text-center transform scale-95 transition-transform duration-300 modal-content-hidden">
+            <h2 class="text-5xl font-extrabold mb-4 text-red-600 flex items-center justify-center">
+                <span id="catastrophe-icon" class="mr-4 text-6xl"></span>
+                <span id="catastrophe-title">CATASTROPHE MAJEURE !</span>
+            </h2>
+            <p id="catastrophe-text" class="text-xl text-red-200 mb-6">Une crise sans précédent menace le projet !</p>
+            <div id="catastrophe-choices-container" class="grid grid-cols-1 gap-4 mb-6">
+                <!-- Catastrophe choices will be rendered here -->
+            </div>
+            <div id="catastrophe-timer-display" class="text-4xl font-bold text-yellow-400">⏱️ 0:05</div>
+        </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="result-screen" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 bg-opacity-90 z-10 transition-all duration-500 ease-in-out screen-hidden">
+        <div class="card p-8 text-center max-w-lg w-full">
+            <h1 class="text-5xl font-extrabold text-white mb-6">Simulation Terminée !</h1>
+            <p class="text-lg text-slate-300 mb-4">Votre score final : <span id="final-score" class="text-amber-400 text-4xl font-bold">0</span></p>
+            <h2 id="result-category" class="text-3xl font-bold text-green-400 mb-4"></h2>
+            <p id="result-description" class="text-md text-slate-300 mb-8"></p>
+            
+            <div class="text-left mb-8">
+                <h3 class="text-2xl font-bold text-cyan-400 mb-4">Analyse des Indicateurs Clés :</h3>
+                <div id="metric-analysis-results" class="space-y-2">
+                    <!-- Metric analysis will be rendered here -->
+                </div>
+            </div>
+
+            <div id="contact-message" class="text-md text-slate-300 mb-8"></div>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button id="restart-game-btn" class="btn text-xl px-8 py-4">Rejouer</button>
+                <button id="share-results-btn" class="btn btn-share text-xl px-8 py-4">Copier les Résultats</button>
+                <button id="back-to-main-menu-result-btn" class="btn btn-back-to-menu text-xl px-8 py-4">Retour au Menu Principal</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Wrap the entire script in an IIFE to create a new scope
+        (function() {
+            // Global state and configuration
+            let state = {};
+            let mainTimerInterval = null;
+            let quickEventTimerInterval = null;
+            let catastropheTimerInterval = null; // New timer for catastrophes
+            let currentScenarioIndex = 0;
+            let timerCountdown = 0;
+            let isQuickEventActive = false;
+            let isCatastropheActive = false; // New flag for catastrophes
+            let activePowerUp = null; // To track which power-up is active
+
+            // Tone.js Synths for sound effects
+            const clickSound = new Tone.Synth().toDestination();
+            const positiveSound = new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: "triangle" },
+                envelope: { attack: 0.01, decay: 0.1, sustain: 0.2, release: 0.5 },
+                volume: -10
+            }).toDestination();
+            const negativeSound = new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: "sawtooth" },
+                envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.4 },
+                volume: -10
+            }).toDestination();
+            const scenarioStartSound = new Tone.MembraneSynth({
+                pitchDecay: 0.05,
+                octaves: 8,
+                envelope: { attack: 0.001, decay: 0.4, sustain: 0.01, release: 0.8 },
+                volume: -15
+            }).toDestination();
+            const gameOverWinSound = new Tone.Synth({
+                oscillator: { type: "sine" },
+                envelope: { attack: 0.1, decay: 0.5, sustain: 0.3, release: 1 },
+                volume: -5
+            }).toDestination();
+            const gameOverLoseSound = new Tone.Synth({
+                oscillator: { type: "square" },
+                envelope: { attack: 0.1, decay: 0.5, sustain: 0.1, release: 1 },
+                volume: -5
+            }).toDestination();
+            const timerWarningSound = new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: "square" },
+                envelope: { attack: 0.01, decay: 0.1, sustain: 0.05, release: 0.1 },
+                volume: -15
+            }).toDestination();
+            const powerUpSound = new Tone.PluckSynth().toDestination();
+            const catastropheSound = new Tone.NoiseSynth({
+                noise: { type: "pink" },
+                envelope: { attack: 0.005, decay: 0.2, sustain: 0.0, release: 0.5 },
+                volume: -10
+            }).toDestination(); // New sound for catastrophes
+
+            // Play sound functions
+            const playClick = () => {
+                if (Tone.context.state !== 'running') { Tone.start(); } // Resume audio on user interaction
+                clickSound.triggerAttackRelease("C4", "8n");
+            }
+            const playPositive = () => {
+                if (Tone.context.state !== 'running') { Tone.start(); }
+                positiveSound.triggerAttackRelease(["E4", "G4", "C5"], "8n");
+            }
+            const playNegative = () => {
+                if (Tone.context.state !== 'running') { Tone.start(); }
+                negativeSound.triggerAttackRelease(["C4", "A3", "F3"], "8n");
+            }
+            const playScenarioStart = () => {
+                if (Tone.context.state !== 'running') { Tone.start(); }
+                scenarioStartSound.triggerAttackRelease("C2", "4n");
+            }
+            const playGameOverWin = () => {
+                if (Tone.context.state !== 'running') { Tone.start(); }
+                gameOverWinSound.triggerAttackRelease("C5", "1n");
+            }
+            const playGameOverLose = () => {
+                if (Tone.context.state !== 'running') { Tone.start(); }
+                gameOverLoseSound.triggerAttackRelease("C2", "1n");
+            }
+            const playPowerUp = () => {
+                if (Tone.context.state !== 'running') { Tone.start(); }
+                powerUpSound.triggerAttackRelease("C5", "8n");
+            }
+            const playCatastropheSound = () => {
+                if (Tone.context.state !== 'running') { Tone.start(); }
+                catastropheSound.triggerAttackRelease("8n");
+            }
+
+            let timerWarningLoop = null;
+            const startTimerWarning = () => {
+                if (timerWarningLoop) return;
+                if (Tone.context.state !== 'running') { Tone.start(); }
+                timerWarningLoop = new Tone.Loop(time => {
+                    timerWarningSound.triggerAttackRelease("G3", "16n", time);
+                }, "0.5s").start(0);
+                Tone.Transport.start();
+            };
+            const stopTimerWarning = () => {
+                if (timerWarningLoop) {
+                    timerWarningLoop.stop();
+                    timerWarningLoop.dispose();
+                    timerWarningLoop = null;
+                }
+                // Tone.Transport.stop(); // Don't stop transport entirely, other sounds might be playing
+            };
+
+
+            const CONFIG = {
+                initialMetrics: {
+                    chiffreAffaires: { name: "Chiffre d'Affaires", value: 150000000, icon: "💰", isCurrency: true }, // 150M Euros
+                    couts: { name: "Coûts Totaux", value: 135000000, icon: "💸", isCurrency: true }, // 135M Euros for 10% margin
+                    marge: { name: "Marge Nette", value: 10, icon: "📈", isPercentage: true }, // Adjusted to 10%
+                    client: { name: "Satisfaction Maître d'Ouvrage", value: 75, icon: "😊" }, // Changed to Project Owner
+                    equipe: { name: "Moral de l'Équipe Chantier", value: 80, icon: "👷" }, // Changed to Site Team
+                    qualite: { name: "Qualité de l'Ouvrage", value: 70, icon: "✨" }, // Changed to Work Quality
+                    delais: { name: "Respect des Délais", value: 60, icon: "⏳" },
+                    securite: { name: "Sécurité du Chantier", value: 90, icon: "🛡️" }, // Changed to Site Safety
+                },
+                initialPowerUps: {
+                    audit: { name: "Audit Financier", icon: "📈", count: 1, description: "Révèle les impacts financiers exacts d'un choix." },
+                    negociation: { name: "Négociation Client", icon: "🗣️", count: 1, description: "Augmente la satisfaction client." },
+                    xray: { name: "Analyse Risques", icon: "💡", count: 1, description: "Met en évidence le meilleur choix." },
+                },
+                timeBonusThreshold: 10, // Seconds remaining for bonus
+                timeBonusPoints: 500, // Points for time bonus
+                quickEventChance: 0.3, // 30% chance of a quick event after a main scenario
+                catastropheChance: 0.1, // 10% chance of a major catastrophe
+                timerWarningThreshold: 10, // Seconds left to start warning sound/animation
+            };
+
+            // DOM Elements mapping
+            const DOMElements = {
+                gameScreen: document.getElementById('game-screen'),
+                resultScreen: document.getElementById('result-screen'),
+                restartGameBtn: document.getElementById('restart-game-btn'),
+                backToMainMenuGameBtn: document.getElementById('back-to-main-menu-game-btn'),
+                backToMainMenuResultBtn: document.getElementById('back-to-main-menu-result-btn'),
+                shareResultsBtn: document.getElementById('share-results-btn'),
+                metricsDisplay: document.getElementById('metrics-display'),
+                powerUpsDisplay: document.getElementById('power-ups-display'),
+                floatingPowerUps: document.getElementById('floating-power-ups'),
+                currentScenarioDisplay: document.getElementById('current-scenario-display'),
+                totalScenariosDisplay: document.getElementById('total-scenarios-display'),
+                progressBar: document.getElementById('progress-bar'),
+                timerDisplay: document.getElementById('timer-display'),
+                scenarioIcon: document.getElementById('scenario-icon'),
+                scenarioTitle: document.getElementById('scenario-title'),
+                scenarioText: document.getElementById('scenario-text'),
+                choicesContainer: document.getElementById('choices-container'),
+                modalOverlay: document.getElementById('modal-overlay'),
+                feedbackModal: document.getElementById('feedback-modal'),
+                feedbackTitle: document.getElementById('feedback-title'),
+                feedbackText: document.getElementById('feedback-text'),
+                impactList: document.getElementById('impact-list'),
+                modalContinueBtn: document.getElementById('modal-continue-btn'),
+                quickEventModalOverlay: document.getElementById('quick-event-modal-overlay'),
+                quickEventModal: document.getElementById('quick-event-modal'),
+                quickEventIcon: document.getElementById('quick-event-icon'),
+                quickEventTitle: document.getElementById('quick-event-title'),
+                quickEventText: document.getElementById('quick-event-text'),
+                quickEventChoicesContainer: document.getElementById('quick-event-choices-container'),
+                quickEventTimerDisplay: document.getElementById('quick-event-timer-display'),
+                catastropheModalOverlay: document.getElementById('catastrophe-modal-overlay'), // New
+                catastropheModal: document.getElementById('catastrophe-modal'), // New
+                catastropheIcon: document.getElementById('catastrophe-icon'), // New
+                catastropheTitle: document.getElementById('catastrophe-title'), // New
+                catastropheText: document.getElementById('catastrophe-text'), // New
+                catastropheChoicesContainer: document.getElementById('catastrophe-choices-container'), // New
+                catastropheTimerDisplay: document.getElementById('catastrophe-timer-display'), // New
+                finalScore: document.getElementById('final-score'),
+                resultCategory: document.getElementById('result-category'),
+                resultDescription: document.getElementById('result-description'),
+                metricAnalysisResults: document.getElementById('metric-analysis-results'), // New
+                contactMessage: document.getElementById('contact-message'),
+                characterContainer: document.getElementById('character-container'),
+                characterAvatar: document.getElementById('character-avatar'),
+                speechBubble: document.getElementById('speech-bubble'),
+            };
+
+            // Scenarios data
+            const scenarios = [
+                {
+                    title: "Retard de Livraison des Matériaux Clés", icon: "🚚", timeLimit: 60,
+                    text: "Un fournisseur clé a un retard important dans la livraison de matériaux essentiels (ex: poutres préfabriquées pour un pont du canal), menaçant de paralyser le chantier.",
+                    choices: [
+                        { text: "Chercher un nouveau fournisseur en urgence (plus cher)", impacts: { couts: 7500000, delais: -10, qualite: 0, marge: -0.75 }, feedback: "Vous assurez la continuité du projet, mais à un coût très élevé. La marge est fortement impactée." },
+                        { text: "Attendre la livraison du fournisseur initial", impacts: { delais: 30, client: -15, equipe: -10, marge: -0.5 }, feedback: "Moins coûteux, mais le retard est significatif et impacte lourdement la satisfaction du maître d'ouvrage et le moral de l'équipe." },
+                        { text: "Réaffecter l'équipe à d'autres tâches en attendant", impacts: { delais: 15, couts: -1500000, equipe: 7, marge: 0.15 }, feedback: "Une bonne gestion des ressources, minimisant le retard et optimisant les coûts. L'équipe reste productive." },
+                        { text: "Travailler en heures supplémentaires pour rattraper le retard", impacts: { couts: 4500000, equipe: -20, qualite: -7, delais: 0, marge: -0.45 }, feedback: "Le retard est rattrapé, mais au prix d'une augmentation massive des coûts, d'une baisse notable de la qualité et d'un épuisement sévère de l'équipe." }
+                    ]
+                },
+                {
+                    title: "Grève des Ouvriers du Chantier", icon: "✊", timeLimit: 45,
+                    text: "Une partie des ouvriers du chantier se met en grève pour des revendications salariales, stoppant net une phase critique de construction (ex: bétonnage d'une écluse).",
+                    choices: [
+                        { text: "Négocier une augmentation salariale (coût très élevé)", impacts: { couts: 15000000, equipe: 25, client: 7, marge: -1.5 }, feedback: "La grève est levée, l'équipe est très motivée, mais le coût est exorbitant, impactant drastiquement la marge." },
+                        { text: "Remplacer les grévistes par des intérimaires", impacts: { couts: 10500000, equipe: -40, qualite: -20, delais: 15, securite: -15, marge: -1.2 }, feedback: "Solution rapide mais qui crée des tensions extrêmes. La qualité et la sécurité peuvent en pâtir gravement, et le moral de l'équipe est au plus bas." },
+                        { text: "Ignorer la grève et attendre qu'elle se termine", impacts: { delais: 60, client: -35, equipe: -60, marge: -0.75 }, feedback: "Une stratégie désastreuse. Le projet est à l'arrêt total, la réputation est ternie, et l'équipe est complètement démotivée et hostile." },
+                        { text: "Ouvrir le dialogue et proposer des compromis (avantages non-salariaux)", impacts: { couts: 3000000, equipe: 15, delais: 7, client: 0, marge: -0.3 }, feedback: "Une approche équilibrée. Le coût est modéré, la grève est levée, et l'équipe se sent écoutée. Un léger retard est inévitable." }
+                    ]
+                },
+                {
+                    title: "Défaut Majeur dans l'Ouvrage", icon: "⚠️", timeLimit: 75,
+                    text: "Un défaut critique est découvert dans un composant clé de l'ouvrage (ex: fondations d'une structure, étanchéité du canal), nécessitant une refonte coûteuse ou un risque de défaillance future.",
+                    choices: [
+                        { text: "Refaire le composant à neuf (coût très élevé, délai)", impacts: { couts: 12000000, qualite: 25, delais: 20, marge: -1.2 }, feedback: "Vous assurez une qualité impeccable, mais le coût et le délai sont significatifs et douloureux." },
+                        { text: "Tenter une réparation rapide (risque résiduel élevé)", impacts: { couts: 3000000, qualite: -15, client: -10, securite: -15, marge: -0.4 }, feedback: "Moins cher et plus rapide, mais la qualité et la sécurité sont gravement compromises, avec un risque majeur pour la satisfaction du maître d'ouvrage." },
+                        { text: "Lancer une enquête approfondie pour identifier la cause", impacts: { delais: 15, equipe: 7, qualite: 7, couts: 1500000, marge: -0.15 }, feedback: "Prend du temps, mais améliore les processus futurs et la qualité globale, tout en maintenant le moral." },
+                        { text: "Demander au sous-traitant de prendre en charge les coûts", impacts: { couts: -7500000, client: -7, delais: 7, marge: 0.75 }, feedback: "Potentiellement très bénéfique financièrement, mais peut créer des tensions extrêmes avec le sous-traitant et entraîner un léger retard." }
+                    ]
+                },
+                {
+                    title: "Nouvelles Normes Environnementales", icon: "📜", timeLimit: 50,
+                    text: "De nouvelles réglementations environnementales sont annoncées concernant les chantiers de grande envergure, nécessitant des modifications importantes dans la méthode de construction du canal.",
+                    choices: [
+                        { text: "Adapter le projet immédiatement (coût, délai)", impacts: { couts: 6000000, delais: 15, securite: 20, marge: -0.6 }, feedback: "Conformité assurée, mais avec des impacts lourds sur le budget et le calendrier." },
+                        { text: "Demander une dérogation (risque de refus élevé)", impacts: { client: -15, securite: -10, delais: 7, marge: 0 }, feedback: "Peut éviter des coûts, mais risqué et peut nuire gravement à la réputation et à la sécurité environnementale." },
+                        { text: "Ignorer les nouvelles réglementations (risque légal extrême)", impacts: { qualite: -30, securite: -40, chiffreAffaires: -15000000, marge: -1.5 }, feedback: "Extrêmement risqué, peut entraîner des amendes massives, l'arrêt définitif du projet et des poursuites judiciaires." },
+                        { text: "Consulter des experts environnementaux pour minimiser l'impact", impacts: { couts: 2250000, delais: 7, securite: 7, marge: -0.225 }, feedback: "Une approche prudente qui aide à naviguer dans la complexité, avec un coût et un délai modérés." }
+                    ]
+                },
+                {
+                    title: "Départ d'un Ingénieur Clé", icon: "🚶", timeLimit: 55,
+                    text: "Un ingénieur structurel indispensable à la réussite du projet démissionne subitement, laissant un vide critique dans la conception des ouvrages d'art.",
+                    choices: [
+                        { text: "Recruter un remplaçant externe (long et très cher)", impacts: { couts: 9000000, delais: 30, equipe: -15, marge: -0.9 }, feedback: "Assure l'expertise, mais coûteux et entraîne un retard très significatif." },
+                        { text: "Promouvoir un membre de l'équipe (formation nécessaire)", impacts: { couts: 1500000, equipe: 15, qualite: -7, delais: 15, marge: -0.15 }, feedback: "Moins coûteux, mais la qualité peut temporairement baisser et un délai est à prévoir." },
+                        { text: "Répartir ses tâches entre les membres restants", impacts: { equipe: -30, qualite: -15, delais: 20, marge: 0 }, feedback: "Économise de l'argent, mais surcharge l'équipe, réduit drastiquement le moral et la qualité." },
+                        { text: "Faire appel à un consultant externe temporaire", impacts: { couts: 4500000, delais: 7, qualite: 7, marge: -0.45 }, feedback: "Solution rapide pour combler le vide, maintient la qualité et limite le retard, but à un coût certain." }
+                    ]
+                },
+                {
+                    title: "Incident de Sécurité Majeur sur le Chantier", icon: "🚨", timeLimit: 70,
+                    text: "Un incident de sécurité majeur se produit sur le chantier (ex: effondrement partiel d'une structure, accident grave avec blessés), entraînant une suspension immédiate des travaux et une enquête approfondie.",
+                    choices: [
+                        { text: "Renforcer massivement les protocoles de sécurité et auditer le site", impacts: { couts: 13500000, securite: 25, delais: 15, client: -7, marge: -1.35 }, feedback: "Mesure drastique mais nécessaire pour la sécurité, avec des coûts et un impact sur le délai." },
+                        { text: "Minimiser l'incident pour éviter des retards (risque légal et humain)", impacts: { securite: -30, client: -20, qualite: -15, marge: -0.75 }, feedback: "Économise de l'argent à court terme, mais risque de compromettre davantage la sécurité, la réputation et d'entraîner des poursuites." },
+                        { text: "Informer immédiatement les autorités et le maître d'ouvrage avec transparence", impacts: { client: -15, securite: 7, equipe: -7, marge: -0.15 }, feedback: "Transparence qui peut nuire à la satisfaction du maître d'ouvrage, mais renforce la confiance à long terme et la sécurité." },
+                        { text: "Mettre en place des formations de sécurité intensives et obligatoires pour toute l'équipe", impacts: { couts: 3000000, securite: 15, delais: 0, marge: -0.3 }, feedback: "Un investissement pour l'avenir, améliorant la sécurité sans impact immédiat majeur sur le projet en cours." }
+                    ]
+                },
+                {
+                    title: "Dépassement Budgétaire Critique", icon: "💸", timeLimit: 60,
+                    text: "Les dépenses du projet ont dépassé les prévisions de manière critique, menaçant la viabilité globale du Canal Seine-Nord Europe.",
+                    choices: [
+                        { text: "Réduire drastiquement les finitions non essentielles ou les aménagements paysagers", impacts: { qualite: -15, client: -15, couts: -7500000, marge: 0.75 }, feedback: "Réduit les coûts de manière significative, mais peut décevoir le maître d'ouvrage et impacter sévèrement la qualité perçue de l'ouvrage." },
+                        { text: "Demander un budget supplémentaire d'urgence au maître d'ouvrage (très difficile à obtenir)", impacts: { chiffreAffaires: 0, couts: 7500000, client: -7, marge: -0.75 }, feedback: "Peut résoudre le problème de budget, mais risque de nuire gravement à la relation avec le maître d'ouvrage et à la marge." },
+                        { text: "Optimiser les processus de construction et renégocier les contrats fournisseurs", impacts: { couts: -4500000, equipe: 7, qualite: 7, marge: 0.45 }, feedback: "Une approche saine qui réduit les coûts tout en améliorant l'efficacité et le moral de l'équipe." },
+                        { text: "Utiliser des matériaux de substitution moins chers (qualité et sécurité compromises)", impacts: { qualite: -20, securite: -10, client: -20, marge: 0.3 }, feedback: "Solution rapide pour les coûts, mais compromet gravement la qualité, la sécurité et la satisfaction du maître d'ouvrage." }
+                    ]
+                },
+                {
+                    title: "Conflit Majeur au sein de l'Équipe Chantier", icon: "🗣️", timeLimit: 40,
+                    text: "Des tensions extrêmes éclatent au sein de l'équipe de construction, entraînant des blocages et une chute drastique de la productivité et du moral sur le terrain.",
+                    choices: [
+                        { text: "Organiser une médiation professionnelle immédiate sur site", impacts: { equipe: 20, delais: 7, couts: 750000, marge: -0.075 }, feedback: "Investissement qui résout les conflits majeurs, améliore le moral mais coûte un peu de temps et d'argent." },
+                        { text: "Laisser l'équipe gérer le problème elle-même (risque d'escalade)", impacts: { equipe: -30, qualite: -15, delais: 15, marge: 0 }, feedback: "Peut empirer la situation de manière incontrôlable, réduisant le moral et la productivité à néant." },
+                        { text: "Réaffecter les membres en conflit à d'autres tâches ou les écarter", impacts: { equipe: 7, qualite: -7, delais: 7, marge: 0 }, feedback: "Solution temporaire qui peut créer de nouvelles frictions et impacter la qualité." },
+                        { text: "Organiser un événement de cohésion d'équipe majeur (coût, mais renforce les liens)", impacts: { couts: 1500000, equipe: 15, marge: -0.15 }, feedback: "Un investissement significatif dans l'équipe qui peut améliorer la cohésion et le moral à long terme." }
+                    ]
+                },
+                {
+                    title: "Modifications de Conception Drastiques Demandées par le Maître d'Ouvrage", icon: "❓", timeLimit: 50,
+                    text: "Le maître d'ouvrage exprime des demandes de modifications de conception de dernière minute et d'envergure (ex: changement complet du tracé sur une section), rendant la poursuite des travaux extrêmement difficile.",
+                    choices: [
+                        { text: "Organiser un atelier de clarification intensif avec le maître d'ouvrage et renégocier", impacts: { client: 15, delais: 10, qualite: 15, couts: 750000, marge: -0.075 }, feedback: "Prend du temps et coûte un peu, mais assure une meilleure compréhension et un ouvrage final de meilleure qualité." },
+                        { text: "Faire des hypothèses et continuer la construction (risque de non-conformité)", impacts: { client: -30, qualite: -20, couts: 3000000, marge: -0.3 }, feedback: "Risque extrêmement élevé de livrer un ouvrage qui ne correspond pas aux attentes, entraînant des retouches massives et des pénalités." },
+                        { text: "Proposer des plans de modification rapides et coûteux pour validation", impacts: { client: 20, qualite: 7, delais: 0, couts: 1500000, marge: -0.15 }, feedback: "Bonne méthode pour valider les exigences, satisfait le maître d'ouvrage et maintient la qualité." },
+                        { text: "Ignorer les demandes et suivre le plan initial (rupture de contrat)", impacts: { client: -40, qualite: -30, chiffreAffaires: -7500000, marge: -0.75 }, feedback: "Une approche désastreuse qui mènera à l'insatisfaction du maître d'ouvrage, à la rupture de contrat et à des pertes financières massives." }
+                    ]
+                },
+                {
+                    title: "Nouvelle Technologie de Construction Révolutionnaire", icon: "💡", timeLimit: 45,
+                    text: "Une nouvelle technologie de construction (ex: robotisation avancée pour le bétonnage) prometteuse émerge, offrant une opportunité d'améliorer significativement l'efficacité ou la durabilité de l'ouvrage, mais avec des risques d'intégration.",
+                    choices: [
+                        { text: "Intégrer la nouvelle technologie (coût élevé, délai, formation)", impacts: { couts: 4500000, delais: 15, qualite: 25, client: 20, marge: -0.45 }, feedback: "Un investissement qui peut révolutionner la construction, mais avec des coûts et des retards." },
+                        { text: "Continuer avec la technologie actuelle", impacts: { qualite: -7, client: -7, marge: 0 }, feedback: "Moins risqué à court terme, mais l'ouvrage pourrait être moins performant à long terme." },
+                        { text: "Mettre en place une petite équipe de R&D dédiée à l'étude approfondie", impacts: { couts: 2250000, equipe: 7, delais: 7, marge: -0.225 }, feedback: "Permet d'explorer l'innovation sans perturber le projet principal, avec un coût modéré." },
+                        { text: "Ignorer l'opportunité", impacts: { client: -15, qualite: -15, chiffreAffaires: -3000000, marge: -0.3 }, feedback: "Manque une opportunité majeure, le projet risque de perdre en compétitivité ou en durabilité sur le long terme." }
+                    ]
+                },
+                {
+                    title: "Fuite de Données Stratégiques du Chantier", icon: " leaked", timeLimit: 65,
+                    text: "Des informations hautement sensibles concernant les plans de sécurité ou les méthodes de construction innovantes du Canal ont été divulguées publiquement, menaçant la réputation et la sécurité du projet.",
+                    choices: [
+                        { text: "Lancer une enquête interne massive et renforcer drastiquement la cybersécurité", impacts: { securite: 25, equipe: -7, client: -15, couts: 6000000, marge: -0.6 }, feedback: "Mesure essentielle pour la sécurité et la réputation, mais coûteuse et peut impacter le moral." },
+                        { text: "Minimiser l'incident publiquement (risque de scandale)", impacts: { client: -30, securite: -15, chiffreAffaires: -7500000, marge: -0.75 }, feedback: "Peut aggraver la situation, entraînant une perte de confiance et des pénalités massives." },
+                        { text: "Informer les parties prenantes concernées avec transparence et proposer des mesures correctives", impacts: { client: -7, securite: 7, marge: 0 }, feedback: "La transparence peut atténuer l'impact négatif et renforcer la confiance à long terme." },
+                        { text: "Mettre en place une campagne de communication de crise pour restaurer l'image du projet", impacts: { couts: 4500000, client: 7, marge: -0.45 }, feedback: "Un investissement pour restaurer la confiance, mais ne résout pas le problème de sécurité sous-jacent." }
+                    ]
+                },
+                {
+                    title: "Problème Géotechnique Critique et Inattendu", icon: "⚙️", timeLimit: 50,
+                    text: "Un problème géotechnique complexe et imprévu (ex: découverte d'une nappe phréatique non cartographiée, sol instable) bloque une étape cruciale de l'excavation du canal, menaçant la stabilité de l'ouvrage.",
+                    choices: [
+                        { text: "Engager des experts géotechniciens externes de renommée mondiale (très coûteux, rapide)", impacts: { couts: 7500000, delais: -7, qualite: 15, marge: -0.75 }, feedback: "Résout le problème rapidement et efficacement, mais à un coût très élevé." },
+                        { text: "Laisser l'équipe interne résoudre le problème (délai incertain, risque élevé)", impacts: { delais: 20, equipe: 7, qualite: 0, marge: 0 }, feedback: "Moins coûteux, mais le délai est incertain et peut frustrer l'équipe, avec un risque d'aggravation." },
+                        { text: "Simplifier drastiquement la conception de l'ouvrage pour contourner le problème", impacts: { qualite: -15, client: -7, delais: -7, marge: 0.15 }, feedback: "Solution rapide, mais compromet gravement la qualité et la satisfaction du maître d'ouvrage." },
+                        { text: "Rechercher des solutions innovantes de stabilisation des sols (temps, mais économique)", impacts: { delais: 15, couts: -750000, qualite: 0, marge: 0.075 }, feedback: "Économique, mais prend du temps et la solution peut ne pas être parfaitement adaptée." }
+                    ]
+                },
+                {
+                    title: "Pression Politique Extrême pour Accélérer les Travaux", icon: "⏱️", timeLimit: 55,
+                    text: "Le maître d'ouvrage et les autorités locales exercent une pression politique extrême pour accélérer le calendrier des travaux du Canal, en raison d'élections ou d'engagements publics, menaçant des pénalités massives en cas de retard.",
+                    choices: [
+                        { text: "Augmenter massivement les équipes et les heures de travail (coût, risque de qualité)", impacts: { qualite: -15, equipe: -15, delais: -15, marge: 0 }, feedback: "Accélère les travaux, mais peut compromettre la qualité et le moral de l'équipe." },
+                        { text: "Optimiser la planification et les ressources existantes avec des outils avancés", impacts: { couts: 0, delais: -7, equipe: 7, marge: 0.75 }, feedback: "Améliore l'efficacité sans coûts supplémentaires, maintient le moral." },
+                        { text: "Refuser la demande d'accélération en justifiant les risques techniques et légaux", impacts: { client: -15, delais: 0, marge: 0 }, feedback: "Maintient la qualité et la sécurité, mais peut créer des tensions majeures avec le maître d'ouvrage et les autorités." },
+                        { text: "Introduire des technologies de construction ultra-rapide (coût exorbitant)", impacts: { couts: 6000000, delais: -20, qualite: 7, marge: -0.6 }, feedback: "Permet une accélération significative, mais à un coût important." }
+                    ]
+                },
+                {
+                    title: "Crise de Relations Publiques Majeure", icon: "📰", timeLimit: 60,
+                    text: "Une mauvaise publicité ou un scandale éclate (ex: accusations de corruption, impact environnemental non déclaré), affectant l'image de l'entreprise et la perception du projet à l'échelle nationale.",
+                    choices: [
+                        { text: "Publier une déclaration officielle transparente et s'excuser publiquement", impacts: { client: 7, equipe: 7, couts: 1000000, marge: -0.1 }, feedback: "Une communication transparente peut aider à restaurer la confiance, mais à un coût." },
+                        { text: "Ignorer la crise et espérer qu'elle passe (risque de catastrophe médiatique)", impacts: { client: -35, chiffreAffaires: -15000000, marge: -1.5 }, feedback: "Peut aggraver la situation de manière incontrôlable, entraînant une perte massive de clients et de revenus, et des poursuites." },
+                        { text: "Lancer une campagne de communication positive massive et coûteuse", impacts: { couts: 7500000, client: 15, marge: -0.75 }, feedback: "Un investissement pour améliorer l'image, mais coûteux." },
+                        { text: "Identifier la source du problème et y remédier activement avec une communication proactive", impacts: { client: 20, qualite: 15, securite: 15, couts: 4500000, marge: -0.45 }, feedback: "S'attaquer à la racine du problème est la meilleure solution à long terme, même si cela prend du temps et de l'argent." }
+                    ]
+                },
+                {
+                    title: "Nouvelle Opportunité Commerciale Stratégique", icon: "🤝", timeLimit: 40,
+                    text: "Un client important propose un partenariat lucratif pour un nouveau projet d'infrastructure majeur, but cela demanderait des ressources importantes et pourrait impacter le projet actuel.",
+                    choices: [
+                        { text: "Accepter le nouveau projet (surcharge extrême des équipes)", impacts: { chiffreAffaires: 22500000, couts: 10500000, equipe: -20, delais: 15, marge: 0.75 }, feedback: "Augmente massivement les revenus, mais peut surcharger l'équipe et impacter lourdement les délais du projet actuel." },
+                        { text: "Refuser le nouveau projet pour se concentrer sur l'actuel", impacts: { chiffreAffaires: 0, equipe: 7, delais: -7, marge: 0 }, feedback: "Maintient la concentration sur le projet actuel, mais manque une opportunité de croissance majeure." },
+                        { text: "Recruter temporairement pour le nouveau projet (coût élevé)", impacts: { couts: 6000000, chiffreAffaires: 15000000, equipe: 0, delais: 0, marge: 0.5 }, feedback: "Permet de saisir l'opportunité sans impacter l'équipe actuelle, mais à un coût." },
+                        { text: "Négocier un démarrage différé pour le nouveau projet", impacts: { client: 7, delais: 7, marge: 0 }, feedback: "Une approche équilibrée qui permet de saisir l'opportunité sans perturber immédiatement le projet en cours." }
+                    ]
+                }
+            ];
+
+            // Quick Events data (impacts also made more punitive)
+            const quickEvents = [
+                {
+                    title: "Panne d'Équipement Majeur sur Site !", icon: "⚡", timeLimit: 15,
+                    text: "Une pelleteuse critique vient de tomber en panne au milieu du chantier. Vous avez peu de temps pour réagir !",
+                    choices: [
+                        { text: "Réparer en urgence avec des équipes dédiées (solution rapide, coût élevé)", impacts: { delais: 7, qualite: -7, securite: -7, marge: -0.15 }, feedback: "L'équipement est relancé, mais il y a un risque notable de qualité et de sécurité due à la précipitation." },
+                        { text: "Louer un équipement de remplacement (plus lent, plus sûr, plus cher)", impacts: { delais: 15, qualite: 0, securite: 7, marge: -0.075 }, feedback: "Plus sûr à long terme, mais le temps d'arrêt est plus long et coûte plus cher." }
+                    ]
+                },
+                {
+                    title: "Urgence Sécurité sur le Chantier !", icon: "📞", timeLimit: 10,
+                    text: "Un petit incident de sécurité nécessite une attention immédiate pour éviter un accident majeur.",
+                    choices: [
+                        { text: "Intervenir personnellement et stopper la zone (impacte le délai et moral)", impacts: { securite: 15, delais: 7, equipe: -7, marge: 0 }, feedback: "La sécurité est assurée, mais le projet prend un léger retard et l'équipe est sous pression." },
+                        { text: "Déléguer à un chef d'équipe (risque d'escalade et de réputation)", impacts: { securite: -15, delais: -7, equipe: 7, marge: 0 }, feedback: "Le projet avance, mais le risque d'accident est plus élevé et la réputation peut en pâtir." }
+                    ]
+                },
+                {
+                    title: "Erreur de Mesure Critique !", icon: "🐞", timeLimit: 20,
+                    text: "Une erreur de mesure cruciale a été découverte dans les plans de terrassement. Elle doit être corrigée rapidement.",
+                    choices: [
+                        { text: "Assigner les topographes les plus expérimentés (coût élevé, rapidité)", impacts: { couts: 1500000, qualite: 15, delais: 0, marge: -0.15 }, feedback: "L'erreur est corrigée rapidement et la qualité est assurée, mais cela coûte cher." },
+                        { text: "Demander à l'équipe actuelle de la corriger (délai, moral, risque de qualité)", impacts: { qualite: 7, delais: 7, equipe: -7, marge: 0 }, feedback: "L'erreur est corrigée, mais cela prend plus de temps et peut affecter le moral de l'équipe, avec un risque de qualité résiduel." }
+                    ]
+                }
+            ];
+
+            // Catastrophe Events data (new and very punitive)
+            const catastrophes = [
+                {
+                    title: "Effondrement Majeur d'une Section du Canal !", icon: "💥", timeLimit: 8,
+                    text: "Une section du canal en construction vient de s'effondrer suite à un mouvement de terrain imprévu. Des blessés sont à déplorer et les travaux sont à l'arrêt total. Vous devez agir IMMÉDIATEMENT !",
+                    choices: [
+                        { text: "Déployer les équipes de secours et d'ingénierie d'urgence (coût colossal, délai énorme)", impacts: { couts: 30000000, delais: 50, securite: 30, qualite: -20, client: -30, marge: -3 }, feedback: "Vous sauvez des vies et assurez la sécurité, mais le coût et le retard sont astronomiques. La qualité perçue et la satisfaction du maître d'ouvrage sont gravement touchées." },
+                        { text: "Prioriser la stabilisation du site pour limiter les dégâts (coût très élevé, risque)", impacts: { couts: 20000000, securite: 15, delais: 30, qualite: -10, client: -20, marge: -2 }, feedback: "Vous tentez de contenir la catastrophe, mais les impacts financiers, sur les délais et la réputation sont immenses." }
+                    ]
+                },
+                {
+                    title: "Scandale de Corruption Révélé !", icon: "📰", timeLimit: 7,
+                    text: "Une enquête journalistique majeure révèle des allégations de corruption au sein de la gestion du projet. La réputation de l'entreprise est en jeu, les investisseurs paniquent et le financement est menacé. Réagissez VITE !",
+                    choices: [
+                        { text: "Lancer une enquête interne indépendante et coopérer pleinement avec la justice (coût, impact réputationnel initial)", impacts: { couts: 15000000, client: -25, chiffreAffaires: -20000000, equipe: -15, marge: -2.5 }, feedback: "Une action forte pour la transparence, mais qui expose initialement le projet à des pertes financières et de réputation massives." },
+                        { text: "Nier les allégations et lancer une contre-campagne médiatique (risque d'aggravation)", impacts: { client: -40, chiffreAffaires: -30000000, equipe: -25, marge: -3.5 }, feedback: "Une stratégie risquée qui peut entraîner une perte totale de confiance, des poursuites judiciaires et l'arrêt du projet." }
+                    ]
+                },
+                {
+                    title: "Crise Écologique Majeure Imprévue !", icon: "☣️", timeLimit: 10,
+                    text: "La construction a déclenché une pollution environnementale imprévue (ex: fuite de produit toxique, destruction d'un habitat protégé) avec des conséquences désastreuses. Les autorités menacent d'arrêter le chantier. AGISSEZ !",
+                    choices: [
+                        { text: "Mettre en œuvre des mesures de dépollution d'urgence et des compensations écologiques (coût exorbitant, délai)", impacts: { couts: 25000000, delais: 40, client: -20, securite: 20, marge: -3 }, feedback: "Vous tentez de réparer les dégâts écologiques, mais le coût est colossal et le projet subit un retard majeur. La réputation est gravement entachée." },
+                        { text: "Contester les accusations et continuer les travaux (risque légal et d'image)", impacts: { client: -35, securite: -25, chiffreAffaires: -25000000, marge: -3.5 }, feedback: "Une approche agressive qui peut entraîner des amendes massives, des poursuites et l'arrêt définitif du projet par décision de justice." }
+                    ]
+                }
+            ];
+
+            // --- Helper Functions ---
+
+            /**
+             * Formats a number as currency (Euro).
+             * @param {number} value
+             * @returns {string}
+             */
+            const formatCurrency = (value) => {
+                return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
+            };
+
+            /**
+             * Formats a number as percentage.
+             * @param {number} value
+             * @returns {string}
+             */
+            const formatPercentage = (value) => {
+                return `${value.toFixed(0)}%`;
+            };
+
+            /**
+             * Shows a specific screen and hides others with transitions.
+             * This function now only manages the main game and result screens.
+             * The floating power-ups are managed separately as they are part of the game view.
+             * @param {HTMLElement} screenToShow
+             */
+            const showScreen = (screenToShow) => {
+                const screens = [DOMElements.gameScreen, DOMElements.resultScreen]; 
+                screens.forEach(screen => {
+                    if (screen) { // Check if element exists
+                        screen.classList.remove('screen-visible');
+                        screen.classList.add('screen-hidden');
+                    }
+                });
+
+                if (screenToShow) { // Check if element exists
+                    screenToShow.classList.remove('screen-hidden');
+                    screenToShow.classList.add('screen-visible');
+                }
+            };
+
+            /**
+             * Shows a modal overlay with content.
+             * @param {HTMLElement} modalOverlayElement
+             * @param {HTMLElement} modalContentElement
+             */
+            const showModal = (modalOverlayElement, modalContentElement) => {
+                modalOverlayElement.classList.remove('modal-hidden');
+                modalOverlayElement.classList.add('modal-visible');
+                modalContentElement.classList.remove('modal-content-hidden');
+                modalContentElement.classList.add('modal-content-visible');
+            };
+
+            /**
+             * Hides a modal overlay with content.
+             * @param {HTMLElement} modalOverlayElement
+             * @param {HTMLElement} modalContentElement
+             */
+            const hideModal = (modalOverlayElement, modalContentElement) => {
+                modalOverlayElement.classList.remove('modal-visible');
+                modalOverlayElement.classList.add('modal-hidden');
+                modalContentElement.classList.remove('modal-content-visible');
+                modalContentElement.classList.add('modal-content-hidden');
+            };
+
+            /**
+             * Updates the character emoji and speech bubble.
+             * @param {string} emoji
+             * @param {string} text
+             * @param {number} durationMs
+             */
+            const updateCharacterSpeech = (emoji, text, durationMs = 3000) => {
+                DOMElements.characterAvatar.textContent = emoji;
+                DOMElements.speechBubble.textContent = text;
+                DOMElements.speechBubble.classList.add('show');
+
+                // Hide after duration
+                setTimeout(() => {
+                    DOMElements.speechBubble.classList.remove('show');
+                }, durationMs);
+            };
+
+            /**
+             * Calculates a score for a choice based on its impacts.
+             * Used by the X-Ray power-up.
+             * @param {object} impacts
+             * @returns {number}
+             */
+            const calculateChoiceScore = (impacts) => {
+                let score = 0;
+                // Positive impacts are good, negative are bad
+                score += (impacts.chiffreAffaires || 0) / 1000000; // Scale down large numbers for 150M project
+                score -= (impacts.couts || 0) / 1000000;
+                score += (impacts.marge || 0) * 100; // Margin is important, scale up
+                score += (impacts.client || 0) * 5;
+                score += (impacts.equipe || 0) * 5;
+                score += (impacts.qualite || 0) * 5;
+                score -= (impacts.delais || 0) * 5; // Delay is bad, so negative impact is good
+                score += (impacts.securite || 0) * 5;
+                return score;
+            };
+
+            // --- Game Logic Functions ---
+
+            /**
+             * Initializes or resets the game state.
+             */
+            const initGame = () => {
+                state = {
+                    score: 0,
+                    metrics: JSON.parse(JSON.stringify(CONFIG.initialMetrics)), // Deep copy
+                    initialMetricsSnapshot: JSON.parse(JSON.stringify(CONFIG.initialMetrics)), // Snapshot for end-game analysis
+                    powerUps: JSON.parse(JSON.stringify(CONFIG.initialPowerUps)), // Deep copy
+                };
+                currentScenarioIndex = 0;
+                isQuickEventActive = false;
+                isCatastropheActive = false; // Reset catastrophe flag
+                activePowerUp = null;
+                stopTimers();
+                renderMetrics();
+                renderPowerUps();
+                updateProgressBar();
+                
+                // Show game screen
+                showScreen(DOMElements.gameScreen);
+                // Explicitly show floating power-ups as they are part of the game view
+                DOMElements.floatingPowerUps.classList.remove('screen-hidden');
+                DOMElements.floatingPowerUps.classList.add('screen-visible');
+
+                loadScenario(); // Load the first scenario
+                updateCharacterSpeech('👋', 'Bienvenue, Directeur des Travaux ! La simulation du Canal Seine-Nord Europe commence !', 4000);
+            };
+
+            /**
+             * Renders the current metrics in the UI.
+             * Also handles the floating change indicators.
+             * @param {object} [changes={}] - Optional object with metric changes for animation.
+             */
+            const renderMetrics = (changes = {}) => {
+                DOMElements.metricsDisplay.innerHTML = '';
+                for (const key in state.metrics) {
+                    const metric = state.metrics[key];
+                    const metricDiv = document.createElement('div');
+                    metricDiv.className = 'flex items-center justify-between relative'; // Added relative for indicator positioning
+                    
+                    const valueSpan = document.createElement('span');
+                    valueSpan.id = `metric-${key}-value`;
+                    valueSpan.className = 'text-2xl font-bold metric-value';
+                    valueSpan.textContent = metric.isCurrency ? formatCurrency(metric.value) : (metric.isPercentage ? formatPercentage(metric.value) : metric.value);
+
+                    metricDiv.innerHTML = `
+                        <div class="flex items-center">
+                            <span class="text-3xl mr-3">${metric.icon}</span>
+                            <span class="text-lg text-slate-300">${metric.name}</span>
+                        </div>
+                    `;
+                    metricDiv.appendChild(valueSpan);
+                    DOMElements.metricsDisplay.appendChild(metricDiv);
+
+                    // Handle change indicator
+                    if (changes[key] !== undefined && changes[key] !== 0) {
+                        const changeIndicator = document.createElement('span');
+                        changeIndicator.className = `metric-change-indicator ${changes[key] > 0 ? 'positive-change' : 'negative-change'}`;
+                        changeIndicator.textContent = `${changes[key] > 0 ? '+' : ''}${changes[key]}${metric.isCurrency ? '€' : (metric.isPercentage ? '%' : '')}`;
+                        metricDiv.appendChild(changeIndicator);
+
+                        // Trigger animation
+                        requestAnimationFrame(() => {
+                            changeIndicator.classList.add('show');
+                            setTimeout(() => {
+                                changeIndicator.remove();
+                            }, 1000); // Remove after animation
+                        });
+                    }
+                }
+            };
+
+            /**
+             * Renders the power-up buttons in the floating container.
+             */
+            const renderPowerUps = () => {
+                DOMElements.powerUpsDisplay.innerHTML = '';
+                for (const key in state.powerUps) {
+                    const powerUp = state.powerUps[key];
+                    const button = document.createElement('button');
+                    button.id = `power-up-${key}-btn`;
+                    button.className = `btn-power-up flex flex-col items-center justify-center p-2 rounded-full text-white text-center transition-all duration-200 ease-in-out ${activePowerUp === key ? 'highlight-choice' : ''}`;
+                    button.innerHTML = `
+                        <span class="text-4xl">${powerUp.icon}</span>
+                        <span class="font-semibold">${powerUp.name}</span>
+                        <span class="text-sm">(${powerUp.count})</span>
+                        <span class="text-xs text-slate-400 mt-1">${powerUp.description}</span>
+                    `;
+                    button.disabled = powerUp.count <= 0;
+                    button.onclick = () => activatePowerUp(key);
+                    DOMElements.powerUpsDisplay.appendChild(button);
+                }
+            };
+
+            /**
+             * Activates a selected power-up.
+             * @param {string} powerUpKey
+             */
+            const activatePowerUp = (powerUpKey) => {
+                if (state.powerUps[powerUpKey].count > 0) {
+                    playPowerUp();
+                    activePowerUp = powerUpKey;
+                    state.powerUps[powerUpKey].count--; // Decrement count immediately
+                    renderPowerUps(); // Re-render to show new count and highlight
+
+                    updateCharacterSpeech('✨', `Bonus "${state.powerUps[powerUpKey].name}" activé !`, 3000);
+
+                    // Apply immediate effects or modify next choice display
+                    if (powerUpKey === 'xray') {
+                        highlightBestChoice();
+                    }
+                } else {
+                    updateCharacterSpeech('🤔', "Vous n'avez plus de ce bonus !", 2000);
+                }
+            };
+
+            /**
+             * Highlights the best choice based on calculated score.
+             */
+            const highlightBestChoice = () => {
+                const currentEvent = isCatastropheActive ? catastrophes[state.catastropheIndex] : (isQuickEventActive ? quickEvents[state.quickEventIndex] : scenarios[currentScenarioIndex]);
+                if (!currentEvent || !currentEvent.choices) return;
+
+                let bestChoiceIndex = -1;
+                let highestScore = -Infinity;
+
+                currentEvent.choices.forEach((choice, index) => {
+                    const score = calculateChoiceScore(choice.impacts);
+                    if (score > highestScore) {
+                        highestScore = score;
+                        bestChoiceIndex = index;
+                    }
+                });
+
+                // Remove existing highlights
+                document.querySelectorAll('#choices-container .highlight-choice, #quick-event-choices-container .highlight-choice, #catastrophe-choices-container .highlight-choice').forEach(btn => {
+                    btn.classList.remove('highlight-choice');
+                });
+
+                // Add highlight to the best choice
+                if (bestChoiceIndex !== -1) {
+                    const choicesContainer = isCatastropheActive ? DOMElements.catastropheChoicesContainer : (isQuickEventActive ? DOMElements.quickEventChoicesContainer : DOMElements.choicesContainer);
+                    const bestChoiceButton = choicesContainer.children[bestChoiceIndex];
+                    if (bestChoiceButton) {
+                        bestChoiceButton.classList.add('highlight-choice');
+                        updateCharacterSpeech('💡', 'Voici le meilleur choix !', 2000);
+                    }
+                }
+            };
+
+            /**
+             * Loads and displays the current scenario.
+             */
+            const loadScenario = () => {
+                stopTimers(); // Stop any previous timer
+                stopTimerWarning(); // Stop warning sound
+
+                const currentScenario = scenarios[currentScenarioIndex];
+                if (!currentScenario) {
+                    gameOver();
+                    return;
+                }
+
+                playScenarioStart();
+                isQuickEventActive = false; // Ensure quick event state is off
+                isCatastropheActive = false; // Ensure catastrophe state is off
+                activePowerUp = null; // Reset active power-up
+                renderPowerUps(); // Re-render power-ups to clear highlight
+
+                DOMElements.currentScenarioDisplay.textContent = currentScenarioIndex + 1;
+                DOMElements.totalScenariosDisplay.textContent = scenarios.length;
+                DOMElements.scenarioIcon.textContent = currentScenario.icon;
+                DOMElements.scenarioIcon.classList.add('scenario-icon-animate');
+                setTimeout(() => DOMElements.scenarioIcon.classList.remove('scenario-icon-animate'), 800); // Remove class after animation
+
+                DOMElements.scenarioTitle.textContent = currentScenario.title;
+                DOMElements.scenarioText.textContent = currentScenario.text;
+                
+                DOMElements.choicesContainer.innerHTML = '';
+                currentScenario.choices.forEach((choice, index) => {
+                    const choiceButton = document.createElement('button');
+                    choiceButton.className = 'btn w-full text-left py-3 px-4 rounded-xl shadow-md transition-all duration-200 ease-in-out hover:scale-[1.01]';
+                    choiceButton.textContent = choice.text;
+                    choiceButton.onclick = () => handleChoice(choice, currentScenario.timeLimit - timerCountdown);
+                    DOMElements.choicesContainer.appendChild(choiceButton);
+                });
+
+                startMainTimer(currentScenario.timeLimit);
+                updateProgressBar();
+                updateCharacterSpeech('🤔', 'Une nouvelle décision vous attend !', 3000);
+            };
+
+            /**
+             * Starts the main scenario timer.
+             * @param {number} duration - Duration in seconds.
+             */
+            const startMainTimer = (duration) => {
+                timerCountdown = duration;
+                DOMElements.timerDisplay.classList.remove('critical-time');
+                DOMElements.timerDisplay.textContent = `⏱️ 0:${String(timerCountdown).padStart(2, '0')}`;
+
+                mainTimerInterval = setInterval(() => {
+                    timerCountdown--;
+                    DOMElements.timerDisplay.textContent = `⏱️ 0:${String(timerCountdown).padStart(2, '0')}`;
+
+                    if (timerCountdown <= CONFIG.timerWarningThreshold && timerCountdown > 0) {
+                        DOMElements.timerDisplay.classList.add('critical-time');
+                        startTimerWarning();
+                    } else if (timerCountdown <= 0) {
+                        stopTimers();
+                        stopTimerWarning();
+                        DOMElements.timerDisplay.classList.remove('critical-time');
+                        handleChoice(null, 0); // Handle timeout as a choice
+                    }
+                }, 1000);
+            };
+
+            /**
+             * Stops all active timers.
+             */
+            const stopTimers = () => {
+                clearInterval(mainTimerInterval);
+                clearInterval(quickEventTimerInterval);
+                clearInterval(catastropheTimerInterval); // Clear catastrophe timer
+                mainTimerInterval = null;
+                quickEventTimerInterval = null;
+                catastropheTimerInterval = null;
+                stopTimerWarning();
+            };
+
+            /**
+             * Handles a player's choice for a scenario.
+             * @param {object} chosenChoice - The selected choice object.
+             * @param {number} timeTaken - Time taken to make the decision.
+             */
+            const handleChoice = (chosenChoice, timeTaken) => {
+                playClick();
+                stopTimers(); // Stop timer immediately after choice
+
+                let feedbackText = chosenChoice ? chosenChoice.feedback : "Le temps est écoulé ! Vous n'avez pas pris de décision à temps. Cela a des conséquences...";
+                // More punitive timeout impacts
+                let impacts = chosenChoice ? chosenChoice.impacts : { delais: 20, equipe: -10, client: -10, marge: -2 }; 
+                let feedbackTitleText = chosenChoice ? "Conséquences de la décision" : "Temps écoulé !"; // Determine title here
+
+                // Apply power-up specific logic if active
+                if (activePowerUp === 'negociation' && chosenChoice) { 
+                    // Boost client satisfaction for the chosen choice
+                    if (impacts.client !== undefined) {
+                        impacts.client += 15; // Add a bigger bonus to client satisfaction
+                        feedbackText += " Grâce à vos talents de négociation, la satisfaction client est grandement améliorée !";
+                    } else {
+                        impacts.client = 15; // If no client impact, add a base one
+                        feedbackText += " Grâce à vos talents de négociation, la satisfaction client est grandement améliorée !";
+                    }
+                }
+                activePowerUp = null; // Reset active power-up after use
+                renderPowerUps(); // Update power-up display
+
+                applyImpacts(impacts, feedbackText, timeTaken, feedbackTitleText);
+            };
+
+            /**
+             * Applies the impacts of a choice to the game metrics.
+             * @param {object} impacts - The impacts object.
+             * @param {string} feedbackMessage - Message for the feedback modal.
+             * @param {number} timeTaken - Time taken for the decision.
+             * @param {string} feedbackTitleText - Title for the feedback modal.
+             */
+            const applyImpacts = (impacts, feedbackMessage, timeTaken, feedbackTitleText) => {
+                const changesMade = {};
+                DOMElements.impactList.innerHTML = ''; // Clear previous impacts
+
+                for (const key in impacts) {
+                    let changeAmount = impacts[key];
+                    const metric = state.metrics[key];
+
+                    if (metric) {
+                        let impactText = '';
+                        let icon = '';
+
+                        if (key === 'chiffreAffaires' || key === 'couts') {
+                            metric.value += changeAmount;
+                            impactText = `${metric.name}: ${changeAmount > 0 ? '+' : ''}${formatCurrency(changeAmount)}`;
+                            icon = changeAmount > 0 ? '⬆️' : '⬇️';
+                        } else if (key === 'marge') {
+                            // Marge is a percentage, so changeAmount is a percentage point change
+                            metric.value += changeAmount;
+                            impactText = `${metric.name}: ${changeAmount > 0 ? '+' : ''}${changeAmount.toFixed(1)}%`;
+                            icon = changeAmount > 0 ? '⬆️' : '⬇️';
+                        } else {
+                            // Other metrics are direct value changes
+                            metric.value += changeAmount;
+                            impactText = `${metric.name}: ${changeAmount > 0 ? '+' : ''}${changeAmount}`;
+                            icon = changeAmount > 0 ? '⬆️' : '⬇️';
+                        }
+
+                        // Ensure metrics stay within reasonable bounds (e.g., 0-100 for percentages/satisfaction)
+                        if (key !== 'chiffreAffaires' && key !== 'couts') {
+                            metric.value = Math.max(0, Math.min(100, metric.value)); 
+                        }
+                         if (key === 'marge') {
+                            metric.value = Math.max(0, Math.min(100, metric.value)); // Marge should also be between 0 and 100
+                        }
+
+
+                        changesMade[key] = changeAmount; // Store actual change for animation
+
+                        const impactItem = document.createElement('li');
+                        impactItem.className = `flex items-center text-lg ${changeAmount > 0 ? 'text-green-400' : (changeAmount < 0 ? 'text-red-400' : 'text-slate-300')}`;
+                        impactItem.innerHTML = `<span class="mr-2">${icon}</span> ${impactText}`;
+                        DOMElements.impactList.appendChild(impactItem);
+                    }
+                }
+
+                // Update score based on overall metric health and time bonus
+                let scenarioScore = 0;
+                for (const key in state.metrics) {
+                    const metric = state.metrics[key];
+                    // Simple scoring: higher is better, except for costs and delays
+                    if (key === 'chiffreAffaires') scenarioScore += metric.value / 1000000; // Scale for 150M project
+                    else if (key === 'couts') scenarioScore -= metric.value / 1000000; // Scale for 150M project
+                    else if (key === 'marge') scenarioScore += metric.value * 10; // Marge is important
+                    else if (key === 'delais') scenarioScore -= metric.value * 5; // Lower delay is better
+                    else scenarioScore += metric.value * 5;
+                }
+                
+                // Add time bonus if applicable
+                const currentEvent = isCatastropheActive ? catastrophes[state.catastropheIndex] : (isQuickEventActive ? quickEvents[state.quickEventIndex] : scenarios[currentScenarioIndex]);
+                if (currentEvent && (currentEvent.timeLimit - timeTaken) >= CONFIG.timeBonusThreshold) {
+                    state.score += CONFIG.timeBonusPoints;
+                    const timeBonusItem = document.createElement('li');
+                    timeBonusItem.className = `flex items-center text-lg text-amber-400`;
+                    timeBonusItem.innerHTML = `<span class="mr-2">⏱️</span> Bonus de temps ! (+${CONFIG.timeBonusPoints} points)`;
+                    DOMElements.impactList.appendChild(timeBonusItem);
+                }
+
+                state.score += Math.round(scenarioScore / 100); // Scale down score contribution for balance
+
+                renderMetrics(changesMade); // Re-render metrics with changes
+                updateProgressBar();
+
+                // Determine character mood and speech
+                let characterEmoji = '👨‍💼'; // Default
+                let characterSpeech = 'Bonne décision !'; // Default positive
+
+                // Check overall health to adjust character feedback
+                const overallHealth = (state.metrics.client.value + state.metrics.equipe.value + state.metrics.qualite.value + state.metrics.securite.value) / 4;
+                if (overallHealth < 50 || state.metrics.marge.value < 10) { // Adjusted margin threshold for warning
+                    characterEmoji = '😟';
+                    characterSpeech = 'Attention, le projet est en difficulté !';
+                    playNegative();
+                } else if (overallHealth > 80 && state.metrics.marge.value > 15) { // Adjusted margin threshold for positive
+                    characterEmoji = '🤩';
+                    characterSpeech = 'Excellent travail ! Le projet est sur la bonne voie !';
+                    playPositive();
+                } else {
+                    playPositive(); // Play positive sound for neutral/good outcomes
+                }
+                updateCharacterSpeech(characterEmoji, characterSpeech, 4000);
+
+
+                DOMElements.feedbackTitle.textContent = feedbackTitleText; // Use the passed title
+                DOMElements.feedbackText.textContent = feedbackMessage;
+                showModal(DOMElements.modalOverlay, DOMElements.feedbackModal);
+            };
+
+            /**
+             * Updates the scenario progress bar.
+             */
+            const updateProgressBar = () => {
+                const progress = ((currentScenarioIndex + 1) / scenarios.length) * 100;
+                DOMElements.progressBar.style.width = `${progress}%`;
+            };
+
+            /**
+             * Handles the continuation after a scenario.
+             */
+            const continueGame = () => {
+                hideModal(DOMElements.modalOverlay, DOMElements.feedbackModal);
+                currentScenarioIndex++;
+
+                // Check for catastrophe chance first
+                if (Math.random() < CONFIG.catastropheChance && currentScenarioIndex < scenarios.length) {
+                    triggerCatastrophe();
+                } 
+                // Then check for quick event chance
+                else if (Math.random() < CONFIG.quickEventChance && currentScenarioIndex < scenarios.length) {
+                    triggerQuickEvent();
+                } else if (currentScenarioIndex < scenarios.length) {
+                    loadScenario();
+                } else {
+                    gameOver();
+                }
+            };
+
+            /**
+             * Triggers a random quick event.
+             */
+            const triggerQuickEvent = () => {
+                isQuickEventActive = true;
+                state.quickEventIndex = Math.floor(Math.random() * quickEvents.length);
+                const quickEvent = quickEvents[state.quickEventIndex];
+
+                DOMElements.quickEventIcon.textContent = quickEvent.icon;
+                DOMElements.quickEventTitle.textContent = quickEvent.title;
+                DOMElements.quickEventText.textContent = quickEvent.text;
+
+                DOMElements.quickEventChoicesContainer.innerHTML = '';
+                quickEvent.choices.forEach((choice, index) => {
+                    const choiceButton = document.createElement('button');
+                    choiceButton.className = 'btn w-full text-left py-3 px-4 rounded-xl shadow-md transition-all duration-200 ease-in-out hover:scale-[1.01]';
+                    choiceButton.textContent = choice.text;
+                    choiceButton.onclick = () => handleQuickEventChoice(choice, quickEvent.timeLimit - timerCountdown);
+                    DOMElements.quickEventChoicesContainer.appendChild(choiceButton);
+                });
+
+                showModal(DOMElements.quickEventModalOverlay, DOMElements.quickEventModal);
+                startQuickEventTimer(quickEvent.timeLimit);
+                updateCharacterSpeech('🚨', 'Événement rapide ! Agissez vite !', 3000);
+            };
+
+            /**
+             * Starts the quick event timer.
+             * @param {number} duration - Duration in seconds.
+             */
+            const startQuickEventTimer = (duration) => {
+                timerCountdown = duration;
+                DOMElements.quickEventTimerDisplay.classList.remove('critical-time');
+                DOMElements.quickEventTimerDisplay.textContent = `⏱️ 0:${String(timerCountdown).padStart(2, '0')}`;
+
+                quickEventTimerInterval = setInterval(() => {
+                    timerCountdown--;
+                    DOMElements.quickEventTimerDisplay.textContent = `⏱️ 0:${String(timerCountdown).padStart(2, '0')}`;
+
+                    if (timerCountdown <= CONFIG.timerWarningThreshold / 2 && timerCountdown > 0) { // More intense warning for quick events
+                        DOMElements.quickEventTimerDisplay.classList.add('critical-time');
+                        startTimerWarning();
+                    } else if (timerCountdown <= 0) {
+                        stopTimers();
+                        stopTimerWarning();
+                        DOMElements.quickEventTimerDisplay.classList.remove('critical-time');
+                        handleQuickEventChoice(null, 0); // Handle timeout
+                    }
+                }, 1000);
+            };
+
+            /**
+             * Handles a player's choice for a quick event.
+             * @param {object} chosenChoice - The selected choice object.
+             * @param {number} timeTaken - Time taken to make the decision.
+             */
+            const handleQuickEventChoice = (chosenChoice, timeTaken) => {
+                playClick();
+                stopTimers();
+                hideModal(DOMElements.quickEventModalOverlay, DOMElements.quickEventModal);
+
+                let feedbackText = chosenChoice ? chosenChoice.feedback : "Temps écoulé pour l'événement rapide ! Cela a des conséquences...";
+                // More punitive quick event timeout impacts
+                let impacts = chosenChoice ? chosenChoice.impacts : { delais: 10, equipe: -10, securite: -5 }; 
+                let feedbackTitleText = chosenChoice ? "Conséquences de la décision" : "Temps écoulé !"; // Determine title here
+
+                applyImpacts(impacts, feedbackText, timeTaken, feedbackTitleText); // Use the same impact application
+                // After quick event, continueGame will be called from modal continue button
+            };
+
+            /**
+             * Triggers a random catastrophe event.
+             */
+            const triggerCatastrophe = () => {
+                isCatastropheActive = true;
+                state.catastropheIndex = Math.floor(Math.random() * catastrophes.length);
+                const catastrophe = catastrophes[state.catastropheIndex];
+
+                playCatastropheSound(); // Play catastrophe sound
+
+                DOMElements.catastropheIcon.textContent = catastrophe.icon;
+                DOMElements.catastropheTitle.textContent = catastrophe.title;
+                DOMElements.catastropheText.textContent = catastrophe.text;
+
+                DOMElements.catastropheChoicesContainer.innerHTML = '';
+                catastrophe.choices.forEach((choice, index) => {
+                    const choiceButton = document.createElement('button');
+                    choiceButton.className = 'btn w-full text-left py-3 px-4 rounded-xl shadow-md transition-all duration-200 ease-in-out hover:scale-[1.01]';
+                    choiceButton.textContent = choice.text;
+                    choiceButton.onclick = () => handleCatastropheChoice(choice, catastrophe.timeLimit - timerCountdown);
+                    DOMElements.catastropheChoicesContainer.appendChild(choiceButton);
+                });
+
+                showModal(DOMElements.catastropheModalOverlay, DOMElements.catastropheModal);
+                startCatastropheTimer(catastrophe.timeLimit);
+                updateCharacterSpeech('😱', 'CATASTROPHE ! Le projet est en péril !', 5000);
+            };
+
+            /**
+             * Starts the catastrophe event timer.
+             * @param {number} duration - Duration in seconds.
+             */
+            const startCatastropheTimer = (duration) => {
+                timerCountdown = duration;
+                DOMElements.catastropheTimerDisplay.classList.remove('critical-time');
+                DOMElements.catastropheTimerDisplay.textContent = `⏱️ 0:${String(timerCountdown).padStart(2, '0')}`;
+
+                catastropheTimerInterval = setInterval(() => {
+                    timerCountdown--;
+                    DOMElements.catastropheTimerDisplay.textContent = `⏱️ 0:${String(timerCountdown).padStart(2, '0')}`;
+
+                    if (timerCountdown <= CONFIG.timerWarningThreshold / 4 && timerCountdown > 0) { // Even more intense warning for catastrophes
+                        DOMElements.catastropheTimerDisplay.classList.add('critical-time');
+                        startTimerWarning();
+                    } else if (timerCountdown <= 0) {
+                        stopTimers();
+                        stopTimerWarning();
+                        DOMElements.catastropheTimerDisplay.classList.remove('critical-time');
+                        handleCatastropheChoice(null, 0); // Handle timeout
+                    }
+                }, 1000);
+            };
+
+            /**
+             * Handles a player's choice for a catastrophe event.
+             * @param {object} chosenChoice - The selected choice object.
+             * @param {number} timeTaken - Time taken to make the decision.
+             */
+            const handleCatastropheChoice = (chosenChoice, timeTaken) => {
+                playClick();
+                stopTimers();
+                hideModal(DOMElements.catastropheModalOverlay, DOMElements.catastropheModal);
+
+                let feedbackText = chosenChoice ? chosenChoice.feedback : "Le temps est écoulé pour la catastrophe ! Les conséquences sont désastreuses...";
+                // Devastating timeout impacts for catastrophes
+                let impacts = chosenChoice ? chosenChoice.impacts : { chiffreAffaires: -50000000, couts: 20000000, delais: 60, client: -50, equipe: -50, qualite: -50, securite: -50, marge: -5 }; 
+                let feedbackTitleText = chosenChoice ? "Conséquences de la décision" : "Échec Catastrophique !";
+
+                applyImpacts(impacts, feedbackText, timeTaken, feedbackTitleText);
+                isCatastropheActive = false; // Reset catastrophe flag
+                // After catastrophe, continueGame will be called from modal continue button
+            };
+
+
+            /**
+             * Ends the game and displays results.
+             */
+            const gameOver = () => {
+                stopTimers();
+                showScreen(DOMElements.resultScreen);
+                // Explicitly hide floating power-ups when game is over
+                DOMElements.floatingPowerUps.classList.remove('screen-visible');
+                DOMElements.floatingPowerUps.classList.add('screen-hidden');
+                
+                DOMElements.finalScore.textContent = state.score;
+
+                let resultCategory = "";
+                let resultDescription = "";
+                let contactMessage = "";
+
+                // Determine game outcome based on metrics and score
+                const overallHealth = (state.metrics.client.value + state.metrics.equipe.value + state.metrics.qualite.value + state.metrics.securite.value) / 4;
+                const financialHealth = (state.metrics.chiffreAffaires.value - state.metrics.couts.value) / 100000000; // In hundreds of millions for 150M project
+
+                if (state.score >= 20000 && overallHealth >= 85 && financialHealth >= 0.15) {
+                    resultCategory = "Légendaire ! 👑";
+                    resultDescription = "Vous avez non seulement mené le projet à un succès retentissant, mais vous avez également établi de nouvelles normes en matière d'excellence et de rentabilité. Votre héritage est assuré.";
+                    contactMessage = "Votre vision est révolutionnaire. Nous devons absolument collaborer sur le prochain grand projet.";
+                    DOMElements.resultCategory.className = "text-3xl font-bold text-yellow-400 mb-4"; // Gold color
+                    playGameOverWin();
+                } else if (state.score >= 15000 && overallHealth >= 70 && financialHealth >= 0.08) {
+                    resultCategory = "Maître d'Ouvrage Exceptionnel ! 🏆";
+                    resultDescription = "Félicitations ! Vous avez géré le projet de construction avec brio, maintenant des métriques excellentes et une rentabilité impressionnante. Votre leadership est exemplaire.";
+                    contactMessage = "Votre succès est une source d'inspiration. Nous aimerions discuter de vos stratégies.";
+                    DOMElements.resultCategory.className = "text-3xl font-bold text-green-400 mb-4";
+                    playGameOverWin();
+                } else if (state.score >= 8000 && overallHealth >= 55 && financialHealth >= 0.02) {
+                    resultCategory = "Directeur des Travaux Compétent ! ✅";
+                    resultDescription = "Bien joué ! Vous avez mené ce grand projet d'infrastructure à terme avec succès, malgré quelques défis. Une gestion solide et des résultats positifs.";
+                    contactMessage = "Votre performance est solide. Continuons à construire sur cette base.";
+                    DOMElements.resultCategory.className = "text-3xl font-bold text-blue-400 mb-4";
+                    playGameOverWin();
+                } else if (state.score >= 4000 && overallHealth >= 40 && financialHealth >= -0.05) {
+                    resultCategory = "Projet Achevé, mais Coûteux 📉";
+                    resultDescription = "Le projet a été livré, mais au prix de sacrifices importants. La rentabilité a souffert et certains indicateurs clés sont sous pression. Des leçons importantes sont à tirer.";
+                    contactMessage = "Chaque projet est une leçon. Analysons ensemble les points à améliorer et identifions les opportunités de croissance.";
+                    DOMElements.resultCategory.className = "text-3xl font-bold text-orange-400 mb-4"; // Orange for warning
+                    playGameOverLose(); // Slightly negative sound
+                } else if (state.score >= 0 && overallHealth >= 25 && financialHealth >= -0.15) {
+                    resultCategory = "Projet Terminé, mais avec des Défis 🚧";
+                    resultDescription = "Le projet de construction est terminé, mais il a rencontré des difficultés majeures. Des améliorations sont nécessaires pour optimiser les métriques et la rentabilité.";
+                    contactMessage = "Nous devons revoir en profondeur les processus pour éviter de futures complications.";
+                    DOMElements.resultCategory.className = "text-3xl font-bold text-amber-400 mb-4";
+                    playGameOverLose();
+                } else {
+                    resultCategory = "Échec Critique du Projet ❌";
+                    resultDescription = "Malheureusement, le projet de construction a échoué. Des décisions clés ont eu des conséquences négatives importantes sur les métriques et la santé financière, menant à un désastre.";
+                    contactMessage = "Un échec est une opportunité d'apprendre. Revoyons ensemble ce qui n'a pas fonctionné pour éviter de telles situations à l'avenir.";
+                    DOMElements.resultCategory.className = "text-3xl font-bold text-red-400 mb-4";
+                    playGameOverLose();
+                }
+
+                DOMElements.resultCategory.textContent = resultCategory;
+                DOMElements.resultDescription.textContent = resultDescription;
+                DOMElements.contactMessage.textContent = contactMessage;
+
+                // --- Display Metric Analysis ---
+                DOMElements.metricAnalysisResults.innerHTML = '';
+                for (const key in state.metrics) {
+                    const initialMetric = state.initialMetricsSnapshot[key];
+                    const finalMetric = state.metrics[key];
+                    const change = finalMetric.value - initialMetric.value;
+
+                    const metricItem = document.createElement('div');
+                    metricItem.className = 'flex justify-between items-center text-lg';
+
+                    let changeText = '';
+                    let changeClass = 'text-slate-300';
+                    let changeIcon = '';
+
+                    if (change > 0) {
+                        changeText = `(+${initialMetric.isCurrency ? formatCurrency(change) : (initialMetric.isPercentage ? change.toFixed(1) + '%' : change)})`;
+                        changeClass = 'text-green-400';
+                        changeIcon = '⬆️';
+                    } else if (change < 0) {
+                        changeText = `(${initialMetric.isCurrency ? formatCurrency(change) : (initialMetric.isPercentage ? change.toFixed(1) + '%' : change)})`;
+                        changeClass = 'text-red-400';
+                        changeIcon = '⬇️';
+                    } else {
+                        changeText = '(Stable)';
+                        changeClass = 'text-slate-300';
+                        changeIcon = '➡️';
+                    }
+
+                    metricItem.innerHTML = `
+                        <span class="font-semibold">${initialMetric.icon} ${initialMetric.name}:</span>
+                        <span class="flex items-center">
+                            ${initialMetric.isCurrency ? formatCurrency(initialMetric.value) : (initialMetric.isPercentage ? formatPercentage(initialMetric.value) : initialMetric.value)} 
+                            ➡️ 
+                            ${finalMetric.isCurrency ? formatCurrency(finalMetric.value) : (finalMetric.isPercentage ? formatPercentage(finalMetric.value) : finalMetric.value)}
+                            <span class="ml-2 ${changeClass}">${changeIcon} ${changeText}</span>
+                        </span>
+                    `;
+                    DOMElements.metricAnalysisResults.appendChild(metricItem);
+                }
+            };
+
+            // --- Event Listeners ---
+            document.addEventListener('DOMContentLoaded', () => {
+                initGame(); // Initialize game on load, which now directly starts the game
+
+                DOMElements.restartGameBtn.addEventListener('click', () => {
+                    playClick();
+                    initGame(); // Restart the game from the beginning
+                });
+
+                DOMElements.backToMainMenuGameBtn.addEventListener('click', () => {
+                    playClick();
+                    initGame(); // Go back to the start of the game (which is now the game screen)
+                });
+
+                DOMElements.backToMainMenuResultBtn.addEventListener('click', () => {
+                    playClick();
+                    initGame(); // Go back to the start of the game (which is now the game screen)
+                });
+
+                DOMElements.modalContinueBtn.addEventListener('click', () => {
+                    playClick();
+                    continueGame();
+                });
+
+                DOMElements.shareResultsBtn.addEventListener('click', () => {
+                    playClick();
+                    // Construct share text with detailed analysis
+                    let shareText = `J'ai terminé le Project Manager Simulator avec un score de ${state.score} ! Catégorie : ${DOMElements.resultCategory.textContent}.\n\n`;
+                    shareText += `Analyse des Indicateurs Clés :\n`;
+                    for (const key in state.metrics) {
+                        const initialMetric = state.initialMetricsSnapshot[key];
+                        const finalMetric = state.metrics[key];
+                        const change = finalMetric.value - initialMetric.value;
+                        let changeValue = initialMetric.isCurrency ? formatCurrency(change) : (initialMetric.isPercentage ? change.toFixed(1) + '%' : change);
+                        if (change > 0 && !initialMetric.isCurrency) changeValue = '+' + changeValue; // Add plus for positive non-currency changes
+
+                        shareText += `- ${initialMetric.name}: Initial ${initialMetric.isCurrency ? formatCurrency(initialMetric.value) : (initialMetric.isPercentage ? formatPercentage(initialMetric.value) : initialMetric.value)}, Final ${finalMetric.isCurrency ? formatCurrency(finalMetric.value) : (finalMetric.isPercentage ? formatPercentage(finalMetric.value) : finalMetric.value)} (Changement: ${changeValue})\n`;
+                    }
+                    shareText += `\n${DOMElements.resultDescription.textContent}`;
+                    
+                    // Use document.execCommand('copy') for clipboard operations in iframes
+                    const textArea = document.createElement("textarea");
+                    textArea.value = shareText;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                        updateCharacterSpeech('📋', 'Résultats copiés dans le presse-papiers !', 2000);
+                    } catch (err) {
+                        updateCharacterSpeech('❌', 'Échec de la copie des résultats.', 2000);
+                    }
+                    document.body.removeChild(textArea);
+                });
+            });
+        })();
+    </script>
+</body>
+</html>
