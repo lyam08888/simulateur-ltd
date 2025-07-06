@@ -1,269 +1,479 @@
-diff --git a/index.html b/index.html
-index c7fabbda2e81485b6f9c3f90f317e14eaa1596a4..238a9c134f42969a633f370ce34d2105074fae6f 100644
---- a/index.html
-+++ b/index.html
-@@ -1,40 +1,47 @@
- <!DOCTYPE html>
- <html lang="fr">
- <head>
-     <meta charset="UTF-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1.0">
--    <title>Arcade - Menu Principal</title>
-+    <meta name="description" content="Simulateur de gestion de chantier et jeux pédagogiques pour directeurs de travaux">
-+    <meta name="robots" content="index,follow">
-+    <link rel="canonical" href="https://ltd-simulator.example.com/index.html">
-+    <link rel="preconnect" href="https://fonts.googleapis.com">
-+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-+    <title>LTD Simulator - Menu Principal</title>
-+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Ctext y='96' font-size='96'%3E%F0%9F%9A%A7%3C/text%3E%3C/svg%3E">
-     <style>
-         * {
-             margin: 0;
-             padding: 0;
-             box-sizing: border-box;
-         }
- 
-         body {
--            font-family: 'Arial', sans-serif;
-+            font-family: 'Inter', sans-serif;
-             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-             min-height: 100vh;
-             display: flex;
-             align-items: center;
-             justify-content: center;
-             overflow: hidden;
-         }
- 
-         /* Particules animées en arrière-plan */
-         .particles {
-             position: fixed;
-             top: 0;
-             left: 0;
-             width: 100%;
-             height: 100%;
-             overflow: hidden;
-             z-index: 1;
-         }
- 
-         .particle {
-             position: absolute;
-             width: 4px;
-             height: 4px;
-             background: rgba(255, 255, 255, 0.5);
-             border-radius: 50%;
-diff --git a/index.html b/index.html
-index c7fabbda2e81485b6f9c3f90f317e14eaa1596a4..238a9c134f42969a633f370ce34d2105074fae6f 100644
---- a/index.html
-+++ b/index.html
-@@ -142,116 +149,208 @@
- 
-         .game-description {
-             color: rgba(255, 255, 255, 0.8);
-             font-size: 0.9em;
-             line-height: 1.4;
-         }
- 
-         .play-button {
-             display: inline-block;
-             margin-top: 20px;
-             padding: 10px 30px;
-             background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-             color: white;
-             text-decoration: none;
-             border-radius: 25px;
-             font-weight: bold;
-             transition: all 0.3s ease;
-             box-shadow: 0 4px 15px rgba(238, 90, 36, 0.4);
-         }
- 
-         .play-button:hover {
-             transform: scale(1.1);
-             box-shadow: 0 6px 20px rgba(238, 90, 36, 0.6);
-         }
- 
-+        .share-button {
-+            position: fixed;
-+            bottom: 20px;
-+            right: 20px;
-+            background: linear-gradient(45deg, #4cd964, #5ac8fa);
-+            color: white;
-+            border: none;
-+            border-radius: 25px;
-+            padding: 12px 25px;
-+            font-weight: bold;
-+            cursor: pointer;
-+            box-shadow: 0 4px 15px rgba(76, 217, 100, 0.4);
-+            transition: transform 0.3s ease, box-shadow 0.3s ease;
-+            z-index: 50;
-+        }
-+
-+        .share-button:hover {
-+            transform: scale(1.1);
-+            box-shadow: 0 6px 20px rgba(90, 200, 250, 0.6);
-+        }
-+
-+        .mascot {
-+            position: fixed;
-+            bottom: 90px;
-+            right: 20px;
-+            display: flex;
-+            align-items: flex-end;
-+            z-index: 60;
-+        }
-+
-+        .mascot-icon {
-+            font-size: 2.5em;
-+            margin-left: 8px;
-+            animation: mascot-hop 2s infinite ease-in-out;
-+        }
-+
-+        @keyframes mascot-hop {
-+            0%, 100% { transform: translateY(0); }
-+            50% { transform: translateY(-6px); }
-+        }
-+
-+        .speech-bubble {
-+            background: white;
-+            color: #333;
-+            padding: 8px 12px;
-+            border-radius: 10px;
-+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-+            position: relative;
-+            font-size: 0.9em;
-+        }
-+
-+        .speech-bubble::after {
-+            content: '';
-+            position: absolute;
-+            bottom: -8px;
-+            right: 10px;
-+            border-width: 8px 8px 0 8px;
-+            border-style: solid;
-+            border-color: white transparent transparent transparent;
-+        }
-+
-         /* Styles pour les jeux à venir */
-         .coming-soon {
-             opacity: 0.7;
-             cursor: not-allowed;
-         }
- 
-         .coming-soon:hover {
-             transform: none;
-             box-shadow: none;
-         }
- 
-         .coming-soon .play-button.disabled {
-             background: linear-gradient(45deg, #95a5a6, #7f8c8d);
-             cursor: not-allowed;
-             box-shadow: none;
-         }
- 
-         .coming-soon .play-button.disabled:hover {
-             transform: none;
-             box-shadow: none;
-         }
- 
-         @media (max-width: 768px) {
-             h1 {
-                 font-size: 2.5em;
-             }
-             
-             .games-grid {
-                 grid-template-columns: 1fr;
-                 gap: 20px;
-             }
-         }
-     </style>
- </head>
- <body>
-     <div class="particles" id="particles"></div>
-     
-     <div class="container">
-         <h1>🏗️ LTd Simulator 🏗️</h1>
-         
-         <div class="games-grid">
-             <div class="game-card" onclick="navigateToGame('simulateur-directeur-travaux.html')">
--                <span class="game-icon">👷</span>
-+                <span class="game-icon" role="img" aria-label="Directeur travaux">👷</span>
-                 <h2 class="game-title">Simulateur Directeur Travaux</h2>
-                 <p class="game-description">Gérez vos chantiers, coordonnez vos équipes et menez vos projets à terme dans ce simulateur réaliste!</p>
-                 <a href="#" class="play-button">Jouer</a>
-             </div>
-             
-             <div class="game-card coming-soon">
--                <span class="game-icon">🚧</span>
-+                <span class="game-icon" role="img" aria-label="Bientôt">🚧</span>
-                 <h2 class="game-title">À venir</h2>
-                 <p class="game-description">Un nouveau simulateur arrive bientôt! Restez connecté pour découvrir la prochaine expérience.</p>
-                 <a href="#" class="play-button disabled">Bientôt disponible</a>
-             </div>
-         </div>
-+
-+        <button class="share-button" onclick="shareSite()">Partager</button>
-+        <div class="mascot" id="mascot">
-+            <div class="speech-bubble" id="mascot-bubble">Bienvenue&nbsp;!</div>
-+            <div class="mascot-icon" role="img" aria-label="Mascotte">👷‍♂️</div>
-+        </div>
-     </div>
- 
-     <script>
-         // Créer des particules animées
-         function createParticles() {
-             const particlesContainer = document.getElementById('particles');
-             const particleCount = 50;
-             
-             for (let i = 0; i < particleCount; i++) {
-                 const particle = document.createElement('div');
-                 particle.classList.add('particle');
-                 particle.style.left = Math.random() * 100 + '%';
-                 particle.style.animationDelay = Math.random() * 20 + 's';
-                 particle.style.opacity = Math.random() * 0.5 + 0.3;
-                 particlesContainer.appendChild(particle);
-             }
-         }
-         
-         createParticles();
-         
-         // Navigation vers les jeux
-         function navigateToGame(gameUrl) {
-             // Redirection directe sans animation pour tester
-             window.location.href = gameUrl;
-         }
-         
-         // Empêcher le comportement par défaut des liens
-         document.querySelectorAll('.play-button').forEach(button => {
-             button.addEventListener('click', (e) => {
-                 e.preventDefault();
-                 e.stopPropagation();
-             });
-         });
-+
-+        function mascotSpeak(message, duration = 5000) {
-+            const bubble = document.getElementById('mascot-bubble');
-+            bubble.textContent = message;
-+            bubble.style.display = 'block';
-+            setTimeout(() => { bubble.style.display = 'none'; }, duration);
-+        }
-+
-+        function shareSite() {
-+            if (navigator.share) {
-+                navigator.share({
-+                    title: 'LTd Simulator',
-+                    text: 'Viens tester ce simulateur de chantier !',
-+                    url: window.location.href
-+                }).then(() => mascotSpeak('Merci pour le partage !'))
-+                  .catch(() => {});
-+            } else {
-+                navigator.clipboard.writeText(window.location.href);
-+                mascotSpeak('Lien copié !');
-+            }
-+        }
-+
-+        window.addEventListener('load', () => {
-+            mascotSpeak('Bienvenue ! Choisis un jeu pour commencer.', 6000);
-+        });
-     </script>
- </body>
- </html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Simulateur de gestion de chantier et jeux pédagogiques pour directeurs de travaux">
+    <meta name="robots" content="index,follow">
+    <link rel="canonical" href="https://ltd-simulator.example.com/index.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>LTD Simulator - Menu Principal</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Ctext y='96' font-size='96'%3E%F0%9F%9A%A7%3C/text%3E%3C/svg%3E">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Particules animées en arrière-plan */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            text-align: center;
+            z-index: 10;
+            position: relative;
+            max-width: 1200px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            color: #ffffff;
+            margin-bottom: 50px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            font-weight: 800;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s;
+            opacity: 0;
+        }
+
+        .game-card:hover::before {
+            animation: shimmer 0.5s ease-in-out;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%) translateY(-100%) rotate(45deg);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(100%) translateY(100%) rotate(45deg);
+                opacity: 0;
+            }
+        }
+
+        .game-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            display: block;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .game-title {
+            font-size: 1.8em;
+            color: #ffffff;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .game-description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9em;
+            line-height: 1.4;
+            margin-bottom: 20px;
+        }
+
+        .play-button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(238, 90, 36, 0.4);
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .play-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(238, 90, 36, 0.6);
+        }
+
+        .share-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #4cd964, #5ac8fa);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 25px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(76, 217, 100, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            z-index: 50;
+            font-size: 1em;
+        }
+
+        .share-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(90, 200, 250, 0.6);
+        }
+
+        .mascot {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            display: flex;
+            align-items: flex-end;
+            z-index: 60;
+        }
+
+        .mascot-icon {
+            font-size: 2.5em;
+            margin-left: 8px;
+            animation: mascot-hop 2s infinite ease-in-out;
+        }
+
+        @keyframes mascot-hop {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .speech-bubble {
+            background: white;
+            color: #333;
+            padding: 10px 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: relative;
+            font-size: 0.9em;
+            max-width: 200px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .speech-bubble.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            right: 15px;
+            border-width: 8px 8px 0 8px;
+            border-style: solid;
+            border-color: white transparent transparent transparent;
+        }
+
+        /* Styles pour les jeux à venir */
+        .coming-soon {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .coming-soon:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .coming-soon .play-button.disabled {
+            background: linear-gradient(45deg, #95a5a6, #7f8c8d);
+            cursor: not-allowed;
+            box-shadow: 0 4px 15px rgba(127, 140, 141, 0.4);
+        }
+
+        .coming-soon .play-button.disabled:hover {
+            transform: none;
+            box-shadow: 0 4px 15px rgba(127, 140, 141, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
+            
+            .games-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .game-card {
+                padding: 30px 20px;
+            }
+
+            .mascot {
+                bottom: 80px;
+                right: 10px;
+            }
+
+            .share-button {
+                bottom: 10px;
+                right: 10px;
+                padding: 10px 20px;
+            }
+
+            .speech-bubble {
+                max-width: 160px;
+                font-size: 0.8em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 2em;
+                margin-bottom: 30px;
+            }
+
+            .game-card {
+                padding: 25px 15px;
+            }
+
+            .game-icon {
+                font-size: 3em;
+            }
+
+            .game-title {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <div class="container">
+        <h1>🏗️ LTD Simulator 🏗️</h1>
+        
+        <div class="games-grid">
+            <div class="game-card" onclick="navigateToGame('simulateur-directeur-travaux.html')">
+                <span class="game-icon" role="img" aria-label="Directeur travaux">👷</span>
+                <h2 class="game-title">Simulateur Directeur Travaux</h2>
+                <p class="game-description">Gérez vos chantiers, coordonnez vos équipes et menez vos projets à terme dans ce simulateur réaliste!</p>
+                <button class="play-button" onclick="event.stopPropagation(); navigateToGame('simulateur-directeur-travaux.html')">Jouer</button>
+            </div>
+            
+            <div class="game-card coming-soon">
+                <span class="game-icon" role="img" aria-label="Bientôt disponible">🚧</span>
+                <h2 class="game-title">Prochainement</h2>
+                <p class="game-description">Un nouveau simulateur arrive bientôt ! Restez connecté pour découvrir la prochaine expérience de gestion.</p>
+                <button class="play-button disabled" disabled>Bientôt disponible</button>
+            </div>
+        </div>
+
+        <button class="share-button" onclick="shareSite()" aria-label="Partager le site">
+            📤 Partager
+        </button>
+
+        <div class="mascot" id="mascot">
+            <div class="speech-bubble" id="mascot-bubble">Bienvenue !</div>
+            <div class="mascot-icon" role="img" aria-label="Mascotte du site">👷‍♂️</div>
+        </div>
+    </div>
+
+    <script>
+        // Créer des particules animées
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 40;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                particle.style.opacity = Math.random() * 0.4 + 0.2;
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Navigation vers les jeux
+        function navigateToGame(gameUrl) {
+            // Vérifier si le fichier existe ou utiliser une page de redirection
+            if (gameUrl) {
+                window.location.href = gameUrl;
+            }
+        }
+        
+        // Gestion de la mascotte
+        function mascotSpeak(message, duration = 4000) {
+            const bubble = document.getElementById('mascot-bubble');
+            bubble.textContent = message;
+            bubble.classList.add('show');
+            
+            setTimeout(() => {
+                bubble.classList.remove('show');
+            }, duration);
+        }
+
+        // Fonction de partage améliorée
+        function shareSite() {
+            const shareData = {
+                title: 'LTD Simulator',
+                text: 'Découvrez ce simulateur de gestion de chantier professionnel !',
+                url: window.location.href
+            };
+
+            if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+                navigator.share(shareData)
+                    .then(() => mascotSpeak('Merci pour le partage ! 🎉'))
+                    .catch((error) => {
+                        if (error.name !== 'AbortError') {
+                            fallbackShare();
+                        }
+                    });
+            } else {
+                fallbackShare();
+            }
+        }
+
+        function fallbackShare() {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(window.location.href)
+                    .then(() => mascotSpeak('Lien copié dans le presse-papiers ! 📋'))
+                    .catch(() => mascotSpeak('Impossible de copier le lien'));
+            } else {
+                // Fallback pour les navigateurs très anciens
+                const textArea = document.createElement('textarea');
+                textArea.value = window.location.href;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    mascotSpeak('Lien copié ! 📋');
+                } catch (err) {
+                    mascotSpeak('Partagez ce lien : ' + window.location.href, 6000);
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+
+        // Messages aléatoires de la mascotte
+        const mascotMessages = [
+            "Prêt à gérer un chantier ? 🏗️",
+            "Attention aux délais ! ⏰",
+            "N'oubliez pas la sécurité ! 🦺",
+            "Coordonnez bien vos équipes ! 👥",
+            "Gérez votre budget ! 💰"
+        ];
+
+        function randomMascotMessage() {
+            const randomMessage = mascotMessages[Math.floor(Math.random() * mascotMessages.length)];
+            mascotSpeak(randomMessage);
+        }
+
+        // Initialisation
+        window.addEventListener('load', () => {
+            createParticles();
+            
+            // Message de bienvenue
+            setTimeout(() => {
+                mascotSpeak('Bienvenue dans LTD Simulator ! 🎯', 5000);
+            }, 1000);
+
+            // Messages aléatoires périodiques
+            setInterval(randomMascotMessage, 30000);
+        });
+
+        // Gestion des erreurs
+        window.addEventListener('error', (event) => {
+            console.error('Erreur détectée:', event.error);
+        });
+
+        // Amélioration de l'accessibilité
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                const target = event.target;
+                if (target.classList.contains('game-card') && !target.classList.contains('coming-soon')) {
+                    navigateToGame('simulateur-directeur-travaux.html');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
