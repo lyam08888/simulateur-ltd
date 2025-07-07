@@ -21,14 +21,13 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            /* Enhanced background with radial gradient for depth */
             background: radial-gradient(circle at 75% 25%, #2a5298 0%, #1e3c72 100%);
             min-height: 100vh;
             display: flex;
-            flex-direction: column; /* Allow content to stack vertically */
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between; /* Space out header, main content, and ticker */
-            overflow: hidden; /* Hide overflow for particles */
+            overflow-y: auto; 
+            overflow-x: hidden;
             position: relative;
         }
 
@@ -45,110 +44,124 @@
 
         .particle {
             position: absolute;
-            background: rgba(255, 255, 255, 0.6); /* Slightly brighter particles */
+            background: rgba(255, 255, 255, 0.6);
             border-radius: 50%;
             animation: float 15s infinite linear;
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.4); /* Subtle glow */
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
         }
 
-        /* Particle animation keyframes */
         @keyframes float {
             0% {
                 transform: translateY(100vh) rotate(0deg);
-                opacity: 0; /* Start invisible */
+                opacity: 0;
             }
             20% {
-                opacity: 0.8; /* Fade in more */
+                opacity: 0.8;
             }
             80% {
-                opacity: 0.8; /* Stay visible */
+                opacity: 0.8;
             }
             100% {
                 transform: translateY(-100vh) rotate(360deg);
-                opacity: 0; /* Fade out */
+                opacity: 0;
             }
         }
 
-        /* Main container for content - now a flex container for games and news */
-        .main-content-wrapper {
-            display: flex;
-            flex-direction: row; /* Default to row for desktop */
-            justify-content: center; /* Center content horizontally */
-            align-items: flex-start; /* Align items to the top */
-            gap: 40px; /* Space between games and news */
-            max-width: 1200px;
+        /* Top Header Area - Fixed at the top */
+        .top-header-area {
             width: 100%;
-            padding: 20px;
-            flex-grow: 1; /* Allow to take available height */
-            z-index: 10;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 10px;
+        }
+
+        /* Recruitment Ticker (Flash Infos) - now at the very top */
+        .recruitment-ticker {
+            background: linear-gradient(90deg, #ff9a9e 0%, #fad0c4 100%);
+            color: #333;
+            padding: 8px 0;
+            width: 100%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            white-space: nowrap;
             position: relative;
-            opacity: 0; /* Hidden initially for entrance animation */
-            transform: translateY(20px);
-            animation: fadeInSlideUp 0.8s ease-out forwards;
-            animation-delay: 0.5s; /* Delay for particles to appear first */
+            z-index: 20;
+            font-weight: 600;
+            font-size: 1em;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+            text-align: center;
         }
 
-        /* Entrance animation for the content wrapper */
-        @keyframes fadeInSlideUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .ticker-content {
+            display: inline-block;
+            padding-left: 100%;
+            animation: scroll-left 30s linear infinite;
+            animation-delay: 2s;
         }
 
-        /* Header section with title and LTD website button */
+        @keyframes scroll-left {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* Main Header Content - Contains title only */
+        .main-header-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            padding: 15px 20px;
+            position: relative;
+        }
+
         .header-section {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-bottom: 50px;
-            z-index: 10; /* Ensure header is above particles */
-            position: relative; /* For z-index to work */
+            margin: 0;
         }
 
         h1 {
-            font-size: 3.5em;
+            font-size: 2.8em;
             color: #ffffff;
-            margin-bottom: 20px;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            margin-bottom: 0;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
             font-weight: 800;
+            text-align: center;
         }
 
-        /* LTD Website Button */
-        .ltd-website-button {
-            display: inline-block;
-            padding: 12px 30px;
-            background: linear-gradient(45deg, #007bff, #00c6ff); /* Blue gradient */
-            color: white;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
-            border: none;
-            cursor: pointer;
-            font-size: 1em;
-            margin-top: 10px;
+        /* Main Content Wrapper - now below the fixed header */
+        .main-content-wrapper {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 40px;
+            max-width: 1200px;
+            width: 100%;
+            padding: 20px;
+            flex-grow: 1;
+            z-index: 10;
+            position: relative;
+            padding-top: 150px; /* Placeholder, will refine with JS for dynamic height */
+            padding-bottom: 100px; /* Placeholder for fixed bottom bar */
         }
 
-        .ltd-website-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.6);
-            background: linear-gradient(45deg, #0056b3, #0099cc); /* Darker on hover */
-        }
-
-        .ltd-website-button:active {
-            transform: translateY(2px); /* Press down effect */
-            box-shadow: 0 2px 10px rgba(0, 123, 255, 0.4);
-        }
-
-        /* Games Grid - now takes a flexible width */
+        /* Games Grid */
         .games-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
-            flex: 2; /* Takes 2/3 of available space */
-            min-width: 600px; /* Minimum width for games grid */
+            flex: 1;
+            min-width: 300px;
         }
 
         /* Individual game card styling */
@@ -258,133 +271,6 @@
             box-shadow: 0 2px 10px rgba(238, 90, 36, 0.4);
         }
 
-        /* Share button */
-        .share-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: linear-gradient(45deg, #4cd964, #5ac8fa);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            padding: 12px 25px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(76, 217, 100, 0.4);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            z-index: 50;
-            font-size: 1em;
-        }
-
-        .share-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(90, 200, 250, 0.6);
-        }
-
-        .share-button:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 10px rgba(90, 200, 250, 0.4);
-        }
-
-        /* Mascot styling */
-        .mascot {
-            position: fixed;
-            bottom: 90px;
-            right: 20px;
-            display: flex;
-            align-items: flex-end;
-            z-index: 60;
-            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
-            animation: mascot-glow 3s infinite alternate ease-in-out;
-        }
-
-        @keyframes mascot-glow {
-            0% { filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3)); }
-            100% { filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.6)); }
-        }
-
-        .mascot-icon {
-            font-size: 4.5em;
-            margin-left: 8px;
-            animation: mascot-hop 0.7s infinite ease-in-out,
-                       mascot-breathe 1.8s infinite ease-in-out,
-                       mascot-sway 2.2s infinite ease-in-out;
-            transform-origin: bottom center;
-        }
-
-        /* Mascot animations */
-        @keyframes mascot-hop {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-30px); }
-        }
-
-        @keyframes mascot-breathe {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.15); }
-        }
-
-        @keyframes mascot-sway {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(10deg); }
-            75% { transform: rotate(-10deg); }
-        }
-
-        .speech-bubble {
-            background: white;
-            color: #333;
-            padding: 15px 22px;
-            border-radius: 25px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            position: absolute;
-            bottom: 100%;
-            right: 0;
-            margin-bottom: 15px;
-            font-size: 1.1em;
-            max-width: 280px;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            opacity: 0;
-            transform: translateY(40px) scale(0.6);
-            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            transform-origin: bottom right;
-            text-shadow: 0 1px 1px rgba(0,0,0,0.1);
-        }
-
-        .speech-bubble.show {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-
-        .speech-bubble::after {
-            content: '';
-            position: absolute;
-            bottom: -12px;
-            right: 25px;
-            border-width: 12px 12px 0 12px;
-            border-style: solid;
-            border-color: white transparent transparent transparent;
-        }
-
-        /* Emoji animation */
-        .mascot-emoji {
-            font-size: 3.5em;
-            position: absolute;
-            bottom: 100%;
-            right: 20px;
-            margin-bottom: 25px;
-            opacity: 0;
-            transform: translateY(20px) scale(0.5);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 65;
-            pointer-events: none;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
-        }
-
-        .mascot-emoji.show {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-
         /* Styles for "Coming Soon" games */
         .game-card.coming-soon {
             opacity: 0.6;
@@ -439,160 +325,226 @@
             100% { transform: scale(1.02); opacity: 0.9; }
         }
 
-        /* News Feed Section - now takes a flexible width */
-        .news-feed-section {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(8px);
-            border-radius: 15px;
-            padding: 20px;
-            flex: 1; /* Takes 1/3 of available space */
-            min-width: 300px; /* Minimum width for news section */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            text-align: left;
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            position: relative;
-            overflow: hidden;
-            display: flex; /* Use flexbox for internal alignment */
-            flex-direction: column;
-        }
-
-        .news-feed-section h2 {
-            color: #ffffff;
-            font-size: 2em;
-            margin-bottom: 20px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-            padding-bottom: 10px;
-        }
-
-        .news-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            flex-grow: 1; /* Allow list to take available space */
-            overflow-y: auto; /* Enable scrolling for long news lists */
-            padding-right: 10px; /* Space for scrollbar */
-        }
-
-        /* Custom scrollbar for news list */
-        .news-list::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .news-list::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
-
-        .news-list::-webkit-scrollbar-thumb {
-            background-color: rgba(255, 255, 255, 0.4);
-            border-radius: 10px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .news-item {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1.1em;
-            margin-bottom: 12px;
-            line-height: 1.5;
-            display: flex;
-            align-items: flex-start;
-            transition: transform 0.2s ease-out;
-        }
-
-        .news-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .news-item:hover {
-            transform: translateX(5px);
-            color: #fff;
-        }
-
-        .news-item::before {
-            content: '📰'; /* News icon */
-            margin-right: 10px;
-            font-size: 1.2em;
-            line-height: 1;
-        }
-
-        /* Recruitment Ticker (Flash Infos) */
-        .recruitment-ticker {
-            background: linear-gradient(90deg, #ff9a9e 0%, #fad0c4 100%); /* Warm gradient */
-            color: #333;
-            padding: 10px 0;
+        /* Bottom Fixed Area */
+        .bottom-fixed-area {
             width: 100%;
-            margin-top: auto; /* Push to bottom if content is short */
-            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            white-space: nowrap;
-            position: relative;
-            z-index: 20;
-            font-weight: 600;
-            font-size: 1.1em;
-            border-top: 2px solid rgba(255, 255, 255, 0.4);
-            border-bottom: 2px solid rgba(255, 255, 255, 0.4);
-            text-align: center; /* Center text within the ticker */
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
         }
 
-        .ticker-content {
+        .bottom-right-elements {
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+        }
+
+        /* Learn More Button */
+        .learn-more-button {
             display: inline-block;
-            padding-left: 100%; /* Start off-screen to the right */
-            animation: scroll-left 30s linear infinite; /* Adjust duration for speed */
-            animation-delay: 2s; /* Delay start slightly */
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #00c6ff, #007bff);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+            border: none;
+            cursor: pointer;
+            font-size: 0.95em;
         }
 
-        @keyframes scroll-left {
-            0% { transform: translateX(0%); }
-            100% { transform: translateX(-100%); } /* Scroll full width of content */
+        .learn-more-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.6);
+            background: linear-gradient(45deg, #0099cc, #0056b3);
+        }
+
+        .learn-more-button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 10px rgba(0, 123, 255, 0.4);
+        }
+
+        /* Share button - IMPROVED STYLES */
+        .share-button {
+            position: relative;
+            top: auto;
+            right: auto;
+            margin: 0;
+            padding: 10px 20px;
+            font-size: 0.9em;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53); /* More vibrant gradient */
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2); /* Added text shadow */
+            letter-spacing: 0.5px; /* Slight letter spacing */
+        }
+
+        .share-button:hover {
+            transform: scale(1.08) rotate(3deg); /* More playful hover effect */
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6); /* Stronger shadow */
+            background: linear-gradient(45deg, #ff4c4c, #ff7a3d); /* Darker on hover */
+        }
+
+        .share-button:active {
+            transform: translateY(2px) scale(0.98); /* Press down effect */
+            box-shadow: 0 2px 10px rgba(255, 107, 107, 0.4);
+        }
+
+        /* Mascot styling - now inside bottom-right-elements */
+        .mascot {
+            position: relative;
+            top: auto;
+            right: auto;
+            bottom: auto;
+            margin: 0;
+            display: flex;
+            align-items: flex-end;
+            z-index: 60;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+            animation: mascot-glow 3s infinite alternate ease-in-out;
+        }
+
+        .mascot-icon {
+            font-size: 4.5em;
+            margin-left: 8px;
+            animation: mascot-hop 0.7s infinite ease-in-out,
+                       mascot-breathe 1.8s infinite ease-in-out,
+                       mascot-sway 2.2s infinite ease-in-out;
+            transform-origin: bottom center;
+        }
+
+        /* Speech bubble and emoji relative to mascot - IMPROVED STYLES */
+        .speech-bubble {
+            background: white;
+            color: #333;
+            padding: 15px 22px;
+            border-radius: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            position: absolute;
+            bottom: calc(100% + 15px); /* Position above mascot icon with more space */
+            right: 0;
+            font-size: 1.1em;
+            max-width: 280px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            opacity: 0;
+            transform: translateY(40px) scale(0.6);
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            transform-origin: bottom right;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.1);
+            pointer-events: none; /* Make it non-interactive */
+        }
+
+        .speech-bubble.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            right: 25px;
+            border-width: 12px 12px 0 12px;
+            border-style: solid;
+            border-color: white transparent transparent transparent;
+        }
+
+        /* Emoji animation - IMPROVED STYLES */
+        .mascot-emoji {
+            font-size: 3.5em;
+            position: absolute;
+            bottom: calc(100% + 25px); /* Position above mascot icon with more space */
+            right: 20px;
+            opacity: 0;
+            transform: translateY(20px) scale(0.5);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 65;
+            pointer-events: none; /* Make it non-interactive */
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+
+        .mascot-emoji.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
         }
 
         /* Responsive adjustments */
-        @media (max-width: 1024px) { /* Adjust breakpoint for two columns */
+        @media (max-width: 1024px) {
             .main-content-wrapper {
-                flex-direction: column; /* Stack games and news vertically */
-                align-items: center; /* Center items when stacked */
-                gap: 30px; /* Space between stacked sections */
+                flex-direction: column;
+                align-items: center;
+                gap: 30px;
+                padding-top: 180px;
             }
 
-            .games-grid,
-            .news-feed-section {
-                flex: none; /* Remove flex sizing */
-                width: 100%; /* Take full width */
-                min-width: unset; /* Remove min-width constraint */
+            .games-grid {
+                flex: none;
+                width: 100%;
+                min-width: unset;
             }
 
-            .news-feed-section {
-                margin-top: 0; /* Remove top margin when stacked */
+            .top-header-area {
+                padding-bottom: 0;
             }
-        }
 
-        @media (max-width: 768px) {
+            .main-header-content {
+                flex-direction: column;
+                align-items: center;
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+
+            .header-section {
+                align-items: center;
+                margin-bottom: 0;
+            }
+
             h1 {
                 font-size: 2.5em;
-            }
-            
-            .game-card {
-                padding: 30px 20px;
+                margin-bottom: 0;
             }
 
-            .mascot {
-                bottom: 80px;
-                right: 10px;
-            }
-
-            .share-button {
-                bottom: 10px;
-                right: 10px;
+            .bottom-fixed-area {
+                flex-direction: column;
                 padding: 10px 20px;
+                gap: 10px;
             }
-
+            .bottom-right-elements {
+                flex-direction: column;
+                gap: 10px;
+                width: 100%;
+            }
+            .learn-more-button, .share-button {
+                width: 100%;
+                text-align: center;
+            }
+            .mascot {
+                margin-top: 10px;
+            }
+            .mascot-icon {
+                font-size: 3.5em;
+            }
             .speech-bubble {
+                bottom: calc(100% + 10px); /* Adjust for smaller screens */
                 max-width: 180px;
                 font-size: 0.9em;
                 padding: 10px 15px;
                 border-radius: 15px;
-                margin-bottom: 10px;
             }
             .speech-bubble::after {
                 bottom: -8px;
@@ -600,69 +552,60 @@
                 border-width: 8px 8px 0 8px;
             }
             .mascot-emoji {
+                bottom: calc(100% + 15px); /* Adjust for smaller screens */
                 font-size: 2.8em;
-                margin-bottom: 15px;
             }
+        }
 
-            .ltd-website-button {
-                padding: 10px 20px;
-                font-size: 0.9em;
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
             }
-
-            .coming-soon-overlay {
-                font-size: 1.5em;
+            .mascot-icon {
+                font-size: 3em;
             }
-
-            .news-feed-section {
-                padding: 15px;
-                width: 95%;
+            .speech-bubble {
+                max-width: 150px;
+                font-size: 0.8em;
+                padding: 8px 12px;
             }
-
-            .news-feed-section h2 {
-                font-size: 1.8em;
+            .speech-bubble::after {
+                bottom: -6px;
+                right: 10px;
+                border-width: 6px 6px 0 6px;
             }
-
-            .news-item {
-                font-size: 1em;
+            .share-button, .learn-more-button {
+                padding: 8px 15px;
+                font-size: 0.8em;
             }
-
             .recruitment-ticker {
-                font-size: 0.9em;
+                font-size: 0.8em;
+                padding: 6px 0;
+            }
+            .main-content-wrapper {
+                padding-top: 160px;
             }
         }
 
         @media (max-width: 480px) {
-            .container {
-                padding: 15px;
-            }
-
             h1 {
-                font-size: 2em;
-                margin-bottom: 30px;
+                font-size: 1.8em;
             }
-
-            .game-card {
-                padding: 25px 15px;
+            .mascot-icon {
+                font-size: 2.5em;
             }
-
-            .game-icon {
-                font-size: 3em;
+            .speech-bubble {
+                max-width: 120px;
+                font-size: 0.7em;
+                padding: 6px 10px;
             }
-
-            .game-title {
-                font-size: 1.5em;
+            .speech-bubble::after {
+                bottom: -5px;
+                right: 8px;
+                border-width: 5px 5px 0 5px;
             }
-
-            .header-section {
-                margin-bottom: 30px;
-            }
-
-            .news-feed-section {
-                padding: 10px;
-            }
-
-            .news-feed-section h2 {
-                font-size: 1.5em;
+            .main-content-wrapper {
+                padding-top: 140px;
             }
         }
     </style>
@@ -670,13 +613,24 @@
 <body>
     <div class="particles" id="particles"></div>
     
-    <div class="header-section">
-        <h1>🏗️ LTD Simulator 🏗️</h1>
-        <a href="https://www.ltd-international.com/" target="_blank" class="ltd-website-button" aria-label="Visiter le site LTD International">
-            Visiter LTD International
-        </a>
+    <!-- Top Header Area - Fixed at the top -->
+    <div class="top-header-area">
+        <!-- Recruitment Ticker (Flash Infos) -->
+        <div class="recruitment-ticker">
+            <div class="ticker-content">
+                ✨ Flash Infos Recrutement : LTD International recrute des Chefs de Projet BTP, Ingénieurs Structure, Conducteurs de Travaux et Géomètres-Topographes ! Envoyez votre CV dès maintenant ! 🚀 Des opportunités passionnantes vous attendent ! 🌟
+            </div>
+        </div>
+
+        <!-- Main Header Content - Contains title only -->
+        <div class="main-header-content">
+            <div class="header-section">
+                <h1>🏗️ LTD Simulator 🏗️</h1>
+            </div>
+        </div>
     </div>
 
+    <!-- Main Content Wrapper - now below the fixed header and scrollable -->
     <div class="main-content-wrapper">
         <div class="games-grid">
             <!-- Existing games -->
@@ -719,39 +673,23 @@
                 <button class="play-button disabled">Bientôt</button>
             </div>
         </div>
-
-        <!-- News Feed Section - now on the right -->
-        <div class="news-feed-section">
-            <h2>Actualités BTP</h2>
-            <ul class="news-list">
-                <li class="news-item">Un projet de loi pour mettre fin aux logements "bouilloires" est en préparation.</li>
-                <li class="news-item">Lancement d'un concours international d'architecture pour la rénovation du Louvre.</li>
-                <li class="news-item">La société Eiffage condamnée pour homicide involontaire sur un chantier du Grand Paris Express en 2023.</li>
-                <li class="news-item">MaPrimeRénov' : les dépôts de dossiers reprendront le 15 septembre.</li>
-                <li class="news-item">Suspension de la reprise des déchets de démolition par Valobat.</li>
-                <li class="news-item">L'économie française a de nouveau stagné au dernier trimestre 2024.</li>
-                <li class="news-item">Les permis de construire accordés aux logements ont enregistré une baisse à deux chiffres en 2024.</li>
-                <li class="news-item">Le marché de la construction en France devrait se redresser de 1.3% en 2025.</li>
-                <li class="news-item">Le nouveau PTZ élargi entre en vigueur au 1er avril.</li>
-                <li class="news-item">Une étude prouve la diminution des douleurs avec l'exosquelette EXO-01 d'Hilti.</li>
-            </ul>
-        </div>
-
-        <button class="share-button" onclick="shareSite()" aria-label="Partager le site">
-            📤 Partager
-        </button>
-
-        <div class="mascot" id="mascot">
-            <div class="speech-bubble" id="mascot-bubble">Bienvenue !</div>
-            <div class="mascot-emoji" id="mascot-emoji" role="img" aria-label="Emoji de la mascotte"></div>
-            <div class="mascot-icon" role="img" aria-label="Mascotte du site">👷‍♂️</div>
-        </div>
     </div>
 
-    <!-- Recruitment Ticker (Flash Infos) -->
-    <div class="recruitment-ticker">
-        <div class="ticker-content">
-            ✨ Flash Infos Recrutement : LTD International recrute des Chefs de Projet BTP, Ingénieurs Structure, Conducteurs de Travaux et Géomètres-Topographes ! Envoyez votre CV dès maintenant ! 🚀 Des opportunités passionnantes vous attendent ! 🌟
+    <!-- Bottom Fixed Area -->
+    <div class="bottom-fixed-area">
+        <a href="https://www.ltd-international.com/" target="_blank" class="learn-more-button" aria-label="En savoir plus sur LTD International">
+            En savoir plus sur LTD International
+        </a>
+
+        <div class="bottom-right-elements">
+            <button class="share-button" onclick="shareSite()" aria-label="Partager le site">
+                📤 Partager
+            </button>
+            <div class="mascot" id="mascot">
+                <div class="speech-bubble" id="mascot-bubble">Bienvenue !</div>
+                <div class="mascot-emoji" id="mascot-emoji" role="img" aria-label="Emoji de la mascotte"></div>
+                <div class="mascot-icon" role="img" aria-label="Mascotte du site">👷‍♂️</div>
+            </div>
         </div>
     </div>
 
@@ -759,40 +697,37 @@
         // Function to create animated particles in the background
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
-            const particleCount = 60; // Increased particle count
+            const particleCount = 60;
             
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
-                // Random position, size, animation delay and duration for variety
                 particle.style.left = Math.random() * 100 + '%';
-                particle.style.width = particle.style.height = (Math.random() * 3 + 2) + 'px'; // Vary size
+                particle.style.width = particle.style.height = (Math.random() * 3 + 2) + 'px';
                 particle.style.animationDelay = Math.random() * 15 + 's';
-                particle.style.animationDuration = (Math.random() * 10 + 15) + 's'; // Vary speed
-                particle.style.opacity = Math.random() * 0.4 + 0.2; // Vary opacity
+                particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                particle.style.opacity = Math.random() * 0.4 + 0.2;
                 particlesContainer.appendChild(particle);
             }
         }
         
         // Navigation function for game cards
         function navigateToGame(event) {
-            const gameCard = event.currentTarget; // The div with game-card class
-            const gameUrl = gameCard.dataset.gameUrl; // Get URL from data-game-url attribute
+            const gameCard = event.currentTarget;
+            const gameUrl = gameCard.dataset.gameUrl;
 
-            // Prevent navigation for "coming soon" games and show a mascot message
             if (gameCard.classList.contains('coming-soon')) {
                 mascotSpeak('Ce jeu arrive très bientôt ! Restez connecté ! ✨', 4000);
                 return; 
             }
 
-            // Navigate if a valid URL is present
             if (gameUrl && gameUrl !== '#') {
                 window.location.href = gameUrl;
             }
         }
         
         // Mascot speech bubble and emoji function
-        const mascotEmojis = ['💡', '✅', '🛠️', '⭐', '👷']; // Emojis to alternate
+        const mascotEmojis = ['💡', '✅', '🛠️', '⭐', '👷'];
         let currentMascotMessageTimeout;
         let currentMascotEmojiTimeout;
 
@@ -810,8 +745,13 @@
             // Show the speech bubble
             bubble.textContent = message;
             bubble.classList.remove('show'); 
-            void bubble.offsetWidth; /* Trigger reflow to restart CSS animation */
-            bubble.classList.add('show');
+            // Force reflow to restart CSS animation
+            // Using requestAnimationFrame can be more reliable than offsetWidth for complex animations
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    bubble.classList.add('show');
+                });
+            });
             
             // Set timeout to hide the bubble and then show an emoji
             currentMascotMessageTimeout = setTimeout(() => {
@@ -821,8 +761,11 @@
                 const randomEmoji = mascotEmojis[Math.floor(Math.random() * mascotEmojis.length)];
                 emojiElement.textContent = randomEmoji;
                 emojiElement.classList.remove('show');
-                void emojiElement.offsetWidth; /* Trigger reflow for emoji animation */
-                emojiElement.classList.add('show');
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        emojiElement.classList.add('show');
+                    });
+                });
 
                 // Set timeout to hide the emoji
                 currentMascotEmojiTimeout = setTimeout(() => {
@@ -840,30 +783,25 @@
                 url: window.location.href
             };
 
-            // Use Web Share API if available
             if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
                 navigator.share(shareData)
                     .then(() => mascotSpeak('Merci pour le partage ! 🎉'))
                     .catch((error) => {
-                        // Ignore user aborting share
                         if (error.name !== 'AbortError') {
                             fallbackShare();
                         }
                     });
             } else {
-                // Fallback to clipboard copy
                 fallbackShare();
             }
         }
 
-        // Fallback share method (copy to clipboard)
         function fallbackShare() {
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(window.location.href)
                     .then(() => mascotSpeak('Lien copié dans le presse-papiers ! 📋'))
                     .catch(() => mascotSpeak('Impossible de copier le lien'));
             } else {
-                // Older browser fallback for copying text
                 const textArea = document.createElement('textarea');
                 textArea.value = window.location.href;
                 document.body.appendChild(textArea);
@@ -878,7 +816,6 @@
             }
         }
 
-        // Array of random mascot messages
         const mascotMessages = [
             "Prêt à gérer un chantier ? 🏗️",
             "Attention aux délais ! ⏰",
@@ -889,50 +826,58 @@
             "Amusez-vous bien ! 😄"
         ];
 
-        // Function to display a random mascot message
         function randomMascotMessage() {
             const randomMessage = mascotMessages[Math.floor(Math.random() * mascotMessages.length)];
             mascotSpeak(randomMessage);
         }
 
+        // Function to set padding-top dynamically based on fixed header height
+        function adjustMainContentPadding() {
+            const topHeader = document.querySelector('.top-header-area');
+            const mainContent = document.querySelector('.main-content-wrapper');
+            const bottomFixedArea = document.querySelector('.bottom-fixed-area');
+
+            if (topHeader && mainContent && bottomFixedArea) {
+                mainContent.style.paddingTop = topHeader.offsetHeight + 20 + 'px';
+                mainContent.style.paddingBottom = bottomFixedArea.offsetHeight + 20 + 'px';
+            }
+        }
+
         // Initialisation on window load
         window.addEventListener('load', () => {
-            createParticles(); // Start particle animation
+            createParticles();
+            adjustMainContentPadding();
             
-            // Initial welcome message from mascot
             setTimeout(() => {
                 mascotSpeak('Bienvenue dans LTD Simulator ! 🎯', 5000);
             }, 1000);
 
-            // Set interval for random mascot messages
-            setInterval(randomMascotMessage, 20000); // Shorter interval for more interactivity
+            setInterval(randomMascotMessage, 20000);
         });
 
-        // Event listeners for game cards and their buttons
+        // Adjust padding on window resize
+        window.addEventListener('resize', adjustMainContentPadding);
+
         document.querySelectorAll('.game-card').forEach(card => {
             card.addEventListener('click', navigateToGame);
         });
 
-        // Prevent play button click from bubbling up and causing double navigation
         document.querySelectorAll('.game-card .play-button').forEach(button => {
             button.addEventListener('click', (event) => {
-                event.stopPropagation(); // Stop event propagation
-                navigateToGame({ currentTarget: event.target.closest('.game-card') }); // Call navigate on the parent card
+                event.stopPropagation();
+                navigateToGame({ currentTarget: event.target.closest('.game-card') });
             });
         });
 
-        // Accessibility improvement: keyboard navigation for game cards
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Enter' || event.key === ' ') {
                 const target = event.target;
-                // Check if the target is a game card and not a "coming soon" one
                 if (target.classList.contains('game-card') && !target.classList.contains('coming-soon')) {
                     navigateToGame({ currentTarget: target });
                 }
             }
         });
 
-        // Basic error handling
         window.addEventListener('error', (event) => {
             console.error('Erreur détectée:', event.error);
         });
