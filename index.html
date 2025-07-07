@@ -12,6 +12,7 @@
     <title>LTD Simulator - Menu Principal</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Ctext y='96' font-size='96'%3E%F0%9F%9A%A7%3C/text%3E%3C/svg%3E">
     <style>
+        /* Base styles */
         * {
             margin: 0;
             padding: 0;
@@ -25,10 +26,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            overflow: hidden; /* Hide overflow for particles */
+            position: relative;
         }
 
-        /* Particules animées en arrière-plan */
+        /* Animated particles in background */
         .particles {
             position: fixed;
             top: 0;
@@ -41,24 +43,30 @@
 
         .particle {
             position: absolute;
-            width: 4px;
-            height: 4px;
             background: rgba(255, 255, 255, 0.5);
             border-radius: 50%;
             animation: float 15s infinite linear;
         }
 
+        /* Particle animation keyframes */
         @keyframes float {
             0% {
                 transform: translateY(100vh) rotate(0deg);
-                opacity: 1;
+                opacity: 0; /* Start invisible */
+            }
+            20% {
+                opacity: 1; /* Fade in */
+            }
+            80% {
+                opacity: 1; /* Stay visible */
             }
             100% {
                 transform: translateY(-100vh) rotate(360deg);
-                opacity: 0;
+                opacity: 0; /* Fade out */
             }
         }
 
+        /* Main container for content */
         .container {
             text-align: center;
             z-index: 10;
@@ -66,16 +74,60 @@
             max-width: 1200px;
             width: 100%;
             padding: 20px;
+            opacity: 0; /* Hidden initially for entrance animation */
+            transform: translateY(20px);
+            animation: fadeInSlideUp 0.8s ease-out forwards;
+            animation-delay: 0.5s; /* Delay for particles to appear first */
+        }
+
+        /* Entrance animation for the container */
+        @keyframes fadeInSlideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header section with title and LTD website button */
+        .header-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 50px;
         }
 
         h1 {
             font-size: 3.5em;
             color: #ffffff;
-            margin-bottom: 50px;
+            margin-bottom: 20px; /* Reduced margin to make space for button */
             text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             font-weight: 800;
         }
 
+        /* LTD Website Button */
+        .ltd-website-button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(45deg, #007bff, #00c6ff); /* Blue gradient */
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 10px; /* Space from title */
+        }
+
+        .ltd-website-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.6);
+            background: linear-gradient(45deg, #0056b3, #0099cc); /* Darker on hover */
+        }
+
+        /* Grid for game cards */
         .games-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -83,6 +135,7 @@
             margin-top: 40px;
         }
 
+        /* Individual game card styling */
         .game-card {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
@@ -94,14 +147,16 @@
             cursor: pointer;
             position: relative;
             overflow: hidden;
+            transform: perspective(1000px) rotateY(0deg); /* For 3D hover */
         }
 
-        .game-card:hover {
-            transform: translateY(-10px);
+        .game-card:hover:not(.coming-soon) {
+            transform: translateY(-10px) perspective(1000px) rotateY(3deg); /* Slight 3D tilt */
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
             background: rgba(255, 255, 255, 0.15);
         }
 
+        /* Shimmer effect on hover */
         .game-card::before {
             content: '';
             position: absolute;
@@ -138,6 +193,11 @@
             margin-bottom: 20px;
             display: block;
             filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+            transition: transform 0.3s ease;
+        }
+
+        .game-card:hover .game-icon {
+            transform: scale(1.1) rotate(5deg); /* Icon animation on hover */
         }
 
         .game-title {
@@ -154,6 +214,7 @@
             margin-bottom: 20px;
         }
 
+        /* Play button styling */
         .play-button {
             display: inline-block;
             padding: 12px 30px;
@@ -167,13 +228,16 @@
             border: none;
             cursor: pointer;
             font-size: 1em;
+            position: relative;
+            z-index: 2; /* Ensure button is above overlay */
         }
 
-        .play-button:hover {
+        .play-button:hover:not(.disabled) {
             transform: scale(1.05);
             box-shadow: 0 6px 20px rgba(238, 90, 36, 0.6);
         }
 
+        /* Share button */
         .share-button {
             position: fixed;
             bottom: 20px;
@@ -196,6 +260,7 @@
             box-shadow: 0 6px 20px rgba(90, 200, 250, 0.6);
         }
 
+        /* Mascot styling */
         .mascot {
             position: fixed;
             bottom: 90px;
@@ -206,68 +271,135 @@
         }
 
         .mascot-icon {
-            font-size: 2.5em;
+            font-size: 4em; /* Much larger mascot */
             margin-left: 8px;
-            animation: mascot-hop 2s infinite ease-in-out;
+            animation: mascot-hop 0.8s infinite ease-in-out, /* Faster and more pronounced hop */
+                       mascot-breathe 2s infinite ease-in-out, /* Faster and more pronounced breathe */
+                       mascot-sway 2.5s infinite ease-in-out; /* Faster and more pronounced sway */
+            transform-origin: bottom center; /* Pivot point for sway */
         }
 
+        /* Mascot animations */
         @keyframes mascot-hop {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
+            50% { transform: translateY(-25px); } /* Even more pronounced hop height */
+        }
+
+        @keyframes mascot-breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.12); } /* Even more pronounced breathe */
+        }
+
+        @keyframes mascot-sway {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(8deg); } /* Even more pronounced sway */
+            75% { transform: rotate(-8deg); } /* Even more pronounced sway */
         }
 
         .speech-bubble {
             background: white;
             color: #333;
-            padding: 10px 15px;
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            position: relative;
-            font-size: 0.9em;
-            max-width: 200px;
+            padding: 15px 22px; /* Even larger padding */
+            border-radius: 25px; /* Even more rounded corners */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4); /* Stronger shadow */
+            position: absolute; /* Changed to absolute for better positioning relative to mascot */
+            bottom: 100%; /* Position above mascot icon */
+            right: 0; /* Align right with mascot */
+            margin-bottom: 15px; /* Space between mascot and bubble */
+            font-size: 1.1em; /* Larger font */
+            max-width: 250px; /* Wider bubble */
+            /* Removed white-space: nowrap; to allow text wrapping */
+            word-wrap: break-word; /* Ensure long words break */
+            overflow-wrap: break-word; /* Modern equivalent */
             opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.3s ease;
-            white-space: nowrap;
+            transform: translateY(40px) scale(0.6); /* Start lower and smaller for a bigger bounce */
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* More pronounced bounce effect transition */
+            transform-origin: bottom right; /* For scaling from bottom right */
         }
 
         .speech-bubble.show {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1); /* End at original position and size */
         }
 
         .speech-bubble::after {
             content: '';
             position: absolute;
-            bottom: -8px;
-            right: 15px;
-            border-width: 8px 8px 0 8px;
+            bottom: -12px; /* Adjust pointer position */
+            right: 25px; /* Adjust pointer position */
+            border-width: 12px 12px 0 12px; /* Larger pointer */
             border-style: solid;
             border-color: white transparent transparent transparent;
         }
 
-        /* Styles pour les jeux à venir */
-        .coming-soon {
+        /* Emoji animation */
+        .mascot-emoji {
+            font-size: 3em; /* Size of the emoji */
+            position: absolute;
+            bottom: 100%; /* Position above mascot icon, similar to bubble */
+            right: 20px; /* Align with mascot */
+            margin-bottom: 20px; /* Space between mascot and emoji */
+            opacity: 0;
+            transform: translateY(20px) scale(0.5);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Pop-in animation */
+            z-index: 65; /* Above bubble */
+            pointer-events: none; /* Make it non-interactive */
+        }
+
+        .mascot-emoji.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Styles for "Coming Soon" games */
+        .game-card.coming-soon {
             opacity: 0.7;
             cursor: not-allowed;
+            position: relative;
+            overflow: hidden;
+            pointer-events: none; /* Disable all pointer events on the card */
+            filter: grayscale(50%); /* Make it slightly desaturated */
         }
 
-        .coming-soon:hover {
-            transform: translateY(-5px);
+        .game-card.coming-soon:hover {
+            transform: translateY(-5px); /* Still allow slight lift on hover */
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.1); /* Prevent background change on hover */
         }
 
-        .coming-soon .play-button.disabled {
-            background: linear-gradient(45deg, #95a5a6, #7f8c8d);
+        .game-card.coming-soon .play-button {
+            background: linear-gradient(45deg, #95a5a6, #7f8c8d); /* Greyed out button */
             cursor: not-allowed;
             box-shadow: 0 4px 15px rgba(127, 140, 141, 0.4);
+            pointer-events: none; /* Disable button clicks */
         }
 
-        .coming-soon .play-button.disabled:hover {
+        .game-card.coming-soon .play-button:hover {
             transform: none;
             box-shadow: 0 4px 15px rgba(127, 140, 141, 0.4);
         }
 
+        /* Coming Soon Overlay */
+        .coming-soon-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            border-radius: 20px;
+            z-index: 5; /* Above card content, below shimmer */
+            pointer-events: none; /* Allow clicks to pass through to the card if needed, but card itself is disabled */
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Responsive adjustments */
         @media (max-width: 768px) {
             h1 {
                 font-size: 2.5em;
@@ -296,6 +428,27 @@
             .speech-bubble {
                 max-width: 160px;
                 font-size: 0.8em;
+                padding: 10px 15px;
+                border-radius: 15px;
+                margin-bottom: 10px;
+            }
+            .speech-bubble::after {
+                bottom: -8px;
+                right: 15px;
+                border-width: 8px 8px 0 8px;
+            }
+            .mascot-emoji {
+                font-size: 2.5em;
+                margin-bottom: 15px;
+            }
+
+            .ltd-website-button {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+
+            .coming-soon-overlay {
+                font-size: 1.5em;
             }
         }
 
@@ -320,6 +473,10 @@
             .game-title {
                 font-size: 1.5em;
             }
+
+            .header-section {
+                margin-bottom: 30px;
+            }
         }
     </style>
 </head>
@@ -327,21 +484,52 @@
     <div class="particles" id="particles"></div>
     
     <div class="container">
-        <h1>🏗️ LTD Simulator 🏗️</h1>
+        <div class="header-section">
+            <h1>🏗️ LTD Simulator 🏗️</h1>
+            <a href="https://www.ltd-international.com/" target="_blank" class="ltd-website-button" aria-label="Visiter le site LTD International">
+                Visiter LTD International
+            </a>
+        </div>
         
         <div class="games-grid">
-            <div class="game-card" onclick="navigateToGame('simulateur-directeur-travaux.html')">
+            <!-- Existing games -->
+            <div class="game-card" data-game-url="simulateur-directeur-travaux.html">
                 <span class="game-icon" role="img" aria-label="Directeur travaux">👷</span>
                 <h2 class="game-title">Simulateur Directeur Travaux</h2>
                 <p class="game-description">Gérez vos chantiers, coordonnez vos équipes et menez vos projets à terme dans ce simulateur réaliste!</p>
-                <button class="play-button" onclick="event.stopPropagation(); navigateToGame('simulateur-directeur-travaux.html')">Jouer</button>
+                <button class="play-button">Jouer</button>
             </div>
             
-            <div class="game-card" onclick="navigateToGame('geometre-topographe.html')">
+            <div class="game-card" data-game-url="geometre-topographe.html">
                 <span class="game-icon" role="img" aria-label="Géomètre-topographe">🚧</span>
                 <h2 class="game-title">Simulateur Géomètre-topographe</h2>
                 <p class="game-description">Relève le défi ! Mets à l’épreuve tes connaissances de Géomètre-Topographe et partage fièrement ton score !</p>
-                <button class="play-button" onclick="event.stopPropagation(); navigateToGame('geometre-topographe.html')">Jouer</button>
+                <button class="play-button">Jouer</button>
+            </div>
+
+            <!-- New "Coming Soon" games -->
+            <div class="game-card coming-soon" data-game-url="#">
+                <span class="game-icon" role="img" aria-label="Chef de chantier">👨‍工地</span>
+                <h2 class="game-title">Simulateur Chef de Chantier</h2>
+                <p class="game-description">Planifiez et supervisez les opérations quotidiennes sur le terrain pour assurer le succès du projet.</p>
+                <div class="coming-soon-overlay">Bientôt disponible !</div>
+                <button class="play-button disabled">Bientôt</button>
+            </div>
+
+            <div class="game-card coming-soon" data-game-url="#">
+                <span class="game-icon" role="img" aria-label="Architecte">📐</span>
+                <h2 class="game-title">Simulateur Architecte</h2>
+                <p class="game-description">Concevez des bâtiments innovants et fonctionnels, de la conception initiale à la réalisation.</p>
+                <div class="coming-soon-overlay">Bientôt disponible !</div>
+                <button class="play-button disabled">Bientôt</button>
+            </div>
+
+            <div class="game-card coming-soon" data-game-url="#">
+                <span class="game-icon" role="img" aria-label="Ingénieur BTP">🏗️</span>
+                <h2 class="game-title">Simulateur Ingénieur BTP</h2>
+                <p class="game-description">Optimisez les structures et les infrastructures, en garantissant la sécurité et la durabilité.</p>
+                <div class="coming-soon-overlay">Bientôt disponible !</div>
+                <button class="play-button disabled">Bientôt</button>
             </div>
         </div>
 
@@ -351,74 +539,120 @@
 
         <div class="mascot" id="mascot">
             <div class="speech-bubble" id="mascot-bubble">Bienvenue !</div>
+            <div class="mascot-emoji" id="mascot-emoji" role="img" aria-label="Emoji de la mascotte"></div>
             <div class="mascot-icon" role="img" aria-label="Mascotte du site">👷‍♂️</div>
         </div>
     </div>
 
     <script>
-        // Créer des particules animées
+        // Function to create animated particles in the background
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
-            const particleCount = 40;
+            const particleCount = 60; // Increased particle count
             
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
+                // Random position, size, animation delay and duration for variety
                 particle.style.left = Math.random() * 100 + '%';
+                particle.style.width = particle.style.height = (Math.random() * 3 + 2) + 'px'; // Vary size
                 particle.style.animationDelay = Math.random() * 15 + 's';
-                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-                particle.style.opacity = Math.random() * 0.4 + 0.2;
+                particle.style.animationDuration = (Math.random() * 10 + 15) + 's'; // Vary speed
+                particle.style.opacity = Math.random() * 0.4 + 0.2; // Vary opacity
                 particlesContainer.appendChild(particle);
             }
         }
         
-        // Navigation vers les jeux
-        function navigateToGame(gameUrl) {
-            // Vérifier si le fichier existe ou utiliser une page de redirection
-            if (gameUrl) {
+        // Navigation function for game cards
+        function navigateToGame(event) {
+            const gameCard = event.currentTarget; // The div with game-card class
+            const gameUrl = gameCard.dataset.gameUrl; // Get URL from data-game-url attribute
+
+            // Prevent navigation for "coming soon" games and show a mascot message
+            if (gameCard.classList.contains('coming-soon')) {
+                mascotSpeak('Ce jeu arrive très bientôt ! Restez connecté ! ✨', 4000);
+                return; 
+            }
+
+            // Navigate if a valid URL is present
+            if (gameUrl && gameUrl !== '#') {
                 window.location.href = gameUrl;
             }
         }
         
-        // Gestion de la mascotte
-        function mascotSpeak(message, duration = 4000) {
+        // Mascot speech bubble and emoji function
+        const mascotEmojis = ['💡', '✅', '🛠️', '⭐', '👷']; // Emojis to alternate
+        let currentMascotMessageTimeout;
+        let currentMascotEmojiTimeout;
+
+        function mascotSpeak(message, bubbleDuration = 4000, emojiDuration = 1500) {
             const bubble = document.getElementById('mascot-bubble');
+            const emojiElement = document.getElementById('mascot-emoji');
+
+            // Clear any existing timeouts to prevent overlap
+            clearTimeout(currentMascotMessageTimeout);
+            clearTimeout(currentMascotEmojiTimeout);
+
+            // Hide emoji if it's currently visible
+            emojiElement.classList.remove('show');
+
+            // Show the speech bubble
             bubble.textContent = message;
+            bubble.classList.remove('show'); 
+            void bubble.offsetWidth; /* Trigger reflow to restart CSS animation */
             bubble.classList.add('show');
             
-            setTimeout(() => {
+            // Set timeout to hide the bubble and then show an emoji
+            currentMascotMessageTimeout = setTimeout(() => {
                 bubble.classList.remove('show');
-            }, duration);
+                
+                // Show a random emoji after the bubble disappears
+                const randomEmoji = mascotEmojis[Math.floor(Math.random() * mascotEmojis.length)];
+                emojiElement.textContent = randomEmoji;
+                emojiElement.classList.remove('show');
+                void emojiElement.offsetWidth; /* Trigger reflow for emoji animation */
+                emojiElement.classList.add('show');
+
+                // Set timeout to hide the emoji
+                currentMascotEmojiTimeout = setTimeout(() => {
+                    emojiElement.classList.remove('show');
+                }, emojiDuration);
+
+            }, bubbleDuration);
         }
 
-        // Fonction de partage améliorée
+        // Share site functionality
         function shareSite() {
             const shareData = {
                 title: 'LTD Simulator',
-                text: 'Découvrez ce simulateur de gestion de chantier professionnel !',
+                text: 'Découvrez ce simulateur de gestion de chantier professionnel et bien plus encore !',
                 url: window.location.href
             };
 
+            // Use Web Share API if available
             if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
                 navigator.share(shareData)
                     .then(() => mascotSpeak('Merci pour le partage ! 🎉'))
                     .catch((error) => {
+                        // Ignore user aborting share
                         if (error.name !== 'AbortError') {
                             fallbackShare();
                         }
                     });
             } else {
+                // Fallback to clipboard copy
                 fallbackShare();
             }
         }
 
+        // Fallback share method (copy to clipboard)
         function fallbackShare() {
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(window.location.href)
                     .then(() => mascotSpeak('Lien copié dans le presse-papiers ! 📋'))
                     .catch(() => mascotSpeak('Impossible de copier le lien'));
             } else {
-                // Fallback pour les navigateurs très anciens
+                // Older browser fallback for copying text
                 const textArea = document.createElement('textarea');
                 textArea.value = window.location.href;
                 document.body.appendChild(textArea);
@@ -433,46 +667,63 @@
             }
         }
 
-        // Messages aléatoires de la mascotte
+        // Array of random mascot messages
         const mascotMessages = [
             "Prêt à gérer un chantier ? 🏗️",
             "Attention aux délais ! ⏰",
             "N'oubliez pas la sécurité ! 🦺",
             "Coordonnez bien vos équipes ! 👥",
-            "Gérez votre budget ! 💰"
+            "Gérez votre budget ! 💰",
+            "De nouveaux jeux arrivent bientôt ! 🚀",
+            "Amusez-vous bien ! 😄"
         ];
 
+        // Function to display a random mascot message
         function randomMascotMessage() {
             const randomMessage = mascotMessages[Math.floor(Math.random() * mascotMessages.length)];
             mascotSpeak(randomMessage);
         }
 
-        // Initialisation
+        // Initialization on window load
         window.addEventListener('load', () => {
-            createParticles();
+            createParticles(); // Start particle animation
             
-            // Message de bienvenue
+            // Initial welcome message from mascot
             setTimeout(() => {
                 mascotSpeak('Bienvenue dans LTD Simulator ! 🎯', 5000);
             }, 1000);
 
-            // Messages aléatoires périodiques
-            setInterval(randomMascotMessage, 30000);
+            // Set interval for random mascot messages
+            setInterval(randomMascotMessage, 20000); // Shorter interval for more interactivity
         });
 
-        // Gestion des erreurs
-        window.addEventListener('error', (event) => {
-            console.error('Erreur détectée:', event.error);
+        // Event listeners for game cards and their buttons
+        document.querySelectorAll('.game-card').forEach(card => {
+            card.addEventListener('click', navigateToGame);
         });
 
-        // Amélioration de l'accessibilité
+        // Prevent play button click from bubbling up and causing double navigation
+        document.querySelectorAll('.game-card .play-button').forEach(button => {
+            button.addEventListener('click', (event) => {
+                event.stopPropagation(); // Stop event propagation
+                navigateToGame({ currentTarget: event.target.closest('.game-card') }); // Call navigate on the parent card
+            });
+        });
+
+        // Accessibility improvement: keyboard navigation for game cards
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Enter' || event.key === ' ') {
                 const target = event.target;
+                // Check if the target is a game card and not a "coming soon" one
                 if (target.classList.contains('game-card') && !target.classList.contains('coming-soon')) {
-                    navigateToGame('simulateur-directeur-travaux.html');
+                    navigateToGame({ currentTarget: target });
                 }
             }
+        });
+
+        // Basic error handling
+        window.addEventListener('error', (event) => {
+            console.error('Erreur détectée:', event.error);
         });
     </script>
 </body>
