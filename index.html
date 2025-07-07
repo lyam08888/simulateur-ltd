@@ -21,11 +21,13 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            /* Enhanced background with radial gradient for depth */
+            background: radial-gradient(circle at 75% 25%, #2a5298 0%, #1e3c72 100%);
             min-height: 100vh;
             display: flex;
+            flex-direction: column; /* Allow content to stack vertically */
             align-items: center;
-            justify-content: center;
+            justify-content: space-between; /* Space out header, main content, and ticker */
             overflow: hidden; /* Hide overflow for particles */
             position: relative;
         }
@@ -43,9 +45,10 @@
 
         .particle {
             position: absolute;
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.6); /* Slightly brighter particles */
             border-radius: 50%;
             animation: float 15s infinite linear;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.4); /* Subtle glow */
         }
 
         /* Particle animation keyframes */
@@ -55,10 +58,10 @@
                 opacity: 0; /* Start invisible */
             }
             20% {
-                opacity: 1; /* Fade in */
+                opacity: 0.8; /* Fade in more */
             }
             80% {
-                opacity: 1; /* Stay visible */
+                opacity: 0.8; /* Stay visible */
             }
             100% {
                 transform: translateY(-100vh) rotate(360deg);
@@ -66,21 +69,26 @@
             }
         }
 
-        /* Main container for content */
-        .container {
-            text-align: center;
-            z-index: 10;
-            position: relative;
+        /* Main container for content - now a flex container for games and news */
+        .main-content-wrapper {
+            display: flex;
+            flex-direction: row; /* Default to row for desktop */
+            justify-content: center; /* Center content horizontally */
+            align-items: flex-start; /* Align items to the top */
+            gap: 40px; /* Space between games and news */
             max-width: 1200px;
             width: 100%;
             padding: 20px;
+            flex-grow: 1; /* Allow to take available height */
+            z-index: 10;
+            position: relative;
             opacity: 0; /* Hidden initially for entrance animation */
             transform: translateY(20px);
             animation: fadeInSlideUp 0.8s ease-out forwards;
             animation-delay: 0.5s; /* Delay for particles to appear first */
         }
 
-        /* Entrance animation for the container */
+        /* Entrance animation for the content wrapper */
         @keyframes fadeInSlideUp {
             to {
                 opacity: 1;
@@ -94,12 +102,14 @@
             flex-direction: column;
             align-items: center;
             margin-bottom: 50px;
+            z-index: 10; /* Ensure header is above particles */
+            position: relative; /* For z-index to work */
         }
 
         h1 {
             font-size: 3.5em;
             color: #ffffff;
-            margin-bottom: 20px; /* Reduced margin to make space for button */
+            margin-bottom: 20px;
             text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             font-weight: 800;
         }
@@ -118,7 +128,7 @@
             border: none;
             cursor: pointer;
             font-size: 1em;
-            margin-top: 10px; /* Space from title */
+            margin-top: 10px;
         }
 
         .ltd-website-button:hover {
@@ -127,12 +137,18 @@
             background: linear-gradient(45deg, #0056b3, #0099cc); /* Darker on hover */
         }
 
-        /* Grid for game cards */
+        .ltd-website-button:active {
+            transform: translateY(2px); /* Press down effect */
+            box-shadow: 0 2px 10px rgba(0, 123, 255, 0.4);
+        }
+
+        /* Games Grid - now takes a flexible width */
         .games-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
-            margin-top: 40px;
+            flex: 2; /* Takes 2/3 of available space */
+            min-width: 600px; /* Minimum width for games grid */
         }
 
         /* Individual game card styling */
@@ -142,18 +158,18 @@
             border-radius: 20px;
             padding: 40px 30px;
             text-align: center;
-            transition: all 0.3s ease;
+            transition: all 0.3s ease, box-shadow 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.2);
             cursor: pointer;
             position: relative;
             overflow: hidden;
-            transform: perspective(1000px) rotateY(0deg); /* For 3D hover */
+            transform: perspective(1000px) rotateY(0deg);
         }
 
         .game-card:hover:not(.coming-soon) {
-            transform: translateY(-10px) perspective(1000px) rotateY(3deg); /* Slight 3D tilt */
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-10px) perspective(1000px) rotateY(3deg) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+            background: rgba(255, 255, 255, 0.18);
         }
 
         /* Shimmer effect on hover */
@@ -197,7 +213,7 @@
         }
 
         .game-card:hover .game-icon {
-            transform: scale(1.1) rotate(5deg); /* Icon animation on hover */
+            transform: scale(1.1) rotate(5deg);
         }
 
         .game-title {
@@ -229,12 +245,17 @@
             cursor: pointer;
             font-size: 1em;
             position: relative;
-            z-index: 2; /* Ensure button is above overlay */
+            z-index: 2;
         }
 
         .play-button:hover:not(.disabled) {
             transform: scale(1.05);
             box-shadow: 0 6px 20px rgba(238, 90, 36, 0.6);
+        }
+
+        .play-button:active:not(.disabled) {
+            transform: translateY(2px);
+            box-shadow: 0 2px 10px rgba(238, 90, 36, 0.4);
         }
 
         /* Share button */
@@ -260,6 +281,11 @@
             box-shadow: 0 6px 20px rgba(90, 200, 250, 0.6);
         }
 
+        .share-button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 10px rgba(90, 200, 250, 0.4);
+        }
+
         /* Mascot styling */
         .mascot {
             position: fixed;
@@ -268,82 +294,90 @@
             display: flex;
             align-items: flex-end;
             z-index: 60;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+            animation: mascot-glow 3s infinite alternate ease-in-out;
+        }
+
+        @keyframes mascot-glow {
+            0% { filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3)); }
+            100% { filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.6)); }
         }
 
         .mascot-icon {
-            font-size: 4em; /* Much larger mascot */
+            font-size: 4.5em;
             margin-left: 8px;
-            animation: mascot-hop 0.8s infinite ease-in-out, /* Faster and more pronounced hop */
-                       mascot-breathe 2s infinite ease-in-out, /* Faster and more pronounced breathe */
-                       mascot-sway 2.5s infinite ease-in-out; /* Faster and more pronounced sway */
-            transform-origin: bottom center; /* Pivot point for sway */
+            animation: mascot-hop 0.7s infinite ease-in-out,
+                       mascot-breathe 1.8s infinite ease-in-out,
+                       mascot-sway 2.2s infinite ease-in-out;
+            transform-origin: bottom center;
         }
 
         /* Mascot animations */
         @keyframes mascot-hop {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-25px); } /* Even more pronounced hop height */
+            50% { transform: translateY(-30px); }
         }
 
         @keyframes mascot-breathe {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.12); } /* Even more pronounced breathe */
+            50% { transform: scale(1.15); }
         }
 
         @keyframes mascot-sway {
             0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(8deg); } /* Even more pronounced sway */
-            75% { transform: rotate(-8deg); } /* Even more pronounced sway */
+            25% { transform: rotate(10deg); }
+            75% { transform: rotate(-10deg); }
         }
 
         .speech-bubble {
             background: white;
             color: #333;
-            padding: 15px 22px; /* Even larger padding */
-            border-radius: 25px; /* Even more rounded corners */
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4); /* Stronger shadow */
-            position: absolute; /* Changed to absolute for better positioning relative to mascot */
-            bottom: 100%; /* Position above mascot icon */
-            right: 0; /* Align right with mascot */
-            margin-bottom: 15px; /* Space between mascot and bubble */
-            font-size: 1.1em; /* Larger font */
-            max-width: 250px; /* Wider bubble */
-            /* Removed white-space: nowrap; to allow text wrapping */
-            word-wrap: break-word; /* Ensure long words break */
-            overflow-wrap: break-word; /* Modern equivalent */
+            padding: 15px 22px;
+            border-radius: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            max-width: 280px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
             opacity: 0;
-            transform: translateY(40px) scale(0.6); /* Start lower and smaller for a bigger bounce */
-            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* More pronounced bounce effect transition */
-            transform-origin: bottom right; /* For scaling from bottom right */
+            transform: translateY(40px) scale(0.6);
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            transform-origin: bottom right;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.1);
         }
 
         .speech-bubble.show {
             opacity: 1;
-            transform: translateY(0) scale(1); /* End at original position and size */
+            transform: translateY(0) scale(1);
         }
 
         .speech-bubble::after {
             content: '';
             position: absolute;
-            bottom: -12px; /* Adjust pointer position */
-            right: 25px; /* Adjust pointer position */
-            border-width: 12px 12px 0 12px; /* Larger pointer */
+            bottom: -12px;
+            right: 25px;
+            border-width: 12px 12px 0 12px;
             border-style: solid;
             border-color: white transparent transparent transparent;
         }
 
         /* Emoji animation */
         .mascot-emoji {
-            font-size: 3em; /* Size of the emoji */
+            font-size: 3.5em;
             position: absolute;
-            bottom: 100%; /* Position above mascot icon, similar to bubble */
-            right: 20px; /* Align with mascot */
-            margin-bottom: 20px; /* Space between mascot and emoji */
+            bottom: 100%;
+            right: 20px;
+            margin-bottom: 25px;
             opacity: 0;
             transform: translateY(20px) scale(0.5);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Pop-in animation */
-            z-index: 65; /* Above bubble */
-            pointer-events: none; /* Make it non-interactive */
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 65;
+            pointer-events: none;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
         }
 
         .mascot-emoji.show {
@@ -353,25 +387,25 @@
 
         /* Styles for "Coming Soon" games */
         .game-card.coming-soon {
-            opacity: 0.7;
+            opacity: 0.6;
             cursor: not-allowed;
             position: relative;
             overflow: hidden;
-            pointer-events: none; /* Disable all pointer events on the card */
-            filter: grayscale(50%); /* Make it slightly desaturated */
+            pointer-events: none;
+            filter: grayscale(70%);
         }
 
         .game-card.coming-soon:hover {
-            transform: translateY(-5px); /* Still allow slight lift on hover */
+            transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-            background: rgba(255, 255, 255, 0.1); /* Prevent background change on hover */
+            background: rgba(255, 255, 255, 0.08);
         }
 
         .game-card.coming-soon .play-button {
-            background: linear-gradient(45deg, #95a5a6, #7f8c8d); /* Greyed out button */
+            background: linear-gradient(45deg, #95a5a6, #7f8c8d);
             cursor: not-allowed;
             box-shadow: 0 4px 15px rgba(127, 140, 141, 0.4);
-            pointer-events: none; /* Disable button clicks */
+            pointer-events: none;
         }
 
         .game-card.coming-soon .play-button:hover {
@@ -386,30 +420,158 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.7);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8em;
+            font-size: 2em;
             font-weight: bold;
             border-radius: 20px;
-            z-index: 5; /* Above card content, below shimmer */
-            pointer-events: none; /* Allow clicks to pass through to the card if needed, but card itself is disabled */
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            z-index: 5;
+            pointer-events: none;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.6);
+            animation: pulse-overlay 2s infinite alternate ease-in-out;
+        }
+
+        @keyframes pulse-overlay {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.02); opacity: 0.9; }
+        }
+
+        /* News Feed Section - now takes a flexible width */
+        .news-feed-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            border-radius: 15px;
+            padding: 20px;
+            flex: 1; /* Takes 1/3 of available space */
+            min-width: 300px; /* Minimum width for news section */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: left;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            position: relative;
+            overflow: hidden;
+            display: flex; /* Use flexbox for internal alignment */
+            flex-direction: column;
+        }
+
+        .news-feed-section h2 {
+            color: #ffffff;
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .news-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1; /* Allow list to take available space */
+            overflow-y: auto; /* Enable scrolling for long news lists */
+            padding-right: 10px; /* Space for scrollbar */
+        }
+
+        /* Custom scrollbar for news list */
+        .news-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .news-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .news-list::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .news-item {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1em;
+            margin-bottom: 12px;
+            line-height: 1.5;
+            display: flex;
+            align-items: flex-start;
+            transition: transform 0.2s ease-out;
+        }
+
+        .news-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .news-item:hover {
+            transform: translateX(5px);
+            color: #fff;
+        }
+
+        .news-item::before {
+            content: '📰'; /* News icon */
+            margin-right: 10px;
+            font-size: 1.2em;
+            line-height: 1;
+        }
+
+        /* Recruitment Ticker (Flash Infos) */
+        .recruitment-ticker {
+            background: linear-gradient(90deg, #ff9a9e 0%, #fad0c4 100%); /* Warm gradient */
+            color: #333;
+            padding: 10px 0;
+            width: 100%;
+            margin-top: auto; /* Push to bottom if content is short */
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            z-index: 20;
+            font-weight: 600;
+            font-size: 1.1em;
+            border-top: 2px solid rgba(255, 255, 255, 0.4);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+            text-align: center; /* Center text within the ticker */
+        }
+
+        .ticker-content {
+            display: inline-block;
+            padding-left: 100%; /* Start off-screen to the right */
+            animation: scroll-left 30s linear infinite; /* Adjust duration for speed */
+            animation-delay: 2s; /* Delay start slightly */
+        }
+
+        @keyframes scroll-left {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-100%); } /* Scroll full width of content */
         }
 
         /* Responsive adjustments */
+        @media (max-width: 1024px) { /* Adjust breakpoint for two columns */
+            .main-content-wrapper {
+                flex-direction: column; /* Stack games and news vertically */
+                align-items: center; /* Center items when stacked */
+                gap: 30px; /* Space between stacked sections */
+            }
+
+            .games-grid,
+            .news-feed-section {
+                flex: none; /* Remove flex sizing */
+                width: 100%; /* Take full width */
+                min-width: unset; /* Remove min-width constraint */
+            }
+
+            .news-feed-section {
+                margin-top: 0; /* Remove top margin when stacked */
+            }
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 2.5em;
             }
             
-            .games-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
             .game-card {
                 padding: 30px 20px;
             }
@@ -426,8 +588,8 @@
             }
 
             .speech-bubble {
-                max-width: 160px;
-                font-size: 0.8em;
+                max-width: 180px;
+                font-size: 0.9em;
                 padding: 10px 15px;
                 border-radius: 15px;
                 margin-bottom: 10px;
@@ -438,7 +600,7 @@
                 border-width: 8px 8px 0 8px;
             }
             .mascot-emoji {
-                font-size: 2.5em;
+                font-size: 2.8em;
                 margin-bottom: 15px;
             }
 
@@ -449,6 +611,23 @@
 
             .coming-soon-overlay {
                 font-size: 1.5em;
+            }
+
+            .news-feed-section {
+                padding: 15px;
+                width: 95%;
+            }
+
+            .news-feed-section h2 {
+                font-size: 1.8em;
+            }
+
+            .news-item {
+                font-size: 1em;
+            }
+
+            .recruitment-ticker {
+                font-size: 0.9em;
             }
         }
 
@@ -477,20 +656,28 @@
             .header-section {
                 margin-bottom: 30px;
             }
+
+            .news-feed-section {
+                padding: 10px;
+            }
+
+            .news-feed-section h2 {
+                font-size: 1.5em;
+            }
         }
     </style>
 </head>
 <body>
     <div class="particles" id="particles"></div>
     
-    <div class="container">
-        <div class="header-section">
-            <h1>🏗️ LTD Simulator 🏗️</h1>
-            <a href="https://www.ltd-international.com/" target="_blank" class="ltd-website-button" aria-label="Visiter le site LTD International">
-                Visiter LTD International
-            </a>
-        </div>
-        
+    <div class="header-section">
+        <h1>🏗️ LTD Simulator 🏗️</h1>
+        <a href="https://www.ltd-international.com/" target="_blank" class="ltd-website-button" aria-label="Visiter le site LTD International">
+            Visiter LTD International
+        </a>
+    </div>
+
+    <div class="main-content-wrapper">
         <div class="games-grid">
             <!-- Existing games -->
             <div class="game-card" data-game-url="simulateur-directeur-travaux.html">
@@ -533,6 +720,23 @@
             </div>
         </div>
 
+        <!-- News Feed Section - now on the right -->
+        <div class="news-feed-section">
+            <h2>Actualités BTP</h2>
+            <ul class="news-list">
+                <li class="news-item">Un projet de loi pour mettre fin aux logements "bouilloires" est en préparation.</li>
+                <li class="news-item">Lancement d'un concours international d'architecture pour la rénovation du Louvre.</li>
+                <li class="news-item">La société Eiffage condamnée pour homicide involontaire sur un chantier du Grand Paris Express en 2023.</li>
+                <li class="news-item">MaPrimeRénov' : les dépôts de dossiers reprendront le 15 septembre.</li>
+                <li class="news-item">Suspension de la reprise des déchets de démolition par Valobat.</li>
+                <li class="news-item">L'économie française a de nouveau stagné au dernier trimestre 2024.</li>
+                <li class="news-item">Les permis de construire accordés aux logements ont enregistré une baisse à deux chiffres en 2024.</li>
+                <li class="news-item">Le marché de la construction en France devrait se redresser de 1.3% en 2025.</li>
+                <li class="news-item">Le nouveau PTZ élargi entre en vigueur au 1er avril.</li>
+                <li class="news-item">Une étude prouve la diminution des douleurs avec l'exosquelette EXO-01 d'Hilti.</li>
+            </ul>
+        </div>
+
         <button class="share-button" onclick="shareSite()" aria-label="Partager le site">
             📤 Partager
         </button>
@@ -541,6 +745,13 @@
             <div class="speech-bubble" id="mascot-bubble">Bienvenue !</div>
             <div class="mascot-emoji" id="mascot-emoji" role="img" aria-label="Emoji de la mascotte"></div>
             <div class="mascot-icon" role="img" aria-label="Mascotte du site">👷‍♂️</div>
+        </div>
+    </div>
+
+    <!-- Recruitment Ticker (Flash Infos) -->
+    <div class="recruitment-ticker">
+        <div class="ticker-content">
+            ✨ Flash Infos Recrutement : LTD International recrute des Chefs de Projet BTP, Ingénieurs Structure, Conducteurs de Travaux et Géomètres-Topographes ! Envoyez votre CV dès maintenant ! 🚀 Des opportunités passionnantes vous attendent ! 🌟
         </div>
     </div>
 
@@ -684,7 +895,7 @@
             mascotSpeak(randomMessage);
         }
 
-        // Initialization on window load
+        // Initialisation on window load
         window.addEventListener('load', () => {
             createParticles(); // Start particle animation
             
