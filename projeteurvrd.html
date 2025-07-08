@@ -892,6 +892,129 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        /* Pipe Connect Game Specific Styles */
+        .pipe-game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .pipe-tray {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #ddd;
+            width: 100%;
+        }
+
+        .pipe-piece-draggable {
+            width: 80px;
+            height: 80px;
+            background: #e2e8f0;
+            border: 2px solid #cbd5e0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            transition: all 0.2s ease;
+            position: relative;
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+
+        .pipe-piece-draggable:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .pipe-piece-draggable.dragging {
+            opacity: 0.6;
+            cursor: grabbing;
+        }
+
+        .pipe-piece-draggable svg {
+            width: 80%;
+            height: 80%;
+        }
+
+        .pipe-grid-container {
+            display: grid;
+            border: 3px solid #667eea;
+            border-radius: 15px;
+            overflow: hidden;
+            background: #f8f9fa;
+        }
+
+        .grid-cell {
+            width: 100px; /* Fixed size for grid cells */
+            height: 100px;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background-color: #fff;
+        }
+
+        .grid-cell.start-node {
+            background-color: #d1fae5; /* Light green */
+            border: 2px solid #34d399; /* Green border */
+        }
+        .grid-cell.end-node {
+            background-color: #fee2e2; /* Light red */
+            border: 2px solid #ef4444; /* Red border */
+        }
+
+        .grid-cell .pipe-piece-placed {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer; /* To allow rotation */
+            transition: transform 0.1s ease-out;
+        }
+
+        .grid-cell .pipe-piece-placed svg {
+            width: 80%;
+            height: 80%;
+            fill: #3b82f6; /* Blue pipe color */
+            stroke: #1e40af; /* Darker blue stroke */
+            stroke-width: 5;
+            border-radius: 5px; /* Rounded pipe ends */
+        }
+
+        .grid-cell.correct-path .pipe-piece-placed svg {
+            fill: #10b981; /* Green for correct path */
+            stroke: #065f46;
+        }
+        .grid-cell.incorrect-path .pipe-piece-placed svg {
+            fill: #ef4444; /* Red for incorrect path */
+            stroke: #b91c1c;
+        }
+
+        .pipe-count {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -923,7 +1046,7 @@
             <h1>LTD SIMULATEUR</h1>
             <p>L'Expérience Complète du Projeteur VRD</p>
             <div class="home-features">
-                <p>🔥 <span>30 Niveaux de défis techniques</span></p>
+                <p>🔥 <span>50 Niveaux de défis techniques</span></p>
                 <p>🚨 <span>Scénarios réalistes de chantier</span></p>
                 <p>🚀 <span>Devenez expert en Voirie et Réseaux Divers</span></p>
             </div>
@@ -977,6 +1100,7 @@
                 <p style="margin: 10px 0;"><strong>📐 Construction</strong> : Assemblage des couches</p>
                 <p style="margin: 10px 0;"><strong>🧮 Calculs</strong> : Problèmes d'altitude et pente</p>
                 <p style="margin: 10px 0;"><strong>⚠️ Scénarios</strong> : Situations d'urgence</p>
+                <p style="margin: 10px 0;"><strong>🧩 Tuyaux</strong> : Connectez les sections de canalisation.</p>
                 <p style="margin: 10px 0;"><strong>🌟 BONUS - Détection de Conflits</strong> : Identifiez les problèmes de réseaux.</p>
                 <p style="margin: 10px 0;"><strong>🌟 BONUS - Calcul de Volume</strong> : Calculez les volumes de terrassement.</p>
             </div>
@@ -1034,6 +1158,7 @@ let gameState = {
         calc: { correct: 0, total: 0 },
         network: { correct: 0, total: 0 },
         scenario: { correct: 0, total: 0 },
+        pipe_connect: { correct: 0, total: 0 }, // New skill type
         conflict_detection: { correct: 0, total: 0 }, // New skill type
         volume_calc: { correct: 0, total: 0 } // New skill type
     },
@@ -1087,7 +1212,52 @@ const originalLevels = [ // Renamed to originalLevels
     { type: 'quiz', question: "Quelle est la fonction principale d'un caniveau ?", answers: ["Délimiter la chaussée", "Collecter les eaux de ruissellement", "Servir de support aux réseaux", "Améliorer l'esthétique"], correct: 1, points: 60 },
     { type: 'network', question: "Concevez un réseau de drainage pluvial pour un parking, avec points de collecte", points: 130, correctPath: ['nodeC', 'nodeD'] }, // Added correctPath
     { type: 'calc', question: "Longueur de réseau: 200m, pente 0.8%. Quel est le dénivelé total ?", answer: "1.60", points: 100 },
-    { type: 'scenario', question: "Vous découvrez un réseau non répertorié lors des terrassements. Que faites-vous ?", actions: ["Continuer les travaux avec prudence", "Arrêter les travaux et informer le chef de projet", "Essayer de l'identifier vous-même", "Le contourner sans le signaler"], correct: 1, points: 150 }
+    { type: 'scenario', question: "Vous découvrez un réseau non répertorié lors des terrassements. Que faites-vous ?", actions: ["Continuer les travaux avec prudence", "Arrêter les travaux et informer le chef de projet", "Essayer de l'identifier vous-même", "Le contourner sans le signaler"], correct: 1, points: 150 },
+
+    // Level 31: New Mini-Game - Pipe Connection
+    {
+        type: 'pipe_connect',
+        question: "Connectez les sections de canalisation pour créer un réseau fonctionnel. Cliquez sur un tuyau pour le faire pivoter.",
+        points: 150,
+        gridSize: 4, // 4x4 grid
+        start: { row: 0, col: 0 },
+        end: { row: 3, col: 3 },
+        // These are the pieces available for the user to place
+        availablePieces: [
+            { type: 'straight', count: 3 }, // 3 straight pipes
+            { type: 'bend', count: 4 },     // 4 bend pipes
+            { type: 't_junction', count: 1 } // 1 T-junction
+        ],
+        // This will be a simplified representation of the *expected* connections for the solution.
+        // The actual validation will be done by traversing the graph.
+        // For the solution display, I'll just show the types of pieces and their counts.
+        correctSolutionDescription: "Utilisez les tuyaux fournis pour créer un chemin continu du point de départ au point d'arrivée."
+    },
+    // New levels for diversity
+    { type: 'quiz', question: "Quelle est la fonction principale d'un collecteur d'eaux pluviales ?", answers: ["Stocker l'eau de pluie", "Transporter les eaux usées", "Évacuer les eaux de surface", "Filtrer les eaux souterraines"], correct: 2, points: 70 },
+    { type: 'material', question: "Sélectionnez le matériau le plus adapté pour une canalisation de gaz.", materials: ["Fonte ductile", "PVC", "PEHD", "Acier galvanisé"], icons: ["⚙️", "📏", "🔗", "🔩"], correct: 2, points: 90 },
+    { type: 'drag', question: "Classez les étapes de la pose d'une canalisation (du début à la fin)", items: ["Ouverture de la tranchée", "Mise en place du lit de pose", "Pose de la canalisation", "Remblayage et compactage"], points: 110 },
+    { type: 'calc', question: "Un regard est à 95.20m. La pente est de 1.5% sur 80m. Quelle est l'altitude du point aval ?", answer: "94.00", points: 100 },
+    { type: 'network', question: "Connectez les points d'éclairage public à la source d'énergie.", points: 110, correctPath: ['nodeB', 'nodeA'] },
+    { type: 'scenario', question: "Un ouvrier signale une odeur de gaz sur le chantier. Que faites-vous ?", actions: ["Ignorer et continuer", "Arrêter les travaux, évacuer la zone et appeler les secours", "Chercher la fuite vous-même", "Ventiler la zone"], correct: 1, points: 160 },
+    { type: 'quiz', question: "Quel document est utilisé pour localiser les réseaux existants avant les travaux ?", answers: ["Plan de masse", "Plan de récolement", "DICT", "Permis de construire"], correct: 2, points: 60 },
+    { type: 'material', question: "Quel matériau est couramment utilisé pour les bordures de trottoir ?", materials: ["Bois", "Plastique recyclé", "Granit", "Métal"], icons: ["🌳", "♻️", "🪨", "⛓️"], correct: 2, points: 80 },
+    { type: 'calc', question: "Une canalisation de 120m a un dénivelé de 2.4m. Quelle est sa pente en % ?", answer: "2.00", points: 100 },
+    { type: 'quiz', question: "Quelle est la couleur du grillage avertisseur pour le gaz ?", answers: ["Bleu", "Rouge", "Jaune", "Vert"], correct: 2, points: 50 },
+    { type: 'drag', question: "Classez les éléments d'un système de drainage (du plus haut au plus bas).", items: ["Grille de caniveau", "Caniveau", "Tuyau de collecte", "Regard de visite"], points: 120 },
+    { type: 'network', question: "Tracez un réseau d'arrosage pour couvrir toutes les zones vertes.", points: 130, correctPath: ['nodeA', 'nodeE'] },
+    { type: 'scenario', question: "Les prévisions météo annoncent de fortes pluies. Comment adaptez-vous le chantier ?", actions: ["Ne rien changer", "Protéger les fouilles, vérifier le drainage et sécuriser les matériaux", "Accélérer les travaux", "Arrêter le chantier complètement"], correct: 1, points: 140 },
+    { type: 'quiz', question: "Qu'est-ce qu'un DTU ?", answers: ["Document Technique Unifié", "Déclaration de Travaux Urgents", "Dossier Technique Urbain"], correct: 0, points: 70 },
+    { type: 'material', question: "Quel type de revêtement est souvent utilisé pour les pistes cyclables ?", materials: ["Béton", "Enrobé drainant", "Pavés", "Terre stabilisée"], icons: ["🧱", "🚲", "🪨", "🌿"], correct: 1, points: 85 },
+    { type: 'calc', question: "Calculez la longueur horizontale pour une pente de 2% et un dénivelé de 0.5m.", answer: "25.00", points: 100 },
+    { type: 'quiz', question: "Quel est le rôle d'un géomembranier ?", answers: ["Installer des géotextiles", "Poser des membranes d'étanchéité", "Réaliser des études géotechniques"], correct: 1, points: 75 },
+    { type: 'scenario', question: "Un riverain se plaint du bruit des travaux. Quelle est votre démarche ?", actions: ["Ignorer la plainte", "Lui demander de contacter la mairie", "L'écouter, expliquer les mesures prises et proposer des solutions si possible", "Arrêter immédiatement les travaux"], correct: 2, points: 120 },
+    { type: 'quiz', question: "Quelle est la signification de 'EP' dans le contexte VRD ?", answers: ["Eau Potable", "Eaux Pluviales", "Éclairage Public"], correct: 1, points: 60 },
+    { type: 'material', question: "Matériau pour les regards de branchement d'eaux usées.", materials: ["Béton préfabriqué", "Plastique", "Brique", "Acier"], icons: ["🧱", "♻️", "🏠", "⛓️"], correct: 0, points: 70 },
+    { type: 'quiz', question: "Quel est le principal risque lié à la présence d'amiante dans les anciennes canalisations ?", answers: ["Fuites fréquentes", "Contamination de l'eau", "Risque sanitaire lors de la manipulation", "Faible résistance aux chocs"], correct: 2, points: 90 },
+    { type: 'quiz', question: "Quelle est la fonction d'une chambre de tirage en réseau télécom ?", answers: ["Connecter les câbles à la fibre optique", "Permettre le tirage et la maintenance des câbles", "Mesurer le débit de données"], correct: 1, points: 80 },
+    { type: 'quiz', question: "Qu'est-ce qu'un PSS ?", answers: ["Plan de Sécurité et de Santé", "Projet de Stabilité des Sols", "Programme de Suivi des Sédiments"], correct: 0, points: 75 },
+    { type: 'quiz', question: "Quel est le rôle du maître d'œuvre en VRD ?", answers: ["Financer le projet", "Réaliser les travaux", "Concevoir et suivre la réalisation du projet", "Vendre les matériaux"], correct: 2, points: 100 }
 ];
 
 const bonusLevels = [
@@ -1108,7 +1278,11 @@ const gameTips = [
     "Astuce: La pente minimale pour un réseau d'eaux usées est de 1% pour assurer l'écoulement.",
     "Astuce: Le géotextile sépare les couches de matériaux et prévient le mélange.",
     "Astuce: Les regards de visite permettent l'inspection et l'entretien des réseaux.",
-    "Astuce: En cas de réseau non répertorié, stoppez les travaux et signalez-le immédiatement."
+    "Astuce: En cas de réseau non répertorié, stoppez les travaux et signalez-le immédiatement.",
+    "Astuce: Pour le mini-jeu de tuyaux, chaque pièce compte ! Planifiez votre chemin avant de placer.",
+    "Astuce: La DICT est obligatoire avant tout travail à proximité des réseaux existants.",
+    "Astuce: Le PEHD est un excellent choix pour les canalisations de gaz grâce à sa flexibilité.",
+    "Astuce: Un PSS (Plan de Sécurité et de Santé) est vital pour la prévention des accidents sur chantier."
 ];
 let currentTipIndex = 0;
 let tipInterval = null;
@@ -1357,7 +1531,8 @@ function loadLevel() {
             timeLimit = 45; // 45 seconds for material, drag, calc
             break;
         case 'network':
-            timeLimit = 60; // 60 seconds for network
+        case 'pipe_connect': // New pipe connect game
+            timeLimit = 60; // 60 seconds for network and pipe connect
             break;
         case 'scenario':
             timeLimit = 90; // 90 seconds for scenario
@@ -1398,6 +1573,10 @@ function loadLevel() {
         case 'scenario':
             renderScenarioLevel(levelToLoad);
             showScreen('quizScreen'); // Using quizScreen for scenario
+            break;
+        case 'pipe_connect': // New mini-game
+            renderPipeConnectLevel(levelToLoad);
+            showScreen('gameScreen');
             break;
         case 'conflict_detection': // New bonus type
             renderConflictDetectionLevel(levelToLoad);
@@ -1620,11 +1799,57 @@ function showSolution() {
             if (gameScreenBtn) { // Added null check
                 gameScreenBtn.disabled = true;
             }
+        } else if (level.type === 'pipe_connect') {
+            // For pipe connect, display a visual representation of a possible correct solution
+            const pipeGridContainer = document.getElementById('pipeGridContainer');
+            if (pipeGridContainer) {
+                // Clear the grid
+                pipeGridContainer.innerHTML = '';
+                pipeGridContainer.style.gridTemplateColumns = `repeat(${level.gridSize}, 100px)`;
+
+                // Define a simple correct path for demonstration
+                const solutionPath = [
+                    {r:0, c:0, type:'start', rotation:0},
+                    {r:0, c:1, type:'straight', rotation:90},
+                    {r:0, c:2, type:'straight', rotation:90},
+                    {r:0, c:3, type:'bend', rotation:270},
+                    {r:1, c:3, type:'straight', rotation:0},
+                    {r:2, c:3, type:'straight', rotation:0},
+                    {r:3, c:3, type:'end', rotation:0}
+                ];
+
+                const gridCells = Array(level.gridSize).fill(0).map((_, r) =>
+                    Array(level.gridSize).fill(0).map((_, c) => {
+                        const cell = document.createElement('div');
+                        cell.classList.add('grid-cell');
+                        const solutionPiece = solutionPath.find(p => p.r === r && p.c === c);
+                        if (solutionPiece) {
+                            if (solutionPiece.type === 'start') {
+                                cell.classList.add('start-node');
+                                cell.textContent = 'Départ';
+                            } else if (solutionPiece.type === 'end') {
+                                cell.classList.add('end-node');
+                                cell.textContent = 'Arrivée';
+                            } else {
+                                const pipeDiv = document.createElement('div');
+                                pipeDiv.classList.add('pipe-piece-placed', 'correct-path');
+                                pipeDiv.innerHTML = getPipeSVG(solutionPiece.type);
+                                pipeDiv.style.transform = `rotate(${solutionPiece.rotation}deg)`;
+                                cell.appendChild(pipeDiv);
+                            }
+                        }
+                        pipeGridContainer.appendChild(cell);
+                        return cell;
+                    })
+                );
+            }
+            const validateButton = document.getElementById('validatePipeConnectBtn');
+            if (validateButton) validateButton.disabled = true;
         }
 
         setTimeout(nextLevel, 3000); // Automatically move to next level after showing solution
         playSound('incorrect'); // Play a sound indicating score loss
-        displayCharacter('�', "Pas de souci, l'apprentissage continue !", 3000); // Solution message
+        displayCharacter('💡', "Pas de souci, l'apprentissage continue !", 3000); // Solution message
     });
 }
 
@@ -1724,6 +1949,8 @@ function getCorrectAnswerForLevel(level) {
             return `Connecter: ${correctPathNames.join(' -> ')}`;
         case 'scenario':
             return sourceLevel.actions[sourceLevel.correct];
+        case 'pipe_connect':
+            return sourceLevel.correctSolutionDescription; // Use the descriptive solution
         case 'conflict_detection': // New bonus type
             return sourceLevel.options[sourceLevel.correct];
         case 'volume_calc': // New bonus type
@@ -1833,7 +2060,7 @@ function copyCorrectionToClipboard() {
         const msg = successful ? 'Copié dans le presse-papiers !' : 'Échec de la copie.';
         // Replace alert with a custom message box if desired
         const currentAlert = document.getElementById('customAlert');
-        if (currentAlert) currentAlert.remove(); // Remove previous alert
+        if (currentAlert) current.remove(); // Remove previous alert
 
         const customAlert = document.createElement('div');
         customAlert.id = 'customAlert';
@@ -2745,6 +2972,422 @@ function checkVolumeCalcAnswer(correctAnswer, points, levelType) {
 }
 
 
+// New Pipe Connect Mini-Game Functions
+let currentPipeGrid = []; // Stores the state of the grid: { type: 'straight'/'bend'/'t_junction'/'cross', rotation: 0/90/180/270 }
+let pipeTrayCounts = {}; // Stores counts of available pipes
+
+// SVG definitions for pipe pieces
+function getPipeSVG(type) {
+    const strokeWidth = 10;
+    const half = 50; // Half of 100px cell size for center
+    const quarter = 25; // Quarter for offsets
+
+    switch (type) {
+        case 'straight':
+            return `<svg viewBox="0 0 100 100"><path d="M${half},0 V100" stroke="currentColor" stroke-width="${strokeWidth}" fill="none" stroke-linecap="round"/></svg>`;
+        case 'bend':
+            return `<svg viewBox="0 0 100 100"><path d="M0,${half} H${half} V100" stroke="currentColor" stroke-width="${strokeWidth}" fill="none" stroke-linecap="round"/></svg>`;
+        case 't_junction':
+            return `<svg viewBox="0 0 100 100"><path d="M0,${half} H100 M${half},0 V100" stroke="currentColor" stroke-width="${strokeWidth}" fill="none" stroke-linecap="round"/></svg>`;
+        case 'cross':
+            return `<svg viewBox="0 0 100 100"><path d="M0,${half} H100 M${half},0 V100" stroke="currentColor" stroke-width="${strokeWidth}" fill="none" stroke-linecap="round"/></svg>`;
+        default:
+            return '';
+    }
+}
+
+function renderPipeConnectLevel(level) {
+    const gameScreen = document.getElementById('gameScreen');
+    if (!gameScreen) return;
+
+    gameScreen.innerHTML = `
+        <h2 id="questionText">${level.question}</h2>
+        <div class="pipe-game-container">
+            <div id="pipeTray" class="pipe-tray"></div>
+            <div id="pipeGridContainer" class="pipe-grid-container"></div>
+            <div class="button-center-align">
+                <button class="btn" id="validatePipeConnectBtn" onclick="checkPipeConnectAnswer(${level.points}, ${level.gridSize}, ${level.start.row}, ${level.start.col}, ${level.end.row}, ${level.end.col}, '${level.type}')">Valider le réseau</button>
+            </div>
+        </div>
+    `;
+
+    const pipeTray = document.getElementById('pipeTray');
+    const pipeGridContainer = document.getElementById('pipeGridContainer');
+
+    // Initialize grid state with nulls and set up grid display
+    currentPipeGrid = Array(level.gridSize).fill(0).map(() => Array(level.gridSize).fill(null));
+    pipeGridContainer.style.gridTemplateColumns = `repeat(${level.gridSize}, 100px)`;
+
+    // Render grid cells
+    for (let r = 0; r < level.gridSize; r++) {
+        for (let c = 0; c < level.gridSize; c++) {
+            const cell = document.createElement('div');
+            cell.classList.add('grid-cell');
+            cell.dataset.row = r;
+            cell.dataset.col = c;
+
+            if (r === level.start.row && c === level.start.col) {
+                cell.classList.add('start-node');
+                cell.textContent = 'Départ';
+            } else if (r === level.end.row && c === level.end.col) {
+                cell.classList.add('end-node');
+                cell.textContent = 'Arrivée';
+            }
+
+            cell.addEventListener('dragover', (e) => {
+                e.preventDefault(); // Allow drop
+                cell.classList.add('hover');
+            });
+            cell.addEventListener('dragleave', () => cell.classList.remove('hover'));
+            cell.addEventListener('drop', (e) => handlePipeDrop(e, cell, level));
+            pipeGridContainer.appendChild(cell);
+        }
+    }
+
+    // Initialize pipe tray
+    pipeTrayCounts = {};
+    level.availablePieces.forEach(piece => {
+        pipeTrayCounts[piece.type] = piece.count;
+        createDraggablePipe(piece.type, pipeTray);
+    });
+}
+
+function createDraggablePipe(type, container) {
+    const pieceDiv = document.createElement('div');
+    pieceDiv.classList.add('pipe-piece-draggable');
+    pieceDiv.draggable = true;
+    pieceDiv.dataset.type = type;
+    pieceDiv.dataset.rotation = 0; // Initial rotation
+
+    pieceDiv.innerHTML = getPipeSVG(type);
+
+    const countSpan = document.createElement('span');
+    countSpan.classList.add('pipe-count');
+    countSpan.textContent = pipeTrayCounts[type];
+    pieceDiv.appendChild(countSpan);
+
+    pieceDiv.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', JSON.stringify({ type: pieceDiv.dataset.type, rotation: pieceDiv.dataset.rotation }));
+        e.dataTransfer.effectAllowed = 'move';
+        pieceDiv.classList.add('dragging');
+    });
+
+    pieceDiv.addEventListener('dragend', () => {
+        pieceDiv.classList.remove('dragging');
+    });
+
+    container.appendChild(pieceDiv);
+    updatePipeTrayDisplay(); // Update counts
+}
+
+function handlePipeDrop(e, targetCell, level) {
+    e.preventDefault();
+    targetCell.classList.remove('hover');
+
+    if (targetCell.classList.contains('start-node') || targetCell.classList.contains('end-node')) {
+        displayCharacter('🚫', "Vous ne pouvez pas placer de tuyau sur les points de départ/arrivée !", 2000);
+        return;
+    }
+
+    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+    const type = data.type;
+    let rotation = parseInt(data.rotation);
+
+    const row = parseInt(targetCell.dataset.row);
+    const col = parseInt(targetCell.dataset.col);
+
+    // If there's already a pipe in the cell, remove it and return to tray
+    if (currentPipeGrid[row][col]) {
+        const existingPipe = currentPipeGrid[row][col];
+        pipeTrayCounts[existingPipe.type]++; // Return to tray
+        updatePipeTrayDisplay();
+        targetCell.innerHTML = ''; // Clear cell
+    }
+
+    // Place the new pipe if available
+    if (pipeTrayCounts[type] > 0) {
+        pipeTrayCounts[type]--;
+        currentPipeGrid[row][col] = { type: type, rotation: rotation };
+
+        const pipeDiv = document.createElement('div');
+        pipeDiv.classList.add('pipe-piece-placed');
+        pipeDiv.innerHTML = getPipeSVG(type);
+        pipeDiv.style.transform = `rotate(${rotation}deg)`;
+        pipeDiv.dataset.type = type;
+        pipeDiv.dataset.rotation = rotation; // Store current rotation
+
+        pipeDiv.addEventListener('click', () => rotatePipe(pipeDiv, row, col));
+        targetCell.appendChild(pipeDiv);
+        updatePipeTrayDisplay();
+    } else {
+        displayCharacter('🤔', "Plus de pièces de ce type disponibles dans le plateau !", 2000);
+    }
+}
+
+function rotatePipe(pipeDiv, row, col) {
+    let currentRotation = parseInt(pipeDiv.dataset.rotation);
+    currentRotation = (currentRotation + 90) % 360;
+    pipeDiv.style.transform = `rotate(${currentRotation}deg)`;
+    pipeDiv.dataset.rotation = currentRotation; // Update stored rotation
+
+    if (currentPipeGrid[row][col]) {
+        currentPipeGrid[row][col].rotation = currentRotation;
+    }
+    playSound('buttonClick');
+}
+
+function updatePipeTrayDisplay() {
+    const pipeTray = document.getElementById('pipeTray');
+    if (!pipeTray) return;
+
+    // Clear existing draggables to re-render with updated counts
+    pipeTray.innerHTML = ''; 
+
+    for (const type in pipeTrayCounts) {
+        if (pipeTrayCounts[type] > 0) {
+            const pieceDiv = document.createElement('div');
+            pieceDiv.classList.add('pipe-piece-draggable');
+            pieceDiv.draggable = true;
+            pieceDiv.dataset.type = type;
+            pieceDiv.dataset.rotation = 0; // Draggable pieces always start at 0 rotation visually in tray
+
+            pieceDiv.innerHTML = getPipeSVG(type);
+
+            const countSpan = document.createElement('span');
+            countSpan.classList.add('pipe-count');
+            countSpan.textContent = pipeTrayCounts[type];
+            pieceDiv.appendChild(countSpan);
+
+            pieceDiv.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', JSON.stringify({ type: pieceDiv.dataset.type, rotation: pieceDiv.dataset.rotation }));
+                e.dataTransfer.effectAllowed = 'move';
+                pieceDiv.classList.add('dragging');
+            });
+
+            pieceDiv.addEventListener('dragend', () => {
+                pieceDiv.classList.remove('dragging');
+            });
+            pipeTray.appendChild(pieceDiv);
+        }
+    }
+}
+
+
+// Define connections for each pipe type and rotation
+// Each entry maps a rotation to an array of connected sides (0=top, 1=right, 2=bottom, 3=left)
+const PIPE_CONNECTIONS = {
+    'straight': {
+        0: [0, 2], // Vertical: top, bottom
+        90: [1, 3], // Horizontal: right, left
+        180: [0, 2],
+        270: [1, 3]
+    },
+    'bend': {
+        0: [0, 1], // Top-right bend
+        90: [1, 2], // Right-bottom bend
+        180: [2, 3], // Bottom-left bend
+        270: [3, 0]  // Left-top bend
+    },
+    't_junction': {
+        0: [0, 1, 3], // T-up: top, right, left
+        90: [0, 1, 2], // T-right: top, right, bottom
+        180: [1, 2, 3], // T-down: right, bottom, left
+        270: [0, 2, 3]  // T-left: top, bottom, left
+    },
+    'cross': {
+        0: [0, 1, 2, 3] // All sides connected
+    }
+};
+
+function checkPipeConnectAnswer(points, gridSize, startRow, startCol, endRow, endCol, levelType) {
+    stopTimer();
+    const validateButton = document.getElementById('validatePipeConnectBtn');
+    if (validateButton) validateButton.disabled = true;
+
+    // Clear previous path highlights
+    document.querySelectorAll('.grid-cell').forEach(cell => {
+        cell.classList.remove('correct-path', 'incorrect-path');
+        const pipe = cell.querySelector('.pipe-piece-placed svg');
+        if (pipe) {
+            pipe.style.fill = '#3b82f6'; // Reset to default blue
+            pipe.style.stroke = '#1e40af';
+        }
+    });
+
+    let isCorrect = false;
+    let pointsEarned = 0;
+    let basePoints = points;
+    let userAnswerPath = "Chemin non trouvé ou incomplet.";
+
+    // Check if all available pieces are used
+    let allPiecesUsed = true;
+    for (const type in pipeTrayCounts) {
+        if (pipeTrayCounts[type] > 0) {
+            allPiecesUsed = false;
+            break;
+        }
+    }
+
+    if (!allPiecesUsed) {
+        displayCharacter('🤔', "Toutes les pièces ne sont pas utilisées ou le chemin est incomplet !", 3000);
+        pointsEarned = -Math.floor(basePoints / 3);
+        gameState.score = Math.max(0, gameState.score + pointsEarned);
+        playSound('incorrect');
+        recordPipeConnectAnswer(levelType, userAnswerPath, false, pointsEarned);
+        setTimeout(nextLevel, 2000);
+        return;
+    }
+
+    // BFS to find a path from start to end
+    const queue = [{ r: startRow, c: startCol, path: [`${startRow}-${startCol}`] }];
+    const visited = new Set([`${startRow}-${startCol}`]);
+
+    while (queue.length > 0) {
+        const { r, c, path } = queue.shift();
+
+        // Check if we reached the end
+        if (r === endRow && c === endCol) {
+            isCorrect = true;
+            userAnswerPath = path.join(' -> ');
+            break;
+        }
+
+        // Determine outgoing connections from current pipe (or start node)
+        let outgoingConnections = [];
+        if (r === startRow && c === startCol) {
+            // Start node connects to its right (assuming start is always on left edge, facing right)
+            // Or, more generally, it connects to the cell (r, c+1) on its right.
+            // For a start node at (0,0), it should connect to a pipe at (0,1) that has a 'left' opening.
+            // This is a simplification. A more robust start/end node would have explicit "openings".
+            // For now, let's assume start has an opening to the right, and end has an opening to the left.
+            outgoingConnections = [1]; // Right side (for start node)
+        } else {
+            const pipe = currentPipeGrid[r][c];
+            if (!pipe) continue; // Should not happen if all pieces are used
+
+            outgoingConnections = PIPE_CONNECTIONS[pipe.type][pipe.rotation];
+        }
+
+        // Explore neighbors
+        const neighbors = [
+            { dr: -1, dc: 0, incomingSide: 2, r: r - 1, c: c }, // Top (expecting bottom connection)
+            { dr: 0, dc: 1, incomingSide: 3, r: r, c: c + 1 }, // Right (expecting left connection)
+            { dr: 1, dc: 0, incomingSide: 0, r: r + 1, c: c }, // Bottom (expecting top connection)
+            { dr: 0, dc: -1, incomingSide: 1, r: r, c: c - 1 }  // Left (expecting right connection)
+        ];
+
+        neighbors.forEach(neighbor => {
+            const nr = neighbor.r;
+            const nc = neighbor.c;
+
+            // Check bounds
+            if (nr < 0 || nr >= gridSize || nc < 0 || nc >= gridSize) return;
+
+            // Check if already visited
+            if (visited.has(`${nr}-${nc}`)) return;
+
+            // Check if current pipe connects to this neighbor
+            const currentPipeHasOutgoing = outgoingConnections.includes(neighbor.incomingSide === 0 ? 2 : neighbor.incomingSide === 1 ? 3 : neighbor.incomingSide === 2 ? 0 : 1); // Map incoming to outgoing
+
+            if (!currentPipeHasOutgoing) return;
+
+            // Check if neighbor is the end node
+            if (nr === endRow && nc === endCol) {
+                // Special check for end node: it must have an opening that connects to the incoming pipe
+                // Assuming end node needs an incoming connection from its left (side 3)
+                // This needs to be dynamic based on end node position.
+                // For now, assume end node is at (3,3) and expects connection from left (side 3) or top (side 0).
+                // Simplified: if it's the end node, and we can reach it, it's a valid connection.
+                 if (currentPipeHasOutgoing) { // Ensure the pipe leading to end has an opening towards end
+                    queue.push({ r: nr, c: nc, path: [...path, `${nr}-${nc}`] });
+                    visited.add(`${nr}-${nc}`);
+                    return;
+                }
+            }
+
+            // Check if neighbor cell has a pipe
+            const neighborPipe = currentPipeGrid[nr][nc];
+            if (!neighborPipe) return;
+
+            // Check if neighbor pipe has an incoming connection from current pipe
+            const neighborIncomingConnections = PIPE_CONNECTIONS[neighborPipe.type][neighborPipe.rotation];
+            const neighborHasIncoming = neighborIncomingConnections.includes(neighbor.incomingSide);
+
+            if (neighborHasIncoming) {
+                queue.push({ r: nr, c: nc, path: [...path, `${nr}-${nc}`] });
+                visited.add(`${nr}-${nc}`);
+            }
+        });
+    }
+
+    if (isCorrect) {
+        pointsEarned = basePoints;
+        if (!gameState.isBonusRound) { // Only apply bonus multiplier for regular questions
+            pointsEarned *= gameState.bonusMultiplier; 
+        }
+        gameState.score += pointsEarned;
+        playSound('correct');
+        displayCharacter('🎉', "Réseau parfait ! Vous êtes un expert en plomberie VRD !", 2000);
+        // Highlight correct path
+        userAnswerPath.split(' -> ').forEach(coordStr => {
+            const [r, c] = coordStr.split('-').map(Number);
+            const cell = document.querySelector(`.grid-cell[data-row="${r}"][data-col="${c}"]`);
+            if (cell) {
+                cell.classList.add('correct-path');
+                const pipe = cell.querySelector('.pipe-piece-placed svg');
+                if (pipe) {
+                    pipe.style.fill = '#10b981'; // Green fill
+                    pipe.style.stroke = '#065f46'; // Darker green stroke
+                }
+            }
+        });
+    } else {
+        pointsEarned = -Math.floor(basePoints / 2);
+        gameState.score = Math.max(0, gameState.score + pointsEarned);
+        playSound('incorrect');
+        displayCharacter('😟', "Le réseau n'est pas fonctionnel. Vérifiez vos connexions !", 2000);
+        // Highlight incorrect path (all placed pipes for this case)
+        for (let r = 0; r < gridSize; r++) {
+            for (let c = 0; c < gridSize; c++) {
+                const cell = document.querySelector(`.grid-cell[data-row="${r}"][data-col="${c}"]`);
+                if (cell && currentPipeGrid[r][c]) {
+                    cell.classList.add('incorrect-path');
+                    const pipe = cell.querySelector('.pipe-piece-placed svg');
+                    if (pipe) {
+                        pipe.style.fill = '#ef4444'; // Red fill
+                        pipe.style.stroke = '#b91c1c'; // Darker red stroke
+                    }
+                }
+            }
+        }
+    }
+
+    recordPipeConnectAnswer(levelType, userAnswerPath, isCorrect, pointsEarned);
+    setTimeout(nextLevel, 2000);
+}
+
+function recordPipeConnectAnswer(levelType, userAnswerText, isCorrect, pointsEarned) {
+    const level = gameState.isBonusRound ? gameState.bonusLevelData : gameState.shuffledLevels[gameState.currentLevel];
+    gameState.answers.push({
+        levelIndex: gameState.currentLevel,
+        type: level.type,
+        question: level.question,
+        userAnswer: userAnswerText,
+        correctAnswer: getCorrectAnswerForLevel(level),
+        isCorrect: isCorrect,
+        pointsEarned: pointsEarned
+    });
+    gameState.skillScores[level.type].total++;
+    if (isCorrect) {
+        gameState.skillScores[level.type].correct++;
+    }
+    if (!gameState.isBonusRound) {
+        gameState.bonusMultiplier = 1;
+    }
+    updateHeader();
+}
+
+
 // Font Size Adjustment Functions
 function applyFontSize() {
     const root = document.documentElement;
@@ -2786,7 +3429,10 @@ function applyFontSize() {
         { selector: '.scenario-icon', baseRem: 4.0 },
         { selector: '.stat-number', baseRem: 3.2 },
         { selector: '.stat-label', baseRem: 1.1 },
-        { selector: '#customAlert', baseRem: 1.1 }
+        { selector: '#customAlert', baseRem: 1.1 },
+        { selector: '.pipe-piece-draggable', baseRem: 1.0 },
+        { selector: '.pipe-count', baseRem: 0.7 },
+        { selector: '.grid-cell', baseRem: 1.0 }
     ];
 
     elementsToScale.forEach(item => {
@@ -2925,4 +3571,3 @@ window.onload = function() {
 </script>
 </body>
 </html>
-�
