@@ -23,7 +23,7 @@
             align-items: center;
             padding: 10px;
             /* Default font size, will be updated by JS */
-            font-size: 16px; 
+            font-size: 14px; /* Adjusted base font size */
         }
         
         .game-container {
@@ -52,13 +52,14 @@
             left: 0;
             width: 100%;
             z-index: 10; /* Ensure it's above other content */
+            height: 90px; /* Explicit height to help with screen padding */
         }
         
         .logo {
             display: flex;
             align-items: center;
             gap: 15px;
-            font-size: 28px;
+            font-size: 2rem; /* Adjusted from 28px */
             font-weight: 800;
         }
         
@@ -70,7 +71,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 30px;
+            font-size: 2.2rem; /* Adjusted from 30px */
         }
         
         .header-stats {
@@ -83,7 +84,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            font-size: 24px;
+            font-size: 1.7rem; /* Adjusted from 24px */
             font-weight: 600;
             background: rgba(255, 255, 255, 0.2);
             padding: 10px 20px;
@@ -93,12 +94,12 @@
         
         .score-icon::before {
             content: "⭐";
-            font-size: 28px;
+            font-size: 2rem; /* Adjusted from 28px */
         }
         
         .timer-icon::before {
             content: "⏰";
-            font-size: 28px;
+            font-size: 2rem; /* Adjusted from 28px */
         }
         
         .timer-display.warning {
@@ -114,13 +115,14 @@
         .screen {
             display: none;
             flex: 1;
-            /* Adjusted padding to account for header (80px), controls (100px from right), and new bottom bars */
+            /* Adjusted padding to account for header (90px), controls (~100px from right), and bottom bars */
             padding: 100px 120px 80px 50px; /* top, right, bottom, left */
             overflow-y: auto;
             animation: fadeIn 0.5s ease-out;
-            margin-top: 80px; /* To push content down from header */
-            margin-right: 100px; /* To push content left from controls */
-            margin-bottom: 60px; /* To push content up from the new bottom bars */
+            /* Removed redundant margins as padding now handles spacing */
+            /* margin-top: 80px; */
+            /* margin-right: 100px; */
+            /* margin-bottom: 60px; */
         }
         
         .screen.active {
@@ -129,6 +131,47 @@
             align-items: center;
             justify-content: center;
         }
+
+        /* Bonus round specific styling */
+        .screen.bonus-active {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); /* Gold/Orange gradient */
+            box-shadow: 0 25px 80px rgba(255, 165, 0, 0.5); /* Orange shadow */
+            color: #333; /* Darker text for contrast */
+        }
+        .screen.bonus-active h2 {
+            color: #333; /* Ensure heading is readable */
+        }
+        .screen.bonus-active .answer-btn {
+            background: #fefce8; /* Light yellow background for buttons */
+            border-color: #fbbf24; /* Yellow border */
+            color: #333;
+        }
+        .screen.bonus-active .answer-btn:hover {
+            border-color: #f59e0b; /* Darker yellow on hover */
+            background: #fde68a;
+        }
+        .screen.bonus-active .material-card {
+            background: #fefce8;
+            border-color: #fbbf24;
+            color: #333;
+        }
+        .screen.bonus-active .material-card:hover {
+            border-color: #f59e0b;
+            background: #fde68a;
+        }
+        .screen.bonus-active .elevation-input {
+            border-color: #fbbf24;
+        }
+        .screen.bonus-active .elevation-input:focus {
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.4);
+        }
+        .screen.bonus-active .btn {
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%); /* Orange to red gradient for bonus buttons */
+            box-shadow: 0 5px 25px rgba(245, 158, 11, 0.4);
+        }
+        .screen.bonus-active .btn:hover {
+            box-shadow: 0 8px 35px rgba(245, 158, 11, 0.6);
+        }
         
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -136,7 +179,7 @@
         }
         
         h1 {
-            font-size: 5rem; /* Increased font size for main title */
+            font-size: 3.5rem; /* Adjusted from 5rem */
             font-weight: 800;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
@@ -147,7 +190,7 @@
         }
         
         h2 {
-            font-size: 3.8rem; /* Further increased font size for questions */
+            font-size: 2.5rem; /* Adjusted from 3.8rem */
             font-weight: 600;
             color: #333;
             margin-bottom: 40px;
@@ -156,7 +199,7 @@
         }
 
         p {
-            font-size: 1.4rem; /* Increased font size for instructions/text */
+            font-size: 1.1rem; /* Adjusted from 1.4rem */
         }
         
         .btn {
@@ -165,7 +208,7 @@
             border: none;
             padding: 18px 50px;
             border-radius: 50px;
-            font-size: 20px;
+            font-size: 1.4rem; /* Adjusted from 20px */
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -233,14 +276,14 @@
             align-items: center;
             justify-content: flex-end;
             padding-right: 5px;
-            font-size: 12px;
+            font-size: 0.8rem; /* Adjusted from 12px */
             color: #667eea;
             font-weight: 600;
         }
         
         .answer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Adjusted minmax for smaller font */
             gap: 25px;
             width: 100%;
             max-width: 1000px;
@@ -252,7 +295,7 @@
             border: 3px solid #e0e0e0;
             padding: 25px;
             border-radius: 20px;
-            font-size: 20px; /* Will be adjusted by JS */
+            font-size: 1.2rem; /* Adjusted from 20px */
             cursor: pointer;
             transition: all 0.3s ease;
             text-align: center;
@@ -328,7 +371,7 @@
             border: none;
             background: white;
             color: #667eea;
-            font-size: 24px;
+            font-size: 1.7rem; /* Adjusted from 24px */
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
@@ -372,7 +415,7 @@
             color: white;
             padding: 8px 12px;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 1rem; /* Adjusted from 14px */
             white-space: nowrap;
             opacity: 0;
             pointer-events: none;
@@ -438,7 +481,7 @@
             border: none;
             background: #f0f0f0;
             border-radius: 50%;
-            font-size: 28px;
+            font-size: 2rem; /* Adjusted from 28px */
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
@@ -461,7 +504,7 @@
             user-select: none;
             margin: 8px;
             transition: all 0.3s ease;
-            font-size: 18px; /* Will be adjusted by JS */
+            font-size: 1.1rem; /* Adjusted from 18px */
             box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
         }
         
@@ -481,7 +524,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px; /* Will be adjusted by JS */
+            font-size: 1.1rem; /* Adjusted from 18px */
             background: white;
         }
         
@@ -499,7 +542,7 @@
         
         .material-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjusted minmax for smaller font */
             gap: 25px;
             max-width: 1000px;
             margin-top: 40px;
@@ -520,7 +563,7 @@
         }
         
         .material-icon {
-            font-size: 60px;
+            font-size: 4rem; /* Adjusted from 60px */
             line-height: 1;
         }
         
@@ -549,7 +592,7 @@
         }
         
         .elevation-input {
-            font-size: 28px; /* Will be adjusted by JS */
+            font-size: 1.8rem; /* Adjusted from 28px */
             padding: 20px 40px;
             border: 3px solid #e0e0e0;
             border-radius: 20px;
@@ -625,7 +668,7 @@
         }
         
         .scenario-icon {
-            font-size: 60px;
+            font-size: 4rem; /* Adjusted from 60px */
             margin-bottom: 20px;
         }
         
@@ -648,13 +691,13 @@
         }
         
         .stat-number {
-            font-size: 48px;
+            font-size: 3.2rem; /* Adjusted from 48px */
             font-weight: 800;
             margin: 10px 0;
         }
         
         .stat-label {
-            font-size: 18px;
+            font-size: 1.1rem; /* Adjusted from 18px */
             opacity: 0.9;
         }
         /* Added for right alignment of buttons */
@@ -675,11 +718,12 @@
             background: linear-gradient(90deg, #764ba2 0%, #667eea 100%);
             color: white;
             padding: 8px 0;
-            font-size: 16px;
+            font-size: 1rem; /* Adjusted from 16px */
             overflow: hidden;
             white-space: nowrap;
             box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
             z-index: 10; /* Ensure it's above other content */
+            height: 30px; /* Explicit height to help with screen padding */
         }
 
         .tips-bar-content {
@@ -695,93 +739,132 @@
 
         /* Home Screen Specific Styles */
         #homeScreen {
-            /* Changed background to a blue gradient */
-            background: linear-gradient(135deg, #4A5568 0%, #2D3748 100%); /* Darker blue gradient */
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%); /* Darker, more professional gradient */
             color: white;
             text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
-            justify-content: center; /* Center content vertically */
-            align-items: center; /* Center content horizontally */
-            padding: 50px; /* Reset padding for home screen */
-            margin-top: 0; /* Reset margin for home screen */
-            margin-right: 0; /* Reset margin for home screen */
-            margin-bottom: 0; /* Reset margin for home screen */
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+            margin-top: 0;
+            margin-right: 0;
+            margin-bottom: 0;
+            position: relative; /* Needed for pseudo-element background */
+            overflow: hidden; /* Hide overflow from pseudo-element */
+        }
+
+        #homeScreen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zm0 36v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0 36v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM12 34v-4H10v4H6v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4H6v2h4v4h2V6h4V4h-4zm0 36v-4H10v4H6v2h4v4h2v-4h4v-2h-4zm0 36v-4H10v4H6v2h4v4h2v-4h4v-2h-4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.1;
+            z-index: 0;
+            animation: backgroundPan 60s linear infinite; /* Subtle animation */
+        }
+
+        @keyframes backgroundPan {
+            from { background-position: 0% 0%; }
+            to { background-position: 100% 100%; }
         }
 
         #homeScreen h1 {
-            font-size: 6.5rem; /* Larger title for home screen */
-            background: none; /* Remove gradient for better text shadow visibility */
-            -webkit-text-fill-color: white;
-            text-shadow: 4px 4px 10px rgba(0,0,0,0.7);
-            margin-bottom: 20px;
+            font-size: 4.5rem; /* Adjusted from 6.8rem */
+            background: linear-gradient(135deg, #a78bfa 0%, #c4b5fd 100%); /* Lighter, more vibrant gradient */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 4px 4px 12px rgba(0,0,0,0.8); /* Stronger shadow */
+            margin-bottom: 25px;
+            letter-spacing: 2px; /* Add some letter spacing */
+            position: relative; /* Ensure it's above pseudo-element */
+            z-index: 1;
         }
 
         #homeScreen p {
-            font-size: 2.2rem; /* Larger subtitle for home screen */
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+            font-size: 1.6rem; /* Adjusted from 2.4rem */
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+            line-height: 1.4;
+            position: relative;
+            z-index: 1;
         }
 
         #homeScreen .logo-icon {
-            width: 180px;
-            height: 180px;
-            font-size: 100px;
-            border-radius: 50%; /* Make it a circle */
-            background: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            margin-bottom: 40px;
+            width: 150px; /* Adjusted from 200px */
+            height: 150px;
+            font-size: 7rem; /* Adjusted from 110px */
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.98); /* Brighter background */
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.5); /* More complex shadow */
+            margin-bottom: 50px;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+        #homeScreen .logo-icon:hover {
+            transform: scale(1.05) rotate(5deg);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7), inset 0 0 30px rgba(255,255,255,0.7);
         }
 
         #homeScreen .btn {
-            padding: 22px 60px;
-            font-size: 24px;
-            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+            padding: 20px 60px; /* Adjusted from 25px 70px */
+            font-size: 1.8rem; /* Adjusted from 26px */
+            background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%); /* Purple gradient */
+            box-shadow: 0 10px 40px rgba(167, 139, 250, 0.7); /* Stronger shadow */
+            border: 2px solid rgba(255,255,255,0.3); /* Subtle border */
+            position: relative;
+            z-index: 1;
+        }
+        #homeScreen .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(167, 139, 250, 0.9);
+        }
+        .home-features {
+            font-size: 1.1rem; /* Adjusted from 1.6rem */
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 60px; /* More space */
+            text-align: center;
+            line-height: 1.6;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
+            position: relative;
+            z-index: 1;
+        }
+        .home-features p {
+            margin: 8px 0;
         }
 
-        /* Character and Speech Bubble Styles */
+        /* Character and Speech Bubble */
         #gameCharacter {
-            position: absolute;
-            bottom: 70px; /* Above tips bar and progress bar */
+            position: fixed;
+            bottom: 80px; /* Above the tips bar and progress bar */
             left: 30px;
-            font-size: 60px; /* Size of the emoji character */
-            z-index: 20; /* Above game content */
+            font-size: 5rem; /* Adjust size, e.g., 80px */
+            z-index: 50; /* Above game content, below modals */
             transition: transform 0.3s ease-out;
-            display: none; /* Hidden by default */
         }
 
         #speechBubble {
-            position: absolute;
-            bottom: 140px; /* Above character */
-            left: 100px;
+            position: fixed;
+            bottom: 140px; /* Above the character */
+            left: 100px; /* To the right of the character */
             background: white;
-            border-radius: 20px;
             padding: 15px 25px;
-            max-width: 250px;
-            font-size: 1.1rem; /* Will be adjusted by JS */
-            color: #333;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 250px; /* Limit width */
+            text-align: center;
             opacity: 0;
-            transform: scale(0.8);
-            transition: all 0.3s ease-out;
-            transform-origin: bottom left;
-            z-index: 21; /* Above character */
-        }
-
-        #speechBubble::after {
-            content: '';
-            position: absolute;
-            bottom: -15px;
-            left: 20px;
-            width: 0;
-            height: 0;
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-top: 15px solid white;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+            z-index: 50;
         }
 
         #speechBubble.active {
             opacity: 1;
-            transform: scale(1);
+            transform: translateY(0);
         }
     </style>
 </head>
@@ -813,7 +896,7 @@
             <div class="logo-icon">🏗️</div>
             <h1>LTD SIMULATEUR</h1>
             <p>L'Expérience Complète du Projeteur VRD</p>
-            <div style="font-size: 28px; color: rgba(255, 255, 255, 0.9); margin-bottom: 50px; text-align: center; line-height: 1.8; text-shadow: 1px 1px 3px rgba(0,0,0,0.3);">
+            <div class="home-features">
                 <p>🔥 30 Niveaux de défis techniques</p>
                 <p>🚨 Scénarios réalistes de chantier</p>
                 <p>🚀 Devenez expert en Voirie et Réseaux Divers</p>
@@ -856,7 +939,7 @@
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('helpModal')">✕</button>
             <h2 style="color: #667eea; margin-bottom: 30px;">📚 Comment jouer ?</h2>
-            <p style="font-size: 18px; line-height: 1.6; margin-bottom: 25px;">
+            <p style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 25px;">
                 Bienvenue dans LTD Simulateur ! Votre objectif est de devenir un expert en VRD 
                 (Voirie et Réseaux Divers) en complétant 30 défis variés.
             </p>
@@ -868,6 +951,8 @@
                 <p style="margin: 10px 0;"><strong>📐 Construction</strong> : Assemblage des couches</p>
                 <p style="margin: 10px 0;"><strong>🧮 Calculs</strong> : Problèmes d'altitude et pente</p>
                 <p style="margin: 10px 0;"><strong>⚠️ Scénarios</strong> : Situations d'urgence</p>
+                <p style="margin: 10px 0;"><strong>🌟 BONUS - Détection de Conflits</strong> : Identifiez les problèmes de réseaux.</p>
+                <p style="margin: 10px 0;"><strong>🌟 BONUS - Calcul de Volume</strong> : Calculez les volumes de terrassement.</p>
             </div>
             <h3 style="color: #764ba2; margin: 25px 0 15px;">💯 Système de points :</h3>
             <div style="background: #e8f5e9; padding: 20px; border-radius: 15px; margin-bottom: 25px;">
@@ -876,6 +961,7 @@
                 <p style="margin: 10px 0;">⏰ Temps écoulé : <strong>-20 points</strong></p>
                 <p style="margin: 10px 0;">💡 Voir solution : <strong>-50 points</strong></p>
                 <p style="margin: 10px 0;">⏭️ Passer : <strong>-10 points</strong></p>
+                <p style="margin: 10px 0;">🔥 Bonus réussis : <strong>Doublent les points de la prochaine question !</strong></p>
             </div>
             <button class="btn" onclick="closeModal('helpModal')">Compris !</button>
         </div>
@@ -884,7 +970,7 @@
     <div id="confirmModal" class="modal">
         <div class="modal-content" style="text-align: center;">
             <h2 id="confirmTitle" style="color: #667eea; margin-bottom: 30px;">Confirmer</h2>
-            <p id="confirmText" style="font-size: 20px; margin: 30px 0;">Êtes-vous sûr ?</p>
+            <p style="font-size: 1.2rem; margin: 30px 0;" id="confirmText">Êtes-vous sûr ?</p>
             <div style="display: flex; gap: 20px; justify-content: center; margin-top: 40px;">
                 <button class="btn" onclick="confirmAction()">Oui</button>
                 <button class="btn btn-secondary" onclick="closeModal('confirmModal')">Non</button>
@@ -896,7 +982,7 @@
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('correctionModal')">✕</button>
             <h2 style="color: #667eea; margin-bottom: 30px;">📊 Rapport de Correction</h2>
-            <div id="correctionReportContent" style="font-size: 18px; line-height: 1.6;">
+            <div id="correctionReportContent" style="font-size: 1.1rem; line-height: 1.6;">
                 <!-- Correction content will be inserted here -->
             </div>
             <button class="btn mt-8" onclick="copyCorrectionToClipboard()">Copier la correction</button>
@@ -921,11 +1007,16 @@ let gameState = {
         drag: { correct: 0, total: 0 },
         calc: { correct: 0, total: 0 },
         network: { correct: 0, total: 0 },
-        scenario: { correct: 0, total: 0 }
+        scenario: { correct: 0, total: 0 },
+        conflict_detection: { correct: 0, total: 0 }, // New skill type
+        volume_calc: { correct: 0, total: 0 } // New skill type
     },
-    baseFontSize: 16, // Default base font size in pixels
+    baseFontSize: 14, // Default base font size in pixels, adjusted to 14px
     characterTipInterval: null, // Interval for character tips
-    shuffledLevels: [] // New array to store shuffled levels
+    shuffledLevels: [], // New array to store shuffled levels
+    isBonusRound: false, // Flag to indicate if current round is a bonus round
+    bonusLevelData: null, // Stores the current bonus level data
+    bonusMultiplier: 1 // Multiplier for points on the next question
 };
 
 // Level data
@@ -935,7 +1026,7 @@ const originalLevels = [ // Renamed to originalLevels
     { type: 'quiz', question: "Quelle est la couleur normalisée pour l'eau potable ?", answers: ["Rouge", "Bleu", "Vert", "Jaune"], correct: 1, points: 50 },
     { type: 'material', question: "Sélectionnez le matériau le plus adapté pour un trottoir", materials: ["Asphalte", "Béton désactivé", "Terre battue", "Gravier"], icons: ["🛣️", "🧱", "🌿", "🚧"], correct: 1, points: 75 },
     { type: 'quiz', question: "Qu'est-ce qu'un plan de récolement ?", answers: ["Le plan initial du projet", "Un plan des travaux réalisés", "Un planning de chantier"], correct: 1, points: 50 },
-    { type: 'network', question: "Tracez le réseau d'eaux usées du point A au point B", points: 100 },
+    { type: 'network', question: "Tracez le réseau d'eaux usées du point A au point B", points: 100, correctPath: ['nodeA', 'nodeB'] }, // Added correctPath
     
     // Level 6-10: Technical basics
     { type: 'quiz', question: "Quelle est la pente minimale pour un réseau EU ?", answers: ["0.5%", "1%", "2%", "5%"], correct: 1, points: 75 },
@@ -948,7 +1039,7 @@ const originalLevels = [ // Renamed to originalLevels
     { type: 'quiz', question: "Couleur du grillage avertisseur électrique ?", answers: ["Bleu", "Rouge", "Vert", "Jaune"], correct: 1, points: 50 },
     { type: 'material', question: "Quel regard pour un changement de direction EU ?", materials: ["Regard de visite", "Bouche à clé", "Avaloir", "Tabouret"], icons: ["🕳️", "🔧", "🌊", "🪑"], correct: 0, points: 75 },
     { type: 'quiz', question: "Distance minimale entre eau potable et EU ?", answers: ["20cm", "40cm", "60cm", "100cm"], correct: 1, points: 75 },
-    { type: 'network', question: "Connectez le réseau télécom en évitant les autres réseaux", points: 100 },
+    { type: 'network', question: "Connectez le réseau télécom en évitant les autres réseaux", points: 100, correctPath: ['nodeA', 'nodeD'] }, // Added correctPath
     { type: 'quiz', question: "Que signifie PMR ?", answers: ["Projet Majeur Régional", "Personnes à Mobilité Réduite", "Plan de Mise en Route"], correct: 1, points: 50 },
     
     // Level 16-20: VRD Deep Dive
@@ -959,7 +1050,7 @@ const originalLevels = [ // Renamed to originalLevels
     { type: 'quiz', question: "Qu'est-ce qu'un BPU en VRD ?", answers: ["Bordure Paveur Urbain", "Béton Prêt à l'Usage", "Bureau des Projets Urbains"], correct: 0, points: 50 },
 
     // Level 21-25: Practical cases and standards
-    { type: 'network', question: "Optimisez le tracé du réseau d'éclairage public pour minimiser les longueurs", points: 120 },
+    { type: 'network', question: "Optimisez le tracé du réseau d'éclairage public pour minimiser les longueurs", points: 120, correctPath: ['nodeB', 'nodeC'] }, // Added correctPath
     { type: 'quiz', question: "Quelle norme régit l'accessibilité PMR en France ?", answers: ["NF P98-331", "Arrêté du 15 janvier 2007", "DTU 20.1"], correct: 1, points: 75 },
     { type: 'material', question: "Matériau pour une conduite d'eau potable sous pression ?", materials: ["PVC-O", "Grès", "Béton armé", "Fibrociment"], icons: ["💧", "🏺", "🏗️", "💨"], correct: 0, points: 80 },
     { type: 'calc', question: "Distance: 75m, dénivelé: 1.5m. Quelle est la pente en % ?", answer: "2.00", points: 100 },
@@ -968,9 +1059,16 @@ const originalLevels = [ // Renamed to originalLevels
     // Level 26-30: Expertise and project management
     { type: 'drag', question: "Classez les étapes d'un projet VRD (de l'étude à la réception)", items: ["Terrassement", "Mise en œuvre des couches de forme", "Réalisation des couches de roulement", "Signalisation et marquage"], points: 120 },
     { type: 'quiz', question: "Quelle est la fonction principale d'un caniveau ?", answers: ["Délimiter la chaussée", "Collecter les eaux de ruissellement", "Servir de support aux réseaux", "Améliorer l'esthétique"], correct: 1, points: 60 },
-    { type: 'network', question: "Concevez un réseau de drainage pluvial pour un parking, avec points de collecte", points: 130 },
+    { type: 'network', question: "Concevez un réseau de drainage pluvial pour un parking, avec points de collecte", points: 130, correctPath: ['nodeC', 'nodeD'] }, // Added correctPath
     { type: 'calc', question: "Longueur de réseau: 200m, pente 0.8%. Quel est le dénivelé total ?", answer: "1.60", points: 100 },
     { type: 'scenario', question: "Vous découvrez un réseau non répertorié lors des terrassements. Que faites-vous ?", actions: ["Continuer les travaux avec prudence", "Arrêter les travaux et informer le chef de projet", "Essayer de l'identifier vous-même", "Le contourner sans le signaler"], correct: 1, points: 150 }
+];
+
+const bonusLevels = [
+    { type: 'conflict_detection', question: "Un réseau d'eau potable passe à 15 cm au-dessus d'un câble électrique. Y a-t-il un conflit ?", options: ["Oui, conflit de distance verticale insuffisante", "Non, c'est conforme", "Oui, conflit de croisement horizontal"], correct: 0, points: 150 },
+    { type: 'volume_calc', question: "Calculez le volume de terre (en m³) à évacuer pour une fouille de 10m de long, 2m de large et 1.5m de profondeur.", answer: "30.00", points: 150 },
+    { type: 'volume_calc', question: "Quel volume de béton (en m³) est nécessaire pour une dalle de 5m x 4m avec une épaisseur de 0.20m ?", answer: "4.00", points: 120 },
+    { type: 'conflict_detection', question: "Une canalisation d'assainissement gravitaire doit traverser une zone rocheuse. Quel est le risque principal ?", options: ["Rupture de la canalisation due aux mouvements du sol", "Difficulté de raccordement aux autres réseaux", "Coût élevé du terrassement et risque d'endommagement de la roche", "Infiltration d'eau dans la canalisation"], correct: 2, points: 140 }
 ];
 
 // Tips for the scrolling bar
@@ -993,6 +1091,7 @@ let tipInterval = null;
 function showScreen(screenId) {
     document.querySelectorAll('.screen').forEach(screen => {
         screen.classList.remove('active');
+        screen.classList.remove('bonus-active'); // Remove bonus class when switching screens
     });
     document.getElementById(screenId).classList.add('active');
 }
@@ -1007,8 +1106,10 @@ function updateChronologicalProgressBar() {
     const progressBarFill = document.getElementById('chronologicalProgressBarFill');
     // Use gameState.shuffledLevels.length for total levels
     const progressPercentage = (gameState.currentLevel / gameState.shuffledLevels.length) * 100;
-    progressBarFill.style.width = `${progressPercentage}%`;
-    progressBarFill.textContent = `${gameState.currentLevel}/${gameState.shuffledLevels.length}`;
+    if (progressBarFill) { // Added null check
+        progressBarFill.style.width = `${progressPercentage}%`;
+        progressBarFill.textContent = `${gameState.currentLevel}/${gameState.shuffledLevels.length}`;
+    }
 }
 
 function startTimer(duration) {
@@ -1016,17 +1117,24 @@ function startTimer(duration) {
     gameState.timeLeft = duration;
     updateHeader();
     const timerElement = document.querySelector('.timer-display');
-    timerElement.classList.remove('warning');
+    if (timerElement) { // Added null check
+        timerElement.classList.remove('warning');
+    }
+
 
     gameState.timer = setInterval(() => {
         gameState.timeLeft--;
         updateHeader();
         if (gameState.timeLeft <= 10 && gameState.timeLeft > 0) {
-            timerElement.classList.add('warning');
+            if (timerElement) { // Added null check
+                timerElement.classList.add('warning');
+            }
             playSound('shortBeep');
         } else if (gameState.timeLeft <= 0) {
             clearInterval(gameState.timer);
-            timerElement.classList.remove('warning');
+            if (timerElement) { // Added null check
+                timerElement.classList.remove('warning');
+            }
             handleTimeout();
         }
     }, 1000);
@@ -1034,7 +1142,10 @@ function startTimer(duration) {
 
 function stopTimer() {
     clearInterval(gameState.timer);
-    document.querySelector('.timer-display').classList.remove('warning');
+    const timerElement = document.querySelector('.timer-display');
+    if (timerElement) { // Added null check
+        timerElement.classList.remove('warning');
+    }
 }
 
 function playSound(type) {
@@ -1075,28 +1186,39 @@ function playSound(type) {
         case 'buttonClick':
             gameState.synth.triggerAttackRelease("C6", "64n");
             break;
+        case 'bonusStart':
+            gameState.synth.triggerAttackRelease(["C5", "E5", "G5"], "0.5"); // Upbeat chord
+            break;
     }
 }
 
 function toggleMusic() {
     gameState.musicEnabled = !gameState.musicEnabled;
     const musicBtn = document.querySelector('.icon-music');
-    if (gameState.musicEnabled) {
-        musicBtn.classList.remove('muted');
-        // Potentially start background music here if desired
-    } else {
-        musicBtn.classList.add('muted');
-        // Stop background music here if playing
+    if (musicBtn) { // Added null check
+        if (gameState.musicEnabled) {
+            musicBtn.classList.remove('muted');
+            // Potentially start background music here if desired
+        } else {
+            musicBtn.classList.add('muted');
+            // Stop background music here if playing
+        }
     }
     playSound('buttonClick');
 }
 
 function showModal(modalId) {
-    document.getElementById(modalId).classList.add('active');
+    const modal = document.getElementById(modalId);
+    if (modal) { // Added null check
+        modal.classList.add('active');
+    }
 }
 
 function closeModal(modalId) {
-    document.getElementById(modalId).classList.remove('active');
+    const modal = document.getElementById(modalId);
+    if (modal) { // Added null check
+        modal.classList.remove('active');
+    }
     gameState.pendingAction = null; // Clear any pending action when modal closes
 }
 
@@ -1109,8 +1231,14 @@ function confirmAction() {
 }
 
 function showConfirmModal(title, text, action) {
-    document.getElementById('confirmTitle').textContent = title;
-    document.getElementById('confirmText').textContent = text;
+    const confirmTitle = document.getElementById('confirmTitle');
+    const confirmText = document.getElementById('confirmText');
+    if (confirmTitle) { // Added null check
+        confirmTitle.textContent = title;
+    }
+    if (confirmText) { // Added null check
+        confirmText.textContent = text;
+    }
     gameState.pendingAction = action;
     showModal('confirmModal');
 }
@@ -1148,12 +1276,24 @@ async function startGame() { // Make it async
     // Shuffle levels for a new game
     gameState.shuffledLevels = [...originalLevels]; // Create a copy to shuffle
     shuffleArray(gameState.shuffledLevels);
+    
+    // Reset bonus state
+    gameState.isBonusRound = false;
+    gameState.bonusLevelData = null;
+    gameState.bonusMultiplier = 1;
 
-    document.querySelector('.game-header').style.display = 'flex';
-    document.querySelector('.controls').style.display = 'flex';
-    document.querySelector('.progress-bar-chronological').style.display = 'block'; // Show progress bar
-    document.querySelector('.tips-bar').style.display = 'block'; // Show tips bar
-    document.getElementById('gameCharacter').style.display = 'block'; // Show character
+    const gameHeader = document.querySelector('.game-header');
+    const controls = document.querySelector('.controls');
+    const progressBar = document.querySelector('.progress-bar-chronological');
+    const tipsBar = document.querySelector('.tips-bar');
+    const gameCharacter = document.getElementById('gameCharacter');
+
+    if (gameHeader) gameHeader.style.display = 'flex';
+    if (controls) controls.style.display = 'flex';
+    if (progressBar) progressBar.style.display = 'block'; // Show progress bar
+    if (tipsBar) tipsBar.style.display = 'block'; // Show tips bar
+    if (gameCharacter) gameCharacter.style.display = 'block'; // Show character
+
     startTipsMarquee(); // Start tips marquee
     displayCharacter('🚀', "Bienvenue, Projeteur ! Prêt à relever le défi ?", 3000); // Welcome message
     loadLevel();
@@ -1162,22 +1302,26 @@ async function startGame() { // Make it async
 
 function loadLevel() {
     stopTimer();
-    const level = gameState.shuffledLevels[gameState.currentLevel]; // Use shuffled levels
+    const levelToLoad = gameState.isBonusRound ? gameState.bonusLevelData : gameState.shuffledLevels[gameState.currentLevel];
     const quizScreen = document.getElementById('quizScreen');
     const gameScreen = document.getElementById('gameScreen');
-    quizScreen.innerHTML = ''; // Clear previous content
-    gameScreen.innerHTML = ''; // Clear previous content
+    
+    // Remove bonus-active class from all screens first
+    document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('bonus-active'));
+
+    if (quizScreen) quizScreen.innerHTML = ''; // Clear previous content
+    if (gameScreen) gameScreen.innerHTML = ''; // Clear previous content
 
     updateHeader(); // Update header including progress bar
     
-    if (!level) {
+    if (!levelToLoad) {
         endGame();
         return;
     }
 
     // Determine time limit based on level type
     let timeLimit;
-    switch (level.type) {
+    switch (levelToLoad.type) {
         case 'quiz':
             timeLimit = 30; // 30 seconds for quiz
             break;
@@ -1192,49 +1336,103 @@ function loadLevel() {
         case 'scenario':
             timeLimit = 90; // 90 seconds for scenario
             break;
+        case 'conflict_detection': // New bonus type
+            timeLimit = 50; 
+            break;
+        case 'volume_calc': // New bonus type
+            timeLimit = 40; 
+            break;
         default:
             timeLimit = 30; // Default time
     }
     startTimer(timeLimit);
 
     // Render level based on type
-    switch (level.type) {
+    switch (levelToLoad.type) {
         case 'quiz':
-            renderQuizLevel(level);
+            renderQuizLevel(levelToLoad);
             showScreen('quizScreen');
             break;
         case 'material':
-            renderMaterialLevel(level);
+            renderMaterialLevel(levelToLoad);
             showScreen('quizScreen'); // Using quizScreen for material selection
             break;
         case 'drag':
-            renderDragLevel(level);
+            renderDragLevel(levelToLoad);
             showScreen('gameScreen'); // Using gameScreen for drag and drop
             break;
         case 'calc':
-            renderCalcLevel(level);
+            renderCalcLevel(levelToLoad);
             showScreen('quizScreen'); // Using quizScreen for calculation
             break;
         case 'network':
-            renderNetworkLevel(level);
+            renderNetworkLevel(levelToLoad);
             showScreen('gameScreen'); // Using gameScreen for network drawing
             break;
         case 'scenario':
-            renderScenarioLevel(level);
+            renderScenarioLevel(levelToLoad);
             showScreen('quizScreen'); // Using quizScreen for scenario
             break;
+        case 'conflict_detection': // New bonus type
+            renderConflictDetectionLevel(levelToLoad);
+            showScreen('quizScreen');
+            const quizScreenElement = document.getElementById('quizScreen');
+            if (quizScreenElement) { // Added null check
+                quizScreenElement.classList.add('bonus-active'); // Add bonus class
+            }
+            break;
+        case 'volume_calc': // New bonus type
+            renderVolumeCalcLevel(levelToLoad);
+            showScreen('quizScreen');
+            const quizScreenElement2 = document.getElementById('quizScreen');
+            if (quizScreenElement2) { // Added null check
+                quizScreenElement2.classList.add('bonus-active'); // Add bonus class
+            }
+            break;
         default:
-            console.error("Unknown level type:", level.type);
+            console.error("Unknown level type:", levelToLoad.type);
             // Fallback to a simple quiz or skip
             break;
     }
     applyFontSize(); // Apply font size after rendering new content
 }
 
+function startBonusRoundTransition() {
+    playSound('bonusStart');
+    displayCharacter('🌟', "NIVEAU BONUS ! Doublez vos points sur la prochaine question !", 3000); // Character announces bonus
+    
+    // Directly load the bonus level after a short delay for the character message
+    setTimeout(() => {
+        loadLevel(); // Load the bonus level
+    }, 1000); // Short delay to allow character message to be seen/heard
+}
+
 function nextLevel() {
     stopTimer();
-    gameState.currentLevel++;
-    if (gameState.currentLevel < gameState.shuffledLevels.length) { // Use shuffled levels length
+
+    // If the previous level was a bonus round, reset bonus state
+    if (gameState.isBonusRound) {
+        gameState.isBonusRound = false;
+        gameState.bonusLevelData = null;
+        // The bonusMultiplier is consumed by the checkAnswer function of the *next* question.
+        // So we don't reset it here, it will be reset to 1 by the next regular loadLevel.
+        gameState.currentLevel++; // Move to the next *regular* level
+    } else {
+        gameState.currentLevel++; // Move to the next *regular* level
+        // Randomly decide if the *next* level should be a bonus level (20% chance)
+        // Only trigger if there are still regular levels left
+        if (Math.random() < 0.2 && gameState.currentLevel < gameState.shuffledLevels.length) {
+            gameState.isBonusRound = true;
+            gameState.bonusLevelData = bonusLevels[Math.floor(Math.random() * bonusLevels.length)];
+            gameState.bonusMultiplier = 2; // Set multiplier for the *next* question
+            startBonusRoundTransition(); // Start the bonus transition
+            return; // Exit to prevent immediate loadLevel
+        } else {
+            gameState.bonusMultiplier = 1; // Ensure multiplier is 1 for regular levels
+        }
+    }
+
+    if (gameState.currentLevel < gameState.shuffledLevels.length || gameState.isBonusRound) {
         loadLevel();
         playSound('levelUp');
     } else {
@@ -1245,7 +1443,16 @@ function nextLevel() {
 function previousLevel() {
     if (gameState.currentLevel > 0) {
         showConfirmModal("Retour au niveau précédent", "Vous perdrez le score du niveau actuel. Continuer ?", () => {
-            gameState.currentLevel--;
+            // If we were in a bonus round, we need to go back to the regular level before it
+            if (gameState.isBonusRound) {
+                gameState.isBonusRound = false;
+                gameState.bonusLevelData = null;
+                gameState.bonusMultiplier = 1; // Reset multiplier
+                // currentLevel does not change if we were in a bonus round, as it's an interstitial level
+            } else {
+                gameState.currentLevel--;
+            }
+            
             // Remove the last answer record if going back
             if (gameState.answers.length > gameState.currentLevel) {
                 const lastAnswer = gameState.answers.pop();
@@ -1280,7 +1487,7 @@ function showSolution() {
     }
 
     showConfirmModal("Afficher la solution", `Afficher la solution vous coûtera ${pointsCost} points. Continuer ?`, () => {
-        const level = gameState.shuffledLevels[gameState.currentLevel]; // Use shuffled levels
+        const level = gameState.isBonusRound ? gameState.bonusLevelData : gameState.shuffledLevels[gameState.currentLevel];
         const pointsLost = pointsCost;
         gameState.score = Math.max(0, gameState.score - pointsLost); // Ensure score doesn't go below zero
         updateHeader();
@@ -1300,12 +1507,10 @@ function showSolution() {
         // No increment for correct as solution was viewed
 
         // Implement solution display based on current level type
-        if (level.type === 'quiz') {
+        if (level.type === 'quiz' || level.type === 'conflict_detection' || level.type === 'scenario') {
             const buttons = document.querySelectorAll('.answer-btn');
-            buttons.forEach((btn, index) => {
-                // Find the original correct answer text and match it
-                const originalLevel = originalLevels.find(l => l.question === level.question);
-                if (originalLevel && btn.textContent === originalLevel.answers[originalLevel.correct]) {
+            buttons.forEach((btn) => {
+                if (btn.dataset.isCorrect === 'true') { // Check the data attribute
                     btn.classList.add('correct');
                 } else {
                     btn.classList.add('incorrect');
@@ -1314,23 +1519,25 @@ function showSolution() {
             });
         } else if (level.type === 'material') {
             const cards = document.querySelectorAll('.material-card');
-            cards.forEach((card, index) => {
-                // Find the original correct material text and match it
-                const originalLevel = originalLevels.find(l => l.question === level.question);
-                const materialText = card.querySelector('.material-text').textContent;
-                if (originalLevel && materialText === originalLevel.materials[originalLevel.correct]) {
+            cards.forEach((card) => {
+                if (card.dataset.isCorrect === 'true') { // Check the data attribute
                     card.classList.add('correct');
                 } else {
                     card.classList.add('incorrect');
                 }
                 card.style.pointerEvents = 'none'; // Disable clicks
             });
-        } else if (level.type === 'calc') {
+        } else if (level.type === 'calc' || level.type === 'volume_calc') { // Added volume_calc
             const input = document.getElementById('elevationInput');
-            input.value = level.answer;
-            input.style.borderColor = '#4caf50';
-            input.style.boxShadow = '0 0 0 3px rgba(76, 175, 80, 0.2)';
-            document.getElementById('validateCalcBtn').disabled = true;
+            const validateBtn = document.getElementById('validateCalcBtn');
+            if (input) { // Added null check
+                input.value = level.answer;
+                input.style.borderColor = '#4caf50';
+                input.style.boxShadow = '0 0 0 3px rgba(76, 175, 80, 0.2)';
+            }
+            if (validateBtn) { // Added null check
+                validateBtn.disabled = true;
+            }
         } else if (level.type === 'drag') {
             const dropZones = document.querySelectorAll('.drop-zone');
             const correctOrder = level.items; // Use items from the current shuffled level
@@ -1346,11 +1553,16 @@ function showSolution() {
                 zone.style.borderColor = '#4caf50';
                 zone.style.borderStyle = 'solid';
             });
-            document.getElementById('gameScreen').querySelector('.btn').disabled = true;
+            const gameScreenBtn = document.getElementById('gameScreen').querySelector('.btn');
+            if (gameScreenBtn) { // Added null check
+                gameScreenBtn.disabled = true;
+            }
         } else if (level.type === 'network') {
             // For network, display the correct path visually
             const drawnLinesGroup = document.getElementById('drawnLines');
-            drawnLinesGroup.innerHTML = ''; // Clear any user-drawn lines
+            if (drawnLinesGroup) { // Added null check
+                drawnLinesGroup.innerHTML = ''; // Clear any user-drawn lines
+            }
 
             const nodes = [
                 { id: 'nodeA', cx: 100, cy: 100, color: 'blue' },
@@ -1359,14 +1571,14 @@ function showSolution() {
                 { id: 'nodeD', cx: 400, cy: 400, color: 'red' },
                 { id: 'nodeE', cx: 250, cy: 250, color: 'green' }
             ];
-            // This is a placeholder; ideally, correctPath should be derived from level data
-            const correctPath = ['nodeA', 'nodeB']; 
+            // Use the correctPath from the level data
+            const correctPath = level.correctPath; 
 
-            if (correctPath.length === 2) {
+            if (correctPath && correctPath.length === 2) { // Added null check for correctPath
                 const startNode = nodes.find(n => n.id === correctPath[0]);
                 const endNode = nodes.find(n => n.id === correctPath[1]);
 
-                if (startNode && endNode) {
+                if (startNode && endNode && drawnLinesGroup) { // Added null check for drawnLinesGroup
                     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
                     line.setAttribute('x1', startNode.cx);
                     line.setAttribute('y1', startNode.cy);
@@ -1378,7 +1590,10 @@ function showSolution() {
                     drawnLinesGroup.appendChild(line);
                 }
             }
-            document.getElementById('gameScreen').querySelector('.btn').disabled = true;
+            const gameScreenBtn = document.getElementById('gameScreen').querySelector('.btn');
+            if (gameScreenBtn) { // Added null check
+                gameScreenBtn.disabled = true;
+            }
         }
 
         setTimeout(nextLevel, 3000); // Automatically move to next level after showing solution
@@ -1390,13 +1605,13 @@ function showSolution() {
 function skipLevel() {
     const pointsCost = 10;
     if (gameState.score < pointsCost) {
-        displayCharacter('🤔', `Vous n'avez pas assez de points pour passer ! Il vous faut ${pointsCost} points.`, 3000);
+        displayCharacter('🤔', `Vous n'avez pas assez de points pour cela ! Il vous faut ${pointsCost} points.`, 3000);
         playSound('incorrect');
         return;
     }
 
     showConfirmModal("Passer le niveau", `Passer ce niveau vous coûtera ${pointsCost} points. Continuer ?`, () => {
-        const level = gameState.shuffledLevels[gameState.currentLevel]; // Use shuffled levels
+        const level = gameState.isBonusRound ? gameState.bonusLevelData : gameState.shuffledLevels[gameState.currentLevel];
         const pointsLost = pointsCost;
         gameState.score = Math.max(0, gameState.score + pointsLost);
         updateHeader();
@@ -1421,7 +1636,7 @@ function skipLevel() {
 }
 
 function handleTimeout() {
-    const level = gameState.shuffledLevels[gameState.currentLevel]; // Use shuffled levels
+    const level = gameState.isBonusRound ? gameState.bonusLevelData : gameState.shuffledLevels[gameState.currentLevel];
     const pointsLost = 20;
     gameState.score = Math.max(0, gameState.score + pointsLost); // Penalty for timeout
     updateHeader();
@@ -1441,11 +1656,15 @@ function handleTimeout() {
 
     // Visually indicate timeout, e.g., flash timer red
     const timerElement = document.querySelector('.timer-display');
-    timerElement.classList.add('warning');
+    if (timerElement) { // Added null check
+        timerElement.classList.add('warning');
+    }
     playSound('incorrect');
     displayCharacter('⏰', "Oups, le temps est écoulé ! Plus vite la prochaine fois.", 3000); // Timeout message
     setTimeout(() => {
-        timerElement.classList.remove('warning');
+        if (timerElement) { // Added null check
+            timerElement.classList.remove('warning');
+        }
         nextLevel();
     }, 1500); // Wait a bit before moving to next level
 }
@@ -1453,21 +1672,20 @@ function handleTimeout() {
 function getCorrectAnswerForLevel(level) {
     // For levels that have been shuffled, we need to refer to the original level
     // to get the correct answer's text/value, as the index might have changed.
-    const originalLevel = originalLevels.find(l => l.question === level.question);
-    if (!originalLevel) return "N/A (Original level not found)";
+    // For bonus levels, they are not in originalLevels, so we directly use the level object.
+    const sourceLevel = originalLevels.find(l => l.question === level.question) || bonusLevels.find(l => l.question === level.question) || level;
 
-    switch (level.type) {
+    switch (sourceLevel.type) {
         case 'quiz':
-            return originalLevel.answers[originalLevel.correct];
+            return sourceLevel.answers[sourceLevel.correct];
         case 'material':
-            return originalLevel.materials[originalLevel.correct];
+            return sourceLevel.materials[sourceLevel.correct];
         case 'drag':
-            return originalLevel.items.join(' > ');
+            return sourceLevel.items.join(' > ');
         case 'calc':
-            return originalLevel.answer;
+            return sourceLevel.answer;
         case 'network':
-            // For network, provide a more descriptive correct answer
-            // This would ideally be dynamically generated based on the specific network level's correct path
+            // Use the correctPath from the sourceLevel
             const nodes = [
                 { id: 'nodeA', cx: 100, cy: 100, color: 'blue' },
                 { id: 'nodeB', cx: 400, cy: 100, color: 'blue' },
@@ -1475,11 +1693,15 @@ function getCorrectAnswerForLevel(level) {
                 { id: 'nodeD', cx: 400, cy: 400, color: 'red' },
                 { id: 'nodeE', cx: 250, cy: 250, color: 'green' }
             ];
-            const correctPathIds = ['nodeA', 'nodeB']; // Example, should be from level data
+            const correctPathIds = sourceLevel.correctPath; 
             const correctPathNames = correctPathIds.map(id => nodes.find(n => n.id === id)?.id || id);
             return `Connecter: ${correctPathNames.join(' -> ')}`;
         case 'scenario':
-            return originalLevel.actions[originalLevel.correct];
+            return sourceLevel.actions[sourceLevel.correct];
+        case 'conflict_detection': // New bonus type
+            return sourceLevel.options[sourceLevel.correct];
+        case 'volume_calc': // New bonus type
+            return sourceLevel.answer;
         default:
             return "N/A";
     }
@@ -1491,39 +1713,48 @@ function endGame() {
     clearInterval(gameState.characterTipInterval); // Stop character tip interval
 
     // Hide game elements
-    document.querySelector('.game-header').style.display = 'none';
-    document.querySelector('.controls').style.display = 'none';
-    document.querySelector('.progress-bar-chronological').style.display = 'none'; // Hide progress bar
-    document.querySelector('.tips-bar').style.display = 'none'; // Hide tips bar
-    document.getElementById('gameCharacter').style.display = 'none'; // Hide character
-    document.getElementById('speechBubble').style.display = 'none'; // Hide speech bubble
+    const gameHeader = document.querySelector('.game-header');
+    const controls = document.querySelector('.controls');
+    const progressBar = document.querySelector('.progress-bar-chronological');
+    const tipsBar = document.querySelector('.tips-bar');
+    const gameCharacter = document.getElementById('gameCharacter');
+    const speechBubble = document.getElementById('speechBubble');
+
+    if (gameHeader) gameHeader.style.display = 'none';
+    if (controls) controls.style.display = 'none';
+    if (progressBar) progressBar.style.display = 'none'; // Hide progress bar
+    if (tipsBar) tipsBar.style.display = 'none'; // Hide tips bar
+    if (gameCharacter) gameCharacter.style.display = 'none'; // Hide character
+    if (speechBubble) speechBubble.style.display = 'none'; // Hide speech bubble
 
     showScreen('finalScreen');
     const finalScreen = document.getElementById('finalScreen');
-    finalScreen.innerHTML = `
-        <div class="logo-icon" style="font-size: 80px; width: 150px; height: 150px; margin-bottom: 30px;">🏆</div>
-        <h1>Aventure Terminée !</h1>
-        <h2 style="font-size: 2.5rem; color: #333; margin-bottom: 40px;">Félicitations, Projeteur VRD !</h2>
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number">${gameState.score}</div>
-                <div class="stat-label">Points Totaux</div>
+    if (finalScreen) { // Added null check
+        finalScreen.innerHTML = `
+            <div class="logo-icon" style="font-size: 5rem; width: 100px; height: 100px; margin-bottom: 30px;">🏆</div>
+            <h1>Aventure Terminée !</h1>
+            <h2 style="font-size: 1.8rem; color: #333; margin-bottom: 40px;">Félicitations, Projeteur VRD !</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">${gameState.score}</div>
+                    <div class="stat-label">Points Totaux</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${gameState.currentLevel} / ${originalLevels.length}</div>
+                    <div class="stat-label">Niveaux Complétés</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${(gameState.score / (gameState.currentLevel * 100) * 100).toFixed(0) || 0}%</div>
+                    <div class="stat-label">Précision Moyenne</div>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-number">${gameState.currentLevel} / ${originalLevels.length}</div>
-                <div class="stat-label">Niveaux Complétés</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">${(gameState.score / (gameState.currentLevel * 100) * 100).toFixed(0) || 0}%</div>
-                <div class="stat-label">Précision Moyenne</div>
-            </div>
-        </div>
-        <button class="btn" onclick="startGame()">Rejouer</button>
-        <button class="btn btn-secondary mt-4" onclick="showCorrectionReport()">Voir la correction</button>
-    `;
+            <button class="btn" onclick="startGame()">Rejouer</button>
+            <button class="btn btn-secondary mt-4" onclick="showCorrectionReport()">Voir la correction</button>
+        `;
+    }
     triggerConfetti();
     playSound('gameOver');
-    displayCharacter('🎓', "Bravo pour cette belle performance ! Revenez vite pour de nouveaux défis.", 5000); // End game message
+    displayCharacter('�', "Bravo pour cette belle performance ! Revenez vite pour de nouveaux défis.", 5000); // End game message
 }
 
 function generateCorrectionReport() {
@@ -1553,12 +1784,19 @@ function generateCorrectionReport() {
 
 function showCorrectionReport() {
     const reportContent = document.getElementById('correctionReportContent');
-    reportContent.innerHTML = generateCorrectionReport();
+    if (reportContent) { // Added null check
+        reportContent.innerHTML = generateCorrectionReport();
+    }
     showModal('correctionModal');
 }
 
 function copyCorrectionToClipboard() {
-    const reportText = document.getElementById('correctionReportContent').innerText;
+    const reportContent = document.getElementById('correctionReportContent');
+    let reportText = '';
+    if (reportContent) { // Added null check
+        reportText = reportContent.innerText;
+    }
+    
     const textArea = document.createElement("textarea");
     textArea.value = reportText;
     document.body.appendChild(textArea);
@@ -1577,7 +1815,7 @@ function copyCorrectionToClipboard() {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: #333; color: white; padding: 15px 30px; border-radius: 10px;
             z-index: 1001; opacity: 0; transition: opacity 0.3s ease-in-out;
-            font-size: 18px; text-align: center;
+            font-size: 1.1rem; text-align: center;
         `;
         customAlert.textContent = msg;
         document.body.appendChild(customAlert);
@@ -1603,6 +1841,8 @@ function copyCorrectionToClipboard() {
 // Quiz Level
 function renderQuizLevel(level) {
     const quizScreen = document.getElementById('quizScreen');
+    if (!quizScreen) return; // Added null check
+
     // Create a mutable copy of answers with their correct status
     const answersWithStatus = level.answers.map((answer, index) => ({
         text: answer,
@@ -1615,7 +1855,8 @@ function renderQuizLevel(level) {
         <div class="answer-grid">
             ${answersWithStatus.map((answer, index) => `
                 <button class="answer-btn" data-original-font-size="20" 
-                        onclick="checkQuizAnswer(${index}, ${answer.isCorrect}, ${level.points}, '${answer.text.replace(/'/g, "\\'")}')">
+                        data-is-correct="${answer.isCorrect}"
+                        onclick="checkQuizAnswer(${index}, ${answer.isCorrect}, ${level.points}, '${answer.text.replace(/'/g, "\\'")}', '${level.type}')">
                     ${answer.text}
                 </button>
             `).join('')}
@@ -1624,29 +1865,37 @@ function renderQuizLevel(level) {
 }
 
 // Modified checkQuizAnswer to use isCorrect flag and user's answer text
-function checkQuizAnswer(selectedIndex, isCorrectFlag, points, userAnswerText) {
+function checkQuizAnswer(selectedIndex, isCorrectFlag, points, userAnswerText, levelType) {
     stopTimer();
     const buttons = document.querySelectorAll('.answer-btn');
     buttons.forEach((btn, index) => {
         btn.disabled = true;
         // The correct button is the one with the isCorrectFlag true
-        if (buttons[index].getAttribute('onclick').includes('true')) { // Check the onclick attribute for 'true' flag
+        if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes('true')) { // Added null check for getAttribute
             btn.classList.add('correct');
         } else if (index === selectedIndex) {
             btn.classList.add('incorrect');
         }
     });
 
-    const level = gameState.shuffledLevels[gameState.currentLevel]; // Use shuffled levels
+    const level = gameState.isBonusRound ? gameState.bonusLevelData : gameState.shuffledLevels[gameState.currentLevel];
     let pointsEarned = 0;
+    let basePoints = points;
 
     if (isCorrectFlag) {
-        pointsEarned = points;
-        gameState.score += points;
+        pointsEarned = basePoints;
+        if (!gameState.isBonusRound) { // Only apply bonus multiplier for regular questions
+            pointsEarned *= gameState.bonusMultiplier; 
+        }
+        gameState.score += pointsEarned;
         playSound('correct');
-        displayCharacter('😊', "Super ! Bonne réponse !", 2000); // Correct message
+        if (gameState.bonusMultiplier > 1 && !gameState.isBonusRound) {
+             displayCharacter('🎉', "BONUS ACTIVÉ ! Points doublés !", 2000);
+        } else {
+            displayCharacter('😊', "Super ! Bonne réponse !", 2000); // Correct message
+        }
     } else {
-        pointsEarned = -Math.floor(points / 5); // Small penalty for incorrect
+        pointsEarned = -Math.floor(basePoints / 5); // Small penalty for incorrect
         gameState.score = Math.max(0, gameState.score + pointsEarned);
         playSound('incorrect');
         displayCharacter('😟', "Dommage, ce n'est pas ça. Mais continuez d'apprendre !", 2000); // Incorrect message
@@ -1655,7 +1904,7 @@ function checkQuizAnswer(selectedIndex, isCorrectFlag, points, userAnswerText) {
     // Record answer
     gameState.answers.push({
         levelIndex: gameState.currentLevel,
-        type: level.type,
+        type: level.type, // Use level.type directly
         question: level.question,
         userAnswer: userAnswerText, // Use the actual text the user clicked
         correctAnswer: getCorrectAnswerForLevel(level), // Get original correct answer
@@ -1667,6 +1916,11 @@ function checkQuizAnswer(selectedIndex, isCorrectFlag, points, userAnswerText) {
     if (isCorrectFlag) {
         gameState.skillScores[level.type].correct++;
     }
+    
+    // Reset bonus multiplier after it's used for a regular question
+    if (!gameState.isBonusRound) {
+        gameState.bonusMultiplier = 1;
+    }
 
     updateHeader();
     setTimeout(nextLevel, 1500);
@@ -1675,6 +1929,8 @@ function checkQuizAnswer(selectedIndex, isCorrectFlag, points, userAnswerText) {
 // Material Level
 function renderMaterialLevel(level) {
     const quizScreen = document.getElementById('quizScreen');
+    if (!quizScreen) return; // Added null check
+
     // Create a mutable copy of materials with their correct status and icons
     const materialsWithStatus = level.materials.map((material, index) => ({
         text: material,
@@ -1688,7 +1944,8 @@ function renderMaterialLevel(level) {
         <div class="material-grid">
             ${materialsWithStatus.map((material, index) => `
                 <div class="material-card" 
-                     onclick="checkMaterialAnswer(${index}, ${material.isCorrect}, ${level.points}, '${material.text.replace(/'/g, "\\'")}')">
+                     data-is-correct="${material.isCorrect}"
+                     onclick="checkMaterialAnswer(${index}, ${material.isCorrect}, ${level.points}, '${material.text.replace(/'/g, "\\'")}', '${level.type}')">
                     <span class="material-icon">${material.icon}</span>
                     <span class="material-text">${material.text}</span>
                 </div>
@@ -1698,29 +1955,37 @@ function renderMaterialLevel(level) {
 }
 
 // Modified checkMaterialAnswer to use isCorrect flag and user's answer text
-function checkMaterialAnswer(selectedIndex, isCorrectFlag, points, userAnswerText) {
+function checkMaterialAnswer(selectedIndex, isCorrectFlag, points, userAnswerText, levelType) {
     stopTimer();
     const cards = document.querySelectorAll('.material-card');
     cards.forEach((card, index) => {
         card.style.pointerEvents = 'none'; // Disable further clicks
         // Find the correct card based on the isCorrectFlag in its onclick attribute
-        if (card.getAttribute('onclick').includes('true')) {
+        if (card.getAttribute('onclick') && card.getAttribute('onclick').includes('true')) { // Added null check for getAttribute
             card.classList.add('correct');
         } else if (index === selectedIndex) {
             card.classList.add('incorrect');
         }
     });
 
-    const level = gameState.shuffledLevels[gameState.currentLevel]; // Use shuffled levels
+    const level = gameState.isBonusRound ? gameState.bonusLevelData : gameState.shuffledLevels[gameState.currentLevel];
     let pointsEarned = 0;
+    let basePoints = points;
 
     if (isCorrectFlag) {
-        pointsEarned = points;
-        gameState.score += points;
+        pointsEarned = basePoints;
+        if (!gameState.isBonusRound) { // Only apply bonus multiplier for regular questions
+            pointsEarned *= gameState.bonusMultiplier; 
+        }
+        gameState.score += pointsEarned;
         playSound('correct');
-        displayCharacter('😊', "Exact ! Vous avez l'œil pour les matériaux !", 2000); // Correct message
+        if (gameState.bonusMultiplier > 1 && !gameState.isBonusRound) {
+             displayCharacter('🎉', "BONUS ACTIVÉ ! Points doublés !", 2000);
+        } else {
+            displayCharacter('😊', "Exact ! Vous avez l'œil pour les matériaux !", 2000); // Correct message
+        }
     } else {
-        pointsEarned = -Math.floor(points / 5);
+        pointsEarned = -Math.floor(basePoints / 5);
         gameState.score = Math.max(0, gameState.score + pointsEarned);
         playSound('incorrect');
         displayCharacter('😟', "Ce n'est pas le bon choix. Réfléchissez bien aux propriétés !", 2000); // Incorrect message
@@ -1742,6 +2007,11 @@ function checkMaterialAnswer(selectedIndex, isCorrectFlag, points, userAnswerTex
         gameState.skillScores[level.type].correct++;
     }
 
+    // Reset bonus multiplier after it's used for a regular question
+    if (!gameState.isBonusRound) {
+        gameState.bonusMultiplier = 1;
+    }
+
     updateHeader();
     setTimeout(nextLevel, 1500);
 }
@@ -1749,6 +2019,8 @@ function checkMaterialAnswer(selectedIndex, isCorrectFlag, points, userAnswerTex
 // Drag and Drop Level
 function renderDragLevel(level) {
     const gameScreen = document.getElementById('gameScreen');
+    if (!gameScreen) return; // Added null check
+
     const shuffledItems = [...level.items].sort(() => Math.random() - 0.5); // Shuffle for challenge
     const dropZones = level.items.map((item, index) => `<div class="drop-zone" data-index="${index}"><span class="drop-zone-text">Déposez ici</span></div>`).join('');
 
@@ -1761,7 +2033,7 @@ function renderDragLevel(level) {
             ${dropZones}
         </div>
         <div class="button-center-align"> <!-- Changed to button-center-align -->
-            <button class="btn" onclick="checkDragAnswer('${level.items.join(',')}', ${level.points})">Valider l'assemblage</button>
+            <button class="btn" onclick="checkDragAnswer('${level.items.join(',')}', ${level.points}, '${level.type}')">Valider l'assemblage</button>
         </div>
     `;
 
@@ -1781,7 +2053,9 @@ function addDragAndDropListeners() {
         });
 
         draggable.addEventListener('dragend', () => {
-            draggedItem.classList.remove('hidden');
+            if (draggedItem) { // Added null check
+                draggedItem.classList.remove('hidden');
+            }
             draggedItem = null;
         });
     });
@@ -1817,7 +2091,7 @@ function addDragAndDropListeners() {
     });
 }
 
-function checkDragAnswer(correctOrderString, points) {
+function checkDragAnswer(correctOrderString, points, levelType) {
     stopTimer();
     const correctOrder = correctOrderString.split(',');
     const dropZones = document.querySelectorAll('.drop-zone');
@@ -1846,16 +2120,24 @@ function checkDragAnswer(correctOrderString, points) {
         zone.style.borderStyle = 'solid'; // Make border solid for feedback
     });
 
-    const level = gameState.shuffledLevels[gameState.currentLevel]; // Use shuffled levels
+    const level = gameState.isBonusRound ? gameState.bonusLevelData : gameState.shuffledLevels[gameState.currentLevel];
     let pointsEarned = 0;
+    let basePoints = points;
 
     if (allCorrect) {
-        pointsEarned = points;
-        gameState.score += points;
+        pointsEarned = basePoints;
+        if (!gameState.isBonusRound) { // Only apply bonus multiplier for regular questions
+            pointsEarned *= gameState.bonusMultiplier; 
+        }
+        gameState.score += pointsEarned;
         playSound('correct');
-        displayCharacter('😊', "Parfait ! L'assemblage est correct !", 2000); // Correct message
+        if (gameState.bonusMultiplier > 1 && !gameState.isBonusRound) {
+             displayCharacter('🎉', "BONUS ACTIVÉ ! Points doublés !", 2000);
+        } else {
+            displayCharacter('😊', "Parfait ! L'assemblage est correct !", 2000); // Correct message
+        }
     } else {
-        pointsEarned = -Math.floor(points / 2); // Larger penalty for drag/drop
+        pointsEarned = -Math.floor(basePoints / 2); // Larger penalty for drag/drop
         gameState.score = Math.max(0, gameState.score + pointsEarned);
         playSound('incorrect');
         displayCharacter('😟', "Revoyez l'ordre des couches, c'est important !", 2000); // Incorrect message
@@ -1877,52 +2159,77 @@ function checkDragAnswer(correctOrderString, points) {
         gameState.skillScores[level.type].correct++;
     }
 
+    // Reset bonus multiplier after it's used for a regular question
+    if (!gameState.isBonusRound) {
+        gameState.bonusMultiplier = 1;
+    }
+
     updateHeader();
     document.querySelectorAll('.draggable').forEach(item => item.draggable = false); // Disable further dragging
-    document.getElementById('gameScreen').querySelector('.btn').disabled = true; // Disable validate button
+    const gameScreenBtn = document.getElementById('gameScreen').querySelector('.btn');
+    if (gameScreenBtn) { // Added null check
+        gameScreenBtn.disabled = true;
+    }
     setTimeout(nextLevel, 2000);
 }
 
 // Calculation Level
 function renderCalcLevel(level) {
     const quizScreen = document.getElementById('quizScreen');
+    if (!quizScreen) return; // Added null check
+
     quizScreen.innerHTML = `
         <h2 id="questionText">${level.question}</h2>
         <input type="number" id="elevationInput" class="elevation-input" placeholder="Entrez votre réponse" step="0.01">
         <div class="button-center-align"> <!-- Changed to button-center-align -->
-            <button class="btn" id="validateCalcBtn" onclick="checkCalcAnswer(${level.answer}, ${level.points})">Valider</button>
+            <button class="btn" id="validateCalcBtn" onclick="checkCalcAnswer(${level.answer}, ${level.points}, '${level.type}')">Valider</button>
         </div>
     `;
 }
 
-function checkCalcAnswer(correctAnswer, points) {
+function checkCalcAnswer(correctAnswer, points, levelType) {
     stopTimer();
     const input = document.getElementById('elevationInput');
-    const userAnswer = parseFloat(input.value);
+    const validateBtn = document.getElementById('validateCalcBtn');
+
+    let userAnswer = null;
+    if (input) { // Added null check
+        userAnswer = parseFloat(input.value);
+        input.disabled = true;
+    }
+    if (validateBtn) { // Added null check
+        validateBtn.disabled = true;
+    }
+
     const tolerance = 0.01; // Allow for small floating point errors
 
-    input.disabled = true;
-    document.getElementById('validateCalcBtn').disabled = true;
-
-    const level = gameState.shuffledLevels[gameState.currentLevel]; // Use shuffled levels
+    const level = gameState.isBonusRound ? gameState.bonusLevelData : gameState.shuffledLevels[gameState.currentLevel];
     let isCorrect = false;
     let pointsEarned = 0;
+    let basePoints = points;
 
-    if (Math.abs(userAnswer - correctAnswer) < tolerance) {
+    if (userAnswer !== null && Math.abs(userAnswer - correctAnswer) < tolerance) { // Added null check for userAnswer
         isCorrect = true;
-        pointsEarned = points;
-        input.style.borderColor = '#4caf50';
-        input.style.boxShadow = '0 0 0 3px rgba(76, 175, 80, 0.2)';
-        gameState.score += points;
+        pointsEarned = basePoints;
+        if (!gameState.isBonusRound) { // Only apply bonus multiplier for regular questions
+            pointsEarned *= gameState.bonusMultiplier; 
+        }
+        gameState.score += pointsEarned;
         playSound('correct');
-        displayCharacter('😊', "Calcul parfait ! Vous maîtrisez les altitudes !", 2000); // Correct message
+        if (gameState.bonusMultiplier > 1 && !gameState.isBonusRound) {
+             displayCharacter('🎉', "BONUS ACTIVÉ ! Points doublés !", 2000);
+        } else {
+            displayCharacter('😊', "Calcul parfait ! Vous maîtrisez les altitudes !", 2000); // Correct message
+        }
     } else {
-        pointsEarned = -Math.floor(points / 3);
-        input.style.borderColor = '#f44336';
-        input.style.boxShadow = '0 0 0 3px rgba(244, 67, 54, 0.2)';
+        pointsEarned = -Math.floor(basePoints / 3);
+        if (input) { // Added null check
+            input.style.borderColor = '#f44336';
+            input.style.boxShadow = '0 0 0 3px rgba(244, 67, 54, 0.2)';
+        }
         gameState.score = Math.max(0, gameState.score + pointsEarned);
         playSound('incorrect');
-        displayCharacter('�', "Vérifiez vos calculs, la précision est clé en VRD !", 2000); // Incorrect message
+        displayCharacter('😟', "Vérifiez vos calculs, la précision est clé en VRD !", 2000); // Incorrect message
     }
 
     // Record answer
@@ -1930,7 +2237,7 @@ function checkCalcAnswer(correctAnswer, points) {
         levelIndex: gameState.currentLevel,
         type: level.type,
         question: level.question,
-        userAnswer: input.value,
+        userAnswer: input ? input.value : "N/A", // Added null check
         correctAnswer: correctAnswer.toFixed(2), // Format correct answer for display
         isCorrect: isCorrect,
         pointsEarned: pointsEarned
@@ -1941,6 +2248,11 @@ function checkCalcAnswer(correctAnswer, points) {
         gameState.skillScores[level.type].correct++;
     }
 
+    // Reset bonus multiplier after it's used for a regular question
+    if (!gameState.isBonusRound) {
+        gameState.bonusMultiplier = 1;
+    }
+
     updateHeader();
     setTimeout(nextLevel, 1500);
 }
@@ -1948,6 +2260,8 @@ function checkCalcAnswer(correctAnswer, points) {
 // Network Level
 function renderNetworkLevel(level) {
     const gameScreen = document.getElementById('gameScreen');
+    if (!gameScreen) return; // Added null check
+
     // Example network nodes and paths (simplified for demonstration)
     const nodes = [
         { id: 'nodeA', cx: 100, cy: 100, color: 'blue' },
@@ -1956,8 +2270,8 @@ function renderNetworkLevel(level) {
         { id: 'nodeD', cx: 400, cy: 400, color: 'red' },
         { id: 'nodeE', cx: 250, cy: 250, color: 'green' } // An 'obstacle' node
     ];
-    // Example correct path for network level (indices of nodes to connect in order)
-    const correctPath = ['nodeA', 'nodeB']; // For "eaux usées" example
+    // Use the correctPath from the level data
+    const correctPathForRender = level.correctPath || []; // Fallback if not defined
 
     gameScreen.innerHTML = `
         <h2 id="questionText">${level.question}</h2>
@@ -1973,7 +2287,7 @@ function renderNetworkLevel(level) {
             <g id="drawnLines"></g>
         </svg>
         <div class="button-center-align"> <!-- Changed to button-center-align -->
-            <button class="btn" onclick="checkNetworkAnswer(${level.points}, '${correctPath.join(',')}', '${JSON.stringify(nodes).replace(/'/g, "\\'").replace(/"/g, '&quot;')}')">Valider le réseau</button>
+            <button class="btn" onclick="checkNetworkAnswer(${level.points}, '${correctPathForRender.join(',')}', '${JSON.stringify(nodes).replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${level.type}')">Valider le réseau</button>
         </div>
     `;
 
@@ -1989,6 +2303,8 @@ function addNetworkListeners(nodes) {
     networkSvg = document.querySelector('.network-svg');
     const drawnLinesGroup = document.getElementById('drawnLines');
 
+    if (!networkSvg || !drawnLinesGroup) return; // Added null checks
+
     networkSvg.addEventListener('mousedown', (e) => {
         const target = e.target;
         if (target.classList.contains('network-node')) {
@@ -1998,8 +2314,10 @@ function addNetworkListeners(nodes) {
             // Start drawing a temporary line
             currentLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
             const startNode = nodes.find(n => n.id === target.id);
-            currentLine.setAttribute('x1', startNode.cx);
-            currentLine.setAttribute('y1', startNode.cy);
+            if (startNode) { // Added null check
+                currentLine.setAttribute('x1', startNode.cx);
+                currentLine.setAttribute('y1', startNode.cy);
+            }
             currentLine.setAttribute('x2', e.offsetX);
             currentLine.setAttribute('y2', e.offsetY);
             currentLine.setAttribute('stroke', '#667eea');
@@ -2026,9 +2344,11 @@ function addNetworkListeners(nodes) {
                 const endNode = nodes.find(n => n.id === networkSelectedNodes[1]);
 
                 // Finalize the line
-                currentLine.setAttribute('x2', endNode.cx);
-                currentLine.setAttribute('y2', endNode.cy);
-                currentLine.setAttribute('marker-end', 'url(#arrow)'); // Add arrow to the end
+                if (currentLine && endNode) { // Added null check for currentLine and endNode
+                    currentLine.setAttribute('x2', endNode.cx);
+                    currentLine.setAttribute('y2', endNode.cy);
+                    currentLine.setAttribute('marker-end', 'url(#arrow)'); // Add arrow to the end
+                }
 
                 // Reset for next line
                 networkSelectedNodes = [];
@@ -2044,7 +2364,7 @@ function addNetworkListeners(nodes) {
 }
 
 
-function checkNetworkAnswer(points, correctPathString, nodesJsonString) {
+function checkNetworkAnswer(points, correctPathString, nodesJsonString, levelType) {
     stopTimer();
     const correctPath = correctPathString.split(',');
     const drawnLines = document.querySelectorAll('#drawnLines line');
@@ -2098,21 +2418,29 @@ function checkNetworkAnswer(points, correctPathString, nodesJsonString) {
         allCorrect = false; // Not exactly one line drawn
     }
 
-    const level = gameState.shuffledLevels[gameState.currentLevel]; // Use shuffled levels
+    const level = gameState.isBonusRound ? gameState.bonusLevelData : gameState.shuffledLevels[gameState.currentLevel];
     let pointsEarned = 0;
+    let basePoints = points;
 
     if (allCorrect) {
-        pointsEarned = points;
-        gameState.score += points;
+        pointsEarned = basePoints;
+        if (!gameState.isBonusRound) { // Only apply bonus multiplier for regular questions
+            pointsEarned *= gameState.bonusMultiplier; 
+        }
+        gameState.score += pointsEarned;
         playSound('correct');
+        if (gameState.bonusMultiplier > 1 && !gameState.isBonusRound) {
+             displayCharacter('🎉', "BONUS ACTIVÉ ! Points doublés !", 2000);
+        } else {
+            displayCharacter('😊', "Excellent ! Le réseau est bien tracé !", 2000); // Correct message
+        }
         drawnLines.forEach(line => line.setAttribute('stroke', '#4caf50'));
-        displayCharacter('😊', "Excellent ! Le réseau est bien tracé !", 2000); // Correct message
     } else {
-        pointsEarned = -Math.floor(points / 2);
+        pointsEarned = -Math.floor(basePoints / 2);
         gameState.score = Math.max(0, gameState.score + pointsEarned);
         playSound('incorrect');
-        drawnLines.forEach(line => line.setAttribute('stroke', '#f44336'));
         displayCharacter('😟', "Le tracé n'est pas optimal. Essayez à nouveau !", 2000); // Incorrect message
+        drawnLines.forEach(line => line.setAttribute('stroke', '#f44336'));
     }
 
     // Record answer
@@ -2131,8 +2459,16 @@ function checkNetworkAnswer(points, correctPathString, nodesJsonString) {
         gameState.skillScores[level.type].correct++;
     }
 
+    // Reset bonus multiplier after it's used for a regular question
+    if (!gameState.isBonusRound) {
+        gameState.bonusMultiplier = 1;
+    }
+
     updateHeader();
-    document.getElementById('gameScreen').querySelector('.btn').disabled = true;
+    const gameScreenBtn = document.getElementById('gameScreen').querySelector('.btn');
+    if (gameScreenBtn) { // Added null check
+        gameScreenBtn.disabled = true;
+    }
     setTimeout(nextLevel, 2000);
 }
 
@@ -2140,6 +2476,8 @@ function checkNetworkAnswer(points, correctPathString, nodesJsonString) {
 // Scenario Level
 function renderScenarioLevel(level) {
     const quizScreen = document.getElementById('quizScreen');
+    if (!quizScreen) return; // Added null check
+
     // Create a mutable copy of actions with their correct status
     const actionsWithStatus = level.actions.map((action, index) => ({
         text: action,
@@ -2155,7 +2493,8 @@ function renderScenarioLevel(level) {
         <div class="answer-grid">
             ${actionsWithStatus.map((action, index) => `
                 <button class="answer-btn" data-original-font-size="20" 
-                        onclick="checkScenarioAnswer(${index}, ${action.isCorrect}, ${level.points}, '${action.text.replace(/'/g, "\\'")}')">
+                        data-is-correct="${action.isCorrect}"
+                        onclick="checkScenarioAnswer(${index}, ${action.isCorrect}, ${level.points}, '${action.text.replace(/'/g, "\\'")}', '${level.type}')">
                     ${action.text}
                 </button>
             `).join('')}
@@ -2164,29 +2503,37 @@ function renderScenarioLevel(level) {
 }
 
 // Modified checkScenarioAnswer to use isCorrect flag and user's answer text
-function checkScenarioAnswer(selectedIndex, isCorrectFlag, points, userAnswerText) {
+function checkScenarioAnswer(selectedIndex, isCorrectFlag, points, userAnswerText, levelType) {
     stopTimer();
     const buttons = document.querySelectorAll('.answer-btn');
     buttons.forEach((btn, index) => {
         btn.disabled = true;
-        // Find the correct button based on the isCorrectFlag in its onclick attribute
-        if (buttons[index].getAttribute('onclick').includes('true')) {
+        // The correct button is the one with the isCorrectFlag true
+        if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes('true')) { // Added null check for getAttribute
             btn.classList.add('correct');
         } else if (index === selectedIndex) {
             btn.classList.add('incorrect');
         }
     });
 
-    const level = gameState.shuffledLevels[gameState.currentLevel]; // Use shuffled levels
+    const level = gameState.isBonusRound ? gameState.bonusLevelData : gameState.shuffledLevels[gameState.currentLevel];
     let pointsEarned = 0;
+    let basePoints = points;
 
     if (isCorrectFlag) {
-        pointsEarned = points;
-        gameState.score += points;
+        pointsEarned = basePoints;
+        if (!gameState.isBonusRound) { // Only apply bonus multiplier for regular questions
+            pointsEarned *= gameState.bonusMultiplier; 
+        }
+        gameState.score += pointsEarned;
         playSound('correct');
-        displayCharacter('😊', "Bonne décision ! La sécurité avant tout.", 2000); // Correct message
+        if (gameState.bonusMultiplier > 1 && !gameState.isBonusRound) {
+             displayCharacter('🎉', "BONUS ACTIVÉ ! Points doublés !", 2000);
+        } else {
+            displayCharacter('😊', "Bonne décision ! La sécurité avant tout.", 2000); // Correct message
+        }
     } else {
-        pointsEarned = -Math.floor(points / 4);
+        pointsEarned = -Math.floor(basePoints / 4);
         gameState.score = Math.max(0, gameState.score + pointsEarned);
         playSound('incorrect');
         displayCharacter('😟', "Attention ! Une mauvaise décision peut avoir des conséquences !", 2000); // Incorrect message
@@ -2208,57 +2555,225 @@ function checkScenarioAnswer(selectedIndex, isCorrectFlag, points, userAnswerTex
         gameState.skillScores[level.type].correct++;
     }
 
+    // Reset bonus multiplier after it's used for a regular question
+    if (!gameState.isBonusRound) {
+        gameState.bonusMultiplier = 1;
+    }
+
     updateHeader();
     setTimeout(nextLevel, 1500);
 }
+
+// New Bonus Level Types
+
+// Conflict Detection Level
+function renderConflictDetectionLevel(level) {
+    const quizScreen = document.getElementById('quizScreen');
+    if (!quizScreen) return; // Added null check
+
+    const optionsWithStatus = level.options.map((option, index) => ({
+        text: option,
+        isCorrect: index === level.correct
+    }));
+    shuffleArray(optionsWithStatus);
+
+    quizScreen.innerHTML = `
+        <div class="scenario-alert" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);">
+            <div class="scenario-icon">⚠️</div>
+            <h2 id="questionText" style="color: #333;">${level.question}</h2>
+        </div>
+        <div class="answer-grid">
+            ${optionsWithStatus.map((option, index) => `
+                <button class="answer-btn" data-original-font-size="20" 
+                        data-is-correct="${option.isCorrect}"
+                        onclick="checkConflictDetectionAnswer(${index}, ${option.isCorrect}, ${level.points}, '${option.text.replace(/'/g, "\\'")}', '${level.type}')">
+                    ${option.text}
+                </button>
+            `).join('')}
+        </div>
+    `;
+}
+
+function checkConflictDetectionAnswer(selectedIndex, isCorrectFlag, points, userAnswerText, levelType) {
+    stopTimer();
+    const buttons = document.querySelectorAll('.answer-btn');
+    buttons.forEach((btn, index) => {
+        btn.disabled = true;
+        if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes('true')) { // Added null check for getAttribute
+            btn.classList.add('correct');
+        } else if (index === selectedIndex) {
+            btn.classList.add('incorrect');
+        }
+    });
+
+    const level = gameState.isBonusRound ? gameState.bonusLevelData : gameState.shuffledLevels[gameState.currentLevel];
+    let pointsEarned = 0;
+    let basePoints = points;
+
+    if (isCorrectFlag) {
+        pointsEarned = basePoints;
+        // Bonus levels themselves don't get multiplied, they set the multiplier for the *next* regular question
+        gameState.score += pointsEarned;
+        playSound('correct');
+        displayCharacter('✅', "Conflit bien identifié ! Excellente analyse !", 2000);
+    } else {
+        pointsEarned = -Math.floor(basePoints / 3);
+        gameState.score = Math.max(0, gameState.score + pointsEarned);
+        playSound('incorrect');
+        displayCharacter('❌', "Attention aux détails ! Ce conflit est critique.", 2000);
+    }
+
+    gameState.answers.push({
+        levelIndex: gameState.currentLevel,
+        type: level.type,
+        question: level.question,
+        userAnswer: userAnswerText,
+        correctAnswer: getCorrectAnswerForLevel(level),
+        isCorrect: isCorrectFlag,
+        pointsEarned: pointsEarned
+    });
+    gameState.skillScores[level.type].total++;
+    if (isCorrectFlag) {
+        gameState.skillScores[level.type].correct++;
+    }
+
+    // After a bonus round, the bonus multiplier is set for the *next* regular question.
+    // We don't reset it here, it will be reset by the next regular loadLevel.
+
+    updateHeader();
+    setTimeout(nextLevel, 1500);
+}
+
+// Volume Calculation Level
+function renderVolumeCalcLevel(level) {
+    const quizScreen = document.getElementById('quizScreen');
+    if (!quizScreen) return; // Added null check
+
+    quizScreen.innerHTML = `
+        <h2 id="questionText">${level.question}</h2>
+        <input type="number" id="elevationInput" class="elevation-input" placeholder="Entrez votre réponse (m³)" step="0.01">
+        <div class="button-center-align">
+            <button class="btn" id="validateCalcBtn" onclick="checkVolumeCalcAnswer(${level.answer}, ${level.points}, '${level.type}')">Valider</button>
+        </div>
+    `;
+}
+
+function checkVolumeCalcAnswer(correctAnswer, points, levelType) {
+    stopTimer();
+    const input = document.getElementById('elevationInput');
+    const validateBtn = document.getElementById('validateCalcBtn');
+
+    let userAnswer = null;
+    if (input) { // Added null check
+        userAnswer = parseFloat(input.value);
+        input.disabled = true;
+    }
+    if (validateBtn) { // Added null check
+        validateBtn.disabled = true;
+    }
+
+    const tolerance = 0.01;
+
+    const level = gameState.isBonusRound ? gameState.bonusLevelData : gameState.shuffledLevels[gameState.currentLevel];
+    let isCorrect = false;
+    let pointsEarned = 0;
+    let basePoints = points;
+
+    if (userAnswer !== null && Math.abs(userAnswer - correctAnswer) < tolerance) { // Added null check for userAnswer
+        isCorrect = true;
+        pointsEarned = basePoints;
+        // Bonus levels themselves don't get multiplied, they set the multiplier for the *next* regular question
+        gameState.score += pointsEarned;
+        playSound('correct');
+        displayCharacter('📈', "Calcul de volume précis ! Impressionnant !", 2000);
+    } else {
+        pointsEarned = -Math.floor(basePoints / 3);
+        if (input) { // Added null check
+            input.style.borderColor = '#f44336';
+            input.style.boxShadow = '0 0 0 3px rgba(244, 67, 54, 0.2)';
+        }
+        gameState.score = Math.max(0, gameState.score + pointsEarned);
+        playSound('incorrect');
+        displayCharacter('📉', "Revoyez vos formules de volume. Chaque mètre cube compte !", 2000);
+    }
+
+    gameState.answers.push({
+        levelIndex: gameState.currentLevel,
+        type: level.type,
+        question: level.question,
+        userAnswer: input ? input.value : "N/A", // Added null check
+        correctAnswer: correctAnswer.toFixed(2),
+        isCorrect: isCorrect,
+        pointsEarned: pointsEarned
+    });
+    gameState.skillScores[level.type].total++;
+    if (isCorrect) {
+        gameState.skillScores[level.type].correct++;
+    }
+
+    // After a bonus round, the bonus multiplier is set for the *next* regular question.
+    // We don't reset it here, it will be reset by the next regular loadLevel.
+
+    updateHeader();
+    setTimeout(nextLevel, 1500);
+}
+
 
 // Font Size Adjustment Functions
 function applyFontSize() {
     const root = document.documentElement;
     root.style.fontSize = `${gameState.baseFontSize}px`;
 
-    // Adjust specific elements that use fixed pixel values or need scaling
-    document.querySelectorAll('h2').forEach(el => {
-        const baseH2Size = 3.8; // rem
-        el.style.fontSize = `${baseH2Size * (gameState.baseFontSize / 16)}rem`;
+    // Elements that are always expected to be in the DOM or are handled by specific screen rendering
+    // and might need scaling.
+    const elementsToScale = [
+        { selector: 'h1', baseRem: 3.5 }, // For general H1 (final screen)
+        { selector: 'h2', baseRem: 2.5 }, // For general H2 (quiz, game, modals)
+        { selector: 'p', baseRem: 1.1 }, // For general paragraphs
+        { selector: '.answer-btn', baseRem: 1.2 },
+        { selector: '.draggable', baseRem: 1.1 },
+        { selector: '.drop-zone', baseRem: 1.1 },
+        { selector: '.elevation-input', baseRem: 1.8 },
+        { selector: '.material-text', baseRem: 1.0 },
+        { selector: '.material-icon', baseRem: 4.0 },
+        { selector: '#speechBubbleText', baseRem: 1.0 }, // Speech bubble text
+        { selector: '.logo span', baseRem: 2.0 }, // Header logo text
+        { selector: '.logo-icon', baseRem: 2.2 }, // Header logo icon and home screen logo icon
+        { selector: '.header-item', baseRem: 1.7 }, // Header stats
+        { selector: '.score-icon', baseRem: 2.0 },
+        { selector: '.timer-icon', baseRem: 2.0 },
+        { selector: '.progress-fill-chronological', baseRem: 0.8 },
+        { selector: '.tips-bar-content', baseRem: 1.0 },
+        { selector: '.control-btn', baseRem: 1.7 },
+        { selector: '#homeScreen h1', baseRem: 4.5 }, // Home screen specific
+        { selector: '#homeScreen p', baseRem: 1.6 }, // Home screen specific
+        { selector: '#homeScreen .logo-icon', baseRem: 7.0 }, // Home screen specific
+        { selector: '#homeScreen .btn', baseRem: 1.8 }, // Home screen specific
+        { selector: '.home-features', baseRem: 1.1 }, // Home screen specific
+        { selector: '#helpModal h2', baseRem: 1.8 },
+        { selector: '#helpModal h3', baseRem: 1.4 },
+        { selector: '#helpModal p', baseRem: 1.1 },
+        { selector: '#confirmModal h2', baseRem: 1.8 },
+        { selector: '#confirmModal p', baseRem: 1.2 },
+        { selector: '#correctionModal h2', baseRem: 1.8 },
+        { selector: '#correctionModal #correctionReportContent', baseRem: 1.1 },
+        { selector: '.scenario-icon', baseRem: 4.0 },
+        { selector: '.stat-number', baseRem: 3.2 },
+        { selector: '.stat-label', baseRem: 1.1 },
+        { selector: '#customAlert', baseRem: 1.1 }
+    ];
+
+    elementsToScale.forEach(item => {
+        document.querySelectorAll(item.selector).forEach(el => {
+            if (el) { // Check if the element exists before trying to set style
+                el.style.fontSize = `${item.baseRem * (gameState.baseFontSize / 14)}rem`;
+            }
+        });
     });
-    document.querySelectorAll('p').forEach(el => {
-        const basePSize = 1.4; // rem
-        el.style.fontSize = `${basePSize * (gameState.baseFontSize / 16)}rem`;
-    });
-    document.querySelectorAll('.answer-btn').forEach(el => {
-        const baseBtnSize = 20; // px
-        el.style.fontSize = `${baseBtnSize * (gameState.baseFontSize / 16)}px`;
-    });
-    document.querySelectorAll('.draggable').forEach(el => {
-        const baseDraggableSize = 18; // px
-        el.style.fontSize = `${baseDraggableSize * (gameState.baseFontSize / 16)}px`;
-    });
-    document.querySelectorAll('.drop-zone').forEach(el => {
-        const baseDropZoneSize = 18; // px
-        el.style.fontSize = `${baseDropZoneSize * (gameState.baseFontSize / 16)}px`;
-    });
-    document.querySelectorAll('.elevation-input').forEach(el => {
-        const baseInputSize = 28; // px
-        el.style.fontSize = `${baseInputSize * (gameState.baseFontSize / 16)}px`;
-    });
-    document.querySelectorAll('.material-text').forEach(el => {
-        const baseMaterialTextSize = 16; // px (assuming default for material card text)
-        el.style.fontSize = `${baseMaterialTextSize * (gameState.baseFontSize / 16)}px`;
-    });
-    document.querySelectorAll('.material-icon').forEach(el => {
-        const baseMaterialIconSize = 60; // px
-        el.style.fontSize = `${baseMaterialIconSize * (gameState.baseFontSize / 16)}px`;
-    });
-    // Adjust speech bubble font size
-    const speechBubbleText = document.getElementById('speechBubbleText');
-    if (speechBubbleText) {
-        speechBubbleText.style.fontSize = `${1.1 * (gameState.baseFontSize / 16)}rem`;
-    }
 }
 
 function increaseFontSize() {
-    if (gameState.baseFontSize < 24) { // Max font size limit
+    if (gameState.baseFontSize < 20) { /* Adjusted max font size limit */
         gameState.baseFontSize += 2; // Increase by 2px
         localStorage.setItem('ltdSimFontSize', gameState.baseFontSize);
         applyFontSize();
@@ -2267,7 +2782,7 @@ function increaseFontSize() {
 }
 
 function decreaseFontSize() {
-    if (gameState.baseFontSize > 12) { // Min font size limit
+    if (gameState.baseFontSize > 10) { /* Adjusted min font size limit */
         gameState.baseFontSize -= 2; // Decrease by 2px
         localStorage.setItem('ltdSimFontSize', gameState.baseFontSize);
         applyFontSize();
@@ -2281,7 +2796,7 @@ function displayCharacter(emoji, message, duration = 3000) {
     const speechBubble = document.getElementById('speechBubble');
     const speechBubbleText = document.getElementById('speechBubbleText');
 
-    if (!characterDiv || !speechBubble || !speechBubbleText) return;
+    if (!characterDiv || !speechBubble || !speechBubbleText) return; // Ensure all elements exist
 
     // Stop any current tip interval
     clearInterval(gameState.characterTipInterval);
@@ -2295,7 +2810,9 @@ function displayCharacter(emoji, message, duration = 3000) {
 
     // Set a timeout to hide the bubble and potentially restart tips
     setTimeout(() => {
-        speechBubble.classList.remove('active');
+        if (speechBubble) { // Added null check
+            speechBubble.classList.remove('active');
+        }
         // speechBubble.style.display = 'none'; // Keep hidden until next message
         // characterDiv.style.display = 'none'; // Keep character visible
         // Restart tips after a short delay if game is active
