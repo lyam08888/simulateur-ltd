@@ -1,0 +1,2385 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LTD Simulateur - Projeteur VRD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            /* Default font size, will be updated by JS */
+            font-size: 16px; 
+        }
+        
+        .game-container {
+            width: 100%;
+            max-width: 1400px; /* Main container width */
+            height: 95vh;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 30px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .game-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+            position: absolute; /* Fixed position to stay at top */
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10; /* Ensure it's above other content */
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 28px;
+            font-weight: 800;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+        
+        .header-stats {
+            display: flex;
+            gap: 30px;
+            align-items: center; /* Align items vertically in the center */
+        }
+        
+        .header-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .score-icon::before {
+            content: "⭐";
+            font-size: 28px;
+        }
+        
+        .timer-icon::before {
+            content: "⏰";
+            font-size: 28px;
+        }
+        
+        .timer-display.warning {
+            animation: pulse 1s infinite;
+            background: rgba(244, 67, 54, 0.3);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .screen {
+            display: none;
+            flex: 1;
+            /* Adjusted padding to account for header (80px), controls (100px from right), and new bottom bars */
+            padding: 100px 120px 80px 50px; /* top, right, bottom, left */
+            overflow-y: auto;
+            animation: fadeIn 0.5s ease-out;
+            margin-top: 80px; /* To push content down from header */
+            margin-right: 100px; /* To push content left from controls */
+            margin-bottom: 60px; /* To push content up from the new bottom bars */
+        }
+        
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h1 {
+            font-size: 5rem; /* Increased font size for main title */
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            font-size: 3.8rem; /* Further increased font size for questions */
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 40px;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        p {
+            font-size: 1.4rem; /* Increased font size for instructions/text */
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 25px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: left 0.5s ease;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 35px rgba(102, 126, 234, 0.6);
+        }
+        
+        .btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-bar-chronological { /* New class for chronological progress bar */
+            width: calc(100% - 100px); /* Adjust width to fit within header padding */
+            height: 15px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            margin: 0 50px; /* Match header padding */
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            bottom: 45px; /* Position above the tips bar */
+            left: 0;
+            right: 0;
+            z-index: 10; /* Ensure it's above other content */
+        }
+        
+        .progress-fill-chronological {
+            height: 100%;
+            background: white; /* White fill for contrast */
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 5px;
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .answer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 40px;
+        }
+        
+        .answer-btn {
+            background: white;
+            border: 3px solid #e0e0e0;
+            padding: 25px;
+            border-radius: 20px;
+            font-size: 20px; /* Will be adjusted by JS */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .answer-btn:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .answer-btn.correct {
+            background: #4caf50;
+            color: white;
+            border-color: #4caf50;
+            animation: bounce 0.5s ease;
+        }
+        
+        .answer-btn.incorrect {
+            background: #f44336;
+            color: white;
+            border-color: #f44336;
+            animation: shake 0.5s ease;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .game-area {
+            width: 100%;
+            max-width: 1000px;
+            height: 500px;
+            background: #f8f9fa;
+            border-radius: 25px;
+            border: 3px solid #e0e0e0;
+            position: relative;
+            overflow: hidden;
+            margin: 30px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .controls {
+            position: fixed;
+            right: 30px; /* Position on the right */
+            top: 50%; /* Center vertically */
+            transform: translateY(-50%); /* Adjust for vertical centering */
+            display: flex;
+            flex-direction: column; /* Arrange buttons vertically */
+            gap: 20px; /* Spacing between control buttons */
+            background: rgba(255, 255, 255, 0.98);
+            padding: 20px;
+            border-radius: 60px; /* Adjust border-radius for vertical layout */
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
+            z-index: 10; /* Ensure it's above other content */
+        }
+        
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            color: #667eea;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            background: #667eea;
+            color: white;
+        }
+        
+        .control-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .control-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .control-btn:disabled:hover {
+            transform: none;
+            background: white;
+            color: #667eea;
+        }
+        
+        /* Tooltip pour les boutons */
+        .control-btn::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: -10px; /* Adjust for vertical positioning */
+            transform: translateX(-100%); /* Move tooltip to the left of the button */
+            top: 50%;
+            transform: translateY(-50%);
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .control-btn:hover::after {
+            opacity: 1;
+        }
+        
+        /* Icons pour les boutons */
+        .icon-previous::before { content: "⏮️"; }
+        .icon-restart::before { content: "🔄"; }
+        .icon-music::before { content: "🎵"; }
+        .icon-music.muted::before { content: "🔇"; }
+        .icon-help::before { content: "❓"; }
+        .icon-solution::before { content: "💡"; }
+        .icon-skip::before { content: "⏭️"; }
+        
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 50px;
+            border-radius: 25px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalIn 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        @keyframes modalIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            width: 45px;
+            height: 45px;
+            border: none;
+            background: #f0f0f0;
+            border-radius: 50%;
+            font-size: 28px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-close:hover {
+            background: #e0e0e0;
+            transform: rotate(90deg);
+        }
+        
+        /* Spécifique aux mini-jeux */
+        .draggable {
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            cursor: grab;
+            user-select: none;
+            margin: 8px;
+            transition: all 0.3s ease;
+            font-size: 18px; /* Will be adjusted by JS */
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .draggable:active {
+            cursor: grabbing;
+            opacity: 0.7;
+            transform: scale(0.95);
+        }
+        
+        .drop-zone {
+            min-height: 70px;
+            border: 3px dashed #ccc;
+            border-radius: 15px;
+            margin: 12px 0;
+            padding: 15px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px; /* Will be adjusted by JS */
+            background: white;
+        }
+        
+        .drop-zone.hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            transform: scale(1.02);
+        }
+        
+        .drop-zone.filled {
+            border-style: solid;
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .material-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            max-width: 1000px;
+            margin-top: 40px;
+        }
+        
+        .material-card {
+            background: white;
+            border: 3px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .material-icon {
+            font-size: 60px;
+            line-height: 1;
+        }
+        
+        .material-card:hover {
+            border-color: #667eea;
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .material-card.selected {
+            border-color: #764ba2;
+            background: rgba(118, 75, 162, 0.1);
+            transform: scale(1.05);
+        }
+        
+        .material-card.correct {
+            background: #4caf50;
+            color: white;
+            border-color: #4caf50;
+        }
+        
+        .material-card.incorrect {
+            background: #f44336;
+            color: white;
+            border-color: #f44336;
+        }
+        
+        .elevation-input {
+            font-size: 28px; /* Will be adjusted by JS */
+            padding: 20px 40px;
+            border: 3px solid #e0e0e0;
+            border-radius: 20px;
+            text-align: center;
+            width: 300px;
+            transition: all 0.3s ease;
+            margin: 20px 0;
+        }
+        
+        .elevation-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+        
+        /* Network game */
+        .network-svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .network-node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .network-node:hover {
+            r: 25;
+        }
+        
+        .network-line {
+            stroke-width: 4;
+            fill: none;
+            stroke-dasharray: 10, 5;
+            animation: dash 20s linear infinite;
+        }
+        
+        @keyframes dash {
+            to { stroke-dashoffset: -100; }
+        }
+        
+        /* Confetti */
+        .confetti {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #667eea;
+            animation: fall 3s linear forwards;
+        }
+        
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Scenario alert */
+        .scenario-alert {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 25px;
+            margin: 30px 0;
+            text-align: center;
+            animation: alertPulse 2s ease-in-out infinite;
+            box-shadow: 0 10px 40px rgba(238, 90, 36, 0.4);
+        }
+        
+        @keyframes alertPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .scenario-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        
+        /* Final screen stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+            max-width: 800px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .stat-number {
+            font-size: 48px;
+            font-weight: 800;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        /* Added for right alignment of buttons */
+        .button-center-align { /* Changed class name to reflect centering */
+            width: 100%;
+            max-width: 600px; /* Match the max-width of drop-zones/input for consistency */
+            display: flex;
+            justify-content: center; /* Centered now */
+            margin-top: 30px; /* Add some top top margin */
+        }
+
+        /* New styles for the tips bar */
+        .tips-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(90deg, #764ba2 0%, #667eea 100%);
+            color: white;
+            padding: 8px 0;
+            font-size: 16px;
+            overflow: hidden;
+            white-space: nowrap;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 10; /* Ensure it's above other content */
+        }
+
+        .tips-bar-content {
+            display: inline-block;
+            padding-left: 100%; /* Start off-screen to the right */
+            animation: marquee 20s linear infinite; /* Adjust duration as needed */
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* Home Screen Specific Styles */
+        #homeScreen {
+            /* Changed background to a blue gradient */
+            background: linear-gradient(135deg, #4A5568 0%, #2D3748 100%); /* Darker blue gradient */
+            color: white;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            justify-content: center; /* Center content vertically */
+            align-items: center; /* Center content horizontally */
+            padding: 50px; /* Reset padding for home screen */
+            margin-top: 0; /* Reset margin for home screen */
+            margin-right: 0; /* Reset margin for home screen */
+            margin-bottom: 0; /* Reset margin for home screen */
+        }
+
+        #homeScreen h1 {
+            font-size: 6.5rem; /* Larger title for home screen */
+            background: none; /* Remove gradient for better text shadow visibility */
+            -webkit-text-fill-color: white;
+            text-shadow: 4px 4px 10px rgba(0,0,0,0.7);
+            margin-bottom: 20px;
+        }
+
+        #homeScreen p {
+            font-size: 2.2rem; /* Larger subtitle for home screen */
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+        }
+
+        #homeScreen .logo-icon {
+            width: 180px;
+            height: 180px;
+            font-size: 100px;
+            border-radius: 50%; /* Make it a circle */
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
+        }
+
+        #homeScreen .btn {
+            padding: 22px 60px;
+            font-size: 24px;
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+        }
+
+        /* Character and Speech Bubble Styles */
+        #gameCharacter {
+            position: absolute;
+            bottom: 70px; /* Above tips bar and progress bar */
+            left: 30px;
+            font-size: 60px; /* Size of the emoji character */
+            z-index: 20; /* Above game content */
+            transition: transform 0.3s ease-out;
+            display: none; /* Hidden by default */
+        }
+
+        #speechBubble {
+            position: absolute;
+            bottom: 140px; /* Above character */
+            left: 100px;
+            background: white;
+            border-radius: 20px;
+            padding: 15px 25px;
+            max-width: 250px;
+            font-size: 1.1rem; /* Will be adjusted by JS */
+            color: #333;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.3s ease-out;
+            transform-origin: bottom left;
+            z-index: 21; /* Above character */
+        }
+
+        #speechBubble::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 20px;
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 15px solid white;
+        }
+
+        #speechBubble.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header" style="display: none;">
+            <div class="logo">
+                <div class="logo-icon">🏗️</div>
+                <span>LTD SIMULATEUR</span>
+            </div>
+            <div class="header-stats">
+                <div class="font-size-controls">
+                    <button class="font-size-btn" onclick="decreaseFontSize()">A-</button>
+                    <button class="font-size-btn" onclick="increaseFontSize()">A+</button>
+                </div>
+                <div class="header-item">
+                    <span class="score-icon"></span>
+                    <span id="score">0</span>
+                </div>
+                <div class="header-item timer-display">
+                    <span class="timer-icon"></span>
+                    <span id="timer">0</span>s
+                </div>
+            </div>
+        </div>
+        
+        <!-- Écran d'accueil -->
+        <div id="homeScreen" class="screen active">
+            <div class="logo-icon">🏗️</div>
+            <h1>LTD SIMULATEUR</h1>
+            <p>L'Expérience Complète du Projeteur VRD</p>
+            <div style="font-size: 28px; color: rgba(255, 255, 255, 0.9); margin-bottom: 50px; text-align: center; line-height: 1.8; text-shadow: 1px 1px 3px rgba(0,0,0,0.3);">
+                <p>🔥 30 Niveaux de défis techniques</p>
+                <p>🚨 Scénarios réalistes de chantier</p>
+                <p>🚀 Devenez expert en Voirie et Réseaux Divers</p>
+            </div>
+            <button class="btn" onclick="startGame()">Commencer l'aventure</button>
+        </div>
+        
+        <!-- Écrans de jeu -->
+        <div id="quizScreen" class="screen"></div>
+        <div id="gameScreen" class="screen"></div>
+        <div id="finalScreen" class="screen"></div>
+        
+        <!-- Contrôles -->
+        <div class="controls" style="display: none;">
+            <button class="control-btn icon-previous" data-tooltip="Niveau précédent" onclick="previousLevel()"></button>
+            <button class="control-btn icon-restart" data-tooltip="Recommencer" onclick="confirmRestart()"></button>
+            <button class="control-btn icon-music" data-tooltip="Musique" onclick="toggleMusic()"></button>
+            <button class="control-btn icon-help" data-tooltip="Aide" onclick="showHelp()"></button>
+            <button class="control-btn icon-solution" data-tooltip="Solution (-50 pts)" onclick="showSolution()"></button>
+            <button class="control-btn icon-skip" data-tooltip="Passer (-10 pts)" onclick="skipLevel()"></button>
+        </div>
+
+        <!-- Character and Speech Bubble -->
+        <div id="gameCharacter" style="display: none;"></div>
+        <div id="speechBubble" style="display: none;"><span id="speechBubbleText"></span></div>
+
+        <!-- Chronological Progress Bar (moved to bottom) -->
+        <div class="progress-bar-chronological" style="display: none;">
+            <div id="chronologicalProgressBarFill" class="progress-fill-chronological"></div>
+        </div>
+
+        <!-- Tips Bar (new) -->
+        <div class="tips-bar" style="display: none;">
+            <span id="tipsBarContent" class="tips-bar-content"></span>
+        </div>
+    </div>
+    
+    <!-- Modals -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('helpModal')">✕</button>
+            <h2 style="color: #667eea; margin-bottom: 30px;">📚 Comment jouer ?</h2>
+            <p style="font-size: 18px; line-height: 1.6; margin-bottom: 25px;">
+                Bienvenue dans LTD Simulateur ! Votre objectif est de devenir un expert en VRD 
+                (Voirie et Réseaux Divers) en complétant 30 défis variés.
+            </p>
+            <h3 style="color: #764ba2; margin: 25px 0 15px;">🎮 Types de défis :</h3>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 15px; margin-bottom: 25px;">
+                <p style="margin: 10px 0;"><strong>📝 Quiz</strong> : Questions techniques sur la VRD</p>
+                <p style="margin: 10px 0;"><strong>🔧 Matériaux</strong> : Sélection des bons matériaux</p>
+                <p style="margin: 10px 0;"><strong>🔌 Réseaux</strong> : Connexion de canalisations</p>
+                <p style="margin: 10px 0;"><strong>📐 Construction</strong> : Assemblage des couches</p>
+                <p style="margin: 10px 0;"><strong>🧮 Calculs</strong> : Problèmes d'altitude et pente</p>
+                <p style="margin: 10px 0;"><strong>⚠️ Scénarios</strong> : Situations d'urgence</p>
+            </div>
+            <h3 style="color: #764ba2; margin: 25px 0 15px;">💯 Système de points :</h3>
+            <div style="background: #e8f5e9; padding: 20px; border-radius: 15px; margin-bottom: 25px;">
+                <p style="margin: 10px 0;">✅ Bonne réponse : <strong>+50 à +100 points</strong></p>
+                <p style="margin: 10px 0;">❌ Mauvaise réponse : <strong>-10 à -30 points</strong></p>
+                <p style="margin: 10px 0;">⏰ Temps écoulé : <strong>-20 points</strong></p>
+                <p style="margin: 10px 0;">💡 Voir solution : <strong>-50 points</strong></p>
+                <p style="margin: 10px 0;">⏭️ Passer : <strong>-10 points</strong></p>
+            </div>
+            <button class="btn" onclick="closeModal('helpModal')">Compris !</button>
+        </div>
+    </div>
+    
+    <div id="confirmModal" class="modal">
+        <div class="modal-content" style="text-align: center;">
+            <h2 id="confirmTitle" style="color: #667eea; margin-bottom: 30px;">Confirmer</h2>
+            <p id="confirmText" style="font-size: 20px; margin: 30px 0;">Êtes-vous sûr ?</p>
+            <div style="display: flex; gap: 20px; justify-content: center; margin-top: 40px;">
+                <button class="btn" onclick="confirmAction()">Oui</button>
+                <button class="btn btn-secondary" onclick="closeModal('confirmModal')">Non</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="correctionModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('correctionModal')">✕</button>
+            <h2 style="color: #667eea; margin-bottom: 30px;">📊 Rapport de Correction</h2>
+            <div id="correctionReportContent" style="font-size: 18px; line-height: 1.6;">
+                <!-- Correction content will be inserted here -->
+            </div>
+            <button class="btn mt-8" onclick="copyCorrectionToClipboard()">Copier la correction</button>
+        </div>
+    </div>
+
+<script>
+// Game state
+let gameState = {
+    currentLevel: 0,
+    score: 0,
+    timer: null,
+    timeLeft: 0,
+    musicEnabled: true,
+    // Store detailed answers for correction report
+    answers: [], // { levelIndex: N, type: 'quiz', question: '...', userAnswer: '...', correctAnswer: '...', isCorrect: true/false, pointsEarned: X }
+    synth: null,
+    pendingAction: null,
+    skillScores: { // Track performance per skill type
+        quiz: { correct: 0, total: 0 },
+        material: { correct: 0, total: 0 },
+        drag: { correct: 0, total: 0 },
+        calc: { correct: 0, total: 0 },
+        network: { correct: 0, total: 0 },
+        scenario: { correct: 0, total: 0 }
+    },
+    baseFontSize: 16, // Default base font size in pixels
+    characterTipInterval: null, // Interval for character tips
+    shuffledLevels: [] // New array to store shuffled levels
+};
+
+// Level data
+const originalLevels = [ // Renamed to originalLevels
+    // Level 1-5: Introduction
+    { type: 'quiz', question: "Que signifie VRD ?", answers: ["Voirie et Réseaux Divers", "Vraiment Rapide et Dangereux", "Vérification Routière Détaillée"], correct: 0, points: 50 },
+    { type: 'quiz', question: "Quelle est la couleur normalisée pour l'eau potable ?", answers: ["Rouge", "Bleu", "Vert", "Jaune"], correct: 1, points: 50 },
+    { type: 'material', question: "Sélectionnez le matériau le plus adapté pour un trottoir", materials: ["Asphalte", "Béton désactivé", "Terre battue", "Gravier"], icons: ["🛣️", "🧱", "🌿", "🚧"], correct: 1, points: 75 },
+    { type: 'quiz', question: "Qu'est-ce qu'un plan de récolement ?", answers: ["Le plan initial du projet", "Un plan des travaux réalisés", "Un planning de chantier"], correct: 1, points: 50 },
+    { type: 'network', question: "Tracez le réseau d'eaux usées du point A au point B", points: 100 },
+    
+    // Level 6-10: Technical basics
+    { type: 'quiz', question: "Quelle est la pente minimale pour un réseau EU ?", answers: ["0.5%", "1%", "2%", "5%"], correct: 1, points: 75 },
+    { type: 'drag', question: "Assemblez les couches d'une voirie (de bas en haut)", items: ["Sol support", "Géotextile", "Grave non traitée", "Enrobé"], points: 100 },
+    { type: 'quiz', question: "Qu'est-ce qu'un avaloir ?", answers: ["Une bouche d'incendie", "Un dispositif de collecte des eaux", "Un type de regard"], correct: 1, points: 50 },
+    { type: 'calc', question: "Altitude départ: 100.00m, pente 2% sur 50m. Altitude finale ?", answer: "99.00", points: 100 },
+    { type: 'quiz', question: "Profondeur hors gel moyenne en France ?", answers: ["20-30cm", "50-80cm", "100-120cm"], correct: 1, points: 75 },
+    
+    // Level 11-15: Networks
+    { type: 'quiz', question: "Couleur du grillage avertisseur électrique ?", answers: ["Bleu", "Rouge", "Vert", "Jaune"], correct: 1, points: 50 },
+    { type: 'material', question: "Quel regard pour un changement de direction EU ?", materials: ["Regard de visite", "Bouche à clé", "Avaloir", "Tabouret"], icons: ["🕳️", "🔧", "🌊", "🪑"], correct: 0, points: 75 },
+    { type: 'quiz', question: "Distance minimale entre eau potable et EU ?", answers: ["20cm", "40cm", "60cm", "100cm"], correct: 1, points: 75 },
+    { type: 'network', question: "Connectez le réseau télécom en évitant les autres réseaux", points: 100 },
+    { type: 'quiz', question: "Que signifie PMR ?", answers: ["Projet Majeur Régional", "Personnes à Mobilité Réduite", "Plan de Mise en Route"], correct: 1, points: 50 },
+    
+    // Level 16-20: VRD Deep Dive
+    { type: 'drag', question: "Classez les étapes de la construction d'une chaussée (du début à la fin)", items: ["Terrassement", "Mise en œuvre des couches de forme", "Réalisation des couches de roulement", "Signalisation et marquage"], points: 100 },
+    { type: 'quiz', question: "Quel est le rôle d'un géotextile ?", answers: ["Empêcher la pousse des mauvaises herbes", "Séparer des couches de matériaux", "Drainer l'eau", "Renforcer la structure"], correct: 1, points: 75 },
+    { type: 'material', question: "Quel type de canalisation pour l'assainissement gravitaire ?", materials: ["PVC", "PEHD", "Fonte", "Acier"], icons: ["📏", "🔗", "⚙️", "🔩"], correct: 0, points: 75 },
+    { type: 'calc', question: "Altitude finale: 85.50m, pente 1.5% sur 100m. Altitude départ ?", answer: "87.00", points: 100 },
+    { type: 'quiz', question: "Qu'est-ce qu'un BPU en VRD ?", answers: ["Bordure Paveur Urbain", "Béton Prêt à l'Usage", "Bureau des Projets Urbains"], correct: 0, points: 50 },
+
+    // Level 21-25: Practical cases and standards
+    { type: 'network', question: "Optimisez le tracé du réseau d'éclairage public pour minimiser les longueurs", points: 120 },
+    { type: 'quiz', question: "Quelle norme régit l'accessibilité PMR en France ?", answers: ["NF P98-331", "Arrêté du 15 janvier 2007", "DTU 20.1"], correct: 1, points: 75 },
+    { type: 'material', question: "Matériau pour une conduite d'eau potable sous pression ?", materials: ["PVC-O", "Grès", "Béton armé", "Fibrociment"], icons: ["💧", "🏺", "🏗️", "💨"], correct: 0, points: 80 },
+    { type: 'calc', question: "Distance: 75m, dénivelé: 1.5m. Quelle est la pente en % ?", answer: "2.00", points: 100 },
+    { type: 'scenario', question: "Un réseau d'eau potable est endommagé. Quelle est la première action à mener ?", actions: ["Couper l'arrivée d'eau", "Réparer immédiatement", "Prévenir les usagers", "Analyser la cause"], correct: 0, points: 100 },
+
+    // Level 26-30: Expertise and project management
+    { type: 'drag', question: "Classez les étapes d'un projet VRD (de l'étude à la réception)", items: ["Terrassement", "Mise en œuvre des couches de forme", "Réalisation des couches de roulement", "Signalisation et marquage"], points: 120 },
+    { type: 'quiz', question: "Quelle est la fonction principale d'un caniveau ?", answers: ["Délimiter la chaussée", "Collecter les eaux de ruissellement", "Servir de support aux réseaux", "Améliorer l'esthétique"], correct: 1, points: 60 },
+    { type: 'network', question: "Concevez un réseau de drainage pluvial pour un parking, avec points de collecte", points: 130 },
+    { type: 'calc', question: "Longueur de réseau: 200m, pente 0.8%. Quel est le dénivelé total ?", answer: "1.60", points: 100 },
+    { type: 'scenario', question: "Vous découvrez un réseau non répertorié lors des terrassements. Que faites-vous ?", actions: ["Continuer les travaux avec prudence", "Arrêter les travaux et informer le chef de projet", "Essayer de l'identifier vous-même", "Le contourner sans le signaler"], correct: 1, points: 150 }
+];
+
+// Tips for the scrolling bar
+const gameTips = [
+    "Astuce: Vérifiez toujours les plans de réseaux avant de terrasser.",
+    "Astuce: Une bonne gestion des eaux pluviales est cruciale pour la durabilité des ouvrages.",
+    "Astuce: La profondeur hors gel varie selon les régions, adaptez vos calculs!",
+    "Astuce: Les normes PMR garantissent l'accessibilité pour tous, ne les négligez jamais.",
+    "Astuce: Un plan de récolement précis est essentiel pour les futures interventions.",
+    "Astuce: La couleur bleue indique généralement les réseaux d'eau potable.",
+    "Astuce: La pente minimale pour un réseau d'eaux usées est de 1% pour assurer l'écoulement.",
+    "Astuce: Le géotextile sépare les couches de matériaux et prévient le mélange.",
+    "Astuce: Les regards de visite permettent l'inspection et l'entretien des réseaux.",
+    "Astuce: En cas de réseau non répertorié, stoppez les travaux et signalez-le immédiatement."
+];
+let currentTipIndex = 0;
+let tipInterval = null;
+
+// Utility functions
+function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+    });
+    document.getElementById(screenId).classList.add('active');
+}
+
+function updateHeader() {
+    document.getElementById('score').textContent = gameState.score;
+    document.getElementById('timer').textContent = gameState.timeLeft;
+    updateChronologicalProgressBar(); // Update progress bar on header update
+}
+
+function updateChronologicalProgressBar() {
+    const progressBarFill = document.getElementById('chronologicalProgressBarFill');
+    // Use gameState.shuffledLevels.length for total levels
+    const progressPercentage = (gameState.currentLevel / gameState.shuffledLevels.length) * 100;
+    progressBarFill.style.width = `${progressPercentage}%`;
+    progressBarFill.textContent = `${gameState.currentLevel}/${gameState.shuffledLevels.length}`;
+}
+
+function startTimer(duration) {
+    clearInterval(gameState.timer);
+    gameState.timeLeft = duration;
+    updateHeader();
+    const timerElement = document.querySelector('.timer-display');
+    timerElement.classList.remove('warning');
+
+    gameState.timer = setInterval(() => {
+        gameState.timeLeft--;
+        updateHeader();
+        if (gameState.timeLeft <= 10 && gameState.timeLeft > 0) {
+            timerElement.classList.add('warning');
+            playSound('shortBeep');
+        } else if (gameState.timeLeft <= 0) {
+            clearInterval(gameState.timer);
+            timerElement.classList.remove('warning');
+            handleTimeout();
+        }
+    }, 1000);
+}
+
+function stopTimer() {
+    clearInterval(gameState.timer);
+    document.querySelector('.timer-display').classList.remove('warning');
+}
+
+function playSound(type) {
+    if (!gameState.musicEnabled) return;
+
+    // Ensure synth is initialized
+    if (!gameState.synth) {
+        console.warn("Tone.PolySynth not initialized when playSound was called.");
+        return;
+    }
+
+    switch (type) {
+        case 'correct':
+            gameState.synth.triggerAttackRelease("C5", "8n");
+            break;
+        case 'incorrect':
+            gameState.synth.triggerAttackRelease("C3", "8n");
+            break;
+        case 'levelUp':
+            const levelUpNotes = ["C4", "E4", "G4"];
+            const levelUpDuration = "0.5s";
+            levelUpNotes.forEach((note, index) => {
+                // Play each note with a tiny offset to ensure they are distinct events
+                // and avoid the "Invalid argument(s) to setValueAtTime" error with arrays.
+                gameState.synth.triggerAttackRelease(note, levelUpDuration, Tone.context.currentTime + (index * 0.01));
+            });
+            break;
+        case 'gameOver':
+            const gameOverNotes = ["C3", "G2", "C2"];
+            const gameOverDuration = "1s";
+            gameOverNotes.forEach((note, index) => {
+                gameState.synth.triggerAttackRelease(note, gameOverDuration, Tone.context.currentTime + (index * 0.01));
+            });
+            break;
+        case 'shortBeep':
+            gameState.synth.triggerAttackRelease("C4", "32n");
+            break;
+        case 'buttonClick':
+            gameState.synth.triggerAttackRelease("C6", "64n");
+            break;
+    }
+}
+
+function toggleMusic() {
+    gameState.musicEnabled = !gameState.musicEnabled;
+    const musicBtn = document.querySelector('.icon-music');
+    if (gameState.musicEnabled) {
+        musicBtn.classList.remove('muted');
+        // Potentially start background music here if desired
+    } else {
+        musicBtn.classList.add('muted');
+        // Stop background music here if playing
+    }
+    playSound('buttonClick');
+}
+
+function showModal(modalId) {
+    document.getElementById(modalId).classList.add('active');
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('active');
+    gameState.pendingAction = null; // Clear any pending action when modal closes
+}
+
+function confirmAction() {
+    if (gameState.pendingAction) {
+        gameState.pendingAction();
+        gameState.pendingAction = null;
+    }
+    closeModal('confirmModal');
+}
+
+function showConfirmModal(title, text, action) {
+    document.getElementById('confirmTitle').textContent = title;
+    document.getElementById('confirmText').textContent = text;
+    gameState.pendingAction = action;
+    showModal('confirmModal');
+}
+
+/**
+ * Shuffles an array in place using the Fisher-Yates (Knuth) algorithm.
+ * @param {Array} array The array to shuffle.
+ */
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+    }
+}
+
+// Navigation and game functions
+async function startGame() { // Make it async
+    // Ensure audio context is started on user gesture
+    if (Tone.context.state !== 'running') {
+        await Tone.start(); // Await Tone.start()
+    }
+    // Initialize PolySynth for playing chords
+    if (!gameState.synth) {
+        gameState.synth = new Tone.PolySynth(Tone.Synth).toDestination();
+    }
+
+    gameState.currentLevel = 0;
+    gameState.score = 0;
+    gameState.answers = []; // Reset answers for new game
+    // Reset skill scores for new game
+    for (const skill in gameState.skillScores) {
+        gameState.skillScores[skill] = { correct: 0, total: 0 };
+    }
+
+    // Shuffle levels for a new game
+    gameState.shuffledLevels = [...originalLevels]; // Create a copy to shuffle
+    shuffleArray(gameState.shuffledLevels);
+
+    document.querySelector('.game-header').style.display = 'flex';
+    document.querySelector('.controls').style.display = 'flex';
+    document.querySelector('.progress-bar-chronological').style.display = 'block'; // Show progress bar
+    document.querySelector('.tips-bar').style.display = 'block'; // Show tips bar
+    document.getElementById('gameCharacter').style.display = 'block'; // Show character
+    startTipsMarquee(); // Start tips marquee
+    displayCharacter('🚀', "Bienvenue, Projeteur ! Prêt à relever le défi ?", 3000); // Welcome message
+    loadLevel();
+    playSound('levelUp');
+}
+
+function loadLevel() {
+    stopTimer();
+    const level = gameState.shuffledLevels[gameState.currentLevel]; // Use shuffled levels
+    const quizScreen = document.getElementById('quizScreen');
+    const gameScreen = document.getElementById('gameScreen');
+    quizScreen.innerHTML = ''; // Clear previous content
+    gameScreen.innerHTML = ''; // Clear previous content
+
+    updateHeader(); // Update header including progress bar
+    
+    if (!level) {
+        endGame();
+        return;
+    }
+
+    // Determine time limit based on level type
+    let timeLimit;
+    switch (level.type) {
+        case 'quiz':
+            timeLimit = 30; // 30 seconds for quiz
+            break;
+        case 'material':
+        case 'drag':
+        case 'calc':
+            timeLimit = 45; // 45 seconds for material, drag, calc
+            break;
+        case 'network':
+            timeLimit = 60; // 60 seconds for network
+            break;
+        case 'scenario':
+            timeLimit = 90; // 90 seconds for scenario
+            break;
+        default:
+            timeLimit = 30; // Default time
+    }
+    startTimer(timeLimit);
+
+    // Render level based on type
+    switch (level.type) {
+        case 'quiz':
+            renderQuizLevel(level);
+            showScreen('quizScreen');
+            break;
+        case 'material':
+            renderMaterialLevel(level);
+            showScreen('quizScreen'); // Using quizScreen for material selection
+            break;
+        case 'drag':
+            renderDragLevel(level);
+            showScreen('gameScreen'); // Using gameScreen for drag and drop
+            break;
+        case 'calc':
+            renderCalcLevel(level);
+            showScreen('quizScreen'); // Using quizScreen for calculation
+            break;
+        case 'network':
+            renderNetworkLevel(level);
+            showScreen('gameScreen'); // Using gameScreen for network drawing
+            break;
+        case 'scenario':
+            renderScenarioLevel(level);
+            showScreen('quizScreen'); // Using quizScreen for scenario
+            break;
+        default:
+            console.error("Unknown level type:", level.type);
+            // Fallback to a simple quiz or skip
+            break;
+    }
+    applyFontSize(); // Apply font size after rendering new content
+}
+
+function nextLevel() {
+    stopTimer();
+    gameState.currentLevel++;
+    if (gameState.currentLevel < gameState.shuffledLevels.length) { // Use shuffled levels length
+        loadLevel();
+        playSound('levelUp');
+    } else {
+        endGame();
+    }
+}
+
+function previousLevel() {
+    if (gameState.currentLevel > 0) {
+        showConfirmModal("Retour au niveau précédent", "Vous perdrez le score du niveau actuel. Continuer ?", () => {
+            gameState.currentLevel--;
+            // Remove the last answer record if going back
+            if (gameState.answers.length > gameState.currentLevel) {
+                const lastAnswer = gameState.answers.pop();
+                // If the popped answer was correct, decrement correct count for that skill
+                if (lastAnswer.isCorrect) {
+                    gameState.skillScores[lastAnswer.type].correct--;
+                }
+                gameState.skillScores[lastAnswer.type].total--; // Always decrement total
+            }
+            loadLevel();
+        });
+    } else {
+        // Optionally show a message that they are on the first level
+    }
+}
+
+function confirmRestart() {
+    showConfirmModal("Recommencer le jeu", "Êtes-vous sûr de vouloir recommencer du début ? Votre score sera remis à zéro.", startGame);
+}
+
+function showHelp() {
+    showModal('helpModal');
+    playSound('buttonClick');
+}
+
+function showSolution() {
+    const pointsCost = 50;
+    if (gameState.score < pointsCost) {
+        displayCharacter('🤔', `Vous n'avez pas assez de points pour cela ! Il vous faut ${pointsCost} points.`, 3000);
+        playSound('incorrect');
+        return;
+    }
+
+    showConfirmModal("Afficher la solution", `Afficher la solution vous coûtera ${pointsCost} points. Continuer ?`, () => {
+        const level = gameState.shuffledLevels[gameState.currentLevel]; // Use shuffled levels
+        const pointsLost = pointsCost;
+        gameState.score = Math.max(0, gameState.score - pointsLost); // Ensure score doesn't go below zero
+        updateHeader();
+        
+        // Record the answer as incorrect due to solution view
+        gameState.answers.push({
+            levelIndex: gameState.currentLevel,
+            type: level.type,
+            question: level.question,
+            userAnswer: "Solution affichée",
+            correctAnswer: getCorrectAnswerForLevel(level),
+            isCorrect: false,
+            pointsEarned: -pointsLost
+        });
+        // Update skill score for this type as incorrect
+        gameState.skillScores[level.type].total++;
+        // No increment for correct as solution was viewed
+
+        // Implement solution display based on current level type
+        if (level.type === 'quiz') {
+            const buttons = document.querySelectorAll('.answer-btn');
+            buttons.forEach((btn, index) => {
+                // Find the original correct answer text and match it
+                const originalLevel = originalLevels.find(l => l.question === level.question);
+                if (originalLevel && btn.textContent === originalLevel.answers[originalLevel.correct]) {
+                    btn.classList.add('correct');
+                } else {
+                    btn.classList.add('incorrect');
+                }
+                btn.disabled = true;
+            });
+        } else if (level.type === 'material') {
+            const cards = document.querySelectorAll('.material-card');
+            cards.forEach((card, index) => {
+                // Find the original correct material text and match it
+                const originalLevel = originalLevels.find(l => l.question === level.question);
+                const materialText = card.querySelector('.material-text').textContent;
+                if (originalLevel && materialText === originalLevel.materials[originalLevel.correct]) {
+                    card.classList.add('correct');
+                } else {
+                    card.classList.add('incorrect');
+                }
+                card.style.pointerEvents = 'none'; // Disable clicks
+            });
+        } else if (level.type === 'calc') {
+            const input = document.getElementById('elevationInput');
+            input.value = level.answer;
+            input.style.borderColor = '#4caf50';
+            input.style.boxShadow = '0 0 0 3px rgba(76, 175, 80, 0.2)';
+            document.getElementById('validateCalcBtn').disabled = true;
+        } else if (level.type === 'drag') {
+            const dropZones = document.querySelectorAll('.drop-zone');
+            const correctOrder = level.items; // Use items from the current shuffled level
+            dropZones.forEach((zone, index) => {
+                const droppedItem = zone.querySelector('.draggable');
+                if (droppedItem) droppedItem.remove(); // Remove existing items
+                
+                const correctItem = document.createElement('div');
+                correctItem.classList.add('draggable', 'correct');
+                correctItem.textContent = correctOrder[index];
+                correctItem.draggable = false;
+                zone.appendChild(correctItem);
+                zone.style.borderColor = '#4caf50';
+                zone.style.borderStyle = 'solid';
+            });
+            document.getElementById('gameScreen').querySelector('.btn').disabled = true;
+        } else if (level.type === 'network') {
+            // For network, display the correct path visually
+            const drawnLinesGroup = document.getElementById('drawnLines');
+            drawnLinesGroup.innerHTML = ''; // Clear any user-drawn lines
+
+            const nodes = [
+                { id: 'nodeA', cx: 100, cy: 100, color: 'blue' },
+                { id: 'nodeB', cx: 400, cy: 100, color: 'blue' },
+                { id: 'nodeC', cx: 100, cy: 400, color: 'red' },
+                { id: 'nodeD', cx: 400, cy: 400, color: 'red' },
+                { id: 'nodeE', cx: 250, cy: 250, color: 'green' }
+            ];
+            // This is a placeholder; ideally, correctPath should be derived from level data
+            const correctPath = ['nodeA', 'nodeB']; 
+
+            if (correctPath.length === 2) {
+                const startNode = nodes.find(n => n.id === correctPath[0]);
+                const endNode = nodes.find(n => n.id === correctPath[1]);
+
+                if (startNode && endNode) {
+                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    line.setAttribute('x1', startNode.cx);
+                    line.setAttribute('y1', startNode.cy);
+                    line.setAttribute('x2', endNode.cx);
+                    line.setAttribute('y2', endNode.cy);
+                    line.setAttribute('stroke', '#4caf50'); // Green for correct
+                    line.setAttribute('stroke-width', '4');
+                    line.setAttribute('marker-end', 'url(#arrow)');
+                    drawnLinesGroup.appendChild(line);
+                }
+            }
+            document.getElementById('gameScreen').querySelector('.btn').disabled = true;
+        }
+
+        setTimeout(nextLevel, 3000); // Automatically move to next level after showing solution
+        playSound('incorrect'); // Play a sound indicating score loss
+        displayCharacter('💡', "Pas de souci, l'apprentissage continue !", 3000); // Solution message
+    });
+}
+
+function skipLevel() {
+    const pointsCost = 10;
+    if (gameState.score < pointsCost) {
+        displayCharacter('🤔', `Vous n'avez pas assez de points pour passer ! Il vous faut ${pointsCost} points.`, 3000);
+        playSound('incorrect');
+        return;
+    }
+
+    showConfirmModal("Passer le niveau", `Passer ce niveau vous coûtera ${pointsCost} points. Continuer ?`, () => {
+        const level = gameState.shuffledLevels[gameState.currentLevel]; // Use shuffled levels
+        const pointsLost = pointsCost;
+        gameState.score = Math.max(0, gameState.score + pointsLost);
+        updateHeader();
+        
+        // Record the answer as skipped
+        gameState.answers.push({
+            levelIndex: gameState.currentLevel,
+            type: level.type,
+            question: level.question,
+            userAnswer: "Niveau passé",
+            correctAnswer: getCorrectAnswerForLevel(level),
+            isCorrect: false,
+            pointsEarned: -pointsLost
+        });
+        // Update skill score for this type as incorrect (or not attempted)
+        gameState.skillScores[level.type].total++;
+
+        nextLevel();
+        playSound('incorrect'); // Play a sound indicating score loss
+        displayCharacter('⏭️', "Parfois, il faut savoir passer à autre chose.", 3000); // Skip message
+    });
+}
+
+function handleTimeout() {
+    const level = gameState.shuffledLevels[gameState.currentLevel]; // Use shuffled levels
+    const pointsLost = 20;
+    gameState.score = Math.max(0, gameState.score + pointsLost); // Penalty for timeout
+    updateHeader();
+    
+    // Record the answer as timeout
+    gameState.answers.push({
+        levelIndex: gameState.currentLevel,
+        type: level.type,
+        question: level.question,
+        userAnswer: "Temps écoulé",
+        correctAnswer: getCorrectAnswerForLevel(level),
+        isCorrect: false,
+        pointsEarned: pointsLost // This should be negative for penalty
+    });
+    // Update skill score for this type as incorrect
+    gameState.skillScores[level.type].total++;
+
+    // Visually indicate timeout, e.g., flash timer red
+    const timerElement = document.querySelector('.timer-display');
+    timerElement.classList.add('warning');
+    playSound('incorrect');
+    displayCharacter('⏰', "Oups, le temps est écoulé ! Plus vite la prochaine fois.", 3000); // Timeout message
+    setTimeout(() => {
+        timerElement.classList.remove('warning');
+        nextLevel();
+    }, 1500); // Wait a bit before moving to next level
+}
+
+function getCorrectAnswerForLevel(level) {
+    // For levels that have been shuffled, we need to refer to the original level
+    // to get the correct answer's text/value, as the index might have changed.
+    const originalLevel = originalLevels.find(l => l.question === level.question);
+    if (!originalLevel) return "N/A (Original level not found)";
+
+    switch (level.type) {
+        case 'quiz':
+            return originalLevel.answers[originalLevel.correct];
+        case 'material':
+            return originalLevel.materials[originalLevel.correct];
+        case 'drag':
+            return originalLevel.items.join(' > ');
+        case 'calc':
+            return originalLevel.answer;
+        case 'network':
+            // For network, provide a more descriptive correct answer
+            // This would ideally be dynamically generated based on the specific network level's correct path
+            const nodes = [
+                { id: 'nodeA', cx: 100, cy: 100, color: 'blue' },
+                { id: 'nodeB', cx: 400, cy: 100, color: 'blue' },
+                { id: 'nodeC', cx: 100, cy: 400, color: 'red' },
+                { id: 'nodeD', cx: 400, cy: 400, color: 'red' },
+                { id: 'nodeE', cx: 250, cy: 250, color: 'green' }
+            ];
+            const correctPathIds = ['nodeA', 'nodeB']; // Example, should be from level data
+            const correctPathNames = correctPathIds.map(id => nodes.find(n => n.id === id)?.id || id);
+            return `Connecter: ${correctPathNames.join(' -> ')}`;
+        case 'scenario':
+            return originalLevel.actions[originalLevel.correct];
+        default:
+            return "N/A";
+    }
+}
+
+function endGame() {
+    stopTimer();
+    stopTipsMarquee(); // Stop tips marquee
+    clearInterval(gameState.characterTipInterval); // Stop character tip interval
+
+    // Hide game elements
+    document.querySelector('.game-header').style.display = 'none';
+    document.querySelector('.controls').style.display = 'none';
+    document.querySelector('.progress-bar-chronological').style.display = 'none'; // Hide progress bar
+    document.querySelector('.tips-bar').style.display = 'none'; // Hide tips bar
+    document.getElementById('gameCharacter').style.display = 'none'; // Hide character
+    document.getElementById('speechBubble').style.display = 'none'; // Hide speech bubble
+
+    showScreen('finalScreen');
+    const finalScreen = document.getElementById('finalScreen');
+    finalScreen.innerHTML = `
+        <div class="logo-icon" style="font-size: 80px; width: 150px; height: 150px; margin-bottom: 30px;">🏆</div>
+        <h1>Aventure Terminée !</h1>
+        <h2 style="font-size: 2.5rem; color: #333; margin-bottom: 40px;">Félicitations, Projeteur VRD !</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">${gameState.score}</div>
+                <div class="stat-label">Points Totaux</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">${gameState.currentLevel} / ${originalLevels.length}</div>
+                <div class="stat-label">Niveaux Complétés</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">${(gameState.score / (gameState.currentLevel * 100) * 100).toFixed(0) || 0}%</div>
+                <div class="stat-label">Précision Moyenne</div>
+            </div>
+        </div>
+        <button class="btn" onclick="startGame()">Rejouer</button>
+        <button class="btn btn-secondary mt-4" onclick="showCorrectionReport()">Voir la correction</button>
+    `;
+    triggerConfetti();
+    playSound('gameOver');
+    displayCharacter('🎓', "Bravo pour cette belle performance ! Revenez vite pour de nouveaux défis.", 5000); // End game message
+}
+
+function generateCorrectionReport() {
+    let reportHtml = '<h3>Performance par Compétence :</h3><ul>';
+    for (const skill in gameState.skillScores) {
+        const { correct, total } = gameState.skillScores[skill];
+        const percentage = total > 0 ? ((correct / total) * 100).toFixed(0) : 0;
+        reportHtml += `<li><strong>${skill.charAt(0).toUpperCase() + skill.slice(1)}</strong>: ${correct} / ${total} (${percentage}%)</li>`;
+    }
+    reportHtml += '</ul><br/><h3>Détail des Réponses :</h3><ol>';
+
+    gameState.answers.forEach((answer, index) => {
+        const status = answer.isCorrect ? '✅ Correct' : '❌ Incorrect';
+        const points = answer.pointsEarned >= 0 ? `(+${answer.pointsEarned} pts)` : `(${answer.pointsEarned} pts)`;
+        reportHtml += `
+            <li>
+                <strong>Niveau ${answer.levelIndex + 1} (${answer.type})</strong>: ${answer.question}<br/>
+                Votre réponse: <em>${answer.userAnswer}</em><br/>
+                Réponse correcte: <em>${answer.correctAnswer}</em><br/>
+                Statut: ${status} ${points}
+            </li><br/>
+        `;
+    });
+    reportHtml += '</ol>';
+    return reportHtml;
+}
+
+function showCorrectionReport() {
+    const reportContent = document.getElementById('correctionReportContent');
+    reportContent.innerHTML = generateCorrectionReport();
+    showModal('correctionModal');
+}
+
+function copyCorrectionToClipboard() {
+    const reportText = document.getElementById('correctionReportContent').innerText;
+    const textArea = document.createElement("textarea");
+    textArea.value = reportText;
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+        // Use document.execCommand('copy') for better compatibility in iframes
+        const successful = document.execCommand('copy');
+        const msg = successful ? 'Copié dans le presse-papiers !' : 'Échec de la copie.';
+        // Replace alert with a custom message box if desired
+        const currentAlert = document.getElementById('customAlert');
+        if (currentAlert) currentAlert.remove(); // Remove previous alert
+
+        const customAlert = document.createElement('div');
+        customAlert.id = 'customAlert';
+        customAlert.style.cssText = `
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: #333; color: white; padding: 15px 30px; border-radius: 10px;
+            z-index: 1001; opacity: 0; transition: opacity 0.3s ease-in-out;
+            font-size: 18px; text-align: center;
+        `;
+        customAlert.textContent = msg;
+        document.body.appendChild(customAlert);
+
+        setTimeout(() => {
+            customAlert.style.opacity = '1';
+        }, 10); // Small delay to trigger transition
+
+        setTimeout(() => {
+            customAlert.style.opacity = '0';
+            customAlert.addEventListener('transitionend', () => customAlert.remove());
+        }, 2000); // Message disappears after 2 seconds
+
+    } catch (err) {
+        // Fallback for older browsers or if execCommand fails
+        alert('Impossible de copier : ' + err);
+    }
+    document.body.removeChild(textArea);
+}
+
+// Render specific levels
+
+// Quiz Level
+function renderQuizLevel(level) {
+    const quizScreen = document.getElementById('quizScreen');
+    // Create a mutable copy of answers with their correct status
+    const answersWithStatus = level.answers.map((answer, index) => ({
+        text: answer,
+        isCorrect: index === level.correct
+    }));
+    shuffleArray(answersWithStatus); // Shuffle the answers
+
+    quizScreen.innerHTML = `
+        <h2 id="questionText">${level.question}</h2>
+        <div class="answer-grid">
+            ${answersWithStatus.map((answer, index) => `
+                <button class="answer-btn" data-original-font-size="20" 
+                        onclick="checkQuizAnswer(${index}, ${answer.isCorrect}, ${level.points}, '${answer.text.replace(/'/g, "\\'")}')">
+                    ${answer.text}
+                </button>
+            `).join('')}
+        </div>
+    `;
+}
+
+// Modified checkQuizAnswer to use isCorrect flag and user's answer text
+function checkQuizAnswer(selectedIndex, isCorrectFlag, points, userAnswerText) {
+    stopTimer();
+    const buttons = document.querySelectorAll('.answer-btn');
+    buttons.forEach((btn, index) => {
+        btn.disabled = true;
+        // The correct button is the one with the isCorrectFlag true
+        if (buttons[index].getAttribute('onclick').includes('true')) { // Check the onclick attribute for 'true' flag
+            btn.classList.add('correct');
+        } else if (index === selectedIndex) {
+            btn.classList.add('incorrect');
+        }
+    });
+
+    const level = gameState.shuffledLevels[gameState.currentLevel]; // Use shuffled levels
+    let pointsEarned = 0;
+
+    if (isCorrectFlag) {
+        pointsEarned = points;
+        gameState.score += points;
+        playSound('correct');
+        displayCharacter('😊', "Super ! Bonne réponse !", 2000); // Correct message
+    } else {
+        pointsEarned = -Math.floor(points / 5); // Small penalty for incorrect
+        gameState.score = Math.max(0, gameState.score + pointsEarned);
+        playSound('incorrect');
+        displayCharacter('😟', "Dommage, ce n'est pas ça. Mais continuez d'apprendre !", 2000); // Incorrect message
+    }
+    
+    // Record answer
+    gameState.answers.push({
+        levelIndex: gameState.currentLevel,
+        type: level.type,
+        question: level.question,
+        userAnswer: userAnswerText, // Use the actual text the user clicked
+        correctAnswer: getCorrectAnswerForLevel(level), // Get original correct answer
+        isCorrect: isCorrectFlag,
+        pointsEarned: pointsEarned
+    });
+    // Update skill score
+    gameState.skillScores[level.type].total++;
+    if (isCorrectFlag) {
+        gameState.skillScores[level.type].correct++;
+    }
+
+    updateHeader();
+    setTimeout(nextLevel, 1500);
+}
+
+// Material Level
+function renderMaterialLevel(level) {
+    const quizScreen = document.getElementById('quizScreen');
+    // Create a mutable copy of materials with their correct status and icons
+    const materialsWithStatus = level.materials.map((material, index) => ({
+        text: material,
+        icon: level.icons[index],
+        isCorrect: index === level.correct
+    }));
+    shuffleArray(materialsWithStatus); // Shuffle the materials
+
+    quizScreen.innerHTML = `
+        <h2 id="questionText">${level.question}</h2>
+        <div class="material-grid">
+            ${materialsWithStatus.map((material, index) => `
+                <div class="material-card" 
+                     onclick="checkMaterialAnswer(${index}, ${material.isCorrect}, ${level.points}, '${material.text.replace(/'/g, "\\'")}')">
+                    <span class="material-icon">${material.icon}</span>
+                    <span class="material-text">${material.text}</span>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+// Modified checkMaterialAnswer to use isCorrect flag and user's answer text
+function checkMaterialAnswer(selectedIndex, isCorrectFlag, points, userAnswerText) {
+    stopTimer();
+    const cards = document.querySelectorAll('.material-card');
+    cards.forEach((card, index) => {
+        card.style.pointerEvents = 'none'; // Disable further clicks
+        // Find the correct card based on the isCorrectFlag in its onclick attribute
+        if (card.getAttribute('onclick').includes('true')) {
+            card.classList.add('correct');
+        } else if (index === selectedIndex) {
+            card.classList.add('incorrect');
+        }
+    });
+
+    const level = gameState.shuffledLevels[gameState.currentLevel]; // Use shuffled levels
+    let pointsEarned = 0;
+
+    if (isCorrectFlag) {
+        pointsEarned = points;
+        gameState.score += points;
+        playSound('correct');
+        displayCharacter('😊', "Exact ! Vous avez l'œil pour les matériaux !", 2000); // Correct message
+    } else {
+        pointsEarned = -Math.floor(points / 5);
+        gameState.score = Math.max(0, gameState.score + pointsEarned);
+        playSound('incorrect');
+        displayCharacter('😟', "Ce n'est pas le bon choix. Réfléchissez bien aux propriétés !", 2000); // Incorrect message
+    }
+
+    // Record answer
+    gameState.answers.push({
+        levelIndex: gameState.currentLevel,
+        type: level.type,
+        question: level.question,
+        userAnswer: userAnswerText,
+        correctAnswer: getCorrectAnswerForLevel(level),
+        isCorrect: isCorrectFlag,
+        pointsEarned: pointsEarned
+    });
+    // Update skill score
+    gameState.skillScores[level.type].total++;
+    if (isCorrectFlag) {
+        gameState.skillScores[level.type].correct++;
+    }
+
+    updateHeader();
+    setTimeout(nextLevel, 1500);
+}
+
+// Drag and Drop Level
+function renderDragLevel(level) {
+    const gameScreen = document.getElementById('gameScreen');
+    const shuffledItems = [...level.items].sort(() => Math.random() - 0.5); // Shuffle for challenge
+    const dropZones = level.items.map((item, index) => `<div class="drop-zone" data-index="${index}"><span class="drop-zone-text">Déposez ici</span></div>`).join('');
+
+    gameScreen.innerHTML = `
+        <h2 id="questionText">${level.question}</h2>
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; margin-bottom: 30px;">
+            ${shuffledItems.map((item, index) => `<div class="draggable" draggable="true" data-item="${item}"><span class="draggable-text">${item}</span></div>`).join('')}
+        </div>
+        <div style="width: 100%; max-width: 600px;">
+            ${dropZones}
+        </div>
+        <div class="button-center-align"> <!-- Changed to button-center-align -->
+            <button class="btn" onclick="checkDragAnswer('${level.items.join(',')}', ${level.points})">Valider l'assemblage</button>
+        </div>
+    `;
+
+    addDragAndDropListeners();
+}
+
+function addDragAndDropListeners() {
+    const draggables = document.querySelectorAll('.draggable');
+    const dropZones = document.querySelectorAll('.drop-zone');
+    let draggedItem = null;
+
+    draggables.forEach(draggable => {
+        draggable.addEventListener('dragstart', (e) => {
+            draggedItem = draggable;
+            e.dataTransfer.setData('text/plain', draggable.dataset.item);
+            setTimeout(() => draggable.classList.add('hidden'), 0); // Hide original
+        });
+
+        draggable.addEventListener('dragend', () => {
+            draggedItem.classList.remove('hidden');
+            draggedItem = null;
+        });
+    });
+
+    dropZones.forEach(zone => {
+        zone.addEventListener('dragover', (e) => {
+            e.preventDefault(); // Allow drop
+            zone.classList.add('hover');
+        });
+
+        zone.addEventListener('dragleave', () => {
+            zone.classList.remove('hover');
+        });
+
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            zone.classList.remove('hover');
+            if (zone.children.length === 0 || (zone.children.length === 1 && zone.children[0].classList.contains('drop-zone-text'))) { // Only allow one item per zone, or replace placeholder text
+                const data = e.dataTransfer.getData('text/plain');
+                const item = document.querySelector(`.draggable[data-item="${data}"]`);
+                if (item) {
+                    // Remove placeholder text if it exists
+                    const placeholder = zone.querySelector('.drop-zone-text');
+                    if (placeholder) placeholder.remove();
+
+                    zone.appendChild(item);
+                    item.style.position = 'static'; // Reset position if it was absolute
+                    item.style.margin = '0'; // Reset margin
+                    zone.classList.add('filled');
+                }
+            }
+        });
+    });
+}
+
+function checkDragAnswer(correctOrderString, points) {
+    stopTimer();
+    const correctOrder = correctOrderString.split(',');
+    const dropZones = document.querySelectorAll('.drop-zone');
+    let correctCount = 0;
+    let allCorrect = true;
+    let userAnswerArray = [];
+
+    dropZones.forEach((zone, index) => {
+        const droppedItem = zone.querySelector('.draggable');
+        if (droppedItem) {
+            userAnswerArray.push(droppedItem.dataset.item);
+            if (droppedItem.dataset.item === correctOrder[index]) {
+                droppedItem.classList.add('correct');
+                zone.style.borderColor = '#4caf50';
+                correctCount++;
+            } else {
+                droppedItem.classList.add('incorrect');
+                zone.style.borderColor = '#f44336';
+                allCorrect = false;
+            }
+        } else {
+            userAnswerArray.push("Vide"); // Indicate an empty drop zone
+            zone.style.borderColor = '#f44336';
+            allCorrect = false;
+        }
+        zone.style.borderStyle = 'solid'; // Make border solid for feedback
+    });
+
+    const level = gameState.shuffledLevels[gameState.currentLevel]; // Use shuffled levels
+    let pointsEarned = 0;
+
+    if (allCorrect) {
+        pointsEarned = points;
+        gameState.score += points;
+        playSound('correct');
+        displayCharacter('😊', "Parfait ! L'assemblage est correct !", 2000); // Correct message
+    } else {
+        pointsEarned = -Math.floor(points / 2); // Larger penalty for drag/drop
+        gameState.score = Math.max(0, gameState.score + pointsEarned);
+        playSound('incorrect');
+        displayCharacter('😟', "Revoyez l'ordre des couches, c'est important !", 2000); // Incorrect message
+    }
+
+    // Record answer
+    gameState.answers.push({
+        levelIndex: gameState.currentLevel,
+        type: level.type,
+        question: level.question,
+        userAnswer: userAnswerArray.join(' > '),
+        correctAnswer: correctOrder.join(' > '),
+        isCorrect: allCorrect,
+        pointsEarned: pointsEarned
+    });
+    // Update skill score
+    gameState.skillScores[level.type].total++;
+    if (allCorrect) {
+        gameState.skillScores[level.type].correct++;
+    }
+
+    updateHeader();
+    document.querySelectorAll('.draggable').forEach(item => item.draggable = false); // Disable further dragging
+    document.getElementById('gameScreen').querySelector('.btn').disabled = true; // Disable validate button
+    setTimeout(nextLevel, 2000);
+}
+
+// Calculation Level
+function renderCalcLevel(level) {
+    const quizScreen = document.getElementById('quizScreen');
+    quizScreen.innerHTML = `
+        <h2 id="questionText">${level.question}</h2>
+        <input type="number" id="elevationInput" class="elevation-input" placeholder="Entrez votre réponse" step="0.01">
+        <div class="button-center-align"> <!-- Changed to button-center-align -->
+            <button class="btn" id="validateCalcBtn" onclick="checkCalcAnswer(${level.answer}, ${level.points})">Valider</button>
+        </div>
+    `;
+}
+
+function checkCalcAnswer(correctAnswer, points) {
+    stopTimer();
+    const input = document.getElementById('elevationInput');
+    const userAnswer = parseFloat(input.value);
+    const tolerance = 0.01; // Allow for small floating point errors
+
+    input.disabled = true;
+    document.getElementById('validateCalcBtn').disabled = true;
+
+    const level = gameState.shuffledLevels[gameState.currentLevel]; // Use shuffled levels
+    let isCorrect = false;
+    let pointsEarned = 0;
+
+    if (Math.abs(userAnswer - correctAnswer) < tolerance) {
+        isCorrect = true;
+        pointsEarned = points;
+        input.style.borderColor = '#4caf50';
+        input.style.boxShadow = '0 0 0 3px rgba(76, 175, 80, 0.2)';
+        gameState.score += points;
+        playSound('correct');
+        displayCharacter('😊', "Calcul parfait ! Vous maîtrisez les altitudes !", 2000); // Correct message
+    } else {
+        pointsEarned = -Math.floor(points / 3);
+        input.style.borderColor = '#f44336';
+        input.style.boxShadow = '0 0 0 3px rgba(244, 67, 54, 0.2)';
+        gameState.score = Math.max(0, gameState.score + pointsEarned);
+        playSound('incorrect');
+        displayCharacter('�', "Vérifiez vos calculs, la précision est clé en VRD !", 2000); // Incorrect message
+    }
+
+    // Record answer
+    gameState.answers.push({
+        levelIndex: gameState.currentLevel,
+        type: level.type,
+        question: level.question,
+        userAnswer: input.value,
+        correctAnswer: correctAnswer.toFixed(2), // Format correct answer for display
+        isCorrect: isCorrect,
+        pointsEarned: pointsEarned
+    });
+    // Update skill score
+    gameState.skillScores[level.type].total++;
+    if (isCorrect) {
+        gameState.skillScores[level.type].correct++;
+    }
+
+    updateHeader();
+    setTimeout(nextLevel, 1500);
+}
+
+// Network Level
+function renderNetworkLevel(level) {
+    const gameScreen = document.getElementById('gameScreen');
+    // Example network nodes and paths (simplified for demonstration)
+    const nodes = [
+        { id: 'nodeA', cx: 100, cy: 100, color: 'blue' },
+        { id: 'nodeB', cx: 400, cy: 100, color: 'blue' },
+        { id: 'nodeC', cx: 100, cy: 400, color: 'red' },
+        { id: 'nodeD', cx: 400, cy: 400, color: 'red' },
+        { id: 'nodeE', cx: 250, cy: 250, color: 'green' } // An 'obstacle' node
+    ];
+    // Example correct path for network level (indices of nodes to connect in order)
+    const correctPath = ['nodeA', 'nodeB']; // For "eaux usées" example
+
+    gameScreen.innerHTML = `
+        <h2 id="questionText">${level.question}</h2>
+        <svg class="network-svg" viewBox="0 0 500 500">
+            <defs>
+                <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L0,6 L9,3 z" fill="#667eea" />
+                </marker>
+            </defs>
+            ${nodes.map(node => `
+                <circle class="network-node" id="${node.id}" cx="${node.cx}" cy="${node.cy}" r="15" fill="${node.color}" stroke="white" stroke-width="3" />
+            `).join('')}
+            <g id="drawnLines"></g>
+        </svg>
+        <div class="button-center-align"> <!-- Changed to button-center-align -->
+            <button class="btn" onclick="checkNetworkAnswer(${level.points}, '${correctPath.join(',')}', '${JSON.stringify(nodes).replace(/'/g, "\\'").replace(/"/g, '&quot;')}')">Valider le réseau</button>
+        </div>
+    `;
+
+    addNetworkListeners(nodes);
+}
+
+let networkSelectedNodes = [];
+let networkDrawing = false;
+let networkSvg = null;
+let currentLine = null;
+
+function addNetworkListeners(nodes) {
+    networkSvg = document.querySelector('.network-svg');
+    const drawnLinesGroup = document.getElementById('drawnLines');
+
+    networkSvg.addEventListener('mousedown', (e) => {
+        const target = e.target;
+        if (target.classList.contains('network-node')) {
+            networkDrawing = true;
+            networkSelectedNodes = [target.id];
+            
+            // Start drawing a temporary line
+            currentLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            const startNode = nodes.find(n => n.id === target.id);
+            currentLine.setAttribute('x1', startNode.cx);
+            currentLine.setAttribute('y1', startNode.cy);
+            currentLine.setAttribute('x2', e.offsetX);
+            currentLine.setAttribute('y2', e.offsetY);
+            currentLine.setAttribute('stroke', '#667eea');
+            currentLine.setAttribute('stroke-width', '4');
+            currentLine.setAttribute('stroke-dasharray', '5,5');
+            drawnLinesGroup.appendChild(currentLine);
+        }
+    });
+
+    networkSvg.addEventListener('mousemove', (e) => {
+        if (networkDrawing && currentLine) {
+            currentLine.setAttribute('x2', e.offsetX);
+            currentLine.setAttribute('y2', e.offsetY);
+        }
+    });
+
+    networkSvg.addEventListener('mouseup', (e) => {
+        if (networkDrawing) {
+            networkDrawing = false;
+            const target = e.target;
+            if (target.classList.contains('network-node') && networkSelectedNodes[0] !== target.id) {
+                networkSelectedNodes.push(target.id);
+                const startNode = nodes.find(n => n.id === networkSelectedNodes[0]);
+                const endNode = nodes.find(n => n.id === networkSelectedNodes[1]);
+
+                // Finalize the line
+                currentLine.setAttribute('x2', endNode.cx);
+                currentLine.setAttribute('y2', endNode.cy);
+                currentLine.setAttribute('marker-end', 'url(#arrow)'); // Add arrow to the end
+
+                // Reset for next line
+                networkSelectedNodes = [];
+                currentLine = null;
+            } else {
+                // If not dropped on another node, remove the temporary line
+                if (currentLine) {
+                    currentLine.remove();
+                }
+            }
+        }
+    });
+}
+
+
+function checkNetworkAnswer(points, correctPathString, nodesJsonString) {
+    stopTimer();
+    const correctPath = correctPathString.split(',');
+    const drawnLines = document.querySelectorAll('#drawnLines line');
+    const nodes = JSON.parse(nodesJsonString.replace(/&quot;/g, '"')); // Parse nodes back from JSON string
+
+    let allCorrect = true;
+    let userAnswerPath = [];
+
+    if (drawnLines.length === 1) {
+        const line = drawnLines[0];
+        const x1 = parseFloat(line.getAttribute('x1'));
+        const y1 = parseFloat(line.getAttribute('y1'));
+        const x2 = parseFloat(line.getAttribute('x2'));
+        const y2 = parseFloat(line.getAttribute('y2'));
+        
+        let lineStartNodeId = null;
+        let lineEndNodeId = null;
+
+        nodes.forEach(node => {
+            const nodeCx = node.cx;
+            const nodeCy = node.cy;
+            const nodeR = 15; // Hardcoded radius from renderNetworkLevel
+
+            // Calculate distance from line endpoints to node center
+            const distStartToNode = Math.sqrt(Math.pow(x1 - nodeCx, 2) + Math.pow(y1 - nodeCy, 2));
+            const distEndToNode = Math.sqrt(Math.pow(x2 - nodeCx, 2) + Math.pow(y2 - nodeCy, 2));
+
+            if (distStartToNode <= nodeR + 5) { // Add a small tolerance
+                lineStartNodeId = node.id;
+            }
+            if (distEndToNode <= nodeR + 5) { // Add a small tolerance
+                lineEndNodeId = node.id;
+            }
+        });
+
+        if (lineStartNodeId && lineEndNodeId) {
+            userAnswerPath.push(lineStartNodeId, lineEndNodeId);
+            // Check if the connected nodes match the correct path (order doesn't matter for this simple check)
+            const sortedUserPath = [...userAnswerPath].sort().join(',');
+            const sortedCorrectPath = [...correctPath].sort().join(',');
+
+            if (sortedUserPath === sortedCorrectPath) {
+                allCorrect = true;
+            } else {
+                allCorrect = false;
+            }
+        } else {
+            allCorrect = false; // Line endpoints not connected to valid nodes
+        }
+    } else {
+        allCorrect = false; // Not exactly one line drawn
+    }
+
+    const level = gameState.shuffledLevels[gameState.currentLevel]; // Use shuffled levels
+    let pointsEarned = 0;
+
+    if (allCorrect) {
+        pointsEarned = points;
+        gameState.score += points;
+        playSound('correct');
+        drawnLines.forEach(line => line.setAttribute('stroke', '#4caf50'));
+        displayCharacter('😊', "Excellent ! Le réseau est bien tracé !", 2000); // Correct message
+    } else {
+        pointsEarned = -Math.floor(points / 2);
+        gameState.score = Math.max(0, gameState.score + pointsEarned);
+        playSound('incorrect');
+        drawnLines.forEach(line => line.setAttribute('stroke', '#f44336'));
+        displayCharacter('😟', "Le tracé n'est pas optimal. Essayez à nouveau !", 2000); // Incorrect message
+    }
+
+    // Record answer
+    gameState.answers.push({
+        levelIndex: gameState.currentLevel,
+        type: level.type,
+        question: level.question,
+        userAnswer: userAnswerPath.length > 0 ? userAnswerPath.join(' -> ') : "Aucun tracé",
+        correctAnswer: getCorrectAnswerForLevel(level),
+        isCorrect: allCorrect,
+        pointsEarned: pointsEarned
+    });
+    // Update skill score
+    gameState.skillScores[level.type].total++;
+    if (allCorrect) {
+        gameState.skillScores[level.type].correct++;
+    }
+
+    updateHeader();
+    document.getElementById('gameScreen').querySelector('.btn').disabled = true;
+    setTimeout(nextLevel, 2000);
+}
+
+
+// Scenario Level
+function renderScenarioLevel(level) {
+    const quizScreen = document.getElementById('quizScreen');
+    // Create a mutable copy of actions with their correct status
+    const actionsWithStatus = level.actions.map((action, index) => ({
+        text: action,
+        isCorrect: index === level.correct
+    }));
+    shuffleArray(actionsWithStatus); // Shuffle the actions
+
+    quizScreen.innerHTML = `
+        <div class="scenario-alert">
+            <div class="scenario-icon">🚨</div>
+            <h2 id="questionText">${level.question}</h2>
+        </div>
+        <div class="answer-grid">
+            ${actionsWithStatus.map((action, index) => `
+                <button class="answer-btn" data-original-font-size="20" 
+                        onclick="checkScenarioAnswer(${index}, ${action.isCorrect}, ${level.points}, '${action.text.replace(/'/g, "\\'")}')">
+                    ${action.text}
+                </button>
+            `).join('')}
+        </div>
+    `;
+}
+
+// Modified checkScenarioAnswer to use isCorrect flag and user's answer text
+function checkScenarioAnswer(selectedIndex, isCorrectFlag, points, userAnswerText) {
+    stopTimer();
+    const buttons = document.querySelectorAll('.answer-btn');
+    buttons.forEach((btn, index) => {
+        btn.disabled = true;
+        // Find the correct button based on the isCorrectFlag in its onclick attribute
+        if (buttons[index].getAttribute('onclick').includes('true')) {
+            btn.classList.add('correct');
+        } else if (index === selectedIndex) {
+            btn.classList.add('incorrect');
+        }
+    });
+
+    const level = gameState.shuffledLevels[gameState.currentLevel]; // Use shuffled levels
+    let pointsEarned = 0;
+
+    if (isCorrectFlag) {
+        pointsEarned = points;
+        gameState.score += points;
+        playSound('correct');
+        displayCharacter('😊', "Bonne décision ! La sécurité avant tout.", 2000); // Correct message
+    } else {
+        pointsEarned = -Math.floor(points / 4);
+        gameState.score = Math.max(0, gameState.score + pointsEarned);
+        playSound('incorrect');
+        displayCharacter('😟', "Attention ! Une mauvaise décision peut avoir des conséquences !", 2000); // Incorrect message
+    }
+
+    // Record answer
+    gameState.answers.push({
+        levelIndex: gameState.currentLevel,
+        type: level.type,
+        question: level.question,
+        userAnswer: userAnswerText,
+        correctAnswer: getCorrectAnswerForLevel(level),
+        isCorrect: isCorrectFlag,
+        pointsEarned: pointsEarned
+    });
+    // Update skill score
+    gameState.skillScores[level.type].total++;
+    if (isCorrectFlag) {
+        gameState.skillScores[level.type].correct++;
+    }
+
+    updateHeader();
+    setTimeout(nextLevel, 1500);
+}
+
+// Font Size Adjustment Functions
+function applyFontSize() {
+    const root = document.documentElement;
+    root.style.fontSize = `${gameState.baseFontSize}px`;
+
+    // Adjust specific elements that use fixed pixel values or need scaling
+    document.querySelectorAll('h2').forEach(el => {
+        const baseH2Size = 3.8; // rem
+        el.style.fontSize = `${baseH2Size * (gameState.baseFontSize / 16)}rem`;
+    });
+    document.querySelectorAll('p').forEach(el => {
+        const basePSize = 1.4; // rem
+        el.style.fontSize = `${basePSize * (gameState.baseFontSize / 16)}rem`;
+    });
+    document.querySelectorAll('.answer-btn').forEach(el => {
+        const baseBtnSize = 20; // px
+        el.style.fontSize = `${baseBtnSize * (gameState.baseFontSize / 16)}px`;
+    });
+    document.querySelectorAll('.draggable').forEach(el => {
+        const baseDraggableSize = 18; // px
+        el.style.fontSize = `${baseDraggableSize * (gameState.baseFontSize / 16)}px`;
+    });
+    document.querySelectorAll('.drop-zone').forEach(el => {
+        const baseDropZoneSize = 18; // px
+        el.style.fontSize = `${baseDropZoneSize * (gameState.baseFontSize / 16)}px`;
+    });
+    document.querySelectorAll('.elevation-input').forEach(el => {
+        const baseInputSize = 28; // px
+        el.style.fontSize = `${baseInputSize * (gameState.baseFontSize / 16)}px`;
+    });
+    document.querySelectorAll('.material-text').forEach(el => {
+        const baseMaterialTextSize = 16; // px (assuming default for material card text)
+        el.style.fontSize = `${baseMaterialTextSize * (gameState.baseFontSize / 16)}px`;
+    });
+    document.querySelectorAll('.material-icon').forEach(el => {
+        const baseMaterialIconSize = 60; // px
+        el.style.fontSize = `${baseMaterialIconSize * (gameState.baseFontSize / 16)}px`;
+    });
+    // Adjust speech bubble font size
+    const speechBubbleText = document.getElementById('speechBubbleText');
+    if (speechBubbleText) {
+        speechBubbleText.style.fontSize = `${1.1 * (gameState.baseFontSize / 16)}rem`;
+    }
+}
+
+function increaseFontSize() {
+    if (gameState.baseFontSize < 24) { // Max font size limit
+        gameState.baseFontSize += 2; // Increase by 2px
+        localStorage.setItem('ltdSimFontSize', gameState.baseFontSize);
+        applyFontSize();
+        playSound('buttonClick');
+    }
+}
+
+function decreaseFontSize() {
+    if (gameState.baseFontSize > 12) { // Min font size limit
+        gameState.baseFontSize -= 2; // Decrease by 2px
+        localStorage.setItem('ltdSimFontSize', gameState.baseFontSize);
+        applyFontSize();
+        playSound('buttonClick');
+    }
+}
+
+// Character and Speech Bubble Functions
+function displayCharacter(emoji, message, duration = 3000) {
+    const characterDiv = document.getElementById('gameCharacter');
+    const speechBubble = document.getElementById('speechBubble');
+    const speechBubbleText = document.getElementById('speechBubbleText');
+
+    if (!characterDiv || !speechBubble || !speechBubbleText) return;
+
+    // Stop any current tip interval
+    clearInterval(gameState.characterTipInterval);
+
+    characterDiv.textContent = emoji;
+    characterDiv.style.display = 'block';
+    speechBubbleText.textContent = message;
+    speechBubble.classList.add('active');
+    speechBubble.style.display = 'block';
+    applyFontSize(); // Re-apply font size to speech bubble text
+
+    // Set a timeout to hide the bubble and potentially restart tips
+    setTimeout(() => {
+        speechBubble.classList.remove('active');
+        // speechBubble.style.display = 'none'; // Keep hidden until next message
+        // characterDiv.style.display = 'none'; // Keep character visible
+        // Restart tips after a short delay if game is active
+        if (document.getElementById('quizScreen').classList.contains('active') || document.getElementById('gameScreen').classList.contains('active')) {
+            startCharacterTips();
+        }
+    }, duration);
+}
+
+function startCharacterTips() {
+    // Clear any existing interval to prevent duplicates
+    clearInterval(gameState.characterTipInterval); 
+    gameState.characterTipInterval = setInterval(() => {
+        const tip = gameTips[currentTipIndex];
+        displayCharacter('🤔', tip, 5000); // Display tip for 5 seconds
+        currentTipIndex = (currentTipIndex + 1) % gameTips.length;
+    }, 10000); // Change tip every 10 seconds
+}
+
+// Tips Marquee Functions (kept for the bottom bar, though character will also give tips)
+function startTipsMarquee() {
+    const tipsBarContent = document.getElementById('tipsBarContent');
+    if (!tipsBarContent) return; // Ensure element exists
+
+    // Clear any existing animation to reset
+    tipsBarContent.style.animation = 'none';
+    tipsBarContent.offsetHeight; // Trigger reflow
+    tipsBarContent.style.animation = null;
+
+    tipsBarContent.textContent = gameTips[currentTipIndex];
+    currentTipIndex = (currentTipIndex + 1) % gameTips.length;
+
+    // Calculate animation duration based on content length to make speed consistent
+    const textLength = tipsBarContent.textContent.length;
+    const duration = Math.max(10, textLength * 0.15); // Min 10s, 0.15s per character
+    tipsBarContent.style.animationDuration = `${duration}s`;
+
+    // Restart animation on completion to cycle tips
+    tipsBarContent.onanimationiteration = () => {
+        tipsBarContent.textContent = gameTips[currentTipIndex];
+        currentTipIndex = (currentTipIndex + 1) % gameTips.length;
+        // Re-calculate duration for the new text
+        const newTextLength = tipsBarContent.textContent.length;
+        const newDuration = Math.max(10, newTextLength * 0.15);
+        tipsBarContent.style.animationDuration = `${newDuration}s`;
+    };
+}
+
+function stopTipsMarquee() {
+    const tipsBarContent = document.getElementById('tipsBarContent');
+    if (tipsBarContent) {
+        tipsBarContent.style.animationPlayState = 'paused';
+        tipsBarContent.onanimationiteration = null; // Remove event listener
+    }
+}
+
+// Confetti effect (from previous versions)
+function triggerConfetti() {
+    const confettiCount = 100;
+    for (let i = 0; i < confettiCount; i++) {
+        const confetti = document.createElement('div');
+        confetti.classList.add('confetti');
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 70%)`;
+        confetti.style.animationDelay = `${Math.random() * 2}s`;
+        document.body.appendChild(confetti);
+        confetti.addEventListener('animationend', () => {
+            confetti.remove();
+        });
+    }
+}
+
+
+// Initialisation
+window.onload = function() {
+    // Load saved font size
+    const savedFontSize = localStorage.getItem('ltdSimFontSize');
+    if (savedFontSize) {
+        gameState.baseFontSize = parseInt(savedFontSize);
+    }
+    applyFontSize(); // Apply initial or saved font size
+};
+
+</script>
+</body>
+</html>
+�
