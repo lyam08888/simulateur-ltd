@@ -265,6 +265,7 @@
             left: 0;
             right: 0;
             z-index: 10; /* Ensure it's above other content */
+            height: 30px; /* Explicit height to help with screen padding */
         }
         
         .progress-fill-chronological {
@@ -1046,7 +1047,7 @@
             <h1>LTD SIMULATEUR</h1>
             <p>L'Expérience Complète du Projeteur VRD</p>
             <div class="home-features">
-                <p>🔥 <span>50 Niveaux de défis techniques</span></p>
+                <p>🔥 <span>60 Niveaux de défis techniques</span></p>
                 <p>🚨 <span>Scénarios réalistes de chantier</span></p>
                 <p>🚀 <span>Devenez expert en Voirie et Réseaux Divers</span></p>
             </div>
@@ -1090,7 +1091,7 @@
             <h2 style="color: #667eea; margin-bottom: 30px;">📚 Comment jouer ?</h2>
             <p style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 25px;">
                 Bienvenue dans LTD Simulateur ! Votre objectif est de devenir un expert en VRD 
-                (Voirie et Réseaux Divers) en complétant 30 défis variés.
+                (Voirie et Réseaux Divers) en complétant 60 défis variés.
             </p>
             <h3 style="color: #764ba2; margin: 25px 0 15px;">🎮 Types de défis :</h3>
             <div style="background: #f8f9fa; padding: 20px; border-radius: 15px; margin-bottom: 25px;">
@@ -1174,45 +1175,45 @@ let gameState = {
 const originalLevels = [ // Renamed to originalLevels
     // Level 1-5: Introduction
     { type: 'quiz', question: "Que signifie VRD ?", answers: ["Voirie et Réseaux Divers", "Vraiment Rapide et Dangereux", "Vérification Routière Détaillée"], correct: 0, points: 50 },
+    { type: 'drag', question: "Assemblez les couches d'une voirie (de bas en haut)", items: ["Sol support", "Géotextile", "Grave non traitée", "Enrobé"], points: 100 },
     { type: 'quiz', question: "Quelle est la couleur normalisée pour l'eau potable ?", answers: ["Rouge", "Bleu", "Vert", "Jaune"], correct: 1, points: 50 },
     { type: 'material', question: "Sélectionnez le matériau le plus adapté pour un trottoir", materials: ["Asphalte", "Béton désactivé", "Terre battue", "Gravier"], icons: ["🛣️", "🧱", "🌿", "🚧"], correct: 1, points: 75 },
-    { type: 'quiz', question: "Qu'est-ce qu'un plan de récolement ?", answers: ["Le plan initial du projet", "Un plan des travaux réalisés", "Un planning de chantier"], correct: 1, points: 50 },
-    { type: 'network', question: "Tracez le réseau d'eaux usées du point A au point B", points: 100, correctPath: ['nodeA', 'nodeB'] }, // Added correctPath
+    { type: 'network', question: "Tracez le réseau d'eaux usées du point A au point B", points: 100, correctPath: ['nodeA', 'nodeB'], nodes: [{ id: 'nodeA', cx: 100, cy: 100, color: 'blue' }, { id: 'nodeB', cx: 400, cy: 100, color: 'blue' }, { id: 'nodeC', cx: 100, cy: 400, color: 'red' }, { id: 'nodeD', cx: 400, cy: 400, color: 'red' }, { id: 'nodeE', cx: 250, cy: 250, color: 'green' }] },
     
     // Level 6-10: Technical basics
     { type: 'quiz', question: "Quelle est la pente minimale pour un réseau EU ?", answers: ["0.5%", "1%", "2%", "5%"], correct: 1, points: 75 },
-    { type: 'drag', question: "Assemblez les couches d'une voirie (de bas en haut)", items: ["Sol support", "Géotextile", "Grave non traitée", "Enrobé"], points: 100 },
+    { type: 'quiz', question: "Qu'est-ce qu'un plan de récolement ?", answers: ["Le plan initial du projet", "Un plan des travaux réalisés", "Un planning de chantier"], correct: 1, points: 50 },
+    { type: 'volume_calc', question: "Calculez le volume de terre (en m³) à évacuer pour une tranchée de 20m de long, 0.8m de large et 1.2m de profondeur.", answer: "19.20", points: 120 }, // Modified for diversity
     { type: 'quiz', question: "Qu'est-ce qu'un avaloir ?", answers: ["Une bouche d'incendie", "Un dispositif de collecte des eaux", "Un type de regard"], correct: 1, points: 50 },
     { type: 'calc', question: "Altitude départ: 100.00m, pente 2% sur 50m. Altitude finale ?", answer: "99.00", points: 100 },
-    { type: 'quiz', question: "Profondeur hors gel moyenne en France ?", answers: ["20-30cm", "50-80cm", "100-120cm"], correct: 1, points: 75 },
     
     // Level 11-15: Networks
+    { type: 'quiz', question: "Profondeur hors gel moyenne en France ?", answers: ["20-30cm", "50-80cm", "100-120cm"], correct: 1, points: 75 },
     { type: 'quiz', question: "Couleur du grillage avertisseur électrique ?", answers: ["Bleu", "Rouge", "Vert", "Jaune"], correct: 1, points: 50 },
     { type: 'material', question: "Quel regard pour un changement de direction EU ?", materials: ["Regard de visite", "Bouche à clé", "Avaloir", "Tabouret"], icons: ["🕳️", "🔧", "🌊", "🪑"], correct: 0, points: 75 },
-    { type: 'quiz', question: "Distance minimale entre eau potable et EU ?", answers: ["20cm", "40cm", "60cm", "100cm"], correct: 1, points: 75 },
-    { type: 'network', question: "Connectez le réseau télécom en évitant les autres réseaux", points: 100, correctPath: ['nodeA', 'nodeD'] }, // Added correctPath
+    { type: 'network', question: "Connectez le réseau télécom en évitant les autres réseaux", points: 100, correctPath: ['nodeA', 'nodeD'], nodes: [{ id: 'nodeA', cx: 100, cy: 100, color: 'orange' }, { id: 'nodeB', cx: 250, cy: 250, color: 'red' }, { id: 'nodeC', cx: 400, cy: 100, color: 'green' }, { id: 'nodeD', cx: 400, cy: 400, color: 'orange' }] },
     { type: 'quiz', question: "Que signifie PMR ?", answers: ["Projet Majeur Régional", "Personnes à Mobilité Réduite", "Plan de Mise en Route"], correct: 1, points: 50 },
     
     // Level 16-20: VRD Deep Dive
-    { type: 'drag', question: "Classez les étapes de la construction d'une chaussée (du début à la fin)", items: ["Terrassement", "Mise en œuvre des couches de forme", "Réalisation des couches de roulement", "Signalisation et marquage"], points: 100 },
+    { type: 'calc', question: "Altitude finale: 85.50m, pente 1.5% sur 100m. Altitude départ ?", answer: "87.00", points: 100 },
     { type: 'quiz', question: "Quel est le rôle d'un géotextile ?", answers: ["Empêcher la pousse des mauvaises herbes", "Séparer des couches de matériaux", "Drainer l'eau", "Renforcer la structure"], correct: 1, points: 75 },
     { type: 'material', question: "Quel type de canalisation pour l'assainissement gravitaire ?", materials: ["PVC", "PEHD", "Fonte", "Acier"], icons: ["📏", "🔗", "⚙️", "🔩"], correct: 0, points: 75 },
-    { type: 'calc', question: "Altitude finale: 85.50m, pente 1.5% sur 100m. Altitude départ ?", answer: "87.00", points: 100 },
     { type: 'quiz', question: "Qu'est-ce qu'un BPU en VRD ?", answers: ["Bordure Paveur Urbain", "Béton Prêt à l'Usage", "Bureau des Projets Urbains"], correct: 0, points: 50 },
+    { type: 'scenario', question: "Un réseau d'eau potable est endommagé. Quelle est la première action à mener ?", actions: ["Couper l'arrivée d'eau", "Réparer immédiatement", "Prévenir les usagers", "Analyser la cause"], correct: 0, points: 100 },
 
     // Level 21-25: Practical cases and standards
-    { type: 'network', question: "Optimisez le tracé du réseau d'éclairage public pour minimiser les longueurs", points: 120, correctPath: ['nodeB', 'nodeC'] }, // Added correctPath
+    { type: 'network', question: "Optimisez le tracé du réseau d'éclairage public pour minimiser les longueurs", points: 120, correctPath: ['nodeB', 'nodeC'], nodes: [{ id: 'nodeA', cx: 100, cy: 250, color: 'yellow' }, { id: 'nodeB', cx: 250, cy: 100, color: 'yellow' }, { id: 'nodeC', cx: 400, cy: 250, color: 'yellow' }, { id: 'nodeD', cx: 250, cy: 400, color: 'yellow' }] },
     { type: 'quiz', question: "Quelle norme régit l'accessibilité PMR en France ?", answers: ["NF P98-331", "Arrêté du 15 janvier 2007", "DTU 20.1"], correct: 1, points: 75 },
     { type: 'material', question: "Matériau pour une conduite d'eau potable sous pression ?", materials: ["PVC-O", "Grès", "Béton armé", "Fibrociment"], icons: ["💧", "🏺", "🏗️", "💨"], correct: 0, points: 80 },
     { type: 'calc', question: "Distance: 75m, dénivelé: 1.5m. Quelle est la pente en % ?", answer: "2.00", points: 100 },
-    { type: 'scenario', question: "Un réseau d'eau potable est endommagé. Quelle est la première action à mener ?", actions: ["Couper l'arrivée d'eau", "Réparer immédiatement", "Prévenir les usagers", "Analyser la cause"], correct: 0, points: 100 },
-
-    // Level 26-30: Expertise and project management
-    { type: 'drag', question: "Classez les étapes d'un projet VRD (de l'étude à la réception)", items: ["Terrassement", "Mise en œuvre des couches de forme", "Réalisation des couches de roulement", "Signalisation et marquage"], points: 120 },
-    { type: 'quiz', question: "Quelle est la fonction principale d'un caniveau ?", answers: ["Délimiter la chaussée", "Collecter les eaux de ruissellement", "Servir de support aux réseaux", "Améliorer l'esthétique"], correct: 1, points: 60 },
-    { type: 'network', question: "Concevez un réseau de drainage pluvial pour un parking, avec points de collecte", points: 130, correctPath: ['nodeC', 'nodeD'] }, // Added correctPath
-    { type: 'calc', question: "Longueur de réseau: 200m, pente 0.8%. Quel est le dénivelé total ?", answer: "1.60", points: 100 },
     { type: 'scenario', question: "Vous découvrez un réseau non répertorié lors des terrassements. Que faites-vous ?", actions: ["Continuer les travaux avec prudence", "Arrêter les travaux et informer le chef de projet", "Essayer de l'identifier vous-même", "Le contourner sans le signaler"], correct: 1, points: 150 },
+
+    // Level 26-30: Expertise and project management (Modified drag level)
+    { type: 'drag', question: "Classez les étapes clés d'un projet VRD (de l'initialisation à la clôture)", items: ["Étude de faisabilité", "Conception détaillée", "Appel d'offres et sélection entreprises", "Exécution des travaux", "Réception et levée des réserves"], points: 130 }, // Modified for diversity
+    { type: 'quiz', question: "Quelle est la fonction principale d'un caniveau ?", answers: ["Délimiter la chaussée", "Collecter les eaux de ruissellement", "Servir de support aux réseaux", "Améliorer l'esthétique"], correct: 1, points: 60 },
+    { type: 'network', question: "Concevez un réseau de drainage pluvial pour un parking, avec points de collecte", points: 130, correctPath: ['nodeC', 'nodeD'], nodes: [{ id: 'nodeA', cx: 100, cy: 100, color: 'grey' }, { id: 'nodeB', cx: 400, cy: 100, color: 'grey' }, { id: 'nodeC', cx: 100, cy: 400, color: 'grey' }, { id: 'nodeD', cx: 400, cy: 400, color: 'grey' }] },
+    { type: 'calc', question: "Longueur de réseau: 200m, pente 0.8%. Quel est le dénivelé total ?", answer: "1.60", points: 100 },
+    { type: 'scenario', question: "Les prévisions météo annoncent de fortes pluies. Comment adaptez-vous le chantier ?", actions: ["Ne rien changer", "Protéger les fouilles, vérifier le drainage et sécuriser les matériaux", "Accélérer les travaux", "Arrêter le chantier complètement"], correct: 1, points: 140 },
 
     // Level 31: New Mini-Game - Pipe Connection
     {
@@ -1222,49 +1223,121 @@ const originalLevels = [ // Renamed to originalLevels
         gridSize: 4, // 4x4 grid
         start: { row: 0, col: 0 },
         end: { row: 3, col: 3 },
-        // These are the pieces available for the user to place
         availablePieces: [
             { type: 'straight', count: 3 }, // 3 straight pipes
             { type: 'bend', count: 4 },     // 4 bend pipes
             { type: 't_junction', count: 1 } // 1 T-junction
         ],
-        // This will be a simplified representation of the *expected* connections for the solution.
-        // The actual validation will be done by traversing the graph.
-        // For the solution display, I'll just show the types of pieces and their counts.
         correctSolutionDescription: "Utilisez les tuyaux fournis pour créer un chemin continu du point de départ au point d'arrivée."
     },
     // New levels for diversity
-    { type: 'quiz', question: "Quelle est la fonction principale d'un collecteur d'eaux pluviales ?", answers: ["Stocker l'eau de pluie", "Transporter les eaux usées", "Évacuer les eaux de surface", "Filtrer les eaux souterraines"], correct: 2, points: 70 },
-    { type: 'material', question: "Sélectionnez le matériau le plus adapté pour une canalisation de gaz.", materials: ["Fonte ductile", "PVC", "PEHD", "Acier galvanisé"], icons: ["⚙️", "📏", "🔗", "🔩"], correct: 2, points: 90 },
-    { type: 'drag', question: "Classez les étapes de la pose d'une canalisation (du début à la fin)", items: ["Ouverture de la tranchée", "Mise en place du lit de pose", "Pose de la canalisation", "Remblayage et compactage"], points: 110 },
-    { type: 'calc', question: "Un regard est à 95.20m. La pente est de 1.5% sur 80m. Quelle est l'altitude du point aval ?", answer: "94.00", points: 100 },
-    { type: 'network', question: "Connectez les points d'éclairage public à la source d'énergie.", points: 110, correctPath: ['nodeB', 'nodeA'] },
+    { type: 'quiz', question: "Quel est le rôle du géomètre-expert en VRD ?", answers: ["Réaliser les travaux de terrassement", "Établir les plans topographiques et les implantations", "Gérer le budget du projet", "Vendre les équipements de chantier"], correct: 1, points: 80 },
+    { type: 'material', question: "Quel matériau est couramment utilisé pour les conduites d'eaux pluviales de grand diamètre ?", materials: ["PVC", "PEHD annelé", "Grès", "Fonte"], icons: ["📏", "🌀", "🏺", "⚙️"], correct: 1, points: 90 },
+    { type: 'drag', question: "Classez les éléments d'un regard de visite (du bas vers le haut).", items: ["Radier", "Cunette", "Rehausses", "Cadre et tampon"], points: 110 },
+    { type: 'calc', question: "Un point haut est à 150.00m. La pente est de 0.5% sur 120m. Quelle est l'altitude du point bas ?", answer: "149.40", points: 100 },
+    { type: 'network', question: "Tracez un réseau d'eau potable avec une dérivation vers un bâtiment.", points: 120, correctPath: ['nodeA', 'nodeC'], nodes: [{ id: 'nodeA', cx: 100, cy: 200, color: 'blue' }, { id: 'nodeB', cx: 400, cy: 200, color: 'blue' }, { id: 'nodeC', cx: 250, cy: 400, color: 'blue' }] },
     { type: 'scenario', question: "Un ouvrier signale une odeur de gaz sur le chantier. Que faites-vous ?", actions: ["Ignorer et continuer", "Arrêter les travaux, évacuer la zone et appeler les secours", "Chercher la fuite vous-même", "Ventiler la zone"], correct: 1, points: 160 },
     { type: 'quiz', question: "Quel document est utilisé pour localiser les réseaux existants avant les travaux ?", answers: ["Plan de masse", "Plan de récolement", "DICT", "Permis de construire"], correct: 2, points: 60 },
     { type: 'material', question: "Quel matériau est couramment utilisé pour les bordures de trottoir ?", materials: ["Bois", "Plastique recyclé", "Granit", "Métal"], icons: ["🌳", "♻️", "🪨", "⛓️"], correct: 2, points: 80 },
     { type: 'calc', question: "Une canalisation de 120m a un dénivelé de 2.4m. Quelle est sa pente en % ?", answer: "2.00", points: 100 },
     { type: 'quiz', question: "Quelle est la couleur du grillage avertisseur pour le gaz ?", answers: ["Bleu", "Rouge", "Jaune", "Vert"], correct: 2, points: 50 },
     { type: 'drag', question: "Classez les éléments d'un système de drainage (du plus haut au plus bas).", items: ["Grille de caniveau", "Caniveau", "Tuyau de collecte", "Regard de visite"], points: 120 },
-    { type: 'network', question: "Tracez un réseau d'arrosage pour couvrir toutes les zones vertes.", points: 130, correctPath: ['nodeA', 'nodeE'] },
-    { type: 'scenario', question: "Les prévisions météo annoncent de fortes pluies. Comment adaptez-vous le chantier ?", actions: ["Ne rien changer", "Protéger les fouilles, vérifier le drainage et sécuriser les matériaux", "Accélérer les travaux", "Arrêter le chantier complètement"], correct: 1, points: 140 },
+    { type: 'network', question: "Tracez un réseau d'arrosage pour couvrir toutes les zones vertes.", points: 130, correctPath: ['nodeA', 'nodeE'], nodes: [{ id: 'nodeA', cx: 100, cy: 100, color: 'green' }, { id: 'nodeB', cx: 400, cy: 100, color: 'green' }, { id: 'nodeC', cx: 100, cy: 400, color: 'green' }, { id: 'nodeD', cx: 400, cy: 400, color: 'green' }, { id: 'nodeE', cx: 250, cy: 250, color: 'green' }] },
+    { type: 'scenario', question: "Un riverain se plaint du bruit des travaux. Quelle est votre démarche ?", actions: ["Ignorer la plainte", "Lui demander de contacter la mairie", "L'écouter, expliquer les mesures prises et proposer des solutions si possible", "Arrêter immédiatement les travaux"], correct: 2, points: 120 },
     { type: 'quiz', question: "Qu'est-ce qu'un DTU ?", answers: ["Document Technique Unifié", "Déclaration de Travaux Urgents", "Dossier Technique Urbain"], correct: 0, points: 70 },
     { type: 'material', question: "Quel type de revêtement est souvent utilisé pour les pistes cyclables ?", materials: ["Béton", "Enrobé drainant", "Pavés", "Terre stabilisée"], icons: ["🧱", "🚲", "🪨", "🌿"], correct: 1, points: 85 },
     { type: 'calc', question: "Calculez la longueur horizontale pour une pente de 2% et un dénivelé de 0.5m.", answer: "25.00", points: 100 },
     { type: 'quiz', question: "Quel est le rôle d'un géomembranier ?", answers: ["Installer des géotextiles", "Poser des membranes d'étanchéité", "Réaliser des études géotechniques"], correct: 1, points: 75 },
-    { type: 'scenario', question: "Un riverain se plaint du bruit des travaux. Quelle est votre démarche ?", actions: ["Ignorer la plainte", "Lui demander de contacter la mairie", "L'écouter, expliquer les mesures prises et proposer des solutions si possible", "Arrêter immédiatement les travaux"], correct: 2, points: 120 },
+    { type: 'scenario', question: "Vous découvrez un vestige archéologique sur le chantier. Que faites-vous ?", actions: ["Le déplacer discrètement pour continuer les travaux", "Arrêter les travaux, sécuriser la zone et contacter les autorités compétentes", "Le photographier et le signaler après la fin du chantier", "Le signaler à l'équipe sans arrêter les travaux"], correct: 1, points: 180 },
     { type: 'quiz', question: "Quelle est la signification de 'EP' dans le contexte VRD ?", answers: ["Eau Potable", "Eaux Pluviales", "Éclairage Public"], correct: 1, points: 60 },
     { type: 'material', question: "Matériau pour les regards de branchement d'eaux usées.", materials: ["Béton préfabriqué", "Plastique", "Brique", "Acier"], icons: ["🧱", "♻️", "🏠", "⛓️"], correct: 0, points: 70 },
     { type: 'quiz', question: "Quel est le principal risque lié à la présence d'amiante dans les anciennes canalisations ?", answers: ["Fuites fréquentes", "Contamination de l'eau", "Risque sanitaire lors de la manipulation", "Faible résistance aux chocs"], correct: 2, points: 90 },
     { type: 'quiz', question: "Quelle est la fonction d'une chambre de tirage en réseau télécom ?", answers: ["Connecter les câbles à la fibre optique", "Permettre le tirage et la maintenance des câbles", "Mesurer le débit de données"], correct: 1, points: 80 },
     { type: 'quiz', question: "Qu'est-ce qu'un PSS ?", answers: ["Plan de Sécurité et de Santé", "Projet de Stabilité des Sols", "Programme de Suivi des Sédiments"], correct: 0, points: 75 },
-    { type: 'quiz', question: "Quel est le rôle du maître d'œuvre en VRD ?", answers: ["Financer le projet", "Réaliser les travaux", "Concevoir et suivre la réalisation du projet", "Vendre les matériaux"], correct: 2, points: 100 }
+    { type: 'quiz', question: "Quel est le rôle du maître d'œuvre en VRD ?", answers: ["Financer le projet", "Réaliser les travaux", "Concevoir et suivre la réalisation du projet", "Vendre les matériaux"], correct: 2, points: 100 },
+    { type: 'pipe_connect',
+        question: "Connectez les sections de canalisation pour créer un réseau d'eau pluviale. Cliquez sur un tuyau pour le faire pivoter.",
+        points: 160,
+        gridSize: 5, // 5x5 grid
+        start: { row: 0, col: 2 },
+        end: { row: 4, col: 2 },
+        availablePieces: [
+            { type: 'straight', count: 5 },
+            { type: 'bend', count: 6 },
+            { type: 't_junction', count: 2 }
+        ],
+        correctSolutionDescription: "Créez un chemin continu du point de départ au point d'arrivée avec les tuyaux."
+    },
+    { type: 'quiz', question: "Qu'est-ce qu'un fil d'eau en assainissement ?", answers: ["Le niveau le plus bas de l'écoulement dans une canalisation", "La ligne de flottaison des eaux usées", "Le tracé d'un cours d'eau souterrain"], correct: 0, points: 70 },
+    { type: 'material', question: "Quel matériau est privilégié pour les chambres de tirage de fibre optique ?", materials: ["Béton armé", "Brique", "Polyester renforcé de fibres de verre (PRV)", "Acier"], icons: ["🏗️", "🏠", "📡", "⛓️"], correct: 2, points: 95 },
+    { type: 'drag', question: "Classez les étapes de raccordement d'un branchement d'eaux usées (du début à la fin).", items: ["Repérage et marquage", "Ouverture de la tranchée", "Pose du tabouret de branchement", "Raccordement au collecteur", "Remblayage et compactage"], points: 140 },
+    { type: 'calc', question: "Calculez le volume de remblai (en m³) nécessaire pour une fouille de 15m de long, 3m de large et 2m de profondeur, sachant que le foisonnement est de 20%.", answer: "72.00", points: 150 }, // 15*3*2 = 90. 90 * 0.8 = 72
+    { type: 'network', question: "Concevez un réseau de fibre optique pour desservir 3 points de raccordement.", points: 140, correctPath: ['nodeA', 'nodeD'], nodes: [{ id: 'nodeA', cx: 100, cy: 100, color: 'purple' }, { id: 'nodeB', cx: 400, cy: 100, color: 'purple' }, { id: 'nodeC', cx: 100, cy: 400, color: 'purple' }, { id: 'nodeD', cx: 400, cy: 400, color: 'purple' }] },
+    { type: 'scenario', question: "Une machine critique tombe en panne au milieu du chantier. Que faites-vous ?", actions: ["Tenter de la réparer soi-même", "Attendre le technicien sans rien faire", "Contacter le fournisseur pour une intervention rapide et organiser un plan B", "Continuer les travaux manuellement"], correct: 2, points: 130 },
+    { type: 'quiz', question: "Quelle est l'importance de la signalisation de chantier ?", answers: ["Décorer le chantier", "Informer le public et assurer la sécurité des travailleurs et usagers", "Cacher les travaux en cours"], correct: 1, points: 65 },
+    { type: 'material', question: "Quel type de béton est utilisé pour les fondations profondes ?", materials: ["Béton désactivé", "Béton autoplaçant (BAP)", "Béton fibré", "Béton armé"], icons: ["🧱", "🌊", "🔗", "💪"], correct: 3, points: 85 },
+    { type: 'calc', question: "Un réseau doit avoir une pente de 1.2% sur 80m. Si l'altitude de départ est 50.00m, quelle est l'altitude d'arrivée ?", answer: "49.04", points: 100 },
+    { type: 'quiz', question: "Quelle est la fonction d'une bouche à clé ?", answers: ["Permettre l'accès à un regard", "Ouvrir ou fermer une vanne sur un réseau", "Mesurer la pression de l'eau"], correct: 1, points: 70 },
+    { type: 'pipe_connect',
+        question: "Connectez les sections de canalisation pour un réseau d'assainissement complexe.",
+        points: 170,
+        gridSize: 5,
+        start: { row: 1, col: 0 },
+        end: { row: 3, col: 4 },
+        availablePieces: [
+            { type: 'straight', count: 4 },
+            { type: 'bend', count: 5 },
+            { type: 't_junction', count: 3 },
+            { type: 'cross', count: 1 }
+        ],
+        correctSolutionDescription: "Créez un chemin continu du point de départ au point d'arrivée avec les tuyaux."
+    },
+    { type: 'quiz', question: "Qu'est-ce qu'un puits perdu ?", answers: ["Un puits sans fond", "Un ouvrage de collecte et d'infiltration des eaux pluviales", "Un puits d'accès aux réseaux souterrains"], correct: 1, points: 75 },
+    { type: 'material', question: "Quel matériau est le plus résistant à la corrosion pour les réseaux d'eaux usées industrielles ?", materials: ["PVC", "Grès", "Polypropylène (PP)", "Béton"], icons: ["📏", "🏺", "🧪", "🏗️"], correct: 2, points: 100 },
+    { type: 'calc', question: "Un point A est à 120.50m et un point B à 119.80m, distants de 50m. Quelle est la pente moyenne en % ?", answer: "1.40", points: 110 },
+    { type: 'network', question: "Tracez un réseau d'irrigation pour un parc avec plusieurs zones à desservir.", points: 150, correctPath: ['nodeA', 'nodeC'], nodes: [{ id: 'nodeA', cx: 100, cy: 100, color: 'cyan' }, { id: 'nodeB', cx: 400, cy: 100, color: 'cyan' }, { id: 'nodeC', cx: 100, cy: 400, color: 'cyan' }, { id: 'nodeD', cx: 400, cy: 400, color: 'cyan' }, { id: 'nodeE', cx: 250, cy: 250, color: 'cyan' }] },
+    { type: 'scenario', question: "Un camion de livraison bloque l'accès au chantier. Que faites-vous ?", actions: ["Klaxonner jusqu'à ce qu'il bouge", "Attendre patiemment", "Contacter le chauffeur ou l'entreprise de livraison pour qu'il dégage le passage", "Essayer de le déplacer avec un engin de chantier"], correct: 2, points: 110 },
+    { type: 'quiz', question: "Quelle est la différence entre un regard de visite et un tabouret de branchement ?", answers: ["Le regard est plus grand et permet l'accès pour l'entretien, le tabouret est pour les branchements individuels.", "Le regard est pour l'eau potable, le tabouret pour les eaux usées.", "Le regard est en surface, le tabouret est enterré."], correct: 0, points: 85 },
+    { type: 'material', question: "Quel matériau est le plus adapté pour les pavés carrossables ?", materials: ["Béton", "Granit", "Grès", "Bois"], icons: ["🧱", "🪨", "🏺", "🌳"], correct: 1, points: 90 },
+    { type: 'calc', question: "Une conduite de 300m a un dénivelé de 6m. Quelle est sa pente en pour mille (‰) ?", answer: "20.00", points: 120 }, // 6/300 * 1000 = 20
+    { type: 'quiz', question: 'Qu\'est-ce qu\'une "zone d\'emprise" en VRD ?', answers: ["La zone où les engins de chantier sont stockés", "La surface de terrain nécessaire à la réalisation des travaux et à l'implantation des ouvrages", "La zone de circulation des piétons"], correct: 1, points: 75 },
+    { type: 'pipe_connect',
+        question: "Rétablissez la connexion du réseau d'assainissement après une rupture.",
+        points: 180,
+        gridSize: 6,
+        start: { row: 0, col: 0 },
+        end: { row: 5, col: 5 },
+        availablePieces: [
+            { type: 'straight', count: 6 },
+            { type: 'bend', count: 7 },
+            { type: 't_junction', count: 2 },
+            { type: 'cross', count: 1 }
+        ],
+        correctSolutionDescription: "Créez un chemin continu du point de départ au point d'arrivée avec les tuyaux."
+    },
+    { type: 'quiz', question: "À quoi sert un fil d'eau dans le calcul de pente d'une canalisation ?", answers: ["À mesurer le débit d'eau", "À définir la ligne de référence pour la pente", "À indiquer la présence d'eau"], correct: 1, points: 80 },
+    { type: 'material', question: "Quel type de géomembrane est utilisé pour l'étanchéité des bassins de rétention ?", materials: ["PVC", "PEHD", "EPDM", "Bitume"], icons: ["📏", "🔗", "💧", "🛣️"], correct: 1, points: 95 },
+    { type: 'calc', question: "Une parcelle a une superficie de 500m². Un bassin de rétention doit collecter 100m³ d'eau. Quelle hauteur d'eau (en m) cela représente-t-il sur la parcelle ?", answer: "0.20", points: 130 }, // 100/500 = 0.2
+    { type: 'network', question: "Connectez les bornes incendie au réseau d'eau existant, en respectant les distances de sécurité.", points: 160, correctPath: ['nodeA', 'nodeB'], nodes: [{ id: 'nodeA', cx: 100, cy: 100, color: 'red' }, { id: 'nodeB', cx: 400, cy: 100, color: 'red' }, { id: 'nodeC', cx: 100, cy: 400, color: 'red' }, { id: 'nodeD', cx: 400, cy: 400, color: 'red' }] },
+    { type: 'scenario', question: "Un engin de chantier endommage accidentellement une clôture de propriété privée. Que faites-vous ?", actions: ["Ignorer et partir", "Réparer la clôture vous-même sans prévenir", "Sécuriser la zone, informer le propriétaire et le chef de projet, et organiser la réparation professionnelle", "Laisser un mot avec vos coordonnées"], correct: 2, points: 170 },
+    { type: 'quiz', question: "Quel est le rôle d'un contrôleur technique en VRD ?", answers: ["Réaliser les études de sol", "Vérifier la conformité des ouvrages aux normes et réglementations", "Gérer les équipes sur le chantier"], correct: 1, points: 90 },
+    { type: 'material', question: "Quel type de sable est utilisé pour le lit de pose des canalisations ?", materials: ["Sable de carrière", "Sable de mer", "Sable concassé", "Sable de rivière lavé"], icons: ["⛰️", "🌊", "🔨", "💧"], correct: 3, points: 80 },
+    { type: 'calc', question: "Un regard a une altitude de fond de 98.75m. La canalisation en sortie a une pente de 1.5% sur 30m. Quelle est l'altitude du fil d'eau à 30m ?", answer: "98.30", points: 120 }, // 98.75 - (30 * 0.015) = 98.30
+    { type: 'quiz', question: "Qu'est-ce qu'un BPU en VRD ?", answers: ["Bordure Paveur Urbain", "Béton Prêt à l'Usage", "Bureau des Projets Urbains"], correct: 0, points: 50 },
+    { type: 'scenario', question: "Le budget du projet est dépassé. Quelle est votre première action ?", actions: ["Arrêter tous les travaux", "Demander plus d'argent sans justification", "Analyser les causes du dépassement et proposer des mesures correctives au chef de projet", "Réduire la qualité des matériaux pour économiser"], correct: 2, points: 140 },
+    { type: 'quiz', question: "Quelle est la fonction d'un réseau séparatif ?", answers: ["Collecter toutes les eaux (usées et pluviales) ensemble", "Séparer la collecte des eaux usées de celle des eaux pluviales", "Séparer les réseaux d'eau potable et d'incendie"], correct: 1, points: 80 },
+    { type: 'material', question: "Quel type de grave est utilisé pour la couche de fondation d'une chaussée ?", materials: ["Grave non traitée (GNT)", "Sable", "Terre végétale", "Enrobé"], icons: ["🚧", "🏖️", "🌿", "🛣️"], correct: 0, points: 85 },
+    { type: 'calc', question: "Un réseau de 80m de long a un dénivelé de 1.6m. Quelle est sa pente en degrés ?", answer: "1.15", points: 140 }, // atan(1.6/80) * 180/PI = 1.1459
+    { type: 'quiz', question: "Qu'est-ce qu'un BPU en VRD ?", answers: ["Bordure Paveur Urbain", "Béton Prêt à l'Usage", "Bureau des Projets Urbains"], correct: 0, points: 50 },
 ];
 
 const bonusLevels = [
-    { type: 'conflict_detection', question: "Un réseau d'eau potable passe à 15 cm au-dessus d'un câble électrique. Y a-t-il un conflit ?", options: ["Oui, conflit de distance verticale insuffisante", "Non, c'est conforme", "Oui, conflit de croisement horizontal"], correct: 0, points: 150 },
+    { type: 'conflict_detection', question: "Une canalisation de gaz (PEHD) est posée à 20 cm d'un arbre existant. Y a-t-il un conflit ?", options: ["Oui, risque d'endommagement par les racines", "Non, la distance est suffisante", "Oui, conflit de matériau"], correct: 0, points: 150 }, // Modified for diversity
     { type: 'volume_calc', question: "Calculez le volume de terre (en m³) à évacuer pour une fouille de 10m de long, 2m de large et 1.5m de profondeur.", answer: "30.00", points: 150 },
-    { type: 'volume_calc', question: "Quel volume de béton (en m³) est nécessaire pour une dalle de 5m x 4m avec une épaisseur de 0.20m ?", answer: "4.00", points: 120 },
-    { type: 'conflict_detection', question: "Une canalisation d'assainissement gravitaire doit traverser une zone rocheuse. Quel est le risque principal ?", options: ["Rupture de la canalisation due aux mouvements du sol", "Difficulté de raccordement aux autres réseaux", "Coût élevé du terrassement et risque d'endommagement de la roche", "Infiltration d'eau dans la canalisation"], correct: 2, points: 140 }
+    { type: 'volume_calc', question: "Quel volume de grave non traitée (en m³) est nécessaire pour une couche de forme de 100m de long, 6m de large et 0.30m d'épaisseur ?", answer: "180.00", points: 140 }, // New diverse volume calc
+    { type: 'conflict_detection', question: "Un collecteur d'eaux usées (diamètre 500mm) est prévu avec une pente de 0.2%. Y a-t-il un conflit ?", options: ["Non, c'est une pente standard", "Oui, la pente est insuffisante pour l'auto-curage", "Oui, la pente est trop forte"], correct: 1, points: 160 }, // New diverse conflict detection
+    { type: 'volume_calc', question: "Un réservoir cylindrique d'eau pluviale a un diamètre de 3m et une hauteur de 4m. Quel est son volume (en m³) ?", answer: "28.27", points: 130 }, // New diverse volume calc (requires PI)
+    { type: 'conflict_detection', question: "Un réseau d'eau potable doit croiser un réseau électrique existant. La norme impose une distance minimale de 40 cm. Ils sont prévus à 30 cm. Y a-t-il un conflit ?", options: ["Non, la distance est acceptable", "Oui, la distance minimale n'est pas respectée", "Oui, mais uniquement si l'eau est sous pression"], correct: 1, points: 170 } // Another diverse conflict detection
 ];
 
 // Tips for the scrolling bar
@@ -1282,7 +1355,10 @@ const gameTips = [
     "Astuce: Pour le mini-jeu de tuyaux, chaque pièce compte ! Planifiez votre chemin avant de placer.",
     "Astuce: La DICT est obligatoire avant tout travail à proximité des réseaux existants.",
     "Astuce: Le PEHD est un excellent choix pour les canalisations de gaz grâce à sa flexibilité.",
-    "Astuce: Un PSS (Plan de Sécurité et de Santé) est vital pour la prévention des accidents sur chantier."
+    "Astuce: Un PSS (Plan de Sécurité et de Santé) est vital pour la prévention des accidents sur chantier.",
+    "Astuce: Le rôle du géomètre-expert est fondamental pour l'implantation précise des ouvrages VRD.",
+    "Astuce: Le fil d'eau est la référence altimétrique pour la pose des canalisations gravitaires.",
+    "Astuce: La signalisation de chantier protège les travailleurs et les usagers de la voie publique."
 ];
 let currentTipIndex = 0;
 let tipInterval = null;
@@ -1370,14 +1446,14 @@ function playSound(type) {
             levelUpNotes.forEach((note, index) => {
                 // Play each note with a tiny offset to ensure they are distinct events
                 // and avoid the "Invalid argument(s) to setValueAtTime" error with arrays.
-                gameState.synth.triggerAttackRelease(note, levelUpDuration, Tone.context.currentTime + (index * 0.01));
+                gameState.synth.triggerAttackRelease(note, Tone.context.currentTime + (index * 0.01), levelUpDuration);
             });
             break;
         case 'gameOver':
             const gameOverNotes = ["C3", "G2", "C2"];
             const gameOverDuration = "1s";
             gameOverNotes.forEach((note, index) => {
-                gameState.synth.triggerAttackRelease(note, gameOverDuration, Tone.context.currentTime + (index * 0.01));
+                gameState.synth.triggerAttackRelease(note, Tone.context.currentTime + (index * 0.01), gameOverDuration);
             });
             break;
         case 'shortBeep':
@@ -1769,13 +1845,8 @@ function showSolution() {
                 drawnLinesGroup.innerHTML = ''; // Clear any user-drawn lines
             }
 
-            const nodes = [
-                { id: 'nodeA', cx: 100, cy: 100, color: 'blue' },
-                { id: 'nodeB', cx: 400, cy: 100, color: 'blue' },
-                { id: 'nodeC', cx: 100, cy: 400, color: 'red' },
-                { id: 'nodeD', cx: 400, cy: 400, color: 'red' },
-                { id: 'nodeE', cx: 250, cy: 250, color: 'green' }
-            ];
+            // Use the nodes from the level data
+            const nodes = level.nodes;
             // Use the correctPath from the level data
             const correctPath = level.correctPath; 
 
@@ -1934,16 +2005,11 @@ function getCorrectAnswerForLevel(level) {
         case 'drag':
             return sourceLevel.items.join(' > ');
         case 'calc':
-            return sourceLevel.answer;
+            // For calc, round to 2 decimal places for consistency
+            return parseFloat(sourceLevel.answer).toFixed(2);
         case 'network':
             // Use the correctPath from the sourceLevel
-            const nodes = [
-                { id: 'nodeA', cx: 100, cy: 100, color: 'blue' },
-                { id: 'nodeB', cx: 400, cy: 100, color: 'blue' },
-                { id: 'nodeC', cx: 100, cy: 400, color: 'red' },
-                { id: 'nodeD', cx: 400, cy: 400, color: 'red' },
-                { id: 'nodeE', cx: 250, cy: 250, color: 'green' }
-            ];
+            const nodes = sourceLevel.nodes;
             const correctPathIds = sourceLevel.correctPath; 
             const correctPathNames = correctPathIds.map(id => nodes.find(n => n.id === id)?.id || id);
             return `Connecter: ${correctPathNames.join(' -> ')}`;
@@ -1954,7 +2020,8 @@ function getCorrectAnswerForLevel(level) {
         case 'conflict_detection': // New bonus type
             return sourceLevel.options[sourceLevel.correct];
         case 'volume_calc': // New bonus type
-            return sourceLevel.answer;
+            // For volume_calc, round to 2 decimal places for consistency
+            return parseFloat(sourceLevel.answer).toFixed(2);
         default:
             return "N/A";
     }
@@ -1997,7 +2064,7 @@ function endGame() {
                     <div class="stat-label">Niveaux Complétés</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">${(gameState.score / (gameState.currentLevel * 100) * 100).toFixed(0) || 0}%</div>
+                    <div class="stat-number">${(gameState.currentLevel > 0 ? (gameState.answers.filter(a => a.isCorrect).length / gameState.currentLevel) * 100 : 0).toFixed(0)}%</div>
                     <div class="stat-label">Précision Moyenne</div>
                 </div>
             </div>
@@ -2060,7 +2127,7 @@ function copyCorrectionToClipboard() {
         const msg = successful ? 'Copié dans le presse-papiers !' : 'Échec de la copie.';
         // Replace alert with a custom message box if desired
         const currentAlert = document.getElementById('customAlert');
-        if (currentAlert) current.remove(); // Remove previous alert
+        if (currentAlert) currentAlert.remove(); // Remove previous alert
 
         const customAlert = document.createElement('div');
         customAlert.id = 'customAlert';
@@ -2515,14 +2582,8 @@ function renderNetworkLevel(level) {
     const gameScreen = document.getElementById('gameScreen');
     if (!gameScreen) return; // Added null check
 
-    // Example network nodes and paths (simplified for demonstration)
-    const nodes = [
-        { id: 'nodeA', cx: 100, cy: 100, color: 'blue' },
-        { id: 'nodeB', cx: 400, cy: 100, color: 'blue' },
-        { id: 'nodeC', cx: 100, cy: 400, color: 'red' },
-        { id: 'nodeD', cx: 400, cy: 400, color: 'red' },
-        { id: 'nodeE', cx: 250, cy: 250, color: 'green' } // An 'obstacle' node
-    ];
+    // Use the nodes from the level data
+    const nodes = level.nodes;
     // Use the correctPath from the level data
     const correctPathForRender = level.correctPath || []; // Fallback if not defined
 
@@ -2789,7 +2850,7 @@ function checkScenarioAnswer(selectedIndex, isCorrectFlag, points, userAnswerTex
         pointsEarned = -Math.floor(basePoints / 4);
         gameState.score = Math.max(0, gameState.score + pointsEarned);
         playSound('incorrect');
-        displayCharacter('😟', "Attention ! Une mauvaise décision peut avoir des conséquences !", 2000); // Incorrect message
+        displayCharacter('�', "Attention ! Une mauvaise décision peut avoir des conséquences !", 2000); // Incorrect message
     }
 
     // Record answer
@@ -2988,7 +3049,7 @@ function getPipeSVG(type) {
         case 'bend':
             return `<svg viewBox="0 0 100 100"><path d="M0,${half} H${half} V100" stroke="currentColor" stroke-width="${strokeWidth}" fill="none" stroke-linecap="round"/></svg>`;
         case 't_junction':
-            return `<svg viewBox="0 0 100 100"><path d="M0,${half} H100 M${half},0 V100" stroke="currentColor" stroke-width="${strokeWidth}" fill="none" stroke-linecap="round"/></svg>`;
+            return `<svg viewBox="0 0 100 100"><path d="M0,${half} H100 M${half},0 V100" stroke="currentColor" stroke-width="${strokeWidth}" fill="none" stroke-linecap="round"/></svg`;
         case 'cross':
             return `<svg viewBox="0 0 100 100"><path d="M0,${half} H100 M${half},0 V100" stroke="currentColor" stroke-width="${strokeWidth}" fill="none" stroke-linecap="round"/></svg>`;
         default:
@@ -3571,3 +3632,4 @@ window.onload = function() {
 </script>
 </body>
 </html>
+�
