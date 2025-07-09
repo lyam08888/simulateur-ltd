@@ -438,17 +438,33 @@
             transform: translateX(0);
         }
 
-        /* Utility classes */
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border-width: 0;
+        /* Info section - New */
+        .info-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: var(--radius);
+            padding: 3rem;
+            margin-bottom: 4rem;
+            color: white;
+            text-align: center;
+        }
+
+        .info-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .info-text {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .info-highlight {
+            font-weight: 700;
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -478,26 +494,26 @@
         <!-- Hero section -->
         <section class="hero animate-in">
             <h1>Maîtrisez les métiers du BTP</h1>
-            <p>Simulateurs professionnels pour développer vos compétences en gestion de chantier, topographie et conception VRD</p>
+            <p>Formez-vous aux métiers d'avenir du BTP avec nos simulateurs professionnels. Le secteur recrute massivement : préparez votre carrière dès maintenant !</p>
         </section>
 
         <!-- Stats -->
         <section class="stats">
             <div class="stat-card animate-in" style="animation-delay: 0.1s;">
-                <div class="stat-number">3</div>
-                <div class="stat-label">Simulateurs disponibles</div>
+                <div class="stat-number">1,5M</div>
+                <div class="stat-label">Emplois dans le BTP en France</div>
             </div>
             <div class="stat-card animate-in" style="animation-delay: 0.2s;">
-                <div class="stat-number">1000+</div>
-                <div class="stat-label">Utilisateurs actifs</div>
+                <div class="stat-number">200k</div>
+                <div class="stat-label">Postes à pourvoir d'ici 2025</div>
             </div>
             <div class="stat-card animate-in" style="animation-delay: 0.3s;">
-                <div class="stat-number">50+</div>
-                <div class="stat-label">Heures de contenu</div>
+                <div class="stat-number">148Mds€</div>
+                <div class="stat-label">Chiffre d'affaires du secteur</div>
             </div>
             <div class="stat-card animate-in" style="animation-delay: 0.4s;">
-                <div class="stat-number">5</div>
-                <div class="stat-label">Métiers couverts</div>
+                <div class="stat-number">+15%</div>
+                <div class="stat-label">Croissance des métiers numériques BTP</div>
             </div>
         </section>
 
@@ -569,36 +585,46 @@
             </div>
         </section>
 
+        <!-- Info section -->
+        <section class="info-section animate-in">
+            <h2 class="info-title">💡 Le saviez-vous ?</h2>
+            <p class="info-text">
+                Le BTP représente <span class="info-highlight">7% du PIB français</span> et recrute chaque année plus de <span class="info-highlight">80 000 personnes</span>. 
+                Avec la transition écologique et la rénovation énergétique, les besoins en main-d'œuvre qualifiée explosent. 
+                Les métiers du numérique dans le BTP (BIM, drones, réalité augmentée) connaissent une croissance de <span class="info-highlight">+30% par an</span>.
+            </p>
+        </section>
+
         <!-- Features section -->
         <section id="features" class="features animate-in">
-            <h2 class="section-title">Pourquoi choisir LTD Simulator ?</h2>
+            <h2 class="section-title">Les métiers du BTP qui recrutent</h2>
             <div class="features-grid">
                 <div class="feature">
-                    <span class="feature-icon">🎯</span>
-                    <h3 class="feature-title">Formation réaliste</h3>
+                    <span class="feature-icon">💼</span>
+                    <h3 class="feature-title">Chef de projet BTP</h3>
                     <p class="feature-description">
-                        Des scénarios basés sur des situations réelles du BTP
+                        Salaire moyen : 45-70k€/an. Pilotage de chantiers et gestion d'équipes multidisciplinaires
                     </p>
                 </div>
                 <div class="feature">
-                    <span class="feature-icon">📊</span>
-                    <h3 class="feature-title">Suivi de progression</h3>
+                    <span class="feature-icon">📏</span>
+                    <h3 class="feature-title">Géomètre-Topographe</h3>
                     <p class="feature-description">
-                        Analysez vos performances et identifiez vos points forts
+                        Salaire moyen : 35-50k€/an. Expertise technique recherchée pour relevés et implantations
                     </p>
                 </div>
                 <div class="feature">
-                    <span class="feature-icon">🏆</span>
-                    <h3 class="feature-title">Certifications</h3>
+                    <span class="feature-icon">🔧</span>
+                    <h3 class="feature-title">Conducteur de travaux</h3>
                     <p class="feature-description">
-                        Obtenez des certificats reconnus par les professionnels
+                        Salaire moyen : 40-60k€/an. Coordination terrain et suivi de l'exécution des chantiers
                     </p>
                 </div>
                 <div class="feature">
-                    <span class="feature-icon">🔄</span>
-                    <h3 class="feature-title">Mises à jour régulières</h3>
+                    <span class="feature-icon">💻</span>
+                    <h3 class="feature-title">BIM Manager</h3>
                     <p class="feature-description">
-                        Nouveau contenu et fonctionnalités ajoutés fréquemment
+                        Salaire moyen : 45-65k€/an. Métier en forte croissance avec la digitalisation du BTP
                     </p>
                 </div>
             </div>
