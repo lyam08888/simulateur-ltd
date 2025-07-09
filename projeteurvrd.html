@@ -1200,7 +1200,7 @@ const originalLevels = [ // Renamed to originalLevels
     { type: 'calc', question: "Altitude finale: 85.50m, pente 1.5% sur 100m. Altitude départ ?", answer: "87.00", points: 100 },
     { type: 'quiz', question: "Quel est le rôle d'un géotextile ?", answers: ["Empêcher la pousse des mauvaises herbes", "Séparer des couches de matériaux", "Drainer l'eau", "Renforcer la structure"], correct: 1, points: 75 },
     { type: 'material', question: "Quel type de canalisation pour l'assainissement gravitaire ?", materials: ["PVC", "PEHD", "Fonte", "Acier"], icons: ["📏", "🔗", "⚙️", "🔩"], correct: 0, points: 75 },
-    { type: 'quiz', question: "Qu'est-ce qu'un BPU en VRD ?", answers: ["Bordure Paveur Urbain", "Béton Prêt à l'Usage", "Bureau des Projets Urbains"], correct: 0, points: 50 },
+    { type: 'quiz', question: "Qu'est-ce qu'un BPU en VRD ?", answers: ["Bordure Paveur Urbain", "Béton Prêt à l'Usage", "Bureau des Projets Urbains"], correct: 0, points: 50 }, // First occurrence (kept)
     { type: 'scenario', question: "Un réseau d'eau potable est endommagé. Quelle est la première action à mener ?", actions: ["Couper l'arrivée d'eau", "Réparer immédiatement", "Prévenir les usagers", "Analyser la cause"], correct: 0, points: 100 },
 
     // Level 21-25: Practical cases and standards
@@ -1247,7 +1247,7 @@ const originalLevels = [ // Renamed to originalLevels
     { type: 'network', question: "Tracez un réseau d'arrosage pour couvrir toutes les zones vertes.", points: 130, correctPath: ['nodeA', 'nodeE'], nodes: [{ id: 'nodeA', cx: 100, cy: 100, color: 'green' }, { id: 'nodeB', cx: 400, cy: 100, color: 'green' }, { id: 'nodeC', cx: 100, cy: 400, color: 'green' }, { id: 'nodeD', cx: 400, cy: 400, color: 'green' }, { id: 'nodeE', cx: 250, cy: 250, color: 'green' }] },
     { type: 'scenario', question: "Un riverain se plaint du bruit des travaux. Quelle est votre démarche ?", actions: ["Ignorer la plainte", "Lui demander de contacter la mairie", "L'écouter, expliquer les mesures prises et proposer des solutions si possible", "Arrêter immédiatement les travaux"], correct: 2, points: 120 },
     { type: 'quiz', question: "Qu'est-ce qu'un DTU ?", answers: ["Document Technique Unifié", "Déclaration de Travaux Urgents", "Dossier Technique Urbain"], correct: 0, points: 70 },
-    { type: 'material', question: "Quel type de revêtement est souvent utilisé pour les pistes cyclables ?", materials: ["Béton", "Enrobé drainant", "Pavés", "Terre stabilisée"], icons: ["🧱", "🚲", "🪨", "🌿"], correct: 1, points: 85 },
+    { type: 'material', question: "Quel type de revêtement est souvent utilisé pour les pistes cyclables ?", materials: ["Béton", "Enrobé drainant", "Pavés", "Terre stabilisée"], icons: ["🧱", "�", "🪨", "🌿"], correct: 1, points: 85 },
     { type: 'calc', question: "Calculez la longueur horizontale pour une pente de 2% et un dénivelé de 0.5m.", answer: "25.00", points: 100 },
     { type: 'quiz', question: "Quel est le rôle d'un géomembranier ?", answers: ["Installer des géotextiles", "Poser des membranes d'étanchéité", "Réaliser des études géotechniques"], correct: 1, points: 75 },
     { type: 'scenario', question: "Vous découvrez un vestige archéologique sur le chantier. Que faites-vous ?", actions: ["Le déplacer discrètement pour continuer les travaux", "Arrêter les travaux, sécuriser la zone et contacter les autorités compétentes", "Le photographier et le signaler après la fin du chantier", "Le signaler à l'équipe sans arrêter les travaux"], correct: 1, points: 180 },
@@ -1325,12 +1325,12 @@ const originalLevels = [ // Renamed to originalLevels
     { type: 'quiz', question: "Quel est le rôle d'un contrôleur technique en VRD ?", answers: ["Réaliser les études de sol", "Vérifier la conformité des ouvrages aux normes et réglementations", "Gérer les équipes sur le chantier"], correct: 1, points: 90 },
     { type: 'material', question: "Quel type de sable est utilisé pour le lit de pose des canalisations ?", materials: ["Sable de carrière", "Sable de mer", "Sable concassé", "Sable de rivière lavé"], icons: ["⛰️", "🌊", "🔨", "💧"], correct: 3, points: 80 },
     { type: 'calc', question: "Un regard a une altitude de fond de 98.75m. La canalisation en sortie a une pente de 1.5% sur 30m. Quelle est l'altitude du fil d'eau à 30m ?", answer: "98.30", points: 120 }, // 98.75 - (30 * 0.015) = 98.30
-    { type: 'quiz', question: "Qu'est-ce qu'un BPU en VRD ?", answers: ["Bordure Paveur Urbain", "Béton Prêt à l'Usage", "Bureau des Projets Urbains"], correct: 0, points: 50 },
+    { type: 'quiz', question: "Que signifie 'DICT' en VRD ?", answers: ["Déclaration d'Intention de Commencement de Travaux", "Document d'Information sur les Canalisations et les Terrains", "Dossier d'Intervention et de Consultation Technique"], correct: 0, points: 60 }, // Replaced duplicate 2
     { type: 'scenario', question: "Le budget du projet est dépassé. Quelle est votre première action ?", actions: ["Arrêter tous les travaux", "Demander plus d'argent sans justification", "Analyser les causes du dépassement et proposer des mesures correctives au chef de projet", "Réduire la qualité des matériaux pour économiser"], correct: 2, points: 140 },
     { type: 'quiz', question: "Quelle est la fonction d'un réseau séparatif ?", answers: ["Collecter toutes les eaux (usées et pluviales) ensemble", "Séparer la collecte des eaux usées de celle des eaux pluviales", "Séparer les réseaux d'eau potable et d'incendie"], correct: 1, points: 80 },
     { type: 'material', question: "Quel type de grave est utilisé pour la couche de fondation d'une chaussée ?", materials: ["Grave non traitée (GNT)", "Sable", "Terre végétale", "Enrobé"], icons: ["🚧", "🏖️", "🌿", "🛣️"], correct: 0, points: 85 },
     { type: 'calc', question: "Un réseau de 80m de long a un dénivelé de 1.6m. Quelle est sa pente en degrés ?", answer: "1.15", points: 140 }, // atan(1.6/80) * 180/PI = 1.1459
-    { type: 'quiz', question: "Qu'est-ce qu'un BPU en VRD ?", answers: ["Bordure Paveur Urbain", "Béton Prêt à l'Usage", "Bureau des Projets Urbains"], correct: 0, points: 50 },
+    { type: 'quiz', question: "Quel est le rôle du 'DTU' dans la construction ?", answers: ["Définir les règles de l'art pour les travaux", "Document de Travaux Urgents", "Déclaration Technique d'Urbanisme"], correct: 0, points: 70 }, // Replaced duplicate 3
 ];
 
 const bonusLevels = [
