@@ -435,6 +435,7 @@
         .icon-help::before { content: "❓"; }
         .icon-solution::before { content: "💡"; }
         .icon-skip::before { content: "⏭️"; }
+        .icon-finish::before { content: "🏁"; } /* New icon for finish button */
         
         /* Modals */
         .modal {
@@ -1067,6 +1068,7 @@
             <button class="control-btn icon-help" data-tooltip="Aide" onclick="showHelp()"></button>
             <button class="control-btn icon-solution" data-tooltip="Solution (-50 pts)" onclick="showSolution()"></button>
             <button class="control-btn icon-skip" data-tooltip="Passer (-10 pts)" onclick="skipLevel()"></button>
+            <button class="control-btn icon-finish" data-tooltip="Finir le jeu (si score >= 1000)" id="finishGameBtn" disabled onclick="confirmFinishGame()"></button>
         </div>
 
         <!-- Character and Speech Bubble -->
@@ -1295,7 +1297,7 @@ const originalLevels = [ // Renamed to originalLevels
     { type: 'quiz', question: "Qu'est-ce qu'un puits perdu ?", answers: ["Un puits sans fond", "Un ouvrage de collecte et d'infiltration des eaux pluviales", "Un puits d'accès aux réseaux souterrains"], correct: 1, points: 75 },
     { type: 'material', question: "Quel matériau est le plus résistant à la corrosion pour les réseaux d'eaux usées industrielles ?", materials: ["PVC", "Grès", "Polypropylène (PP)", "Béton"], icons: ["📏", "🏺", "🧪", "🏗️"], correct: 2, points: 100 },
     { type: 'calc', question: "Un point A est à 120.50m et un point B à 119.80m, distants de 50m. Quelle est la pente moyenne en % ?", answer: "1.40", points: 110 },
-    { type: 'network', question: "Tracez un réseau d'irrigation pour un parc avec plusieurs zones à desservir.", points: 150, correctPath: ['nodeA', 'nodeC'], nodes: [{ id: 'nodeA', cx: 100, cy: 100, color: 'cyan' }, { id: 'nodeB', cx: 400, cy: 100, color: 'cyan' }, { id: 'nodeC', cx: 100, cy: 400, color: 'cyan' }, { id: 'nodeD', cx: 400, cy: 400, color: 'cyan' }, { id: 'nodeE', cx: 250, cy: 250, color: 'cyan' }] },
+    { type: 'network', question: "Tracez un réseau d'irrigation pour un parc avec plusieurs zones à desservir.", points: 150, correctPath: ['nodeA', 'nodeE'], nodes: [{ id: 'nodeA', cx: 100, cy: 100, color: 'cyan' }, { id: 'nodeB', cx: 400, cy: 100, color: 'cyan' }, { id: 'nodeC', cx: 100, cy: 400, color: 'cyan' }, { id: 'nodeD', cx: 400, cy: 400, color: 'cyan' }, { id: 'nodeE', cx: 250, cy: 250, color: 'cyan' }] },
     { type: 'scenario', question: "Un camion de livraison bloque l'accès au chantier. Que faites-vous ?", actions: ["Klaxonner jusqu'à ce qu'il bouge", "Attendre patiemment", "Contacter le chauffeur ou l'entreprise de livraison pour qu'il dégage le passage", "Essayer de le déplacer avec un engin de chantier"], correct: 2, points: 110 },
     { type: 'quiz', question: "Quelle est la différence entre un regard de visite et un tabouret de branchement ?", answers: ["Le regard est plus grand et permet l'accès pour l'entretien, le tabouret est pour les branchements individuels.", "Le regard est pour l'eau potable, le tabouret pour les eaux usées.", "Le regard est en surface, le tabouret est enterré."], correct: 0, points: 85 },
     { type: 'material', question: "Quel matériau est le plus adapté pour les pavés carrossables ?", materials: ["Béton", "Granit", "Grès", "Bois"], icons: ["🧱", "🪨", "🏺", "🌳"], correct: 1, points: 90 },
@@ -1376,6 +1378,7 @@ function updateHeader() {
     document.getElementById('score').textContent = gameState.score;
     document.getElementById('timer').textContent = gameState.timeLeft;
     updateChronologicalProgressBar(); // Update progress bar on header update
+    checkFinishGameButton(); // Check and update finish game button state
 }
 
 function updateChronologicalProgressBar() {
@@ -2850,7 +2853,7 @@ function checkScenarioAnswer(selectedIndex, isCorrectFlag, points, userAnswerTex
         pointsEarned = -Math.floor(basePoints / 4);
         gameState.score = Math.max(0, gameState.score + pointsEarned);
         playSound('incorrect');
-        displayCharacter('�', "Attention ! Une mauvaise décision peut avoir des conséquences !", 2000); // Incorrect message
+        displayCharacter('😟', "Attention ! Une mauvaise décision peut avoir des conséquences !", 2000); // Incorrect message
     }
 
     // Record answer
@@ -3618,6 +3621,34 @@ function triggerConfetti() {
     }
 }
 
+// New function to check and enable/disable the finish game button
+function checkFinishGameButton() {
+    const finishGameBtn = document.getElementById('finishGameBtn');
+    if (finishGameBtn) {
+        if (gameState.score >= 1000) {
+            finishGameBtn.disabled = false;
+        } else {
+            finishGameBtn.disabled = true;
+        }
+    }
+}
+
+// New function to confirm and finish the game early
+function confirmFinishGame() {
+    if (gameState.score >= 1000) {
+        showConfirmModal(
+            "Finir le jeu ?", 
+            "Vous avez atteint un score de 1000 points ou plus. Voulez-vous terminer le jeu maintenant ?", 
+            () => {
+                endGame(); // Call endGame if confirmed
+            }
+        );
+    } else {
+        displayCharacter('🤔', "Vous devez avoir au moins 1000 points pour finir le jeu plus tôt !", 3000);
+        playSound('incorrect');
+    }
+}
+
 
 // Initialisation
 window.onload = function() {
@@ -3632,4 +3663,3 @@ window.onload = function() {
 </script>
 </body>
 </html>
-�
