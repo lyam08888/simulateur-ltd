@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <title>LTD Simulator - Menu Principal</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Ctext y='96' font-size='96'%3E🏗️%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Base styles */
         * {
@@ -375,34 +376,6 @@
             color: var(--text-primary);
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
-
-            .hero p {
-                font-size: 1rem;
-            }
-
-            .games-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .features {
-                padding: 2rem;
-            }
-
-            .nav-links {
-                gap: 1rem;
-            }
-
-            .footer-content {
-                flex-direction: column;
-                text-align: center;
-            }
-        }
-
         /* Animations */
         @keyframes fadeIn {
             from {
@@ -465,6 +438,250 @@
         .info-highlight {
             font-weight: 700;
             text-decoration: underline;
+        }
+
+        /* Floating Layout Toggle Button */
+        #layout-toggle-btn {
+            position: fixed;
+            bottom: 1.5rem; /* 24px */
+            right: 1.5rem; /* 24px */
+            z-index: 50; /* Ensure it's on top */
+            background-color: var(--surface-light); /* Matches secondary button style */
+            color: white;
+            padding: 1rem; /* Slightly larger for touch */
+            border-radius: 9999px; /* Fully rounded */
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        #layout-toggle-btn:hover {
+            background-color: #4b5563; /* Darker gray on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 12px 18px -4px rgba(0,0,0,0.2), 0 6px 8px -3px rgba(0,0,0,0.1);
+        }
+        /* Hide text on small screens for the floating button */
+        @media (max-width: 640px) {
+            #layout-toggle-btn .layout-text {
+                display: none;
+            }
+            #layout-toggle-btn {
+                padding: 0.75rem; /* Smaller padding when text is hidden */
+            }
+        }
+
+        /* --- Responsive Layout Overrides (Manual Modes) --- */
+        /* Mobile Mode Forced */
+        body[data-layout-mode="mobile"] .header-content {
+            padding: 0.75rem 1rem; /* Smaller header padding */
+        }
+        body[data-layout-mode="mobile"] .logo {
+            font-size: 1.2rem;
+            gap: 0.5rem;
+        }
+        body[data-layout-mode="mobile"] .logo-icon {
+            font-size: 1.5rem;
+        }
+        body[data-layout-mode="mobile"] .nav-links {
+            gap: 0.75rem; /* Smaller nav link gap */
+        }
+        body[data-layout-mode="mobile"] .nav-link {
+            font-size: 0.875rem; /* Smaller nav link font */
+            padding: 0.3rem 0.8rem !important; /* Adjust login button padding */
+        }
+        body[data-layout-mode="mobile"] .main {
+            padding: 5rem 1rem 3rem; /* Smaller main padding */
+        }
+        body[data-layout-mode="mobile"] .hero h1 {
+            font-size: 2.2rem; /* Smaller hero title */
+            margin-bottom: 1rem;
+        }
+        body[data-layout-mode="mobile"] .hero p {
+            font-size: 1rem; /* Smaller hero text */
+        }
+        body[data-layout-mode="mobile"] .stats {
+            grid-template-columns: 1fr; /* Single column for stats */
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        body[data-layout-mode="mobile"] .stat-card {
+            padding: 1rem;
+        }
+        body[data-layout-mode="mobile"] .stat-number {
+            font-size: 1.8rem;
+        }
+        body[data-layout-mode="mobile"] .section-title {
+            font-size: 1.8rem; /* Smaller section titles */
+            margin-bottom: 1.5rem;
+        }
+        body[data-layout-mode="mobile"] .games-grid {
+            grid-template-columns: 1fr; /* Single column for games */
+            gap: 1.5rem;
+        }
+        body[data-layout-mode="mobile"] .game-card {
+            padding: 1.5rem;
+        }
+        body[data-layout-mode="mobile"] .game-icon {
+            font-size: 2.5rem;
+        }
+        body[data-layout-mode="mobile"] .game-title {
+            font-size: 1.3rem;
+        }
+        body[data-layout-mode="mobile"] .game-description {
+            font-size: 0.8rem;
+        }
+        body[data-layout-mode="mobile"] .game-button {
+            padding: 0.6rem 1.5rem;
+            font-size: 0.9rem;
+        }
+        body[data-layout-mode="mobile"] .info-section {
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        body[data-layout-mode="mobile"] .info-title {
+            font-size: 1.3rem;
+        }
+        body[data-layout-mode="mobile"] .info-text {
+            font-size: 0.9rem;
+        }
+        body[data-layout-mode="mobile"] .features {
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        body[data-layout-mode="mobile"] .features-grid {
+            grid-template-columns: 1fr; /* Single column for features */
+            gap: 1.5rem;
+        }
+        body[data-layout-mode="mobile"] .feature-icon {
+            font-size: 2rem;
+        }
+        body[data-layout-mode="mobile"] .feature-title {
+            font-size: 1.1rem;
+        }
+        body[data-layout-mode="mobile"] .feature-description {
+            font-size: 0.8rem;
+        }
+        body[data-layout-mode="mobile"] .footer {
+            padding: 2rem 0;
+            margin-top: 2rem;
+        }
+        body[data-layout-mode="mobile"] .footer-content {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+        body[data-layout-mode="mobile"] .footer-links {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        body[data-layout-mode="mobile"] .footer-link {
+            font-size: 0.8rem;
+        }
+
+        /* Desktop Mode Forced */
+        body[data-layout-mode="desktop"] .header-content {
+            padding: 1rem 2rem;
+        }
+        body[data-layout-mode="desktop"] .logo {
+            font-size: 1.5rem;
+            gap: 1rem;
+        }
+        body[data-layout-mode="desktop"] .logo-icon {
+            font-size: 2rem;
+        }
+        body[data-layout-mode="desktop"] .nav-links {
+            gap: 2rem;
+        }
+        body[data-layout-mode="desktop"] .nav-link {
+            font-size: 1rem;
+            padding: 0.5rem 1.3rem !important;
+        }
+        body[data-layout-mode="desktop"] .main {
+            padding: 6rem 2rem 4rem;
+        }
+        body[data-layout-mode="desktop"] .hero h1 {
+            font-size: 3rem;
+        }
+        body[data-layout-mode="desktop"] .hero p {
+            font-size: 1.25rem;
+        }
+        body[data-layout-mode="desktop"] .stats {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        body[data-layout-mode="desktop"] .stat-card {
+            padding: 1.5rem;
+        }
+        body[data-layout-mode="desktop"] .stat-number {
+            font-size: 2rem;
+        }
+        body[data-layout-mode="desktop"] .section-title {
+            font-size: 2rem;
+        }
+        body[data-layout-mode="desktop"] .games-grid {
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+        body[data-layout-mode="desktop"] .game-card {
+            padding: 2rem;
+        }
+        body[data-layout-mode="desktop"] .game-icon {
+            font-size: 3rem;
+        }
+        body[data-layout-mode="desktop"] .game-title {
+            font-size: 1.5rem;
+        }
+        body[data-layout-mode="desktop"] .game-description {
+            font-size: 0.875rem;
+        }
+        body[data-layout-mode="desktop"] .game-button {
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+        }
+        body[data-layout-mode="desktop"] .info-section {
+            padding: 3rem;
+        }
+        body[data-layout-mode="desktop"] .info-title {
+            font-size: 1.5rem;
+        }
+        body[data-layout-mode="desktop"] .info-text {
+            font-size: 1.1rem;
+        }
+        body[data-layout-mode="desktop"] .features {
+            padding: 3rem;
+        }
+        body[data-layout-mode="desktop"] .features-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        body[data-layout-mode="desktop"] .feature-icon {
+            font-size: 2.5rem;
+        }
+        body[data-layout-mode="desktop"] .feature-title {
+            font-size: 1.25rem;
+        }
+        body[data-layout-mode="desktop"] .feature-description {
+            font-size: 0.875rem;
+        }
+        body[data-layout-mode="desktop"] .footer {
+            padding: 3rem 0;
+        }
+        body[data-layout-mode="desktop"] .footer-content {
+            flex-direction: row;
+            text-align: left;
+            gap: 2rem;
+        }
+        body[data-layout-mode="desktop"] .footer-links {
+            flex-direction: row;
+            gap: 2rem;
+        }
+        body[data-layout-mode="desktop"] .footer-link {
+            font-size: 0.875rem;
         }
     </style>
 </head>
@@ -652,6 +869,12 @@
         <span id="notificationText"></span>
     </div>
 
+    <!-- Layout Toggle Button (floating) -->
+    <button id="layout-toggle-btn">
+        <i id="layout-mode-icon" class="fa-solid fa-mobile-screen-button"></i> 
+        <span id="layout-mode-text" class="layout-text">Mode Auto</span>
+    </button>
+
     <script>
         // Loader
         window.addEventListener('load', () => {
@@ -747,6 +970,56 @@
                 this.style.transform = 'translateY(0)';
             });
         });
+
+        // --- Layout Toggle Logic ---
+        const layoutToggleBtn = document.getElementById('layout-toggle-btn');
+        const layoutModeIcon = document.getElementById('layout-mode-icon');
+        const layoutModeText = document.getElementById('layout-mode-text');
+        const bodyElement = document.body; // Apply data-layout-mode to body
+
+        let currentLayoutMode = 'auto'; // 'auto', 'mobile', 'desktop'
+
+        /**
+         * Updates the display of the layout toggle button and applies the layout mode to the body.
+         */
+        const updateLayoutDisplay = () => {
+            bodyElement.dataset.layoutMode = currentLayoutMode;
+
+            if (currentLayoutMode === 'auto') {
+                layoutModeText.textContent = 'Mode Auto';
+                layoutModeIcon.className = 'fa-solid fa-mobile-screen-button';
+                bodyElement.removeAttribute('data-layout-mode'); // Remove attribute for auto mode
+            } else if (currentLayoutMode === 'mobile') {
+                layoutModeText.textContent = 'Mode Mobile';
+                layoutModeIcon.className = 'fa-solid fa-mobile-screen';
+                bodyElement.setAttribute('data-layout-mode', 'mobile');
+            } else if (currentLayoutMode === 'desktop') {
+                layoutModeText.textContent = 'Mode Ordinateur';
+                layoutModeIcon.className = 'fa-solid fa-desktop';
+                bodyElement.setAttribute('data-layout-mode', 'desktop');
+            }
+        };
+
+        /**
+         * Toggles the layout mode between 'auto', 'mobile', and 'desktop'.
+         */
+        const toggleLayoutMode = () => {
+            if (currentLayoutMode === 'auto') {
+                currentLayoutMode = 'mobile';
+            } else if (currentLayoutMode === 'mobile') {
+                currentLayoutMode = 'desktop';
+            } else {
+                currentLayoutMode = 'auto';
+            }
+            updateLayoutDisplay();
+        };
+
+        // Attach event listener to the layout toggle button
+        layoutToggleBtn.addEventListener('click', toggleLayoutMode);
+
+        // Set initial layout display on page load
+        document.addEventListener('DOMContentLoaded', updateLayoutDisplay);
+
     </script>
 </body>
 </html>
