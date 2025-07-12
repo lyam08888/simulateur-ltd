@@ -400,7 +400,8 @@
                         <!-- Add other tests here if needed -->
                         <a href="#" onclick="showNotification('Ce test est en cours de développement.'); return false;" class="dropdown-item">Test de Connaissances</a>
                         <!-- NEW: Test Comportemental -->
-                        <a href="#" onclick="showNotification('Le test comportemental est en cours de développement.'); return false;" class="dropdown-item">Test Comportemental <span class="new-badge">NOUVEAU</span></a>
+                        <!-- Updated: Removed coming-soon class, enabled button, and linked to testperso.html -->
+                        <a href="#" onclick="launchGame('testperso.html'); return false;" class="dropdown-item">Test Comportemental</a>
                     </div>
                 </div>
                 <a href="#" onclick="showNotification('La page de connexion est en cours de construction.'); return false;" class="nav-link" style="background: var(--primary);color:#fff;padding:0.5rem 1.3rem;border-radius:8px;font-weight:700;margin-left:1rem;">Connexion</a>
@@ -495,10 +496,11 @@
                     <div class="game-card-content"><span class="game-icon">📚</span><h3 class="game-title">Test de Connaissances</h3><p class="game-description">Évaluez vos connaissances techniques et théoriques sur les fondamentaux du BTP.</p></div>
                     <button class="game-button" disabled>Prochainement</button>
                 </div>
-                <div class="game-card coming-soon animate-in">
-                    <span class="coming-soon-badge">NOUVEAU</span>
+                <!-- Updated: Removed coming-soon class, enabled button, and linked to testperso.html -->
+                <div class="game-card animate-in">
+                    <!-- Removed <span class="coming-soon-badge">NOUVEAU</span> -->
                     <div class="game-card-content"><span class="game-icon">🤝</span><h3 class="game-title">Test Comportemental</h3><p class="game-description">Mesurez vos compétences comportementales et interpersonnelles essentielles en entreprise.</p></div>
-                    <button class="game-button" disabled>Prochainement</button>
+                    <a href="#" onclick="launchGame('testperso.html'); return false;" class="game-button">Commencer le Test</a>
                 </div>
             </div>
         </section>
