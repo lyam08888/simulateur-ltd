@@ -29,6 +29,29 @@
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
+        /* Dark Mode specific variables - these will override the above when .dark-mode is active */
+        body.dark-mode {
+            --background: #0F172A; /* Keep original dark background */
+            --surface: #1E293B;
+            --surface-light: #334155;
+            --text-primary: #F8FAFC;
+            --text-secondary: #CBD5E1;
+            --border: #334155;
+        }
+
+        /* Light Mode (Normal Mode) variables */
+        body.light-mode {
+            --primary: #4F46E5;
+            --primary-dark: #4338CA;
+            --secondary: #10B981;
+            --background: #F8FAFC; /* Light background */
+            --surface: #FFFFFF; /* Light surface */
+            --surface-light: #E2E8F0; /* Lighter surface for elements */
+            --text-primary: #1E293B; /* Dark text */
+            --text-secondary: #64748B; /* Darker secondary text */
+            --border: #CBD5E1; /* Lighter border */
+        }
+
         html { scroll-behavior: smooth; }
         body {
             font-family: 'Inter', sans-serif;
@@ -37,6 +60,7 @@
             line-height: 1.6;
             overflow-x: hidden; /* Prevent horizontal scroll */
             margin: 0; /* Ensure no default body margin */
+            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for theme change */
         }
         body::before {
             content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -64,6 +88,10 @@
         .header {
             position: fixed; top: 0; left: 0; right: 0; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); z-index: 100; transition: all 0.3s ease;
         }
+        body.light-mode .header {
+            background: rgba(255, 255, 255, 0.9);
+            border-bottom-color: var(--border);
+        }
         .header.scrolled { box-shadow: var(--shadow-lg); }
         .header-content {
             max-width: 1200px; margin: 0 auto; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;
@@ -89,6 +117,19 @@
         .dropdown.open .dropdown-menu { display: block; opacity: 1; visibility: visible; top: calc(100% + 5px); }
         .dropdown-item { display: block; padding: 0.75rem 1.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; transition: background-color 0.2s ease, color 0.2s ease; }
         .dropdown-item:hover { background-color: var(--surface-light); color: var(--text-primary); }
+        /* NEW: Badge for new features in dropdown */
+        .new-badge {
+            background-color: var(--secondary); /* Green color */
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.2em 0.5em;
+            border-radius: 8px;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+            display: inline-block;
+        }
+
 
         .main { max-width: 1200px; margin: 0 auto; padding: 6rem 2rem 4rem; position: relative; z-index: 2; }
         .footer { background: var(--surface); border-top: 1px solid var(--border); padding: 3rem 0; margin-top: 4rem; }
@@ -143,7 +184,11 @@
         .job-card-body { margin: 1.5rem 0; flex-grow: 1; }
         .job-tags { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; /* Allow tags to wrap */ }
         .job-tag { background: var(--surface-light); color: var(--text-secondary); font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 15px; }
-        .job-card-footer { margin-top: auto; }
+        .job-card-footer {
+            margin-top: auto;
+            display: flex; /* Use flexbox to control button width */
+            justify-content: center; /* Center the button */
+        }
 
         /* NEW: Poll Section */
         #poll-section { background: var(--surface); padding: 2rem; border-radius: var(--radius); margin-bottom: 4rem; }
@@ -155,23 +200,38 @@
         .poll-result-bar span { position: relative; z-index: 2; }
         .poll-result-fill { position: absolute; top: 0; left: 0; height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); z-index: 1; transition: width 0.5s ease; }
 
+        /* NEW: Tests Section (reusing games-grid and game-card for consistency) */
+        #tests-section { margin-bottom: 4rem; }
+        .tests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
         /* --- Floating Elements & Modals --- */
         .notification { position: fixed; bottom: 2rem; right: 2rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.5rem; box-shadow: var(--shadow-lg); transform: translateX(calc(100% + 2rem)); transition: transform 0.4s ease-in-out; z-index: 1010; }
         .notification.show { transform: translateX(0); }
 
-        #layout-toggle-btn, #personality-test-btn, #chatbot-button {
+        /* Removed #personality-test-btn from this selector as it's no longer a floating button */
+        #layout-toggle-btn, #chatbot-button, #theme-toggle-btn {
             position: fixed; z-index: 1000; padding: 1rem; border-radius: 9999px; box-shadow: var(--shadow-lg);
             transition: all 0.2s ease; border: 1px solid var(--border); display: flex;
             align-items: center; justify-content: center; gap: 0.5rem; font-weight: 600; cursor: pointer;
         }
-        #layout-toggle-btn:hover, #personality-test-btn:hover, #chatbot-button:hover { transform: translateY(-2px); box-shadow: 0 12px 18px -4px rgba(0,0,0,0.2); }
+        /* Removed #personality-test-btn from this selector */
+        #layout-toggle-btn:hover, #chatbot-button:hover, #theme-toggle-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 18px -4px rgba(0,0,0,0.2); }
+        
+        /* Positioning for floating buttons (adjusted) */
         #layout-toggle-btn { bottom: 1.5rem; right: 1.5rem; background-color: var(--surface-light); color: white; }
-        #personality-test-btn { bottom: 1.5rem; left: 1.5rem; background-color: var(--secondary); color: white; animation: pulse 2s infinite; }
-        #chatbot-button { bottom: 5.5rem; right: 1.5rem; background-color: var(--primary); color: white; }
+        /* #personality-test-btn was here, now removed */
+        #chatbot-button { bottom: 6rem; right: 1.5rem; background-color: var(--primary); color: white; } /* Adjusted bottom */
+        #theme-toggle-btn { bottom: 10.5rem; right: 1.5rem; background-color: var(--surface-light); color: white; } /* Adjusted bottom */
+
         @keyframes pulse { 50% { transform: scale(1.05); } }
 
         #chatbot-container {
-            position: fixed; bottom: 9.5rem; right: 1.5rem; width: 380px; height: 500px;
+            position: fixed; bottom: 10rem; right: 1.5rem; /* Adjusted bottom to align with new chatbot button position */
+            width: 380px; height: 500px;
             background-color: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
             box-shadow: var(--shadow-lg); display: flex; flex-direction: column; z-index: 1001;
             transform: translateY(100%) scale(0.8); opacity: 0; pointer-events: none;
@@ -213,8 +273,9 @@
             .main { padding: 5rem 1.5rem 3rem; }
             .hero h1 { font-size: 2.5rem; }
             .hero p { font-size: 1.1rem; }
-            .games-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+            .games-grid, .tests-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
             .job-board-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+            .job-card-footer .game-button { max-width: 200px; } /* Limit button width on larger screens */
         }
 
         @media (max-width: 768px) {
@@ -243,27 +304,36 @@
             .hero p { font-size: 1rem; }
             .stats { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
             .stat-number { font-size: 1.75rem; }
-            .games-grid, .job-board-grid { grid-template-columns: 1fr; /* Single column for smaller tablets and phones */ }
+            .games-grid, .job-board-grid, .tests-grid { grid-template-columns: 1fr; /* Single column for smaller tablets and phones */ }
             .game-card, .job-card { padding: 1.5rem; }
             .poll-options { grid-template-columns: 1fr; /* Single column for poll options */ }
             .footer-main { flex-direction: column; align-items: center; text-align: center; }
             .footer-links { flex-direction: column; gap: 1rem; }
+
+            /* Adjust chatbot container position for smaller screens */
+            #chatbot-container { bottom: 9.5rem; } /* Adjusted bottom to align with new chatbot button position */
+            .job-card-footer .game-button { max-width: 180px; } /* Limit button width on smaller tablets */
         }
 
         @media (max-width: 640px) {
             /* Existing rule, keeping it */
             #layout-toggle-btn .layout-text,
-            #personality-test-btn .button-text,
-            #chatbot-button .button-text {
+            #chatbot-button .button-text,
+            #theme-toggle-btn .button-text { /* Removed #personality-test-btn from this selector */
                 display: none;
             }
             #layout-toggle-btn,
-            #personality-test-btn,
-            #chatbot-button {
+            #chatbot-button,
+            #theme-toggle-btn { /* Removed #personality-test-btn from this selector */
                 padding: 0.75rem;
                 font-size: 1.1rem; /* Make icons slightly larger */
             }
-            #chatbot-button { bottom: 5rem; } /* Adjust position if text is hidden */
+            
+            /* Adjust button positions for very small screens */
+            #layout-toggle-btn { bottom: 1.5rem; right: 1rem; }
+            /* #personality-test-btn was here, now removed */
+            #chatbot-button { bottom: 5.5rem; right: 1rem; } /* Adjusted bottom */
+            #theme-toggle-btn { bottom: 9.5rem; right: 1rem; } /* Adjusted bottom */
 
             /* Further adjustments for very small phones */
             .header-content { padding: 0.75rem; }
@@ -290,7 +360,7 @@
             #chatbot-container {
                 width: 95%; /* Make chatbot wider on small screens */
                 right: 2.5%; /* Center it roughly */
-                bottom: 5rem; /* Adjust bottom position */
+                bottom: 9.5rem; /* Adjusted bottom to align with new chatbot button position */
                 height: 400px; /* Slightly shorter */
             }
             .chatbot-messages { padding: 0.75rem; }
@@ -300,6 +370,7 @@
             .quiz-modal { padding: 1.5rem; width: 95%; }
             .quiz-question h3 { font-size: 1.1rem; }
             .quiz-options label { padding: 0.8rem; font-size: 0.9rem; }
+            .job-card-footer .game-button { max-width: 150px; } /* Limit button width on smallest screens */
         }
     </style>
 </head>
@@ -316,7 +387,20 @@
                         <a href="#games" class="dropdown-item">Simulateurs</a>
                         <a href="#history-section" class="dropdown-item">Histoire du BTP</a>
                         <a href="#jobs-section" class="dropdown-item">Offres d'emploi</a>
+                        <a href="#tests-section" class="dropdown-item">Nos Tests</a> <!-- NEW: Link to tests section -->
                         <a href="https://www.ltd-international.com/" target="_blank" class="dropdown-item">LTD International</a>
+                    </div>
+                </div>
+                <!-- NEW: Tests Dropdown -->
+                <div class="dropdown" id="tests-dropdown">
+                    <button class="nav-link dropdown-toggle">Tests <i class="fas fa-chevron-down"></i></button>
+                    <div class="dropdown-menu">
+                        <!-- Personality Test moved here -->
+                        <a href="#" onclick="window.quizLogic.openModal(); return false;" class="dropdown-item">Test d'Orientation</a>
+                        <!-- Add other tests here if needed -->
+                        <a href="#" onclick="showNotification('Ce test est en cours de développement.'); return false;" class="dropdown-item">Test de Connaissances</a>
+                        <!-- NEW: Test Comportemental -->
+                        <a href="#" onclick="showNotification('Le test comportemental est en cours de développement.'); return false;" class="dropdown-item">Test Comportemental <span class="new-badge">NOUVEAU</span></a>
                     </div>
                 </div>
                 <a href="#" onclick="showNotification('La page de connexion est en cours de construction.'); return false;" class="nav-link" style="background: var(--primary);color:#fff;padding:0.5rem 1.3rem;border-radius:8px;font-weight:700;margin-left:1rem;">Connexion</a>
@@ -377,7 +461,7 @@
                         <div class="job-tags"><span class="job-tag">50-60k€/an</span><span class="job-tag">5+ ans exp.</span><span class="job-tag">CDI</span></div>
                         <p class="game-description">Pilotez des chantiers de construction d'envergure et managez vos équipes avec leadership.</p>
                     </div>
-                    <div class="job-card-footer"><a href="#" onclick="showNotification('Candidature envoyée (simulation)')" class="game-button" style="width: 100%;">Postuler</a></div>
+                    <div class="job-card-footer"><a href="#" onclick="showNotification('Candidature envoyée (simulation)')" class="game-button">Postuler</a></div>
                 </div>
                 <div class="job-card">
                     <div class="job-card-header"><h3>Projeteur BIM / CVC</h3><span>Lyon, Auvergne-Rhône-Alpes</span></div>
@@ -385,7 +469,7 @@
                         <div class="job-tags"><span class="job-tag">40-50k€/an</span><span class="job-tag">2+ ans exp.</span><span class="job-tag">CDI</span></div>
                         <p class="game-description">Modélisez des systèmes CVC complexes pour des bâtiments tertiaires et industriels sur Revit.</p>
                     </div>
-                    <div class="job-card-footer"><a href="#" onclick="showNotification('Candidature envoyée (simulation)')" class="game-button" style="width: 100%;">Postuler</a></div>
+                    <div class="job-card-footer"><a href="#" onclick="showNotification('Candidature envoyée (simulation)')" class="game-button">Postuler</a></div>
                 </div>
                 <div class="job-card">
                     <div class="job-card-header"><h3>Géomètre-Topographe Junior</h3><span>Bordeaux, Nouvelle-Aquitaine</span></div>
@@ -393,7 +477,28 @@
                         <div class="job-tags"><span class="job-tag">30-38k€/an</span><span class="job-tag">0-2 ans exp.</span><span class="job-tag">CDI</span></div>
                         <p class="game-description">Réalisez des levés topographiques et des implantations sur des projets d'infrastructures variés.</p>
                     </div>
-                    <div class="job-card-footer"><a href="#" onclick="showNotification('Candidature envoyée (simulation)')" class="game-button" style="width: 100%;">Postuler</a></div>
+                    <div class="job-card-footer"><a href="#" onclick="showNotification('Candidature envoyée (simulation)')" class="game-button">Postuler</a></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NEW: Tests Section -->
+        <section id="tests-section" class="tests-section">
+            <h2 class="section-title animate-in">Nos Tests et Évaluations</h2>
+            <div class="tests-grid">
+                <div class="game-card animate-in">
+                    <div class="game-card-content"><span class="game-icon">🧠</span><h3 class="game-title">Test d'Orientation</h3><p class="game-description">Découvrez les métiers du BTP qui correspondent le mieux à votre profil et vos intérêts.</p></div>
+                    <a href="#" onclick="window.quizLogic.openModal(); return false;" class="game-button">Commencer le Test</a>
+                </div>
+                <div class="game-card coming-soon animate-in">
+                    <span class="coming-soon-badge">Bientôt</span>
+                    <div class="game-card-content"><span class="game-icon">📚</span><h3 class="game-title">Test de Connaissances</h3><p class="game-description">Évaluez vos connaissances techniques et théoriques sur les fondamentaux du BTP.</p></div>
+                    <button class="game-button" disabled>Prochainement</button>
+                </div>
+                <div class="game-card coming-soon animate-in">
+                    <span class="coming-soon-badge">NOUVEAU</span>
+                    <div class="game-card-content"><span class="game-icon">🤝</span><h3 class="game-title">Test Comportemental</h3><p class="game-description">Mesurez vos compétences comportementales et interpersonnelles essentielles en entreprise.</p></div>
+                    <button class="game-button" disabled>Prochainement</button>
                 </div>
             </div>
         </section>
@@ -429,9 +534,10 @@
 
     <div class="notification" id="notification"><span id="notificationText"></span></div>
 
+    <!-- Removed #personality-test-btn from here -->
     <button id="layout-toggle-btn"><i id="layout-mode-icon" class="fa-solid fa-mobile-screen-button"></i><span id="layout-mode-text" class="layout-text">Mode Auto</span></button>
-    <button id="personality-test-btn"><i class="fa-solid fa-brain"></i><span class="button-text">Test d'Orientation</span></button>
     <button id="chatbot-button"><i class="fa-solid fa-comments"></i><span class="button-text">Chat BTP</span></button>
+    <button id="theme-toggle-btn"><i id="theme-mode-icon" class="fa-solid fa-moon"></i><span id="theme-mode-text" class="button-text">Mode Nuit</span></button>
 
     <div id="chatbot-container">
         <div class="chatbot-header"><span>Chatbot BTP</span><button id="close-chatbot-btn"><i class="fa-solid fa-times"></i></button></div>
@@ -462,12 +568,41 @@
         });
         const header = document.getElementById('header');
         if(header) window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 50));
-        const dropdown = document.getElementById('nav-dropdown');
-        if (dropdown) {
-            const toggle = dropdown.querySelector('.dropdown-toggle');
-            toggle.addEventListener('click', () => dropdown.classList.toggle('open'));
-            window.addEventListener('click', (e) => { if (!dropdown.contains(e.target)) dropdown.classList.remove('open'); });
+        
+        // Handle existing dropdowns
+        const navDropdown = document.getElementById('nav-dropdown');
+        if (navDropdown) {
+            const toggle = navDropdown.querySelector('.dropdown-toggle');
+            toggle.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent click from closing immediately
+                navDropdown.classList.toggle('open');
+                // Close other dropdowns if open
+                document.querySelectorAll('.dropdown').forEach(d => {
+                    if (d !== navDropdown) d.classList.remove('open');
+                });
+            });
         }
+
+        // Handle new tests dropdown
+        const testsDropdown = document.getElementById('tests-dropdown');
+        if (testsDropdown) {
+            const toggle = testsDropdown.querySelector('.dropdown-toggle');
+            toggle.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent click from closing immediately
+                testsDropdown.classList.toggle('open');
+                // Close other dropdowns if open
+                document.querySelectorAll('.dropdown').forEach(d => {
+                    if (d !== testsDropdown) d.classList.remove('open');
+                });
+            });
+        }
+
+        // Close all dropdowns when clicking outside
+        window.addEventListener('click', (e) => {
+            document.querySelectorAll('.dropdown').forEach(d => {
+                if (!d.contains(e.target)) d.classList.remove('open');
+            });
+        });
     });
 
     // --- Global Functions ---
@@ -617,7 +752,7 @@
         const container = document.getElementById('chatbot-container'), closeBtn = document.getElementById('close-chatbot-btn'), messages = document.getElementById('chatbot-messages'), input = document.getElementById('chatbot-input'), sendBtn = document.getElementById('chatbot-send-btn'), suggestionsContainer = document.getElementById('chatbot-suggestions');
         const suggestions = ["Quels sont les salaires ?", "Parle-moi du métier de géomètre.", "Qu'est-ce que le BIM ?", "Comment devenir directeur de travaux ?"];
         let chatHistory = [{ role: "model", parts: [{ text: "Bonjour ! Je suis votre assistant BTP. Posez-moi une question ou choisissez une suggestion." }] }];
-        function populateSuggestions() { suggestionsContainer.innerHTML = ''; suggestions.forEach(s => { const c = document.createElement('button'); c.className = 'suggestion-chip'; c.textContent = s; c.onclick = () => { input.value = s; sendMessage(); }; suggestionsContainer.appendChild(c); }); }
+        function populateSuggestions() { suggestionsContainer.innerHTML = ''; suggestions.forEach(s => { const c = document.createElement('button'); c.className = 'suggestion-chip'; c.textContent = s; c.onclick = () => { input.value = s; sendMessage(); }; suggestionsContainer.appendChild(c); } ); }
         function toggleChatbot() { container.classList.toggle('open'); if (container.classList.contains('open')) { addMessage('bot', chatHistory[0].parts[0].text, true); populateSuggestions(); input.focus(); } }
         function addMessage(sender, text, isInitial = false) { if (isInitial) messages.innerHTML = ''; const m = document.createElement('div'); m.className = `message-bubble ${sender}`; m.textContent = text; messages.appendChild(m); messages.scrollTop = messages.scrollHeight; }
         async function sendMessage() {
@@ -637,12 +772,18 @@
     
     // Career Quiz
     (() => {
-        const quizBtn = document.getElementById('personality-test-btn'); if(!quizBtn) return;
+        // Removed quizBtn variable and its event listener as it's now a dropdown item
         const modalOverlay = document.getElementById('quiz-modal-overlay'), quizContent = document.getElementById('quiz-content'), closeBtn = document.getElementById('quiz-close-btn');
         const quizData = [ { question: "Sur un projet, qu'est-ce qui vous motive le plus ?", options: { a: "La vision globale et la coordination des équipes.", b: "La précision technique et la résolution de problèmes.", c: "La conception et la création de plans détaillés." } }, { question: "Quel type d'environnement de travail préférez-vous ?", options: { a: "Un mélange de bureau et de terrain, avec interactions.", b: "Principalement sur le terrain, avec des technologies.", c: "Essentiellement au bureau, sur des logiciels de conception." } }, { question: "Face à un défi, votre première réaction est de :", options: { a: "Planifier, déléguer et superviser la solution.", b: "Analyser les données, mesurer et calculer l'approche.", c: "Dessiner et modéliser différentes solutions." } } ];
         const results = { a: { title: "Directeur de Travaux", link: "directeur-travaux" }, b: { title: "Géomètre-Topographe", link: "geometre-topographe" }, c: { title: "Projeteur VRD", link: "projeteur-vrd" } };
         let currentQuestionIndex = 0, scores = { a: 0, b: 0, c: 0 };
-        function openModal() { modalOverlay.classList.add('show'); currentQuestionIndex = 0; scores = { a: 0, b: 0, c: 0 }; renderQuestion(); }
+
+        function openModal() {
+            modalOverlay.classList.add('show');
+            currentQuestionIndex = 0;
+            scores = { a: 0, b: 0, c: 0 };
+            renderQuestion();
+        }
         function closeModal() { modalOverlay.classList.remove('show'); }
         function renderQuestion() {
             if (currentQuestionIndex >= quizData.length) { renderResult(); return; }
@@ -657,8 +798,65 @@
             let maxScore = 'a'; if (scores.b > scores[maxScore]) maxScore = 'b'; if (scores.c > scores[maxScore]) maxScore = 'c'; const result = results[maxScore];
             quizContent.innerHTML = `<div class="quiz-result"><h2>Votre profil : ${result.title} !</h2><p>Ce métier semble correspondre à vos intérêts. Lancez le simulateur pour le découvrir !</p><a href="#" onclick="launchGame('${result.link}')" class="game-button">Lancer le simulateur</a></div>`;
         }
-        window.quizLogic = { nextQuestion };
-        quizBtn.addEventListener('click', openModal); closeBtn.addEventListener('click', closeModal); modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
+        
+        // Expose functions globally for direct calls from HTML onclick
+        window.quizLogic = {
+            openModal: openModal,
+            nextQuestion: nextQuestion
+        };
+
+        closeBtn.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
+    })();
+
+    // Theme Toggle (Night/Normal Mode)
+    (() => {
+        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        if (!themeToggleBtn) return;
+
+        const icon = document.getElementById('theme-mode-icon');
+        const text = document.getElementById('theme-mode-text');
+        const body = document.body;
+
+        // Function to apply the theme
+        function applyTheme(isDarkMode) {
+            if (isDarkMode) {
+                body.classList.add('dark-mode');
+                body.classList.remove('light-mode');
+                icon.className = 'fa-solid fa-sun';
+                text.textContent = 'Mode Jour';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.add('light-mode');
+                body.classList.remove('dark-mode');
+                icon.className = 'fa-solid fa-moon';
+                text.textContent = 'Mode Nuit';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Check for saved theme on load
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            applyTheme(true);
+        } else if (savedTheme === 'light') {
+            applyTheme(false);
+        } else {
+            // Default to dark mode if no preference is saved
+            applyTheme(true);
+        }
+
+        // Event listener for button click
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = localStorage.getItem('theme');
+            if (currentTheme === 'dark') {
+                applyTheme(false); // Switch to light
+                showNotification("Passage en Mode Jour");
+            } else {
+                applyTheme(true); // Switch to dark
+                showNotification("Passage en Mode Nuit");
+            }
+        });
     })();
     </script>
 </body>
