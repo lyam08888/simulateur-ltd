@@ -1,1458 +1,543 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Simulateur de gestion de chantier et jeux pédagogiques">
-    <meta name="robots" content="index,follow">
-    <link rel="canonical" href="https://ltd-simulator.example.com/index.html">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <title>LTD Simulator - Menu Principal</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Ctext y='96' font-size='96'%3E🏗️%3C/text%3E%3Csvg%3E">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Base styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #4F46E5;
-            --primary-dark: #4338CA;
-            --secondary: #10B981;
-            --background: #0F172A;
-            --surface: #1E293B;
-            --surface-light: #334155;
-            --text-primary: #F8FAFC;
-            --text-secondary: #CBD5E1;
-            --border: #334155;
-            --radius: 12px;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--background);
-            color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        /* Subtle background pattern */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image:
-                radial-gradient(circle at 20% 50%, rgba(79, 70, 229, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        /* Loading screen */
-        .loader-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--background);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
-        }
-
-        .loader {
-            width: 60px;
-            height: 60px;
-            border: 3px solid var(--surface-light);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Header */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
-            z-index: 100;
-            transition: all 0.3s ease;
-        }
-
-        .header.scrolled {
-            box-shadow: var(--shadow-lg);
-        }
-
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            text-decoration: none;
-        }
-
-        .logo-icon {
-            font-size: 2rem;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .nav-link {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s ease;
-            padding: 0.5rem 0;
-        }
-
-        .nav-link:hover {
-            color: var(--text-primary);
-        }
-
-        /* Dropdown Menu Styles */
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .dropdown-toggle {
-            background: none;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .dropdown-toggle .fa-chevron-down {
-            font-size: 0.7rem;
-            transition: transform 0.2s ease;
-        }
-
-        .dropdown.open .dropdown-toggle .fa-chevron-down {
-            transform: rotate(180deg);
-        }
-
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            top: calc(100% + 10px);
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-lg);
-            min-width: 220px;
-            z-index: 110;
-            padding: 0.5rem 0;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.2s ease, visibility 0.2s ease, top 0.2s ease;
-        }
-
-        .dropdown.open .dropdown-menu {
-            display: block;
-            opacity: 1;
-            visibility: visible;
-            top: calc(100% + 5px);
-        }
-
-        .dropdown-item {
-            display: block;
-            padding: 0.75rem 1.5rem;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: background-color 0.2s ease, color 0.2s ease;
-        }
-
-        .dropdown-item:hover {
-            background-color: var(--surface-light);
-            color: var(--text-primary);
-        }
-
-        /* Main content */
-        .main {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 6rem 2rem 4rem;
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Hero section */
-        .hero {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-
-        .hero h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Stats */
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 4rem;
-        }
-
-        .stat-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--primary);
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-        }
-
-        /* Games grid */
-        .games-section {
-            margin-bottom: 4rem;
-        }
-
-        .section-title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .games-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 2rem;
-        }
-
-        .game-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 2rem;
-            text-align: center;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .game-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--primary);
-        }
-
-        .game-card.coming-soon {
-            opacity: 0.7;
-        }
-
-        .game-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            display: block;
-        }
-
-        .game-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-
-        .game-description {
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
-            font-size: 0.875rem;
-            line-height: 1.5;
-        }
-
-        .game-button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 0.75rem 2rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 1rem;
-        }
-
-        .game-button:hover:not(:disabled) {
-            background: var(--primary-dark);
-            transform: scale(1.05);
-        }
-
-        .game-button:disabled {
-            background: var(--surface-light);
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-
-        .coming-soon-badge {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: var(--secondary);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        /* Features section */
-        .features {
-            background: var(--surface);
-            border-radius: var(--radius);
-            padding: 3rem;
-            margin-bottom: 4rem;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .feature {
-            text-align: center;
-        }
-
-        .feature-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            display: block;
-        }
-
-        .feature-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .feature-description {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-        }
-
-        /* Footer */
-        .footer {
-            background: var(--surface);
-            border-top: 1px solid var(--border);
-            padding: 3rem 0;
-            margin-top: 4rem;
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 2rem;
-        }
-
-        .footer-links {
-            display: flex;
-            gap: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .footer-link {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.875rem;
-            transition: color 0.2s ease;
-        }
-
-        .footer-link:hover {
-            color: var(--text-primary);
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .animate-in {
-            animation: fadeIn 0.6s ease forwards;
-        }
-
-        /* Notification */
-        .notification {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1rem 1.5rem;
-            box-shadow: var(--shadow-lg);
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
-            z-index: 200;
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        /* Info section - New */
-        .info-section {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            border-radius: var(--radius);
-            padding: 3rem;
-            margin-bottom: 4rem;
-            color: white;
-            text-align: center;
-        }
-
-        .info-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .info-text {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            max-width: 800px;
-            margin: 0 auto;
-            line-height: 1.7;
-        }
-
-        .info-highlight {
-            font-weight: 700;
-            text-decoration: underline;
-        }
-
-        /* Floating Layout Toggle Button */
-        #layout-toggle-btn {
-            position: fixed;
-            bottom: 1.5rem; /* 24px */
-            right: 1.5rem; /* 24px */
-            z-index: 50; /* Ensure it's on top */
-            background-color: var(--surface-light); /* Matches secondary button style */
-            color: white;
-            padding: 1rem; /* Slightly larger for touch */
-            border-radius: 9999px; /* Fully rounded */
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-            transition: all 0.2s ease;
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        #layout-toggle-btn:hover {
-            background-color: #4b5563; /* Darker gray on hover */
-            transform: translateY(-2px);
-            box-shadow: 0 12px 18px -4px rgba(0,0,0,0.2), 0 6px 8px -3px rgba(0,0,0,0.1);
-        }
-        /* Hide text on small screens for the floating button */
-        @media (max-width: 640px) {
-            #layout-toggle-btn .layout-text {
-                display: none;
-            }
-            #layout-toggle-btn {
-                padding: 0.75rem; /* Smaller padding when text is hidden */
-            }
-        }
-
-        /* New Floating Personality Test Button */
-        #personality-test-btn {
-            position: fixed;
-            bottom: 1.5rem; /* 24px */
-            left: 1.5rem; /* 24px - Position on the left */
-            z-index: 50; /* Ensure it's on top */
-            background-color: var(--secondary); /* Use secondary color for prominence */
-            color: white;
-            padding: 1rem; /* Slightly larger for touch */
-            border-radius: 9999px; /* Fully rounded */
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-            transition: all 0.2s ease;
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            animation: pulse 2s infinite; /* Add pulse animation */
-        }
-        #personality-test-btn:hover {
-            background-color: #0F9F72; /* Darker secondary on hover */
-            transform: translateY(-2px);
-            box-shadow: 0 12px 18px -4px rgba(0,0,0,0.2), 0 6px 8px -3px rgba(0,0,0,0.1);
-            animation: none; /* Stop pulse on hover */
-        }
-        /* Pulse animation for the personality test button */
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-            }
-            50% {
-                transform: scale(1.05);
-                box-shadow: 0 12px 18px -4px rgba(0,0,0,0.2), 0 6px 8px -3px rgba(0,0,0,0.1);
-            }
-            100% {
-                transform: scale(1);
-                box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-            }
-        }
-
-        /* Hide text on small screens for the floating button */
-        @media (max-width: 640px) {
-            #personality-test-btn .button-text {
-                display: none;
-            }
-            #personality-test-btn {
-                padding: 0.75rem; /* Smaller padding when text is hidden */
-            }
-        }
-
-        /* Chatbot styles */
-        #chatbot-button {
-            position: fixed;
-            bottom: 5.5rem; /* Au-dessus du bouton de mode d'affichage */
-            right: 1.5rem;
-            z-index: 50;
-            background-color: var(--primary);
-            color: white;
-            padding: 1rem;
-            border-radius: 9999px;
-            box-shadow: var(--shadow-lg);
-            transition: all 0.2s ease;
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        #chatbot-button:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 12px 18px -4px rgba(0,0,0,0.2), 0 6px 8px -3px rgba(0,0,0,0.1);
-        }
-        @media (max-width: 640px) {
-            #chatbot-button .button-text {
-                display: none;
-            }
-            #chatbot-button {
-                padding: 0.75rem;
-                bottom: 5rem; /* Ajusté pour mobile */
-            }
-        }
-
-        #chatbot-container {
-            position: fixed;
-            bottom: 6.5rem; /* Au-dessus du bouton de chatbot */
-            right: 1.5rem;
-            width: 380px;
-            height: 500px;
-            background-color: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-lg);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            z-index: 60;
-            transform: translateY(100%) scale(0.8);
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s ease-in-out;
-            transform-origin: bottom right;
-        }
-
-        #chatbot-container.open {
-            transform: translateY(0) scale(1);
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .chatbot-header {
-            background-color: var(--primary);
-            color: white;
-            padding: 0.8rem 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-            border-top-left-radius: var(--radius);
-            border-top-right-radius: var(--radius);
-        }
-
-        .chatbot-header button {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-        .chatbot-header button:hover {
-            transform: scale(1.1);
-        }
-
-        .chatbot-messages {
-            flex-grow: 1;
-            padding: 1rem;
-            overflow-y: auto;
-            background-color: var(--background);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .message-bubble {
-            max-width: 80%;
-            padding: 0.6rem 0.9rem;
-            border-radius: 12px;
-            margin-bottom: 0.7rem;
-            line-height: 1.4;
-            word-wrap: break-word;
-        }
-
-        .message-bubble.user {
-            background-color: var(--primary);
-            color: white;
-            margin-left: auto;
-            border-bottom-right-radius: 4px;
-        }
-
-        .message-bubble.bot {
-            background-color: var(--surface-light);
-            color: var(--text-primary);
-            margin-right: auto;
-            border-bottom-left-radius: 4px;
-        }
-
-        .chatbot-input-area {
-            display: flex;
-            padding: 0.8rem 1rem;
-            background-color: var(--surface);
-            border-bottom-left-radius: var(--radius);
-            border-bottom-right-radius: var(--radius);
-        }
-
-        .chatbot-input-area input {
-            flex-grow: 1;
-            padding: 0.6rem 1rem;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            background-color: var(--background);
-            color: var(--text-primary);
-            font-size: 0.9rem;
-            margin-right: 0.5rem;
-            outline: none;
-        }
-
-        .chatbot-input-area button {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 0.6rem 1rem;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-        .chatbot-input-area button:hover {
-            background-color: var(--primary-dark);
-        }
-        .chatbot-input-area button:disabled {
-            background-color: var(--surface-light);
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        .typing-indicator {
-            font-style: italic;
-            color: var(--text-secondary);
-            margin-bottom: 0.7rem;
-            text-align: center;
-            font-size: 0.8rem;
-        }
-
-        /* Mobile Mode Forced */
-        body[data-layout-mode="mobile"] .header-content {
-            padding: 0.4rem 0.5rem;
-        }
-        body[data-layout-mode="mobile"] .logo {
-            font-size: 0.9rem;
-            gap: 0.2rem;
-        }
-        body[data-layout-mode="mobile"] .logo-icon {
-            font-size: 1.2rem;
-        }
-        body[data-layout-mode="mobile"] .nav-links {
-            gap: 0.4rem;
-        }
-        body[data-layout-mode="mobile"] .nav-link {
-            font-size: 0.7rem;
-            padding: 0.15rem 0.5rem !important;
-        }
-        body[data-layout-mode="mobile"] .main {
-            padding: 3.5rem 0.5rem 1.5rem;
-        }
-        body[data-layout-mode="mobile"] .hero h1 {
-            font-size: 1.6rem;
-            margin-bottom: 0.6rem;
-        }
-        body[data-layout-mode="mobile"] .hero p {
-            font-size: 0.85rem;
-            line-height: 1.4;
-        }
-        body[data-layout-mode="mobile"] .stats {
-            grid-template-columns: 1fr;
-            gap: 0.6rem;
-            margin-bottom: 1rem;
-        }
-        body[data-layout-mode="mobile"] .stat-card {
-            padding: 0.6rem;
-        }
-        body[data-layout-mode="mobile"] .stat-number {
-            font-size: 1.4rem;
-        }
-        body[data-layout-mode="mobile"] .section-title {
-            font-size: 1.4rem;
-            margin-bottom: 0.8rem;
-        }
-        body[data-layout-mode="mobile"] .games-grid {
-            grid-template-columns: 1fr;
-            gap: 0.8rem;
-        }
-        body[data-layout-mode="mobile"] .game-card {
-            padding: 0.8rem;
-        }
-        body[data-layout-mode="mobile"] .game-icon {
-            font-size: 1.8rem;
-        }
-        body[data-layout-mode="mobile"] .game-title {
-            font-size: 1rem;
-        }
-        body[data-layout-mode="mobile"] .game-description {
-            font-size: 0.65rem;
-            margin-bottom: 0.6rem;
-            line-height: 1.3;
-        }
-        body[data-layout-mode="mobile"] .game-button {
-            padding: 0.35rem 0.9rem;
-            font-size: 0.75rem;
-        }
-        body[data-layout-mode="mobile"] .info-section {
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-        body[data-layout-mode="mobile"] .info-title {
-            font-size: 1rem;
-        }
-        body[data-layout-mode="mobile"] .info-text {
-            font-size: 0.75rem;
-            line-height: 1.4;
-        }
-        body[data-layout-mode="mobile"] .features {
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-        body[data-layout-mode="mobile"] .features-grid {
-            grid-template-columns: 1fr;
-            gap: 0.8rem;
-        }
-        body[data-layout-mode="mobile"] .feature-icon {
-            font-size: 1.4rem;
-        }
-        body[data-layout-mode="mobile"] .feature-title {
-            font-size: 0.85rem;
-        }
-        body[data-layout-mode="mobile"] .feature-description {
-            font-size: 0.65rem;
-            line-height: 1.3;
-        }
-        body[data-layout-mode="mobile"] .footer {
-            padding: 1rem 0;
-            margin-top: 1rem;
-        }
-        body[data-layout-mode="mobile"] .footer-content {
-            flex-direction: column;
-            text-align: center;
-            gap: 0.6rem;
-        }
-        body[data-layout-mode="mobile"] .footer-links {
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-        body[data-layout-mode="mobile"] .footer-link {
-            font-size: 0.65rem;
-        }
-
-        /* Chatbot mobile overrides */
-        @media (max-width: 640px) {
-            #chatbot-container {
-                width: 90%; /* Prend plus de place sur mobile */
-                height: 70%; /* Prend plus de hauteur sur mobile */
-                bottom: 1rem;
-                right: 5%; /* Centré horizontalement */
-                left: 5%;
-                transform: translateY(100%) scale(0.9); /* Animation ajustée */
-            }
-            #chatbot-container.open {
-                transform: translateY(0) scale(1);
-            }
-            .message-bubble {
-                max-width: 90%; /* Bulles plus larges sur mobile */
-                padding: 0.5rem 0.8rem; /* Padding ajusté */
-                font-size: 0.85rem; /* Taille de police ajustée */
-            }
-            .chatbot-input-area input {
-                font-size: 0.85rem; /* Taille de police ajustée */
-            }
-            .chatbot-input-area button {
-                padding: 0.5rem 0.8rem; /* Padding ajusté */
-            }
-        }
-
-        /* Desktop Mode Forced */
-        body[data-layout-mode="desktop"] .header-content {
-            padding: 1rem 2rem;
-        }
-        body[data-layout-mode="desktop"] .logo {
-            font-size: 1.5rem;
-            gap: 1rem;
-        }
-        body[data-layout-mode="desktop"] .logo-icon {
-            font-size: 2rem;
-        }
-        body[data-layout-mode="desktop"] .nav-links {
-            gap: 2rem;
-        }
-        body[data-layout-mode="desktop"] .nav-link {
-            font-size: 1rem;
-            padding: 0.5rem 1.3rem !important;
-        }
-        body[data-layout-mode="desktop"] .main {
-            padding: 6rem 2rem 4rem;
-        }
-        body[data-layout-mode="desktop"] .hero h1 {
-            font-size: 3rem;
-        }
-        body[data-layout-mode="desktop"] .hero p {
-            font-size: 1.25rem;
-        }
-        body[data-layout-mode="desktop"] .stats {
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-        }
-        body[data-layout-mode="desktop"] .stat-card {
-            padding: 1.5rem;
-        }
-        body[data-layout-mode="desktop"] .stat-number {
-            font-size: 2rem;
-        }
-        body[data-layout-mode="desktop"] .section-title {
-            font-size: 2rem;
-        }
-        body[data-layout-mode="desktop"] .games-grid {
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 2rem;
-        }
-        body[data-layout-mode="desktop"] .game-card {
-            padding: 2rem;
-        }
-        body[data-layout-mode="desktop"] .game-icon {
-            font-size: 3rem;
-        }
-        body[data-layout-mode="desktop"] .game-title {
-            font-size: 1.5rem;
-        }
-        body[data-layout-mode="desktop"] .game-description {
-            font-size: 0.875rem;
-        }
-        body[data-layout-mode="desktop"] .game-button {
-            padding: 0.75rem 2rem;
-            font-size: 1rem;
-        }
-        body[data-layout-mode="desktop"] .info-section {
-            padding: 3rem;
-        }
-        body[data-layout-mode="desktop"] .info-title {
-            font-size: 1.5rem;
-        }
-        body[data-layout-mode="desktop"] .info-text {
-            font-size: 1.1rem;
-        }
-        body[data-layout-mode="desktop"] .features {
-            padding: 3rem;
-        }
-        body[data-layout-mode="desktop"] .features-grid {
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-        body[data-layout-mode="desktop"] .feature-icon {
-            font-size: 2.5rem;
-        }
-        body[data-layout-mode="desktop"] .feature-title {
-            font-size: 1.25rem;
-        }
-        body[data-layout-mode="desktop"] .feature-description {
-            font-size: 0.875rem;
-        }
-        body[data-layout-mode="desktop"] .footer {
-            padding: 3rem 0;
-        }
-        body[data-layout-mode="desktop"] .footer-content {
-            flex-direction: row;
-            text-align: left;
-            gap: 2rem;
-        }
-        body[data-layout-mode="desktop"] .footer-links {
-            flex-direction: row;
-            gap: 2rem;
-        }
-        body[data-layout-mode="desktop"] .footer-link {
-            font-size: 0.875rem;
-        }
-    </style>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta name="description" content="Simulateur de gestion de chantier et jeux pédagogiques pour le BTP.">
+   <meta name="robots" content="index,follow">
+   <link rel="canonical" href="https://ltd-simulator.example.com/index.html">
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+   <title>LTD Simulator - Menu Principal</title>
+   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Ctext y='96' font-size='96'%3E🏗️%3C/text%3E%3C/svg%3E">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   <style>
+       /* Base styles */
+       :root {
+           --primary: #4F46E5;
+           --primary-dark: #4338CA;
+           --secondary: #10B981;
+           --background: #0F172A;
+           --surface: #1E293B;
+           --surface-light: #334155;
+           --text-primary: #F8FAFC;
+           --text-secondary: #CBD5E1;
+           --border: #334155;
+           --radius: 12px;
+           --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+           --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+       }
+
+       html { scroll-behavior: smooth; }
+       body {
+           font-family: 'Inter', sans-serif;
+           background-color: var(--background);
+           color: var(--text-primary);
+           line-height: 1.6;
+           overflow-x: hidden;
+       }
+       body::before {
+           content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+           background-image: radial-gradient(circle at 20% 50%, rgba(79, 70, 229, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+           pointer-events: none; z-index: 1;
+       }
+
+       /* --- Reusable Components --- */
+       .section-title { font-size: 2rem; font-weight: 700; margin-bottom: 2rem; text-align: center; }
+       .game-button {
+           background: var(--primary); color: white; border: none; border-radius: 8px;
+           padding: 0.75rem 2rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+           font-size: 1rem; text-decoration: none; display: inline-block;
+       }
+       .game-button:hover:not(:disabled) { background: var(--primary-dark); transform: scale(1.05); }
+       .game-button:disabled { background: var(--surface-light); cursor: not-allowed; opacity: 0.5; }
+       .animate-in { animation: fadeIn 0.6s ease forwards; opacity: 0; }
+       @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+       /* --- Page Structure --- */
+       .loader-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--background); display: flex; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease; }
+       .loader { width: 60px; height: 60px; border: 3px solid var(--surface-light); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+       @keyframes spin { to { transform: rotate(360deg); } }
+       .header { position: fixed; top: 0; left: 0; right: 0; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); z-index: 100; transition: all 0.3s ease; }
+       .header.scrolled { box-shadow: var(--shadow-lg); }
+       .header-content { max-width: 1200px; margin: 0 auto; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+       .logo { display: flex; align-items: center; gap: 1rem; font-size: 1.5rem; font-weight: 700; color: var(--text-primary); text-decoration: none; }
+       .logo-icon { font-size: 2rem; }
+       .nav-links { display: flex; gap: 2rem; align-items: center; }
+       .nav-link { color: var(--text-secondary); text-decoration: none; font-weight: 500; transition: color 0.2s ease; padding: 0.5rem 0; }
+       .nav-link:hover { color: var(--text-primary); }
+       .dropdown { position: relative; display: inline-block; }
+       .dropdown-toggle { background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+       .dropdown-toggle .fa-chevron-down { font-size: 0.7rem; transition: transform 0.2s ease; }
+       .dropdown.open .dropdown-toggle .fa-chevron-down { transform: rotate(180deg); }
+       .dropdown-menu { display: none; position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); background-color: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-lg); min-width: 220px; z-index: 110; padding: 0.5rem 0; opacity: 0; visibility: hidden; transition: opacity 0.2s ease, visibility 0.2s ease, top 0.2s ease; }
+       .dropdown.open .dropdown-menu { display: block; opacity: 1; visibility: visible; top: calc(100% + 5px); }
+       .dropdown-item { display: block; padding: 0.75rem 1.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; transition: background-color 0.2s ease, color 0.2s ease; }
+       .dropdown-item:hover { background-color: var(--surface-light); color: var(--text-primary); }
+       .main { max-width: 1200px; margin: 0 auto; padding: 6rem 2rem 4rem; position: relative; z-index: 2; }
+       .footer { background: var(--surface); border-top: 1px solid var(--border); padding: 3rem 0; margin-top: 4rem; }
+       .footer-content { max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; flex-direction: column; align-items: center; gap: 2rem; }
+       .footer-main { width: 100%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 2rem; }
+       .footer-links { display: flex; gap: 2rem; flex-wrap: wrap; }
+       .footer-link { color: var(--text-secondary); text-decoration: none; font-size: 0.875rem; transition: color 0.2s ease; }
+       .footer-link:hover { color: var(--text-primary); }
+
+       /* --- Sections --- */
+       .hero { text-align: center; margin-bottom: 4rem; }
+       .hero h1 { font-size: 3rem; font-weight: 700; margin-bottom: 1.5rem; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+       .hero p { font-size: 1.25rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; }
+       
+       .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 4rem; }
+       .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; text-align: center; transition: all 0.3s ease; }
+       .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
+       .stat-number { font-size: 2rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem; }
+       .stat-label { color: var(--text-secondary); font-size: 0.875rem; }
+
+       .games-section { margin-bottom: 4rem; }
+       .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; }
+       .game-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; text-align: center; transition: all 0.3s ease; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+       .game-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
+       .game-card-content { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+       .game-card .game-button { margin-top: auto; }
+       .game-card.coming-soon { opacity: 0.7; }
+       .game-icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
+       .game-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary); }
+       .game-description { color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.875rem; line-height: 1.5; flex-grow: 1; }
+       .coming-soon-badge { position: absolute; top: 1rem; right: 1rem; background: var(--secondary); color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+
+       /* NEW: History Timeline Section */
+       #history-section { margin-bottom: 4rem; }
+       .timeline-nav { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem; }
+       .timeline-nav button { background: var(--surface-light); color: var(--text-secondary); border: 1px solid var(--border); padding: 0.5rem 1.5rem; border-radius: 20px; cursor: pointer; transition: all 0.2s ease; font-weight: 500; }
+       .timeline-nav button:hover { background: var(--primary-dark); color: white; }
+       .timeline-nav button.active { background: var(--primary); color: white; border-color: var(--primary-dark); }
+       .timeline-content { background: var(--surface); padding: 2rem; border-radius: var(--radius); min-height: 200px; transition: all 0.5s ease; }
+       .timeline-content h3 { color: var(--secondary); margin-bottom: 1rem; }
+       .timeline-content ul { list-style: none; padding-left: 0; }
+       .timeline-content li { margin-bottom: 0.5rem; padding-left: 1.5rem; position: relative; }
+       .timeline-content li::before { content: '🏗️'; position: absolute; left: 0; }
+
+       /* NEW: Job Board Section */
+       #jobs-section { margin-bottom: 4rem; }
+       .job-board-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+       .job-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; transition: all 0.3s ease; display: flex; flex-direction: column; }
+       .job-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--secondary); }
+       .job-card-header h3 { font-size: 1.25rem; margin-bottom: 0.25rem; }
+       .job-card-header span { color: var(--text-secondary); font-size: 0.9rem; }
+       .job-card-body { margin: 1.5rem 0; flex-grow: 1; }
+       .job-tags { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+       .job-tag { background: var(--surface-light); color: var(--text-secondary); font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 15px; }
+       .job-card-footer { margin-top: auto; }
+
+       /* NEW: Poll Section */
+       #poll-section { background: var(--surface); padding: 2rem; border-radius: var(--radius); margin-bottom: 4rem; }
+       .poll-options { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; }
+       .poll-option { background: var(--surface-light); border: 1px solid var(--border); padding: 1rem; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; text-align: center; }
+       .poll-option:hover { background: var(--primary-dark); }
+       .poll-results { display: none; }
+       .poll-result-bar { background: var(--surface-light); border-radius: 8px; margin-bottom: 0.75rem; padding: 0.5rem 1rem; position: relative; overflow: hidden; }
+       .poll-result-bar span { position: relative; z-index: 2; }
+       .poll-result-fill { position: absolute; top: 0; left: 0; height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); z-index: 1; transition: width 0.5s ease; }
+
+       /* --- Floating Elements & Modals --- */
+       .notification { position: fixed; bottom: 2rem; right: 2rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.5rem; box-shadow: var(--shadow-lg); transform: translateX(calc(100% + 2rem)); transition: transform 0.4s ease-in-out; z-index: 1010; }
+       .notification.show { transform: translateX(0); }
+       #layout-toggle-btn, #personality-test-btn, #chatbot-button { position: fixed; z-index: 1000; padding: 1rem; border-radius: 9999px; box-shadow: var(--shadow-lg); transition: all 0.2s ease; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-weight: 600; cursor: pointer; }
+       #layout-toggle-btn:hover, #personality-test-btn:hover, #chatbot-button:hover { transform: translateY(-2px); box-shadow: 0 12px 18px -4px rgba(0,0,0,0.2); }
+       #layout-toggle-btn { bottom: 1.5rem; right: 1.5rem; background-color: var(--surface-light); color: white; }
+       #personality-test-btn { bottom: 1.5rem; left: 1.5rem; background-color: var(--secondary); color: white; animation: pulse 2s infinite; }
+       #chatbot-button { bottom: 5.5rem; right: 1.5rem; background-color: var(--primary); color: white; }
+       @keyframes pulse { 50% { transform: scale(1.05); } }
+       @media (max-width: 640px) { #layout-toggle-btn .layout-text, #personality-test-btn .button-text, #chatbot-button .button-text { display: none; } #layout-toggle-btn, #personality-test-btn, #chatbot-button { padding: 0.75rem; } #chatbot-button { bottom: 5rem; } }
+       #chatbot-container { position: fixed; bottom: 9.5rem; right: 1.5rem; width: 380px; height: 500px; background-color: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-lg); display: flex; flex-direction: column; z-index: 1001; transform: translateY(100%) scale(0.8); opacity: 0; pointer-events: none; transition: all 0.3s ease-in-out; transform-origin: bottom right; }
+       #chatbot-container.open { transform: translateY(0) scale(1); opacity: 1; pointer-events: all; }
+       .chatbot-header { background-color: var(--primary); color: white; padding: 0.8rem 1rem; display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+       .chatbot-header button { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; }
+       .chatbot-messages { flex-grow: 1; padding: 1rem; overflow-y: auto; background-color: var(--background); }
+       .message-bubble { max-width: 80%; padding: 0.6rem 0.9rem; border-radius: 12px; margin-bottom: 0.7rem; line-height: 1.4; word-wrap: break-word; }
+       .message-bubble.user { background-color: var(--primary); color: white; margin-left: auto; border-bottom-right-radius: 4px; }
+       .message-bubble.bot { background-color: var(--surface-light); color: var(--text-primary); margin-right: auto; border-bottom-left-radius: 4px; }
+       .chatbot-suggestions { padding: 0.5rem 1rem 0.25rem; background-color: var(--background); display: flex; flex-wrap: wrap; gap: 0.5rem; border-bottom: 1px solid var(--border); }
+       .suggestion-chip { background-color: var(--surface-light); color: var(--text-secondary); border: 1px solid var(--border); border-radius: 20px; padding: 0.3rem 0.8rem; font-size: 0.8rem; cursor: pointer; transition: all 0.2s ease; }
+       .suggestion-chip:hover { background-color: var(--primary); color: white; }
+       .chatbot-input-area { display: flex; padding: 0.8rem 1rem; background-color: var(--surface); }
+       .chatbot-input-area input { flex-grow: 1; padding: 0.6rem 1rem; border: 1px solid var(--border); border-radius: 8px; background-color: var(--background); color: var(--text-primary); font-size: 0.9rem; margin-right: 0.5rem; outline: none; }
+       .chatbot-input-area button { background-color: var(--primary); color: white; border: none; border-radius: 8px; padding: 0.6rem 1rem; cursor: pointer; }
+       .typing-indicator { font-style: italic; color: var(--text-secondary); margin-bottom: 0.7rem; text-align: center; font-size: 0.8rem; }
+       .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(5px); z-index: 1005; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
+       .modal-overlay.show { display: flex; opacity: 1; }
+       .quiz-modal { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 2rem; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; position: relative; transform: scale(0.95); transition: transform 0.3s ease; }
+       .modal-overlay.show .quiz-modal { transform: scale(1); }
+       .quiz-modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; }
+       .quiz-question h3 { margin-bottom: 1.5rem; font-size: 1.25rem; }
+       .quiz-options label { display: block; background: var(--surface-light); padding: 1rem; margin-bottom: 0.75rem; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; border: 1px solid transparent; }
+       .quiz-options label:hover { background: var(--primary-dark); }
+       .quiz-options input[type="radio"] { display: none; }
+       .quiz-options input[type="radio"]:checked + span { font-weight: bold; }
+       .quiz-options input[type="radio"]:checked + span::before { content: '✔ '; color: var(--secondary); }
+       .quiz-navigation { margin-top: 2rem; display: flex; justify-content: space-between; }
+       .quiz-result { text-align: center; }
+       .quiz-result h2 { color: var(--secondary); margin-bottom: 1rem; }
+   </style>
 </head>
 <body>
-    <!-- Loading screen -->
-    <div class="loader-container" id="loader">
-        <div class="loader"></div>
-    </div>
+   <div class="loader-container" id="loader"><div class="loader"></div></div>
 
-    <!-- Header -->
-    <header class="header" id="header">
-        <div class="header-content">
-            <a href="/" class="logo">
-                <span class="logo-icon">🏗️</span>
-                <span>LTD Simulator</span>
-            </a>
-            <nav class="nav-links">
-                <!-- Dropdown Menu -->
-                <div class="dropdown" id="nav-dropdown">
-                    <button class="nav-link dropdown-toggle">
-                        Menu
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="dropdown-menu">
-                        <a href="#games" class="dropdown-item">Simulateurs</a>
-                        <a href="#features" class="dropdown-item">Fonctionnalités</a>
-                        <a href="https://www.ltd-international.com/" target="_blank" class="dropdown-item">LTD International</a>
-                    </div>
-                </div>
-                <!-- Connexion Button -->
-                <a href="login_ltd_canvas_static_v_1 (1).html" class="nav-link" style="background: var(--primary);color:#fff;padding:0.5rem 1.3rem;border-radius:8px;font-weight:700;margin-left:1rem;">Connexion</a>
-            </nav>
-        </div>
-    </header>
+   <header class="header" id="header">
+       <div class="header-content">
+           <a href="#" class="logo"><span class="logo-icon">🏗️</span><span>LTD Simulator</span></a>
+           <nav class="nav-links">
+               <div class="dropdown" id="nav-dropdown">
+                   <button class="nav-link dropdown-toggle">Menu <i class="fas fa-chevron-down"></i></button>
+                   <div class="dropdown-menu">
+                       <a href="#games" class="dropdown-item">Simulateurs</a>
+                       <a href="#history-section" class="dropdown-item">Histoire du BTP</a>
+                       <a href="#jobs-section" class="dropdown-item">Offres d'emploi</a>
+                       <a href="https://www.ltd-international.com/" target="_blank" class="dropdown-item">LTD International</a>
+                   </div>
+               </div>
+               <a href="#" onclick="showNotification('La page de connexion est en cours de construction.'); return false;" class="nav-link" style="background: var(--primary);color:#fff;padding:0.5rem 1.3rem;border-radius:8px;font-weight:700;margin-left:1rem;">Connexion</a>
+           </nav>
+       </div>
+   </header>
 
-    <!-- Main content -->
-    <main class="main">
-        <!-- Hero section -->
-        <section class="hero animate-in">
-            <h1>Maîtrisez les métiers du BTP</h1>
-            <p>Formez-vous aux métiers d'avenir du BTP avec nos simulateurs professionnels. Le secteur recrute massivement : préparez votre carrière dès maintenant !</p>
-        </section>
+   <main class="main">
+       <section class="hero animate-in">
+           <h1>Maîtrisez les métiers du BTP</h1>
+           <p>Formez-vous aux métiers d'avenir du BTP avec nos simulateurs professionnels. Le secteur recrute massivement : préparez votre carrière dès maintenant !</p>
+       </section>
 
-        <!-- Stats -->
-        <section class="stats">
-            <div class="stat-card animate-in" style="animation-delay: 0.1s;">
-                <div class="stat-number">1,5M</div>
-                <div class="stat-label">Emplois dans le BTP en France</div>
-            </div>
-            <div class="stat-card animate-in" style="animation-delay: 0.2s;">
-                <div class="stat-number">200k</div>
-                <div class="stat-label">Postes à pourvoir d'ici 2025</div>
-            </div>
-            <div class="stat-card animate-in" style="animation-delay: 0.3s;">
-                <div class="stat-number">148Mds€</div>
-                <div class="stat-label">Chiffre d'affaires du secteur</div>
-            </div>
-            <div class="stat-card animate-in" style="animation-delay: 0.4s;">
-                <div class="stat-number">+15%</div>
-                <div class="stat-label">Croissance des métiers numériques BTP</div>
-            </div>
-        </section>
+       <section class="stats">
+           <div class="stat-card animate-in"><div class="stat-number">1,5M</div><div class="stat-label">Emplois dans le BTP en France</div></div>
+           <div class="stat-card animate-in"><div class="stat-number">200k</div><div class="stat-label">Postes à pourvoir d'ici 2025</div></div>
+           <div class="stat-card animate-in"><div class="stat-number">148Mds€</div><div class="stat-label">Chiffre d'affaires du secteur</div></div>
+           <div class="stat-card animate-in"><div class="stat-number">+15%</div><div class="stat-label">Croissance des métiers numériques</div></div>
+       </section>
 
-        <!-- Games section -->
-        <section id="games" class="games-section">
-            <h2 class="section-title animate-in">Nos Simulateurs</h2>
-            <div class="games-grid">
-                <!-- Directeur Travaux -->
-                <div class="game-card animate-in" style="animation-delay: 0.5s;">
-                    <span class="game-icon">👷</span>
-                    <h3 class="game-title">Directeur Travaux</h3>
-                    <p class="game-description">
-                        Gérez vos chantiers avec expertise. Coordonnez équipes, budgets et délais dans ce simulateur ultra-réaliste.
-                    </p>
-                    <button class="game-button" onclick="launchGame('simulateur-directeur-travaux.html')">
-                        Jouer maintenant
-                    </button>
-                </div>
+       <section id="games" class="games-section">
+           <h2 class="section-title animate-in">Nos Simulateurs</h2>
+           <div class="games-grid">
+               <div class="game-card animate-in">
+                   <div class="game-card-content"><span class="game-icon">👷</span><h3 class="game-title">Directeur Travaux</h3><p class="game-description">Gérez vos chantiers avec expertise. Coordonnez équipes, budgets et délais.</p></div>
+                   <a href="#" onclick="launchGame('directeur-travaux')" class="game-button">Lancer le Simulateur</a>
+               </div>
+               <div class="game-card animate-in">
+                   <div class="game-card-content"><span class="game-icon">📍</span><h3 class="game-title">Géomètre-Topographe</h3><p class="game-description">Testez vos compétences en topographie. Relevés, calculs et précision sont les clés.</p></div>
+                   <a href="#" onclick="launchGame('geometre-topographe')" class="game-button">Lancer le Simulateur</a>
+               </div>
+               <div class="game-card animate-in">
+                   <div class="game-card-content"><span class="game-icon">📐</span><h3 class="game-title">Projeteur VRD</h3><p class="game-description">Concevez les infrastructures de demain. Plans, réseaux et aménagements urbains.</p></div>
+                   <a href="#" onclick="launchGame('projeteur-vrd')" class="game-button">Lancer le Simulateur</a>
+               </div>
+               <div class="game-card coming-soon animate-in">
+                   <span class="coming-soon-badge">Bientôt</span>
+                   <div class="game-card-content"><span class="game-icon">🏛️</span><h3 class="game-title">Architecte</h3><p class="game-description">Créez des bâtiments innovants et durables. De l'esquisse à la réalisation.</p></div>
+                   <button class="game-button" disabled>Prochainement</button>
+               </div>
+           </div>
+       </section>
 
-                <!-- Géomètre-topographe -->
-                <div class="game-card animate-in" style="animation-delay: 0.6s;">
-                    <span class="game-icon">📍</span>
-                    <h3 class="game-title">Géomètre-Topographe</h3>
-                    <p class="game-description">
-                        Testez vos compétences en topographie. Relevés, calculs et précision sont les clés de votre succès.
-                    </p>
-                    <button class="game-button" onclick="launchGame('geometre-topographe.html')">
-                        Jouer maintenant
-                    </button>
-                </div>
+       <!-- NEW: History Timeline Section -->
+       <section id="history-section" class="animate-in">
+           <h2 class="section-title">Explorez l'Histoire du BTP</h2>
+           <nav class="timeline-nav" id="timeline-nav"></nav>
+           <div class="timeline-content" id="timeline-content"></div>
+       </section>
 
-                <!-- Projeteur VRD -->
-                <div class="game-card animate-in" style="animation-delay: 0.7s;">
-                    <span class="game-icon">📐</span>
-                    <h3 class="game-title">Projeteur VRD</h3>
-                    <p class="game-description">
-                        Concevez les infrastructures de demain. Plans, réseaux et aménagements urbains n'auront plus de secrets.
-                    </p>
-                    <button class="game-button" onclick="launchGame('projeteurvrd.html')">
-                        Jouer maintenant
-                    </button>
-                </div>
+       <!-- NEW: Job Board Section -->
+       <section id="jobs-section" class="animate-in">
+           <h2 class="section-title">Offres d'Emploi en Vedette</h2>
+           <div class="job-board-grid">
+               <div class="job-card">
+                   <div class="job-card-header"><h3>Chef de Chantier Gros Œuvre</h3><span>Paris, Île-de-France</span></div>
+                   <div class="job-card-body">
+                       <div class="job-tags"><span class="job-tag">50-60k€/an</span><span class="job-tag">5+ ans exp.</span><span class="job-tag">CDI</span></div>
+                       <p class="game-description">Pilotez des chantiers de construction d'envergure et managez vos équipes avec leadership.</p>
+                   </div>
+                   <div class="job-card-footer"><a href="#" onclick="showNotification('Candidature envoyée (simulation)')" class="game-button" style="width: 100%;">Postuler</a></div>
+               </div>
+               <div class="job-card">
+                   <div class="job-card-header"><h3>Projeteur BIM / CVC</h3><span>Lyon, Auvergne-Rhône-Alpes</span></div>
+                   <div class="job-card-body">
+                       <div class="job-tags"><span class="job-tag">40-50k€/an</span><span class="job-tag">2+ ans exp.</span><span class="job-tag">CDI</span></div>
+                       <p class="game-description">Modélisez des systèmes CVC complexes pour des bâtiments tertiaires et industriels sur Revit.</p>
+                   </div>
+                   <div class="job-card-footer"><a href="#" onclick="showNotification('Candidature envoyée (simulation)')" class="game-button" style="width: 100%;">Postuler</a></div>
+               </div>
+               <div class="job-card">
+                   <div class="job-card-header"><h3>Géomètre-Topographe Junior</h3><span>Bordeaux, Nouvelle-Aquitaine</span></div>
+                   <div class="job-card-body">
+                       <div class="job-tags"><span class="job-tag">30-38k€/an</span><span class="job-tag">0-2 ans exp.</span><span class="job-tag">CDI</span></div>
+                       <p class="game-description">Réalisez des levés topographiques et des implantations sur des projets d'infrastructures variés.</p>
+                   </div>
+                   <div class="job-card-footer"><a href="#" onclick="showNotification('Candidature envoyée (simulation)')" class="game-button" style="width: 100%;">Postuler</a></div>
+               </div>
+           </div>
+       </section>
 
-                <!-- Architecte (Coming Soon) -->
-                <div class="game-card coming-soon animate-in" style="animation-delay: 0.9s;">
-                    <span class="coming-soon-badge">Bientôt</span>
-                    <span class="game-icon">🏛️</span>
-                    <h3 class="game-title">Architecte</h3>
-                    <p class="game-description">
-                        Créez des bâtiments innovants et durables. De l'esquisse à la réalisation, donnez vie à vos projets.
-                    </p>
-                    <button class="game-button" disabled>
-                        Disponible prochainement
-                    </button>
-                </div>
+       <!-- NEW: Poll Section -->
+       <section id="poll-section" class="animate-in">
+           <h2 class="section-title">Sondage : Quel grand projet vous inspire le plus ?</h2>
+           <div id="poll-container">
+               <div class="poll-options" id="poll-options">
+                   <div class="poll-option" data-option="viaduc">Viaduc de Millau</div>
+                   <div class="poll-option" data-option="pyramide">Pyramide du Louvre</div>
+                   <div class="poll-option" data-option="tunnel">Tunnel sous la Manche</div>
+                   <div class="poll-option" data-option="burj">Burj Khalifa</div>
+               </div>
+               <div class="poll-results" id="poll-results"></div>
+           </div>
+       </section>
 
-                <!-- Ingénieur BTP (Coming Soon) -->
-                <div class="game-card coming-soon animate-in" style="animation-delay: 1.0s;">
-                    <span class="coming-soon-badge">Bientôt</span>
-                    <span class="game-icon">⚙️</span>
-                    <h3 class="game-title">Ingénieur BTP</h3>
-                    <p class="game-description">
-                        Optimisez structures et matériaux pour des constructions sûres et durables. La technique au service de l'innovation.
-                    </p>
-                    <button class="game-button" disabled>
-                        Disponible prochainement
-                    </button>
-                </div>
-            </div>
-        </section>
+   </main>
 
-        <!-- Info section -->
-        <section class="info-section animate-in">
-            <h2 class="info-title">💡 Le saviez-vous ?</h2>
-            <p class="info-text">
-                Le BTP représente <span class="info-highlight">7% du PIB français</span> et recrute chaque année plus de <span class="info-highlight">80 000 personnes</span>.
-                Avec la transition écologique et la rénovation énergétique, les besoins en main-d'œuvre qualifiée explosent.
-                Les métiers du numérique dans le BTP (BIM, drones, réalité augmentée) connaissent une croissance de <span class="info-highlight">+30% par an</span>.
-            </p>
-        </section>
+   <footer class="footer">
+       <div class="footer-content">
+           <div class="footer-main">
+               <div class="footer-links">
+                   <a href="https://www.ltd-international.com/" target="_blank" class="footer-link">LTD International</a>
+                   <a href="#" class="footer-link">Conditions d'utilisation</a>
+                   <a href="#" class="footer-link">Politique de confidentialité</a>
+               </div>
+               <div><p class="footer-link">© 2025 LTD Simulator. Tous droits réservés.</p></div>
+           </div>
+       </div>
+   </footer>
 
-        <!-- Features section -->
-        <section id="features" class="features animate-in">
-            <h2 class="section-title">Les métiers du BTP qui recrutent</h2>
-            <div class="features-grid">
-                <div class="feature">
-                    <span class="feature-icon">💼</span>
-                    <h3 class="feature-title">Chef de projet BTP</h3>
-                    <p class="feature-description">
-                        Salaire moyen : 45-70k€/an. Pilotage de chantiers et gestion d'équipes multidisciplinaires
-                    </p>
-                </div>
-                <div class="feature">
-                    <span class="feature-icon">📏</span>
-                    <h3 class="feature-title">Géomètre-Topographe</h3>
-                    <p class="feature-description">
-                        Salaire moyen : 35-50k€/an. Expertise technique recherchée pour relevés et implantations
-                    </p>
-                </div>
-                <div class="feature">
-                    <span class="feature-icon">🔧</span>
-                    <h3 class="feature-title">Conducteur de travaux</h3>
-                    <p class="feature-description">
-                        Salaire moyen : 40-60k€/an. Coordination terrain et suivi de l'exécution des chantiers
-                    </p>
-                </div>
-                <div class="feature">
-                    <span class="feature-icon">💻</span>
-                    <h3 class="feature-title">BIM Manager</h3>
-                    <p class="feature-description">
-                        Salaire moyen : 45-65k€/an. Métier en forte croissance avec la digitalisation du BTP
-                    </p>
-                </div>
-            </div>
-        </section>
-    </main>
+   <div class="notification" id="notification"><span id="notificationText"></span></div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-links">
-                <a href="https://www.ltd-international.com/" target="_blank" class="footer-link">LTD International</a>
-                <a href="#" class="footer-link">Conditions d'utilisation</a>
-                <a href="#" class="footer-link">Politique de confidentialité</a>
-                <a href="#" class="footer-link">Contact</a>
-            </div>
-            <div>
-                <p class="footer-link">© 2025 LTD Simulator. Tous droits réservés.</p>
-            </div>
-        </div>
-    </footer>
+   <button id="layout-toggle-btn"><i id="layout-mode-icon" class="fa-solid fa-mobile-screen-button"></i><span id="layout-mode-text" class="layout-text">Mode Auto</span></button>
+   <button id="personality-test-btn"><i class="fa-solid fa-brain"></i><span class="button-text">Test d'Orientation</span></button>
+   <button id="chatbot-button"><i class="fa-solid fa-comments"></i><span class="button-text">Chat BTP</span></button>
 
-    <!-- Notification -->
-    <div class="notification" id="notification">
-        <span id="notificationText"></span>
-    </div>
+   <div id="chatbot-container">
+       <div class="chatbot-header"><span>Chatbot BTP</span><button id="close-chatbot-btn"><i class="fa-solid fa-times"></i></button></div>
+       <div class="chatbot-messages" id="chatbot-messages"></div>
+       <div class="chatbot-suggestions" id="chatbot-suggestions"></div>
+       <div class="chatbot-input-area"><input type="text" id="chatbot-input" placeholder="Tapez votre message..." autocomplete="off"><button id="chatbot-send-btn"><i class="fa-solid fa-paper-plane"></i></button></div>
+   </div>
+   
+   <div class="modal-overlay" id="quiz-modal-overlay">
+       <div class="quiz-modal" id="quiz-modal">
+           <button class="quiz-modal-close" id="quiz-close-btn"><i class="fa-solid fa-times"></i></button>
+           <div id="quiz-content"></div>
+       </div>
+   </div>
 
-    <!-- Layout Toggle Button (floating) -->
-    <button id="layout-toggle-btn">
-        <i id="layout-mode-icon" class="fa-solid fa-mobile-screen-button"></i>
-        <span id="layout-mode-text" class="layout-text">Mode Auto</span>
-    </button>
+   <script>
+   document.addEventListener('DOMContentLoaded', () => {
+       // --- General Setup ---
+       const loader = document.getElementById('loader');
+       window.addEventListener('load', () => {
+           if(loader) {
+               loader.style.opacity = '0';
+               setTimeout(() => { loader.style.display = 'none'; }, 500);
+           }
+           document.querySelectorAll('.animate-in').forEach((el, index) => {
+               el.style.animationDelay = `${index * 0.1}s`;
+           });
+       });
+       const header = document.getElementById('header');
+       if(header) window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 50));
+       const dropdown = document.getElementById('nav-dropdown');
+       if (dropdown) {
+           const toggle = dropdown.querySelector('.dropdown-toggle');
+           toggle.addEventListener('click', () => dropdown.classList.toggle('open'));
+           window.addEventListener('click', (e) => { if (!dropdown.contains(e.target)) dropdown.classList.remove('open'); });
+       }
+   });
 
-    <!-- New Floating Personality Test Button -->
-    <button id="personality-test-btn" onclick="launchGame('testperso.html')">
-        <i class="fa-solid fa-brain"></i>
-        <span class="button-text">Test de Personnalité</span>
-    </button>
+   // --- Global Functions ---
+   function showNotification(message) {
+       const notification = document.getElementById('notification');
+       const notificationText = document.getElementById('notificationText');
+       if (notification && notificationText) {
+           notificationText.textContent = message;
+           notification.classList.add('show');
+           setTimeout(() => { notification.classList.remove('show'); }, 3000);
+       }
+   }
+   function launchGame(gameId) {
+       showNotification(`Lancement du simulateur : ${gameId.replace(/-/g, ' ')}...`);
+       console.log(`Navigating to ${gameId}.html`);
+   }
 
-    <!-- Chatbot Floating Button -->
-    <button id="chatbot-button">
-        <i class="fa-solid fa-comments"></i>
-        <span class="button-text">Chat BTP</span>
-    </button>
+   // --- IIFE for scoped logic ---
 
-    <!-- Chatbot Container -->
-    <div id="chatbot-container">
-        <div class="chatbot-header">
-            <span>Chatbot BTP</span>
-            <button id="close-chatbot-btn"><i class="fa-solid fa-times"></i></button>
-        </div>
-        <div class="chatbot-messages" id="chatbot-messages">
-            <div class="message-bubble bot">Bonjour ! Je suis votre assistant BTP. Posez-moi vos questions sur le secteur.</div>
-        </div>
-        <div class="chatbot-input-area">
-            <input type="text" id="chatbot-input" placeholder="Tapez votre message..." autocomplete="off">
-            <button id="chatbot-send-btn"><i class="fa-solid fa-paper-plane"></i></button>
-        </div>
-    </div>
+   // Layout Mode Toggle
+   (() => {
+       const toggleBtn = document.getElementById('layout-toggle-btn');
+       if(!toggleBtn) return;
+       const icon = document.getElementById('layout-mode-icon'), text = document.getElementById('layout-mode-text'), body = document.body;
+       const modes = [ { name: 'auto', icon: 'fa-mobile-screen-button', text: 'Mode Auto' }, { name: 'mobile', icon: 'fa-mobile-alt', text: 'Mode Mobile' }, { name: 'desktop', icon: 'fa-desktop', text: 'Mode Bureau' } ];
+       let currentModeIndex = parseInt(localStorage.getItem('layoutModeIndex') || '0');
+       function applyLayoutMode(index) {
+           const mode = modes[index];
+           body.dataset.layoutMode = mode.name;
+           icon.className = `fa-solid ${mode.icon}`;
+           text.textContent = mode.text;
+           localStorage.setItem('layoutModeIndex', index);
+       }
+       toggleBtn.addEventListener('click', () => {
+           currentModeIndex = (currentModeIndex + 1) % modes.length;
+           applyLayoutMode(currentModeIndex);
+           showNotification(`Mode d'affichage : ${modes[currentModeIndex].text}`);
+       });
+       applyLayoutMode(currentModeIndex);
+   })();
 
-    <script>
-        // Function to hide the loader once the page is loaded
-        window.addEventListener('load', () => {
-            const loader = document.getElementById('loader');
-            if (loader) {
-                loader.style.opacity = '0';
-                setTimeout(() => {
-                    loader.style.display = 'none';
-                }, 500); // Wait for the fade out transition
-            }
-        });
+   // History Timeline
+   (() => {
+       const navContainer = document.getElementById('timeline-nav');
+       const contentContainer = document.getElementById('timeline-content');
+       if (!navContainer || !contentContainer) return;
 
-        // Function to handle header scroll effect
-        document.addEventListener('DOMContentLoaded', () => {
-            const header = document.getElementById('header');
-            if (header) {
-                window.addEventListener('scroll', () => {
-                    if (window.scrollY > 50) {
-                        header.classList.add('scrolled');
-                    } else {
-                        header.classList.remove('scrolled');
-                    }
-                });
-            }
-        });
-        
-        // --- Dropdown Menu Logic ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const dropdown = document.getElementById('nav-dropdown');
-            if (dropdown) {
-                const toggle = dropdown.querySelector('.dropdown-toggle');
-                
-                toggle.addEventListener('click', () => {
-                    dropdown.classList.toggle('open');
-                });
+       const timelineData = {
+           "Antiquité": {
+               title: "Les Bâtisseurs de l'Antiquité",
+               points: ["Invention du béton par les Romains (Pont du Gard).", "Construction des Pyramides d'Égypte.", "Utilisation de grues primitives et d'aqueducs."]
+           },
+           "Moyen Âge": {
+               title: "L'Art des Cathédrales",
+               points: ["Développement de l'arc-boutant et de la voûte sur croisée d'ogives.", "Construction des grandes cathédrales gothiques (Notre-Dame).", "Guildes d'artisans et compagnonnage."]
+           },
+           "Révolution Industrielle": {
+               title: "L'Ère de l'Acier et de la Vapeur",
+               points: ["Utilisation massive de l'acier (Tour Eiffel).", "Invention du ciment Portland moderne.", "Apparition des machines à vapeur sur les chantiers."]
+           },
+           "Ère Numérique": {
+               title: "La Construction 4.0",
+               points: ["Avènement du BIM (Building Information Modeling).", "Utilisation de drones, de la 3D et de la réalité augmentée.", "Développement de matériaux intelligents et durables."]
+           }
+       };
 
-                // Close dropdown if clicked outside
-                window.addEventListener('click', (event) => {
-                    if (!dropdown.contains(event.target)) {
-                        dropdown.classList.remove('open');
-                    }
-                });
-            }
-        });
+       function updateTimeline(key) {
+           const data = timelineData[key];
+           contentContainer.innerHTML = `
+               <h3>${data.title}</h3>
+               <ul>${data.points.map(p => `<li>${p}</li>`).join('')}</ul>
+           `;
+           navContainer.querySelectorAll('button').forEach(btn => {
+               btn.classList.toggle('active', btn.dataset.key === key);
+           });
+       }
 
-        // Function to launch a game and show a notification
-        function launchGame(gameUrl) {
-            // In a real application, you would navigate to the game URL
-            // window.location.href = gameUrl;
-            showNotification(`Lancement de : ${gameUrl.split('/').pop().split('.')[0].replace(/-/g, ' ')}...`);
-            console.log(`Launching game: ${gameUrl}`);
-            // For demonstration, we'll just log and show a notification
-        }
+       Object.keys(timelineData).forEach(key => {
+           const button = document.createElement('button');
+           button.textContent = key;
+           button.dataset.key = key;
+           button.addEventListener('click', () => updateTimeline(key));
+           navContainer.appendChild(button);
+       });
 
-        // Function to show a temporary notification
-        function showNotification(message) {
-            const notification = document.getElementById('notification');
-            const notificationText = document.getElementById('notificationText');
-            if (notification && notificationText) {
-                notificationText.textContent = message;
-                notification.classList.add('show');
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                }, 3000); // Notification disappears after 3 seconds
-            }
-        }
+       // Init with the first key
+       updateTimeline(Object.keys(timelineData)[0]);
+   })();
 
-        // --- Layout Mode Toggle Logic ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const layoutToggleButton = document.getElementById('layout-toggle-btn');
-            const layoutModeIcon = document.getElementById('layout-mode-icon');
-            const layoutModeText = document.getElementById('layout-mode-text');
-            const body = document.body;
+   // Poll Logic
+   (() => {
+       const pollContainer = document.getElementById('poll-container');
+       if (!pollContainer) return;
 
-            // Define the modes and their corresponding icons and text
-            const modes = [
-                { name: 'auto', icon: 'fa-mobile-screen-button', text: 'Mode Auto' },
-                { name: 'mobile', icon: 'fa-mobile-alt', text: 'Mode Téléphone' },
-                { name: 'desktop', icon: 'fa-desktop', text: 'Mode Ordinateur' }
-            ];
+       const optionsContainer = document.getElementById('poll-options');
+       const resultsContainer = document.getElementById('poll-results');
+       const pollId = 'btp-poll-2025';
+       let pollData = JSON.parse(localStorage.getItem(pollId)) || {
+           voted: false,
+           votes: { viaduc: 58, pyramide: 42, tunnel: 35, burj: 61 }
+       };
 
-            let currentModeIndex = 0;
+       function savePollData() {
+           localStorage.setItem(pollId, JSON.stringify(pollData));
+       }
 
-            // Function to apply the selected layout mode
-            function applyLayoutMode(modeName) {
-                body.setAttribute('data-layout-mode', modeName);
-                const mode = modes.find(m => m.name === modeName);
-                if (mode) {
-                    layoutModeIcon.className = `fa-solid ${mode.icon}`;
-                    layoutModeText.textContent = mode.text;
-                    localStorage.setItem('layoutMode', modeName); // Persist the preference
-                }
-            }
+       function renderResults() {
+           const totalVotes = Object.values(pollData.votes).reduce((sum, val) => sum + val, 0);
+           resultsContainer.innerHTML = '';
+           for (const [key, value] of Object.entries(pollData.votes)) {
+               const percentage = totalVotes === 0 ? 0 : ((value / totalVotes) * 100).toFixed(1);
+               const optionText = optionsContainer.querySelector(`[data-option="${key}"]`).textContent;
+               
+               const resultBar = document.createElement('div');
+               resultBar.className = 'poll-result-bar';
+               resultBar.innerHTML = `
+                   <span>${optionText}: ${value} votes (${percentage}%)</span>
+                   <div class="poll-result-fill" style="width: ${percentage}%;"></div>
+               `;
+               resultsContainer.appendChild(resultBar);
+           }
+           optionsContainer.style.display = 'none';
+           resultsContainer.style.display = 'block';
+       }
 
-            // Get initial mode from localStorage or set to 'auto'
-            const savedMode = localStorage.getItem('layoutMode');
-            if (savedMode) {
-                currentModeIndex = modes.findIndex(m => m.name === savedMode);
-                if (currentModeIndex === -1) { // Fallback if saved mode is invalid
-                    currentModeIndex = 0;
-                }
-            }
-            applyLayoutMode(modes[currentModeIndex].name);
+       optionsContainer.addEventListener('click', (e) => {
+           if (e.target.matches('.poll-option') && !pollData.voted) {
+               const optionKey = e.target.dataset.option;
+               pollData.votes[optionKey]++;
+               pollData.voted = true;
+               savePollData();
+               renderResults();
+           } else if (pollData.voted) {
+               showNotification("Vous avez déjà voté à ce sondage.");
+           }
+       });
 
-            // Event listener for the layout toggle button
-            layoutToggleButton.addEventListener('click', () => {
-                currentModeIndex = (currentModeIndex + 1) % modes.length;
-                applyLayoutMode(modes[currentModeIndex].name);
-                showNotification(`Mode d'affichage : ${modes[currentModeIndex].text}`);
-            });
+       if (pollData.voted) {
+           renderResults();
+       }
+   })();
 
-            // Optional: Revert to 'auto' if window resizes and mode is 'auto' (to allow native responsiveness)
-            // If a manual mode (mobile/desktop) is set, it should override resize behavior.
-            let resizeTimer;
-            window.addEventListener('resize', () => {
-                clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(() => {
-                    // Only revert to auto if the current mode is 'auto' and not manually forced
-                    if (modes[currentModeIndex].name === 'auto') {
-                        // The CSS media queries will naturally handle this,
-                        // but this ensures the button text/icon also reflects the 'auto' state
-                        // if the user had previously selected 'auto' and then resized.
-                        // No explicit action needed here as 'auto' means default CSS takes over.
-                    }
-                }, 250); // Debounce resize event
-            });
-        });
-
-        // --- Chatbot Logic ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const chatbotButton = document.getElementById('chatbot-button');
-            const chatbotContainer = document.getElementById('chatbot-container');
-            const closeChatbotBtn = document.getElementById('close-chatbot-btn');
-            const chatbotMessages = document.getElementById('chatbot-messages');
-            const chatbotInput = document.getElementById('chatbot-input');
-            const chatbotSendBtn = document.getElementById('chatbot-send-btn');
-
-            let chatHistory = [{ role: "model", parts: [{ text: "Bonjour ! Je suis votre assistant BTP. Posez-moi vos questions sur le secteur." }] }];
-
-            // Function to toggle chatbot visibility
-            function toggleChatbot() {
-                chatbotContainer.classList.toggle('open');
-                if (chatbotContainer.classList.contains('open')) {
-                    chatbotInput.focus(); // Focus on input when opened
-                    chatbotMessages.scrollTop = chatbotMessages.scrollHeight; // Scroll to bottom
-                }
-            }
-
-            // Function to add a message to the chat display
-            function addMessage(sender, text) {
-                const messageDiv = document.createElement('div');
-                messageDiv.classList.add('message-bubble', sender);
-                messageDiv.textContent = text;
-                chatbotMessages.appendChild(messageDiv);
-                chatbotMessages.scrollTop = chatbotMessages.scrollHeight; // Scroll to bottom
-            }
-
-            // Function to send a message to the bot
-            async function sendMessage() {
-                const userMessage = chatbotInput.value.trim();
-                if (userMessage === '') return;
-
-                addMessage('user', userMessage);
-                chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
-                chatbotInput.value = ''; // Clear input
-
-                // Show typing indicator
-                const typingIndicator = document.createElement('div');
-                typingIndicator.classList.add('typing-indicator');
-                typingIndicator.textContent = 'Le bot est en train d\'écrire...';
-                chatbotMessages.appendChild(typingIndicator);
-                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-
-                chatbotSendBtn.disabled = true; // Disable send button
-                chatbotInput.disabled = true; // Disable input
-
-                try {
-                    const payload = { contents: chatHistory };
-                    const apiKey = ""; // Canvas will provide this at runtime
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(`API error: ${response.status} - ${errorData.error.message || 'Unknown error'}`);
-                    }
-
-                    const result = await response.json();
-
-                    // Remove typing indicator
-                    chatbotMessages.removeChild(typingIndicator);
-
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        const botResponse = result.candidates[0].content.parts[0].text;
-                        addMessage('bot', botResponse);
-                        chatHistory.push({ role: "model", parts: [{ text: botResponse }] });
-                    } else {
-                        addMessage('bot', 'Désolé, je n\'ai pas pu générer de réponse. Veuillez réessayer.');
-                        console.error('Unexpected API response structure:', result);
-                    }
-                } catch (error) {
-                    // Remove typing indicator if an error occurred
-                    if (chatbotMessages.contains(typingIndicator)) {
-                        chatbotMessages.removeChild(typingIndicator);
-                    }
-                    addMessage('bot', `Une erreur est survenue : ${error.message}. Veuillez réessayer.`);
-                    console.error('Error calling Gemini API:', error);
-                } finally {
-                    chatbotSendBtn.disabled = false; // Re-enable send button
-                    chatbotInput.disabled = false; // Re-enable input
-                    chatbotInput.focus(); // Refocus input
-                }
-            }
-
-            // Event Listeners
-            chatbotButton.addEventListener('click', toggleChatbot);
-            closeChatbotBtn.addEventListener('click', toggleChatbot);
-            chatbotSendBtn.addEventListener('click', sendMessage);
-            chatbotInput.addEventListener('keypress', (event) => {
-                if (event.key === 'Enter') {
-                    sendMessage();
-                }
-            });
-        });
-    </script>
+   // Chatbot
+   (() => {
+       const chatbotButton = document.getElementById('chatbot-button');
+       if(!chatbotButton) return;
+       const container = document.getElementById('chatbot-container'), closeBtn = document.getElementById('close-chatbot-btn'), messages = document.getElementById('chatbot-messages'), input = document.getElementById('chatbot-input'), sendBtn = document.getElementById('chatbot-send-btn'), suggestionsContainer = document.getElementById('chatbot-suggestions');
+       const suggestions = ["Quels sont les salaires ?", "Parle-moi du métier de géomètre.", "Qu'est-ce que le BIM ?", "Comment devenir directeur de travaux ?"];
+       let chatHistory = [{ role: "model", parts: [{ text: "Bonjour ! Je suis votre assistant BTP. Posez-moi une question ou choisissez une suggestion." }] }];
+       function populateSuggestions() { suggestionsContainer.innerHTML = ''; suggestions.forEach(s => { const c = document.createElement('button'); c.className = 'suggestion-chip'; c.textContent = s; c.onclick = () => { input.value = s; sendMessage(); }; suggestionsContainer.appendChild(c); }); }
+       function toggleChatbot() { container.classList.toggle('open'); if (container.classList.contains('open')) { addMessage('bot', chatHistory[0].parts[0].text, true); populateSuggestions(); input.focus(); } }
+       function addMessage(sender, text, isInitial = false) { if (isInitial) messages.innerHTML = ''; const m = document.createElement('div'); m.className = `message-bubble ${sender}`; m.textContent = text; messages.appendChild(m); messages.scrollTop = messages.scrollHeight; }
+       async function sendMessage() {
+           const userMessage = input.value.trim(); if (userMessage === '') return;
+           addMessage('user', userMessage); chatHistory.push({ role: "user", parts: [{ text: userMessage }] }); input.value = ''; suggestionsContainer.style.display = 'none';
+           const t = document.createElement('div'); t.className = 'typing-indicator'; t.textContent = 'Le bot est en train d\'écrire...'; messages.appendChild(t); messages.scrollTop = messages.scrollHeight; sendBtn.disabled = true;
+           try {
+               const payload = { contents: chatHistory }, apiKey = "", apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+               const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+               if (!response.ok) throw new Error(`API error: ${response.status}`);
+               const result = await response.json();
+               if (result.candidates?.[0]?.content?.parts?.[0]) { const r = result.candidates[0].content.parts[0].text; addMessage('bot', r); chatHistory.push({ role: "model", parts: [{ text: r }] }); } else { addMessage('bot', 'Désolé, je n\'ai pas pu générer de réponse.'); }
+           } catch (error) { addMessage('bot', `Une erreur est survenue.`); console.error('Error:', error); } finally { messages.removeChild(t); sendBtn.disabled = false; suggestionsContainer.style.display = 'flex'; input.focus(); }
+       }
+       chatbotButton.addEventListener('click', toggleChatbot); closeBtn.addEventListener('click', toggleChatbot); sendBtn.addEventListener('click', sendMessage); input.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+   })();
+   
+   // Career Quiz
+   (() => {
+       const quizBtn = document.getElementById('personality-test-btn'); if(!quizBtn) return;
+       const modalOverlay = document.getElementById('quiz-modal-overlay'), quizContent = document.getElementById('quiz-content'), closeBtn = document.getElementById('quiz-close-btn');
+       const quizData = [ { question: "Sur un projet, qu'est-ce qui vous motive le plus ?", options: { a: "La vision globale et la coordination des équipes.", b: "La précision technique et la résolution de problèmes.", c: "La conception et la création de plans détaillés." } }, { question: "Quel type d'environnement de travail préférez-vous ?", options: { a: "Un mélange de bureau et de terrain, avec interactions.", b: "Principalement sur le terrain, avec des technologies.", c: "Essentiellement au bureau, sur des logiciels de conception." } }, { question: "Face à un défi, votre première réaction est de :", options: { a: "Planifier, déléguer et superviser la solution.", b: "Analyser les données, mesurer et calculer l'approche.", c: "Dessiner et modéliser différentes solutions." } } ];
+       const results = { a: { title: "Directeur de Travaux", link: "directeur-travaux" }, b: { title: "Géomètre-Topographe", link: "geometre-topographe" }, c: { title: "Projeteur VRD", link: "projeteur-vrd" } };
+       let currentQuestionIndex = 0, scores = { a: 0, b: 0, c: 0 };
+       function openModal() { modalOverlay.classList.add('show'); currentQuestionIndex = 0; scores = { a: 0, b: 0, c: 0 }; renderQuestion(); }
+       function closeModal() { modalOverlay.classList.remove('show'); }
+       function renderQuestion() {
+           if (currentQuestionIndex >= quizData.length) { renderResult(); return; }
+           const q = quizData[currentQuestionIndex]; let o = ''; for (const k in q.options) { o += `<label><input type="radio" name="q${currentQuestionIndex}" value="${k}"> <span>${q.options[k]}</span></label>`; }
+           quizContent.innerHTML = `<div class="quiz-question"><h3>${q.question}</h3><div class="quiz-options">${o}</div></div><div class="quiz-navigation"><button class="game-button" onclick="window.quizLogic.nextQuestion()">Suivant</button></div>`;
+       }
+       function nextQuestion() {
+           const selected = document.querySelector(`input[name="q${currentQuestionIndex}"]:checked`); if (!selected) { showNotification("Veuillez choisir une réponse."); return; }
+           scores[selected.value]++; currentQuestionIndex++; renderQuestion();
+       }
+       function renderResult() {
+           let maxScore = 'a'; if (scores.b > scores[maxScore]) maxScore = 'b'; if (scores.c > scores[maxScore]) maxScore = 'c'; const result = results[maxScore];
+           quizContent.innerHTML = `<div class="quiz-result"><h2>Votre profil : ${result.title} !</h2><p>Ce métier semble correspondre à vos intérêts. Lancez le simulateur pour le découvrir !</p><a href="#" onclick="launchGame('${result.link}')" class="game-button">Lancer le simulateur</a></div>`;
+       }
+       window.quizLogic = { nextQuestion };
+       quizBtn.addEventListener('click', openModal); closeBtn.addEventListener('click', closeModal); modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
+   })();
+   </script>
 </body>
-</html>
+</html
