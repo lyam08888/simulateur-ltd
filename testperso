@@ -39,6 +39,8 @@
             text-align: center;
             border-bottom-left-radius: 20px; /* Rounded corners for header bottom */
             border-bottom-right-radius: 20px;
+            position: relative; /* For potential future elements */
+            overflow: hidden; /* Ensure gradient stays within bounds */
         }
         .header h1 {
             font-size: 2.8em; /* Slightly larger heading */
@@ -115,6 +117,8 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.2); /* Button shadow */
             letter-spacing: 0.5px;
             text-transform: uppercase;
+            position: relative; /* For subtle glow effect */
+            overflow: hidden; /* For gradient animation */
         }
         .btn:hover {
             transform: translateY(-3px) scale(1.02); /* More pronounced hover */
@@ -123,7 +127,30 @@
         .btn:active {
             transform: translateY(0);
             box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+            background: linear-gradient(135deg, #5a6cd9 0%, #6b3e92 100%); /* Slightly darker on active */
         }
+        /* Subtle button glow on hover */
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: transform 0.5s ease-out;
+            transform: scaleX(0);
+            transform-origin: left;
+            z-index: 0;
+        }
+        .btn:hover::before {
+            transform: scaleX(1);
+        }
+        .btn span {
+            position: relative;
+            z-index: 1;
+        }
+
 
         /* Progress bar styling */
         .progress-container {
@@ -154,6 +181,7 @@
             margin: 30px 0;
             border: 1px solid #dee2e6;
             box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out; /* Smooth transition for scenario change */
         }
         .scenario-title {
             font-size: 2em; /* Larger title */
@@ -199,6 +227,7 @@
             background: #d4edda; /* Light green */
             border-color: #28a745;
             transform: scale(1.01);
+            box-shadow: 0 0 15px rgba(40, 167, 69, 0.4); /* Green glow for selected */
         }
         .choice-letter {
             width: 45px; /* Larger letter circle */
@@ -243,6 +272,7 @@
             padding: 30px; /* More padding */
             background: #f8f9fa;
             box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out; /* Smooth transition for scenario change */
         }
         .minigame-header {
             display: flex;
@@ -662,6 +692,7 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             min-width: 150px;
             flex: 1; /* Allow items to grow */
+            overflow: hidden; /* To contain the pulse animation */
         }
         .indicator-label {
             font-size: 1em;
@@ -883,9 +914,9 @@
             gap: 10px;
         }
         body.mobile-mode .indicator-item {
-            min-width: unset;
-            width: 100%;
-        }
+                min-width: unset;
+                width: 100%;
+            }
 
 
         /* Desktop Mode */
@@ -988,7 +1019,7 @@
                             <p>Des recommandations pour optimiser votre carrière.</p>
                         </div>
                     </div>
-                    <button class="btn" onclick="startTest()">🚀 Commencer le Test</button>
+                    <button class="btn" onclick="startTest()"><span>🚀 Commencer le Test</span></button>
                     <p style="color: #888; margin-top: 10px;">⏱️ Durée : 10-12 minutes</p>
                 </div>
             </div>
@@ -1127,7 +1158,7 @@
                     </div>
                     <div class="total-allocation-display">Total alloué : <span id="total-allocation-value">100</span> / 100</div>
                     <div id="allocation-error-message" class="allocation-error-message hidden">Le total doit être de 100 !</div>
-                    <button class="btn" id="submit-allocation-btn" onclick="submitAllocation()">Valider l'allocation</button>
+                    <button class="btn" id="submit-allocation-btn" onclick="submitAllocation()"><span>Valider l'allocation</span></button>
                 </div>
 
 
@@ -1141,7 +1172,7 @@
                     💡 Choisissez la réponse qui correspond le mieux à votre réaction naturelle.
                 </p>
                 <div style="text-align: center; margin-top: 20px;">
-                    <button class="btn" id="prev-scenario-btn" onclick="goBack()">↩️ Précédent</button>
+                    <button class="btn" id="prev-scenario-btn" onclick="goBack()"><span>↩️ Précédent</span></button>
                 </div>
             </div>
         </div>
@@ -1175,7 +1206,7 @@
                     <div id="scores-grid" class="scores-grid"></div>
                 </div>
                 <div style="text-align: center; margin-top: 30px;">
-                    <button class="btn" onclick="resetTest()">🔄 Refaire le Test</button>
+                    <button class="btn" onclick="resetTest()"><span>🔄 Refaire le Test</span></button>
                 </div>
             </div>
         </div>
@@ -1458,7 +1489,7 @@
                 id: 'scenario_13_difficult_feedback',
                 type: 'meeting',
                 title: "Donner un Feedback Constructif Difficile",
-                avatar: "�",
+                avatar: "😐",
                 dialogue: "Vous avez remarqué que les performances d'un membre clé de votre équipe, un développeur talentueux mais récemment distrait, ont considérablement baissé. Cela commence à impacter le calendrier du projet. Vous devez avoir une conversation délicate avec lui pour aborder le problème de manière constructive.",
                 question: "Comment préparez-vous et menez-vous cette conversation pour qu'elle soit efficace et respectueuse ?",
                 choices: [
@@ -1654,7 +1685,7 @@
         const taskItems = document.getElementById('task-items');
 
         const resourceAllocationView = document.getElementById('resource-allocation-view');
-        const allocationTitle = document.getElementById('allocation-title');
+        const allocationTitle = document = document.getElementById('allocation-title');
         const allocationSituation = document.getElementById('allocation-situation');
         const rDInput = document.getElementById('r-d-input');
         const marketingInput = document.getElementById('marketing-input');
@@ -1735,7 +1766,12 @@
                     // Apply consequences
                     const originalScenario = scenarios.find(s => s.id === response.scenarioId);
                     if (originalScenario) {
-                        const chosenChoice = originalScenario.choices.find(c => JSON.stringify(c.scores) === JSON.stringify(response.scores));
+                        // Find the chosen choice by comparing its scores, as choices might not have unique IDs
+                        const chosenChoice = originalScenario.choices.find(c => {
+                            // Deep comparison for objects
+                            return JSON.stringify(c.scores) === JSON.stringify(response.scores);
+                        });
+                        
                         if (chosenChoice && chosenChoice.consequences) {
                             for (const effect in chosenChoice.consequences) {
                                 if (playerState.hasOwnProperty(effect)) {
@@ -1757,9 +1793,19 @@
                                     userScores[trait] += (allocatedValue / 10) * dept.traits[trait];
                                 }
                             }
+                            // Apply consequences for playerState from allocation
+                            // This assumes department traits also have playerState consequences, or we calculate them here
+                            // For simplicity, let's assume direct playerState consequences are not tied to traits in allocation,
+                            // or they are handled separately if needed.
+                            // If they were, it would look something like:
+                            // if (dept.consequences) {
+                            //     for (const effect in dept.consequences) {
+                            //         playerState[effect] += (allocatedValue / 100) * dept.consequences[effect];
+                            //         playerState[effect] = Math.max(0, Math.min(100, playerState[effect]));
+                            //     }
+                            // }
                         });
                     }
-                    // Allocation itself is a consequence, no separate 'consequences' field needed here for playerState
                 }
             }
         }
@@ -1903,7 +1949,7 @@
                 emailScenarioView.classList.remove('hidden');
                 emailFrom.textContent = scenario.from;
                 emailSubject.textContent = scenario.subject;
-                emailBody.textContent = currentSituationText; // Email body is the situation
+                emailBody.innerHTML = currentSituationText; // Use innerHTML for line breaks
                 scenarioQuestion.textContent = currentQuestionText;
                 populateChoices(scenario);
             } else if (scenario.type === 'phone') {
@@ -2003,6 +2049,7 @@
                 return true;
             });
 
+            choicesContainer.innerHTML = ''; // Clear existing choices before populating
             availableChoices.forEach((choice, index) => {
                 const choiceDiv = document.createElement('div');
                 choiceDiv.classList.add('choice');
@@ -2076,8 +2123,20 @@
                 support: support
             };
             
-            // Consequences for allocation are embedded in the department traits, applied in calculateTotalScores
-            handleAnswer(scenarios[currentScenarioIndex], { type: 'allocation', values: allocationValues });
+            // Calculate consequences for playerState based on allocation
+            const currentScenario = scenarios[currentScenarioIndex];
+            const consequences = {};
+            if (currentScenario.departments) {
+                currentScenario.departments.forEach(dept => {
+                    const allocatedValue = allocationValues[dept.id] || 0;
+                    // Example: 1 unit of allocation in R&D gives 0.1 to projectQuality
+                    if (dept.projectQuality) consequences.projectQuality = (consequences.projectQuality || 0) + (allocatedValue / 10) * dept.projectQuality;
+                    if (dept.teamMorale) consequences.teamMorale = (consequences.teamMorale || 0) + (allocatedValue / 10) * dept.teamMorale;
+                    if (dept.personalReputation) consequences.personalReputation = (consequences.personalReputation || 0) + (allocatedValue / 10) * dept.personalReputation;
+                });
+            }
+
+            handleAnswer(currentScenario, { type: 'allocation', values: allocationValues }, null, -1, consequences);
         }
 
 
@@ -2263,6 +2322,7 @@
 
         /**
          * Resets the test to its initial state, clearing scores and returning to the welcome screen.
+         * Also resets the body background to its default gradient.
          */
         function resetTest() {
             currentScenarioIndex = 0;
@@ -2307,4 +2367,3 @@
     </script>
 </body>
 </html>
-�
