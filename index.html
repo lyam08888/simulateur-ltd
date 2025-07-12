@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <title>LTD Simulator - Menu Principal</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Ctext y='96' font-size='96'%3E🏗️%3C/text%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Ctext y='96' font-size='96'%3E🏗️%3C/text%3E%3Csvg%3E">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Base styles */
@@ -475,6 +475,59 @@
             }
         }
 
+        /* New Floating Personality Test Button */
+        #personality-test-btn {
+            position: fixed;
+            bottom: 1.5rem; /* 24px */
+            left: 1.5rem; /* 24px - Position on the left */
+            z-index: 50; /* Ensure it's on top */
+            background-color: var(--secondary); /* Use secondary color for prominence */
+            color: white;
+            padding: 1rem; /* Slightly larger for touch */
+            border-radius: 9999px; /* Fully rounded */
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            animation: pulse 2s infinite; /* Add pulse animation */
+        }
+        #personality-test-btn:hover {
+            background-color: #0F9F72; /* Darker secondary on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 12px 18px -4px rgba(0,0,0,0.2), 0 6px 8px -3px rgba(0,0,0,0.1);
+            animation: none; /* Stop pulse on hover */
+        }
+        /* Pulse animation for the personality test button */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 12px 18px -4px rgba(0,0,0,0.2), 0 6px 8px -3px rgba(0,0,0,0.1);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            }
+        }
+
+        /* Hide text on small screens for the floating button */
+        @media (max-width: 640px) {
+            #personality-test-btn .button-text {
+                display: none;
+            }
+            #personality-test-btn {
+                padding: 0.75rem; /* Smaller padding when text is hidden */
+            }
+        }
+
         /* --- Responsive Layout Overrides (Manual Modes) --- */
         /* Mobile Mode Forced */
         body[data-layout-mode="mobile"] .header-content {
@@ -701,8 +754,6 @@
             <nav class="nav-links">
                 <a href="#games" class="nav-link">Simulateurs</a>
                 <a href="#features" class="nav-link">Fonctionnalités</a>
-                <!-- New Personality Test Link -->
-                <a href="testperso.html" class="nav-link">Test de Personnalité</a>
                 <a href="https://www.ltd-international.com/" target="_blank" class="nav-link">LTD International</a>
                 <a href="login_ltd_canvas_static_v_1 (1).html" class="nav-link" style="background: var(--primary);color:#fff;padding:0.5rem 1.3rem;border-radius:8px;font-weight:700;margin-left:1rem;">Connexion</a>
             </nav>
@@ -774,19 +825,6 @@
                     </p>
                     <button class="game-button" onclick="launchGame('projeteurvrd.html')">
                         Jouer maintenant
-                    </button>
-                </div>
-
-                <!-- Personality Test (New) -->
-                <div class="game-card coming-soon animate-in" style="animation-delay: 0.8s;">
-                    <span class="coming-soon-badge">Bientôt</span>
-                    <span class="game-icon">🧠</span> <!-- Brain icon for personality test -->
-                    <h3 class="game-title">Test de Personnalité</h3>
-                    <p class="game-description">
-                        Découvrez votre profil professionnel et les métiers du BTP qui vous correspondent le mieux.
-                    </p>
-                    <button class="game-button" disabled>
-                        Disponible prochainement
                     </button>
                 </div>
 
@@ -888,6 +926,12 @@
     <button id="layout-toggle-btn">
         <i id="layout-mode-icon" class="fa-solid fa-mobile-screen-button"></i> 
         <span id="layout-mode-text" class="layout-text">Mode Auto</span>
+    </button>
+
+    <!-- New Floating Personality Test Button -->
+    <button id="personality-test-btn" onclick="launchGame('testperso.html')">
+        <i class="fa-solid fa-lightbulb"></i> 
+        <span class="button-text">Test de Personnalité</span>
     </button>
 
     <script>
