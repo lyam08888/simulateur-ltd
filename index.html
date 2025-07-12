@@ -137,9 +137,73 @@
             text-decoration: none;
             font-weight: 500;
             transition: color 0.2s ease;
+            padding: 0.5rem 0;
         }
 
         .nav-link:hover {
+            color: var(--text-primary);
+        }
+
+        /* Dropdown Menu Styles */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dropdown-toggle .fa-chevron-down {
+            font-size: 0.7rem;
+            transition: transform 0.2s ease;
+        }
+
+        .dropdown.open .dropdown-toggle .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            min-width: 220px;
+            z-index: 110;
+            padding: 0.5rem 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease, top 0.2s ease;
+        }
+
+        .dropdown.open .dropdown-menu {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+            top: calc(100% + 5px);
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--surface-light);
             color: var(--text-primary);
         }
 
@@ -945,9 +1009,19 @@
                 <span>LTD Simulator</span>
             </a>
             <nav class="nav-links">
-                <a href="#games" class="nav-link">Simulateurs</a>
-                <a href="#features" class="nav-link">Fonctionnalités</a>
-                <a href="https://www.ltd-international.com/" target="_blank" class="nav-link">LTD International</a>
+                <!-- Dropdown Menu -->
+                <div class="dropdown" id="nav-dropdown">
+                    <button class="nav-link dropdown-toggle">
+                        Menu
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a href="#games" class="dropdown-item">Simulateurs</a>
+                        <a href="#features" class="dropdown-item">Fonctionnalités</a>
+                        <a href="https://www.ltd-international.com/" target="_blank" class="dropdown-item">LTD International</a>
+                    </div>
+                </div>
+                <!-- Connexion Button -->
                 <a href="login_ltd_canvas_static_v_1 (1).html" class="nav-link" style="background: var(--primary);color:#fff;padding:0.5rem 1.3rem;border-radius:8px;font-weight:700;margin-left:1rem;">Connexion</a>
             </nav>
         </div>
@@ -1169,6 +1243,25 @@
                         header.classList.add('scrolled');
                     } else {
                         header.classList.remove('scrolled');
+                    }
+                });
+            }
+        });
+        
+        // --- Dropdown Menu Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropdown = document.getElementById('nav-dropdown');
+            if (dropdown) {
+                const toggle = dropdown.querySelector('.dropdown-toggle');
+                
+                toggle.addEventListener('click', () => {
+                    dropdown.classList.toggle('open');
+                });
+
+                // Close dropdown if clicked outside
+                window.addEventListener('click', (event) => {
+                    if (!dropdown.contains(event.target)) {
+                        dropdown.classList.remove('open');
                     }
                 });
             }
