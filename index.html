@@ -701,6 +701,8 @@
             <nav class="nav-links">
                 <a href="#games" class="nav-link">Simulateurs</a>
                 <a href="#features" class="nav-link">Fonctionnalités</a>
+                <!-- New Personality Test Link -->
+                <a href="testperso" class="nav-link">Test de Personnalité</a>
                 <a href="https://www.ltd-international.com/" target="_blank" class="nav-link">LTD International</a>
                 <a href="login_ltd_canvas_static_v_1 (1).html" class="nav-link" style="background: var(--primary);color:#fff;padding:0.5rem 1.3rem;border-radius:8px;font-weight:700;margin-left:1rem;">Connexion</a>
             </nav>
@@ -775,8 +777,21 @@
                     </button>
                 </div>
 
-                <!-- Architecte (Coming Soon) -->
+                <!-- Personality Test (New) -->
                 <div class="game-card coming-soon animate-in" style="animation-delay: 0.8s;">
+                    <span class="coming-soon-badge">Bientôt</span>
+                    <span class="game-icon">🧠</span> <!-- Brain icon for personality test -->
+                    <h3 class="game-title">Test de Personnalité</h3>
+                    <p class="game-description">
+                        Découvrez votre profil professionnel et les métiers du BTP qui vous correspondent le mieux.
+                    </p>
+                    <button class="game-button" disabled>
+                        Disponible prochainement
+                    </button>
+                </div>
+
+                <!-- Architecte (Coming Soon) -->
+                <div class="game-card coming-soon animate-in" style="animation-delay: 0.9s;">
                     <span class="coming-soon-badge">Bientôt</span>
                     <span class="game-icon">🏛️</span>
                     <h3 class="game-title">Architecte</h3>
@@ -789,7 +804,7 @@
                 </div>
 
                 <!-- Ingénieur BTP (Coming Soon) -->
-                <div class="game-card coming-soon animate-in" style="animation-delay: 0.9s;">
+                <div class="game-card coming-soon animate-in" style="animation-delay: 1.0s;">
                     <span class="coming-soon-badge">Bientôt</span>
                     <span class="game-icon">⚙️</span>
                     <h3 class="game-title">Ingénieur BTP</h3>
@@ -946,64 +961,39 @@
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    observer.unobserve(entry.target);
+                    entry.target.classList.add('animate-in');
+                    observer.unobserve(entry.target); // Stop observing once animated
                 }
             });
         }, observerOptions);
 
-        // Observe all animate-in elements
-        document.querySelectorAll('.animate-in').forEach(el => {
-            el.style.opacity = '0';
-            observer.observe(el);
+        document.querySelectorAll('.animate-in').forEach(element => {
+            observer.observe(element);
         });
 
-        // Add hover effect to game cards
-        document.querySelectorAll('.game-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                if (!this.classList.contains('coming-soon')) {
-                    this.style.transform = 'translateY(-4px)';
-                }
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-            });
-        });
-
-        // --- Layout Toggle Logic ---
-        const layoutToggleBtn = document.getElementById('layout-toggle-btn');
+        // Layout Toggle Button Logic
+        const layoutToggleButton = document.getElementById('layout-toggle-btn');
         const layoutModeIcon = document.getElementById('layout-mode-icon');
         const layoutModeText = document.getElementById('layout-mode-text');
-        const bodyElement = document.body; // Apply data-layout-mode to body
-
         let currentLayoutMode = 'auto'; // 'auto', 'mobile', 'desktop'
 
-        /**
-         * Updates the display of the layout toggle button and applies the layout mode to the body.
-         */
-        const updateLayoutDisplay = () => {
-            bodyElement.dataset.layoutMode = currentLayoutMode;
-
-            if (currentLayoutMode === 'auto') {
-                layoutModeText.textContent = 'Mode Auto';
-                layoutModeIcon.className = 'fa-solid fa-mobile-screen-button';
-                bodyElement.removeAttribute('data-layout-mode'); // Remove attribute for auto mode
-            } else if (currentLayoutMode === 'mobile') {
-                layoutModeText.textContent = 'Mode Mobile';
-                layoutModeIcon.className = 'fa-solid fa-mobile-screen';
-                bodyElement.setAttribute('data-layout-mode', 'mobile');
-            } else if (currentLayoutMode === 'desktop') {
-                layoutModeText.textContent = 'Mode Ordinateur';
+        function applyLayoutMode(mode) {
+            document.body.removeAttribute('data-layout-mode');
+            if (mode === 'mobile') {
+                document.body.setAttribute('data-layout-mode', 'mobile');
                 layoutModeIcon.className = 'fa-solid fa-desktop';
-                bodyElement.setAttribute('data-layout-mode', 'desktop');
+                layoutModeText.textContent = 'Mode Bureau';
+            } else if (mode === 'desktop') {
+                document.body.setAttribute('data-layout-mode', 'desktop');
+                layoutModeIcon.className = 'fa-solid fa-mobile-screen-button';
+                layoutModeText.textContent = 'Mode Auto';
+            } else { // auto
+                layoutModeIcon.className = 'fa-solid fa-mobile-screen-button';
+                layoutModeText.textContent = 'Mode Auto';
             }
-        };
+        }
 
-        /**
-         * Toggles the layout mode between 'auto', 'mobile', and 'desktop'.
-         */
-        const toggleLayoutMode = () => {
+        layoutToggleButton.addEventListener('click', () => {
             if (currentLayoutMode === 'auto') {
                 currentLayoutMode = 'mobile';
             } else if (currentLayoutMode === 'mobile') {
@@ -1011,15 +1001,29 @@
             } else {
                 currentLayoutMode = 'auto';
             }
-            updateLayoutDisplay();
-        };
+            applyLayoutMode(currentLayoutMode);
+        });
 
-        // Attach event listener to the layout toggle button
-        layoutToggleBtn.addEventListener('click', toggleLayoutMode);
+        // Initial layout mode based on screen size (auto mode)
+        function setInitialLayoutMode() {
+            if (window.innerWidth <= 768) { // Example breakpoint for mobile
+                // If we are in 'auto' mode and screen is small, visually show mobile icon
+                if (currentLayoutMode === 'auto') {
+                    layoutModeIcon.className = 'fa-solid fa-mobile-screen-button';
+                    layoutModeText.textContent = 'Mode Auto';
+                }
+            } else {
+                // If we are in 'auto' mode and screen is large, visually show desktop icon
+                if (currentLayoutMode === 'auto') {
+                    layoutModeIcon.className = 'fa-solid fa-desktop';
+                    layoutModeText.textContent = 'Mode Auto';
+                }
+            }
+        }
 
-        // Set initial layout display on page load
-        document.addEventListener('DOMContentLoaded', updateLayoutDisplay);
-
+        // Call on load and resize to adjust icon/text in auto mode
+        window.addEventListener('resize', setInitialLayoutMode);
+        setInitialLayoutMode(); // Initial call
     </script>
 </body>
 </html>
