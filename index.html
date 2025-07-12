@@ -312,7 +312,7 @@
 
             /* Adjust chatbot container position for smaller screens */
             #chatbot-container { bottom: 9.5rem; } /* Adjusted bottom to align with new chatbot button position */
-            .job-card-footer .game-button { max-width: 180px; } /* Limit button width on smaller tablets */
+            .job-card-footer .game-button { max-width: 180px; } /* Limit button width on larger tablets */
         }
 
         @media (max-width: 640px) {
@@ -426,15 +426,15 @@
             <div class="games-grid">
                 <div class="game-card animate-in">
                     <div class="game-card-content"><span class="game-icon">👷</span><h3 class="game-title">Directeur Travaux</h3><p class="game-description">Gérez vos chantiers avec expertise. Coordonnez équipes, budgets et délais.</p></div>
-                    <a href="#" onclick="launchGame(simulateur-directeur-travaux.html)" class="game-button">Lancer le Simulateur</a>
+                    <a href="#" onclick="launchGame('simulateur-directeur-travaux.html')" class="game-button">Lancer le Simulateur</a>
                 </div>
                 <div class="game-card animate-in">
                     <div class="game-card-content"><span class="game-icon">📍</spam><h3 class="game-title">Géomètre-Topographe</h3><p class="game-description">Testez vos compétences en topographie. Relevés, calculs et précision sont les clés.</p></div>
-                    <a href="#" onclick="launchGame(geometre-topographe.html)" class="game-button">Lancer le Simulateur</a>
+                    <a href="#" onclick="launchGame('geometre-topographe.html')" class="game-button">Lancer le Simulateur</a>
                 </div>
                 <div class="game-card animate-in">
                     <div class="game-card-content"><span class="game-icon">📐</span><h3 class="game-title">Projeteur VRD</h3><p class="game-description">Concevez les infrastructures de demain. Plans, réseaux et aménagements urbains.</p></div>
-                    <a href="#" onclick="launchGame(projeteurvrd.html)" class="game-button">Lancer le Simulateur</a>
+                    <a href="#" onclick="launchGame('projeteurvrd.html')" class="game-button">Lancer le Simulateur</a>
                 </div>
                 <div class="game-card coming-soon animate-in">
                     <span class="coming-soon-badge">Bientôt</span>
@@ -617,7 +617,9 @@
     }
     function launchGame(gameId) {
         showNotification(`Lancement du simulateur : ${gameId.replace(/-/g, ' ')}...`);
-        console.log(`Navigating to ${gameId}.html`);
+        // Use window.location.href to redirect to the specified HTML file
+        window.location.href = gameId; 
+        console.log(`Navigating to ${gameId}`);
     }
 
     // --- IIFE for scoped logic ---
@@ -775,7 +777,7 @@
         // Removed quizBtn variable and its event listener as it's now a dropdown item
         const modalOverlay = document.getElementById('quiz-modal-overlay'), quizContent = document.getElementById('quiz-content'), closeBtn = document.getElementById('quiz-close-btn');
         const quizData = [ { question: "Sur un projet, qu'est-ce qui vous motive le plus ?", options: { a: "La vision globale et la coordination des équipes.", b: "La précision technique et la résolution de problèmes.", c: "La conception et la création de plans détaillés." } }, { question: "Quel type d'environnement de travail préférez-vous ?", options: { a: "Un mélange de bureau et de terrain, avec interactions.", b: "Principalement sur le terrain, avec des technologies.", c: "Essentiellement au bureau, sur des logiciels de conception." } }, { question: "Face à un défi, votre première réaction est de :", options: { a: "Planifier, déléguer et superviser la solution.", b: "Analyser les données, mesurer et calculer l'approche.", c: "Dessiner et modéliser différentes solutions." } } ];
-        const results = { a: { title: "Directeur de Travaux", link: "directeur-travaux" }, b: { title: "Géomètre-Topographe", link: "geometre-topographe" }, c: { title: "Projeteur VRD", link: "projeteur-vrd" } };
+        const results = { a: { title: "Directeur de Travaux", link: "simulateur-directeur-travaux.html" }, b: { title: "Géomètre-Topographe", link: "geometre-topographe.html" }, c: { title: "Projeteur VRD", link: "projeteurvrd.html" } }; // Corrected links here
         let currentQuestionIndex = 0, scores = { a: 0, b: 0, c: 0 };
 
         function openModal() {
