@@ -528,117 +528,305 @@
             }
         }
 
-        /* --- Responsive Layout Overrides (Manual Modes) --- */
+        /* Chatbot styles */
+        #chatbot-button {
+            position: fixed;
+            bottom: 5.5rem; /* Au-dessus du bouton de mode d'affichage */
+            right: 1.5rem;
+            z-index: 50;
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            border-radius: 9999px;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.2s ease;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        #chatbot-button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 18px -4px rgba(0,0,0,0.2), 0 6px 8px -3px rgba(0,0,0,0.1);
+        }
+        @media (max-width: 640px) {
+            #chatbot-button .button-text {
+                display: none;
+            }
+            #chatbot-button {
+                padding: 0.75rem;
+                bottom: 5rem; /* Ajusté pour mobile */
+            }
+        }
+
+        #chatbot-container {
+            position: fixed;
+            bottom: 6.5rem; /* Au-dessus du bouton de chatbot */
+            right: 1.5rem;
+            width: 380px;
+            height: 500px;
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 60;
+            transform: translateY(100%) scale(0.8);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease-in-out;
+            transform-origin: bottom right;
+        }
+
+        #chatbot-container.open {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .chatbot-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 0.8rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            border-top-left-radius: var(--radius);
+            border-top-right-radius: var(--radius);
+        }
+
+        .chatbot-header button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .chatbot-header button:hover {
+            transform: scale(1.1);
+        }
+
+        .chatbot-messages {
+            flex-grow: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            background-color: var(--background);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .message-bubble {
+            max-width: 80%;
+            padding: 0.6rem 0.9rem;
+            border-radius: 12px;
+            margin-bottom: 0.7rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .message-bubble.user {
+            background-color: var(--primary);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-bubble.bot {
+            background-color: var(--surface-light);
+            color: var(--text-primary);
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chatbot-input-area {
+            display: flex;
+            padding: 0.8rem 1rem;
+            background-color: var(--surface);
+            border-bottom-left-radius: var(--radius);
+            border-bottom-right-radius: var(--radius);
+        }
+
+        .chatbot-input-area input {
+            flex-grow: 1;
+            padding: 0.6rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background-color: var(--background);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            margin-right: 0.5rem;
+            outline: none;
+        }
+
+        .chatbot-input-area button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .chatbot-input-area button:hover {
+            background-color: var(--primary-dark);
+        }
+        .chatbot-input-area button:disabled {
+            background-color: var(--surface-light);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .typing-indicator {
+            font-style: italic;
+            color: var(--text-secondary);
+            margin-bottom: 0.7rem;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
         /* Mobile Mode Forced */
         body[data-layout-mode="mobile"] .header-content {
-            padding: 0.4rem 0.5rem; /* Encore plus petit */
+            padding: 0.4rem 0.5rem;
         }
         body[data-layout-mode="mobile"] .logo {
-            font-size: 0.9rem; /* Encore plus petit */
+            font-size: 0.9rem;
             gap: 0.2rem;
         }
         body[data-layout-mode="mobile"] .logo-icon {
-            font-size: 1.2rem; /* Encore plus petit */
+            font-size: 1.2rem;
         }
         body[data-layout-mode="mobile"] .nav-links {
-            gap: 0.4rem; /* Encore plus petit */
+            gap: 0.4rem;
         }
         body[data-layout-mode="mobile"] .nav-link {
-            font-size: 0.7rem; /* Encore plus petit */
-            padding: 0.15rem 0.5rem !important; /* Ajusté */
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem !important;
         }
         body[data-layout-mode="mobile"] .main {
-            padding: 3.5rem 0.5rem 1.5rem; /* Encore plus petit */
+            padding: 3.5rem 0.5rem 1.5rem;
         }
         body[data-layout-mode="mobile"] .hero h1 {
-            font-size: 1.6rem; /* Encore plus petit */
+            font-size: 1.6rem;
             margin-bottom: 0.6rem;
         }
         body[data-layout-mode="mobile"] .hero p {
-            font-size: 0.85rem; /* Encore plus petit */
-            line-height: 1.4; /* Ajusté pour un meilleur passage à la ligne */
+            font-size: 0.85rem;
+            line-height: 1.4;
         }
         body[data-layout-mode="mobile"] .stats {
             grid-template-columns: 1fr;
-            gap: 0.6rem; /* Encore plus petit */
+            gap: 0.6rem;
             margin-bottom: 1rem;
         }
         body[data-layout-mode="mobile"] .stat-card {
-            padding: 0.6rem; /* Encore plus petit */
+            padding: 0.6rem;
         }
         body[data-layout-mode="mobile"] .stat-number {
-            font-size: 1.4rem; /* Encore plus petit */
+            font-size: 1.4rem;
         }
         body[data-layout-mode="mobile"] .section-title {
-            font-size: 1.4rem; /* Encore plus petit */
+            font-size: 1.4rem;
             margin-bottom: 0.8rem;
         }
         body[data-layout-mode="mobile"] .games-grid {
             grid-template-columns: 1fr;
-            gap: 0.8rem; /* Encore plus petit */
+            gap: 0.8rem;
         }
         body[data-layout-mode="mobile"] .game-card {
-            padding: 0.8rem; /* Encore plus petit */
+            padding: 0.8rem;
         }
         body[data-layout-mode="mobile"] .game-icon {
-            font-size: 1.8rem; /* Encore plus petit */
+            font-size: 1.8rem;
         }
         body[data-layout-mode="mobile"] .game-title {
-            font-size: 1rem; /* Encore plus petit */
+            font-size: 1rem;
         }
         body[data-layout-mode="mobile"] .game-description {
-            font-size: 0.65rem; /* Encore plus petit */
-            margin-bottom: 0.6rem; /* Ajusté */
-            line-height: 1.3; /* Ajusté pour un meilleur passage à la ligne */
+            font-size: 0.65rem;
+            margin-bottom: 0.6rem;
+            line-height: 1.3;
         }
         body[data-layout-mode="mobile"] .game-button {
-            padding: 0.35rem 0.9rem; /* Encore plus petit */
-            font-size: 0.75rem; /* Encore plus petit */
+            padding: 0.35rem 0.9rem;
+            font-size: 0.75rem;
         }
         body[data-layout-mode="mobile"] .info-section {
-            padding: 1rem; /* Encore plus petit */
+            padding: 1rem;
             margin-bottom: 1rem;
         }
         body[data-layout-mode="mobile"] .info-title {
-            font-size: 1rem; /* Encore plus petit */
+            font-size: 1rem;
         }
         body[data-layout-mode="mobile"] .info-text {
-            font-size: 0.75rem; /* Encore plus petit */
-            line-height: 1.4; /* Ajusté pour un meilleur passage à la ligne */
+            font-size: 0.75rem;
+            line-height: 1.4;
         }
         body[data-layout-mode="mobile"] .features {
-            padding: 1rem; /* Encore plus petit */
+            padding: 1rem;
             margin-bottom: 1rem;
         }
         body[data-layout-mode="mobile"] .features-grid {
             grid-template-columns: 1fr;
-            gap: 0.8rem; /* Encore plus petit */
+            gap: 0.8rem;
         }
         body[data-layout-mode="mobile"] .feature-icon {
-            font-size: 1.4rem; /* Encore plus petit */
+            font-size: 1.4rem;
         }
         body[data-layout-mode="mobile"] .feature-title {
-            font-size: 0.85rem; /* Encore plus petit */
+            font-size: 0.85rem;
         }
         body[data-layout-mode="mobile"] .feature-description {
-            font-size: 0.65rem; /* Encore plus petit */
-            line-height: 1.3; /* Ajusté pour un meilleur passage à la ligne */
+            font-size: 0.65rem;
+            line-height: 1.3;
         }
         body[data-layout-mode="mobile"] .footer {
-            padding: 1rem 0; /* Encore plus petit */
+            padding: 1rem 0;
             margin-top: 1rem;
         }
         body[data-layout-mode="mobile"] .footer-content {
             flex-direction: column;
             text-align: center;
-            gap: 0.6rem; /* Encore plus petit */
+            gap: 0.6rem;
         }
         body[data-layout-mode="mobile"] .footer-links {
             flex-direction: column;
-            gap: 0.25rem; /* Encore plus petit */
+            gap: 0.25rem;
         }
         body[data-layout-mode="mobile"] .footer-link {
-            font-size: 0.65rem; /* Encore plus petit */
+            font-size: 0.65rem;
+        }
+
+        /* Chatbot mobile overrides */
+        @media (max-width: 640px) {
+            #chatbot-container {
+                width: 90%; /* Prend plus de place sur mobile */
+                height: 70%; /* Prend plus de hauteur sur mobile */
+                bottom: 1rem;
+                right: 5%; /* Centré horizontalement */
+                left: 5%;
+                transform: translateY(100%) scale(0.9); /* Animation ajustée */
+            }
+            #chatbot-container.open {
+                transform: translateY(0) scale(1);
+            }
+            .message-bubble {
+                max-width: 90%; /* Bulles plus larges sur mobile */
+                padding: 0.5rem 0.8rem; /* Padding ajusté */
+                font-size: 0.85rem; /* Taille de police ajustée */
+            }
+            .chatbot-input-area input {
+                font-size: 0.85rem; /* Taille de police ajustée */
+            }
+            .chatbot-input-area button {
+                padding: 0.5rem 0.8rem; /* Padding ajusté */
+            }
         }
 
         /* Desktop Mode Forced */
@@ -939,6 +1127,27 @@
         <span class="button-text">Test de Personnalité</span>
     </button>
 
+    <!-- Chatbot Floating Button -->
+    <button id="chatbot-button">
+        <i class="fa-solid fa-comments"></i>
+        <span class="button-text">Chat BTP</span>
+    </button>
+
+    <!-- Chatbot Container -->
+    <div id="chatbot-container">
+        <div class="chatbot-header">
+            <span>Chatbot BTP</span>
+            <button id="close-chatbot-btn"><i class="fa-solid fa-times"></i></button>
+        </div>
+        <div class="chatbot-messages" id="chatbot-messages">
+            <div class="message-bubble bot">Bonjour ! Je suis votre assistant BTP. Posez-moi vos questions sur le secteur.</div>
+        </div>
+        <div class="chatbot-input-area">
+            <input type="text" id="chatbot-input" placeholder="Tapez votre message..." autocomplete="off">
+            <button id="chatbot-send-btn"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+
     <script>
         // Function to hide the loader once the page is loaded
         window.addEventListener('load', () => {
@@ -1045,6 +1254,110 @@
                         // No explicit action needed here as 'auto' means default CSS takes over.
                     }
                 }, 250); // Debounce resize event
+            });
+        });
+
+        // --- Chatbot Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatbotButton = document.getElementById('chatbot-button');
+            const chatbotContainer = document.getElementById('chatbot-container');
+            const closeChatbotBtn = document.getElementById('close-chatbot-btn');
+            const chatbotMessages = document.getElementById('chatbot-messages');
+            const chatbotInput = document.getElementById('chatbot-input');
+            const chatbotSendBtn = document.getElementById('chatbot-send-btn');
+
+            let chatHistory = [{ role: "model", parts: [{ text: "Bonjour ! Je suis votre assistant BTP. Posez-moi vos questions sur le secteur." }] }];
+
+            // Function to toggle chatbot visibility
+            function toggleChatbot() {
+                chatbotContainer.classList.toggle('open');
+                if (chatbotContainer.classList.contains('open')) {
+                    chatbotInput.focus(); // Focus on input when opened
+                    chatbotMessages.scrollTop = chatbotMessages.scrollHeight; // Scroll to bottom
+                }
+            }
+
+            // Function to add a message to the chat display
+            function addMessage(sender, text) {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message-bubble', sender);
+                messageDiv.textContent = text;
+                chatbotMessages.appendChild(messageDiv);
+                chatbotMessages.scrollTop = chatbotMessages.scrollHeight; // Scroll to bottom
+            }
+
+            // Function to send a message to the bot
+            async function sendMessage() {
+                const userMessage = chatbotInput.value.trim();
+                if (userMessage === '') return;
+
+                addMessage('user', userMessage);
+                chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
+                chatbotInput.value = ''; // Clear input
+
+                // Show typing indicator
+                const typingIndicator = document.createElement('div');
+                typingIndicator.classList.add('typing-indicator');
+                typingIndicator.textContent = 'Le bot est en train d\'écrire...';
+                chatbotMessages.appendChild(typingIndicator);
+                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+
+                chatbotSendBtn.disabled = true; // Disable send button
+                chatbotInput.disabled = true; // Disable input
+
+                try {
+                    const payload = { contents: chatHistory };
+                    const apiKey = ""; // Canvas will provide this at runtime
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`API error: ${response.status} - ${errorData.error.message || 'Unknown error'}`);
+                    }
+
+                    const result = await response.json();
+
+                    // Remove typing indicator
+                    chatbotMessages.removeChild(typingIndicator);
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const botResponse = result.candidates[0].content.parts[0].text;
+                        addMessage('bot', botResponse);
+                        chatHistory.push({ role: "model", parts: [{ text: botResponse }] });
+                    } else {
+                        addMessage('bot', 'Désolé, je n\'ai pas pu générer de réponse. Veuillez réessayer.');
+                        console.error('Unexpected API response structure:', result);
+                    }
+                } catch (error) {
+                    // Remove typing indicator if an error occurred
+                    if (chatbotMessages.contains(typingIndicator)) {
+                        chatbotMessages.removeChild(typingIndicator);
+                    }
+                    addMessage('bot', `Une erreur est survenue : ${error.message}. Veuillez réessayer.`);
+                    console.error('Error calling Gemini API:', error);
+                } finally {
+                    chatbotSendBtn.disabled = false; // Re-enable send button
+                    chatbotInput.disabled = false; // Re-enable input
+                    chatbotInput.focus(); // Refocus input
+                }
+            }
+
+            // Event Listeners
+            chatbotButton.addEventListener('click', toggleChatbot);
+            closeChatbotBtn.addEventListener('click', toggleChatbot);
+            chatbotSendBtn.addEventListener('click', sendMessage);
+            chatbotInput.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter') {
+                    sendMessage();
+                }
             });
         });
     </script>
