@@ -107,6 +107,11 @@
             pointer-events: none;
             z-index: -1;
         }
+        
+        /* Make all clickable elements have a pointer cursor */
+        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle {
+            cursor: pointer;
+        }
 
         /* Header */
         .header {
@@ -426,8 +431,6 @@
             text-decoration: none;
             font-weight: 500;
             transition: var(--transition);
-            cursor: pointer;
-            backdrop-filter: blur(10px);
         }
 
         .theme-toggle:hover,
@@ -461,7 +464,6 @@
             background: var(--glass);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius);
-            cursor: pointer;
             transition: var(--transition);
             backdrop-filter: blur(10px);
         }
@@ -543,7 +545,6 @@
             border: 1px solid var(--glass-border);
             border-radius: var(--radius);
             color: var(--text-primary);
-            cursor: pointer;
             transition: var(--transition);
         }
 
@@ -863,7 +864,6 @@
             border-radius: var(--radius-full);
             color: white;
             font-size: 1.25rem;
-            cursor: pointer;
             box-shadow: var(--shadow-lg);
             transition: var(--transition);
             display: flex;
@@ -980,7 +980,6 @@
             gap: var(--spacing-sm);
             padding: var(--spacing-sm);
             border-radius: var(--radius);
-            cursor: pointer;
             transition: var(--transition);
         }
 
@@ -1059,7 +1058,6 @@
             background: none;
             border: none;
             color: var(--text-muted);
-            cursor: pointer;
             padding: 0;
             font-size: 1rem;
             transition: var(--transition);
@@ -1091,7 +1089,6 @@
             height: 1.5rem;
             background: var(--surface-hover);
             border-radius: var(--radius-full);
-            cursor: pointer;
             transition: var(--transition);
         }
 
@@ -1143,7 +1140,6 @@
             gap: var(--spacing-sm);
             padding: var(--spacing-sm) var(--spacing-md);
             color: var(--text-secondary);
-            cursor: pointer;
             transition: var(--transition);
             border: none;
             background: none;
@@ -1415,11 +1411,11 @@
 
                 <!-- Actions -->
                 <div class="nav-actions">
-                    <button class="theme-toggle" id="themeToggle">
+                    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
                         <i class="fas fa-moon" id="themeIcon"></i>
                         <span id="themeText">Sombre</span>
                     </button>
-                    <button class="quick-settings-toggle" id="quickSettingsToggle">
+                    <button class="quick-settings-toggle" id="quickSettingsToggle" onclick="toggleQuickSettings()">
                         <i class="fas fa-cog"></i>
                         <span>Paramètres</span>
                     </button>
@@ -1431,7 +1427,7 @@
             </div>
 
             <!-- Mobile Toggle -->
-            <button class="mobile-toggle" id="mobileToggle">
+            <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
                 <div class="hamburger">
                     <span></span>
                     <span></span>
@@ -1444,11 +1440,11 @@
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
         <div class="mobile-menu-header">
-            <a href="#" class="logo" onclick="event.preventDefault(); window.scrollTo({top: 0, behavior: 'smooth'});">
+            <a href="#" class="logo" onclick="event.preventDefault(); toggleMobileMenu(); window.scrollTo({top: 0, behavior: 'smooth'});">
                 <span class="logo-icon">🏗️</span>
                 <span class="logo-text">LTD Simulator</span>
             </a>
-            <button class="mobile-menu-close" id="mobileMenuClose">
+            <button class="mobile-menu-close" id="mobileMenuClose" onclick="toggleMobileMenu()">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -1531,7 +1527,7 @@
             <div class="mobile-nav-section">
                 <h3>Paramètres</h3>
                 <div class="mobile-nav-items">
-                    <a href="#" class="mobile-nav-item" id="mobileThemeToggle">
+                    <a href="#" class="mobile-nav-item" id="mobileThemeToggle" onclick="event.preventDefault(); toggleTheme();">
                         <div class="mobile-nav-item-icon">🌙</div>
                         <div class="mobile-nav-item-content">
                             <h4>Mode Sombre</h4>
@@ -1554,11 +1550,7 @@
     <main class="main-content">
         <!-- Breadcrumb -->
         <nav class="breadcrumb animate-in">
-            <a href="#" class="breadcrumb-item">Accueil</a>
-            <span class="breadcrumb-separator">
-                <i class="fas fa-chevron-right"></i>
-            </span>
-            <span class="breadcrumb-item active">Simulateurs BTP</span>
+            <a href="#" class="breadcrumb-item active" onclick="event.preventDefault(); window.scrollTo({top: 0, behavior: 'smooth'});">Accueil</a>
         </nav>
 
         <section class="hero animate-in">
@@ -1588,51 +1580,61 @@
             </div>
         </section>
 
-        <!-- Quick Actions -->
+        <!-- Quick Actions Section -->
         <section class="quick-actions animate-in" style="margin: 4rem 0;">
-            <h2 style="text-align: center; font-size: 2rem; font-weight: 700; margin-bottom: 2rem; color: var(--text-primary);">Actions Rapides</h2>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
-                <a href="simulateur-directeur-travaux.html" onclick="event.preventDefault(); launchGame('simulateur-directeur-travaux.html')" style="text-decoration: none; color: inherit;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+                
+                <a href="#" onclick="event.preventDefault(); launchGame('simulateur-directeur-travaux.html')" style="text-decoration: none; color: inherit;">
                     <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
-                        <div style="font-size: 3rem; margin-bottom: 1rem;">🎯</div>
-                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Commencer un Simulateur</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Testez immédiatement vos compétences</p>
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">👷</div>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Simulateur</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Gérez vos chantiers avec expertise.</p>
                         <div style="background: var(--primary); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Lancer</div>
                     </div>
                 </a>
-                
+
                 <a href="#" onclick="event.preventDefault(); openQuiz()" style="text-decoration: none; color: inherit;">
                     <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
                         <div style="font-size: 3rem; margin-bottom: 1rem;">🧠</div>
-                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Test d'Orientation</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Découvrez votre métier idéal</p>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Test & Évaluation</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Découvrez votre métier idéal.</p>
                         <div style="background: var(--secondary); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Commencer</div>
                     </div>
                 </a>
                 
-                <a href="#" onclick="event.preventDefault(); showNotification('Section emploi en cours de développement', 'info')" style="text-decoration: none; color: inherit;">
+                <a href="#" onclick="event.preventDefault(); showNotification('Page en construction', 'info')" style="text-decoration: none; color: inherit;">
                     <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
-                        <div style="font-size: 3rem; margin-bottom: 1rem;">💼</div>
-                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Offres d'Emploi</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Trouvez votre prochain poste</p>
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📜</div>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Histoire du BTP</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Découvrez l'évolution du secteur.</p>
                         <div style="background: var(--accent); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Explorer</div>
                     </div>
                 </a>
+
+                <a href="https://www.ltd-international.com/" target="_blank" style="text-decoration: none; color: inherit;">
+                    <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🏢</div>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">LTD International</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Visitez le site de notre partenaire.</p>
+                        <div style="background: var(--primary-light); color: var(--text-primary); padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Visiter</div>
+                    </div>
+                </a>
+
             </div>
         </section>
     </main>
 
     <!-- Floating Action Buttons -->
     <div class="fab-container">
-        <button class="fab" id="helpFab">
+        <button class="fab" id="helpFab" onclick="showShortcuts()">
             <i class="fas fa-question"></i>
             <div class="fab-tooltip">Aide (F1)</div>
         </button>
-        <button class="fab secondary" id="feedbackFab">
+        <button class="fab secondary" id="feedbackFab" onclick="showNotification('Merci pour votre feedback ! 🙏', 'success')">
             <i class="fas fa-comment"></i>
             <div class="fab-tooltip">Feedback</div>
         </button>
-        <button class="fab accent" id="bookmarkFab">
+        <button class="fab accent" id="bookmarkFab" onclick="showBookmarks()">
             <i class="fas fa-bookmark"></i>
             <div class="fab-tooltip">Favoris</div>
         </button>
@@ -1649,32 +1651,32 @@
     <div class="quick-settings" id="quickSettings">
         <div class="quick-settings-header">
             <h3 class="quick-settings-title">Paramètres Rapides</h3>
-            <button class="quick-settings-close" id="quickSettingsClose">
+            <button class="quick-settings-close" id="quickSettingsClose" onclick="toggleQuickSettings()">
                 <i class="fas fa-times"></i>
             </button>
         </div>
         <div class="quick-settings-content">
             <div class="setting-item">
                 <span class="setting-label">Mode sombre</span>
-                <div class="toggle-switch" id="darkModeToggle">
+                <div class="toggle-switch" id="darkModeToggle" onclick="toggleTheme()">
                     <div class="toggle-slider"></div>
                 </div>
             </div>
             <div class="setting-item">
                 <span class="setting-label">Animations</span>
-                <div class="toggle-switch active" id="animationsToggle">
+                <div class="toggle-switch active" id="animationsToggle" onclick="toggleSetting('animations')">
                     <div class="toggle-slider"></div>
                 </div>
             </div>
             <div class="setting-item">
                 <span class="setting-label">Sons</span>
-                <div class="toggle-switch" id="soundsToggle">
+                <div class="toggle-switch" id="soundsToggle" onclick="toggleSetting('sounds')">
                     <div class="toggle-slider"></div>
                 </div>
             </div>
             <div class="setting-item">
                 <span class="setting-label">Notifications</span>
-                <div class="toggle-switch active" id="notificationsToggle">
+                <div class="toggle-switch active" id="notificationsToggle" onclick="toggleSetting('notifications')">
                     <div class="toggle-slider"></div>
                 </div>
             </div>
@@ -1785,7 +1787,7 @@
         <div class="notification-content">
             <i class="fas fa-info-circle notification-icon" id="notificationIcon"></i>
             <span class="notification-text" id="notificationText"></span>
-            <button class="notification-close" id="notificationClose">
+            <button class="notification-close" id="notificationClose" onclick="this.parentElement.parentElement.classList.remove('show')">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -1912,30 +1914,28 @@
             
             // Create audio context if needed
             if (!window.audioContext) {
-                window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                try {
+                    window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                } catch(e) {
+                    console.error("Web Audio API is not supported in this browser.");
+                    return;
+                }
             }
             
-            // Simple beep sounds
-            const frequencies = {
-                notification: 800,
-                switch: 600,
-                click: 400,
-                success: 1000,
-                error: 300
-            };
-            
-            const oscillator = window.audioContext.createOscillator();
-            const gainNode = window.audioContext.createGain();
+            const audioCtx = window.audioContext;
+            const frequencies = { notification: 800, switch: 600, click: 400, success: 1000, error: 300 };
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
             
             oscillator.connect(gainNode);
-            gainNode.connect(window.audioContext.destination);
+            gainNode.connect(audioCtx.destination);
             
-            oscillator.frequency.setValueAtTime(frequencies[type] || 500, window.audioContext.currentTime);
-            gainNode.gain.setValueAtTime(0.1, window.audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, window.audioContext.currentTime + 0.1);
+            oscillator.frequency.setValueAtTime(frequencies[type] || 500, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
             
-            oscillator.start(window.audioContext.currentTime);
-            oscillator.stop(window.audioContext.currentTime + 0.1);
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + 0.1);
         }
 
         // Progress bar functionality
@@ -1975,7 +1975,6 @@
         function openQuiz() {
             showNotification('Test d\'orientation en cours de chargement...', 'info');
             playSound('click');
-            // Here you would normally open a quiz modal or navigate to quiz page
         }
 
         // Command palette functionality
@@ -1984,20 +1983,6 @@
             const commandPaletteOverlay = document.getElementById('commandPaletteOverlay');
             const commandInput = document.getElementById('commandInput');
             const commandResults = document.getElementById('commandResults');
-
-            function showCommandPalette() {
-                commandPalette.classList.add('show');
-                commandPaletteOverlay.classList.add('show');
-                commandInput.focus();
-                renderCommands(commands);
-                selectedCommandIndex = -1;
-            }
-
-            function hideCommandPalette() {
-                commandPalette.classList.remove('show');
-                commandPaletteOverlay.classList.remove('show');
-                commandInput.value = '';
-            }
 
             function renderCommands(commandList) {
                 commandResults.innerHTML = '';
@@ -2012,11 +1997,11 @@
                         </div>
                     `;
                     
-                    item.addEventListener('click', () => {
+                    item.onclick = () => {
                         command.action();
                         hideCommandPalette();
                         addToCommandHistory(command);
-                    });
+                    };
                     
                     commandResults.appendChild(item);
                 });
@@ -2041,14 +2026,15 @@
 
             commandInput.addEventListener('keydown', (e) => {
                 const items = commandResults.querySelectorAll('.command-item');
+                if (items.length === 0) return;
                 
                 if (e.key === 'ArrowDown') {
                     e.preventDefault();
-                    selectedCommandIndex = Math.min(selectedCommandIndex + 1, items.length - 1);
+                    selectedCommandIndex = (selectedCommandIndex + 1) % items.length;
                     updateSelection(items);
                 } else if (e.key === 'ArrowUp') {
                     e.preventDefault();
-                    selectedCommandIndex = Math.max(selectedCommandIndex - 1, -1);
+                    selectedCommandIndex = (selectedCommandIndex - 1 + items.length) % items.length;
                     updateSelection(items);
                 } else if (e.key === 'Enter' && selectedCommandIndex >= 0) {
                     e.preventDefault();
@@ -2064,78 +2050,47 @@
                 });
             }
 
-            commandPaletteOverlay.addEventListener('click', hideCommandPalette);
-
             // Expose globally
-            window.showCommandPalette = showCommandPalette;
-            window.hideCommandPalette = hideCommandPalette;
+            window.showCommandPalette = () => {
+                commandPalette.classList.add('show');
+                commandPaletteOverlay.classList.add('show');
+                commandInput.focus();
+                renderCommands(commandHistory.length > 0 ? commandHistory : commands);
+                selectedCommandIndex = -1;
+            };
+            window.hideCommandPalette = () => {
+                commandPalette.classList.remove('show');
+                commandPaletteOverlay.classList.remove('show');
+                commandInput.value = '';
+            };
+            
+            commandPaletteOverlay.onclick = hideCommandPalette;
         }
 
         // Quick settings functionality
-        function initQuickSettings() {
+        window.toggleQuickSettings = () => {
             const quickSettings = document.getElementById('quickSettings');
-            const quickSettingsToggle = document.getElementById('quickSettingsToggle');
-            const quickSettingsClose = document.getElementById('quickSettingsClose');
-
-            function toggleQuickSettings() {
-                quickSettings.classList.toggle('show');
-                playSound('click');
-            }
-
-            function hideQuickSettings() {
-                quickSettings.classList.remove('show');
-            }
-
-            quickSettingsToggle.addEventListener('click', toggleQuickSettings);
-            quickSettingsClose.addEventListener('click', hideQuickSettings);
-
-            // Setting toggles
-            document.getElementById('darkModeToggle').addEventListener('click', toggleTheme);
-            
-            document.getElementById('animationsToggle').addEventListener('click', () => {
-                settings.animations = !settings.animations;
-                updateSettingsUI();
-                saveSettings();
-                showNotification(`Animations ${settings.animations ? 'activées' : 'désactivées'}`, 'success');
-            });
-
-            document.getElementById('soundsToggle').addEventListener('click', () => {
-                settings.sounds = !settings.sounds;
-                updateSettingsUI();
-                saveSettings();
-                showNotification(`Sons ${settings.sounds ? 'activés' : 'désactivés'}`, 'success');
-            });
-
-            document.getElementById('notificationsToggle').addEventListener('click', () => {
-                settings.notifications = !settings.notifications;
-                updateSettingsUI();
-                saveSettings();
-                showNotification(`Notifications ${settings.notifications ? 'activées' : 'désactivées'}`, 'success');
-            });
-
-            // Close when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!quickSettings.contains(e.target) && !quickSettingsToggle.contains(e.target)) {
-                    hideQuickSettings();
-                }
-            });
-
-            // Expose globally
-            window.toggleQuickSettings = toggleQuickSettings;
-        }
+            quickSettings.classList.toggle('show');
+            playSound('click');
+        };
 
         // Save settings
         function saveSettings() {
             localStorage.setItem('settings', JSON.stringify(settings));
         }
-
-        // Floating Action Buttons
-        function initFABs() {
-            document.getElementById('helpFab').addEventListener('click', showShortcuts);
-            document.getElementById('feedbackFab').addEventListener('click', () => {
-                showNotification('Merci pour votre feedback ! 🙏', 'success');
-            });
-            document.getElementById('bookmarkFab').addEventListener('click', showBookmarks);
+        
+        // Toggle a specific setting
+        function toggleSetting(key) {
+            settings[key] = !settings[key];
+            updateSettingsUI();
+            saveSettings();
+            const status = settings[key] ? 'activé' : 'désactivé';
+            const name = {
+                animations: 'Animations',
+                sounds: 'Sons',
+                notifications: 'Notifications'
+            }[key];
+            showNotification(`${name}${status.endsWith('s') ? '' : 's'} ${status}`, 'success');
         }
 
         // Bookmarks functionality
@@ -2151,153 +2106,38 @@
             localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
         }
 
-        function showBookmarks() {
+        window.showBookmarks = () => {
             if (bookmarks.length === 0) {
                 showNotification('Aucun favori enregistré', 'info');
                 return;
             }
-            
-            // For now, just show count - could open a modal
             showNotification(`Vous avez ${bookmarks.length} favori(s)`, 'info');
-        }
-
-        // Context menu functionality
-        function initContextMenu() {
-            const contextMenu = document.getElementById('contextMenu');
-            let currentTarget = null;
-
-            document.addEventListener('contextmenu', (e) => {
-                // Only show on specific elements
-                if (e.target.closest('.mega-menu-item, .mobile-nav-item')) {
-                    e.preventDefault();
-                    currentTarget = e.target.closest('.mega-menu-item, .mobile-nav-item');
-                    
-                    contextMenu.style.left = e.pageX + 'px';
-                    contextMenu.style.top = e.pageY + 'px';
-                    contextMenu.classList.add('show');
-                }
-            });
-
-            document.addEventListener('click', () => {
-                contextMenu.classList.remove('show');
-            });
-
-            contextMenu.addEventListener('click', (e) => {
-                const action = e.target.closest('.context-menu-item')?.dataset.action;
-                if (!action || !currentTarget) return;
-
-                switch(action) {
-                    case 'copy':
-                        navigator.clipboard?.writeText(currentTarget.textContent);
-                        showNotification('Copié dans le presse-papier', 'success');
-                        break;
-                    case 'bookmark':
-                        const title = currentTarget.querySelector('h4')?.textContent || 'Élément';
-                        toggleBookmark({ id: Date.now(), title });
-                        break;
-                    case 'share':
-                        if (navigator.share) {
-                            navigator.share({ title: 'LTD Simulator', url: window.location.href });
-                        } else {
-                            showNotification('Partage non supporté', 'warning');
-                        }
-                        break;
-                    case 'report':
-                        showNotification('Merci pour le signalement', 'info');
-                        break;
-                }
-                
-                contextMenu.classList.remove('show');
-            });
-        }
+        };
 
         // Keyboard shortcuts
-        function showShortcuts() {
+        window.showShortcuts = () => {
             document.getElementById('shortcutOverlay').classList.add('show');
-        }
-
-        function hideShortcuts() {
+        };
+        window.hideShortcuts = () => {
             document.getElementById('shortcutOverlay').classList.remove('show');
-        }
+        };
 
         // Mobile menu functionality
-        function initMobileMenu() {
+        window.toggleMobileMenu = () => {
             const mobileToggle = document.getElementById('mobileToggle');
             const mobileMenu = document.getElementById('mobileMenu');
-            const mobileMenuClose = document.getElementById('mobileMenuClose');
-
-            function toggleMobileMenu() {
-                mobileToggle.classList.toggle('active');
-                mobileMenu.classList.toggle('active');
-                document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
-                playSound('click');
-            }
-
-            mobileToggle.addEventListener('click', toggleMobileMenu);
-            mobileMenuClose.addEventListener('click', toggleMobileMenu);
-
-            // Close mobile menu when clicking on a link
-            mobileMenu.addEventListener('click', (e) => {
-                if (e.target.closest('.mobile-nav-item')) {
-                    setTimeout(toggleMobileMenu, 300);
-                }
-            });
-        }
-
-        // Header scroll effect
-        function initHeaderScroll() {
-            const header = document.getElementById('header');
-            
-            window.addEventListener('scroll', () => {
-                header.classList.toggle('scrolled', window.scrollY > 50);
-            });
-        }
-
-        // Search functionality
-        function initSearch() {
-            const searchInput = document.querySelector('.search-input');
-            
-            searchInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    const query = searchInput.value.trim();
-                    if (query) {
-                        showNotification(`Recherche pour: "${query}"`, 'info');
-                        playSound('click');
-                        // Here you would implement actual search functionality
-                    }
-                }
-            });
-
-            searchInput.addEventListener('focus', () => {
-                playSound('click');
-            });
-        }
+            mobileToggle.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+            playSound('click');
+        };
 
         // Initialize everything when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
-            // Load command history
             commandHistory = JSON.parse(localStorage.getItem('commandHistory')) || [];
             
             initTheme();
-            initMobileMenu();
-            initHeaderScroll();
-            initSearch();
             initCommandPalette();
-            initQuickSettings();
-            initFABs();
-            initContextMenu();
-
-            // Event listeners
-            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-            document.getElementById('mobileThemeToggle').addEventListener('click', (e) => {
-                e.preventDefault();
-                toggleTheme();
-            });
-
-            // Notification close button
-            document.getElementById('notificationClose').addEventListener('click', () => {
-                document.getElementById('notification').classList.remove('show');
-            });
 
             // Animate elements on scroll
             const observerOptions = {
@@ -2314,7 +2154,6 @@
                 });
             }, observerOptions);
 
-            // Observe animate-in elements
             document.querySelectorAll('.animate-in').forEach(el => {
                 el.style.opacity = '0';
                 el.style.transform = 'translateY(30px)';
@@ -2323,7 +2162,7 @@
             });
 
             // Add hover effects to cards
-            document.querySelectorAll('[style*="background: var(--surface)"]').forEach(card => {
+            document.querySelectorAll('.quick-actions a div').forEach(card => {
                 card.addEventListener('mouseenter', () => {
                     if (settings.animations) {
                         card.style.transform = 'translateY(-8px)';
@@ -2345,69 +2184,47 @@
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
-            // Ctrl+K for command palette
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                 e.preventDefault();
                 showCommandPalette();
             }
-            
-            // Alt+T for theme toggle
             if (e.altKey && e.key === 't') {
                 e.preventDefault();
                 toggleTheme();
             }
-            
-            // Alt+S for search focus
             if (e.altKey && e.key === 's') {
                 e.preventDefault();
                 document.querySelector('.search-input').focus();
             }
-
-            // Alt+H for home
             if (e.altKey && e.key === 'h') {
                 e.preventDefault();
-                window.location.href = '#';
+                window.scrollTo({top: 0, behavior: 'smooth'});
                 showNotification('Retour à l\'accueil', 'info');
             }
-
-            // Alt+P for quick settings
             if (e.altKey && e.key === 'p') {
                 e.preventDefault();
                 toggleQuickSettings();
             }
-
-            // F1 for help
             if (e.key === 'F1') {
                 e.preventDefault();
                 showShortcuts();
             }
-
-            // Ctrl+B for bookmarks
             if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
                 e.preventDefault();
                 showBookmarks();
             }
-
-            // Ctrl+Enter to launch first simulator
             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                 e.preventDefault();
                 launchGame('simulateur-directeur-travaux.html');
             }
-            
-            // Escape to close modals
             if (e.key === 'Escape') {
-                const mobileMenu = document.getElementById('mobileMenu');
-                const commandPalette = document.getElementById('commandPalette');
-                const quickSettings = document.getElementById('quickSettings');
-                const shortcutOverlay = document.getElementById('shortcutOverlay');
-                
-                if (mobileMenu.classList.contains('active')) {
-                    document.getElementById('mobileToggle').click();
-                } else if (commandPalette.classList.contains('show')) {
+                if (document.getElementById('mobileMenu').classList.contains('active')) {
+                    toggleMobileMenu();
+                } else if (document.getElementById('commandPalette').classList.contains('show')) {
                     hideCommandPalette();
-                } else if (quickSettings.classList.contains('show')) {
-                    quickSettings.classList.remove('show');
-                } else if (shortcutOverlay.classList.contains('show')) {
+                } else if (document.getElementById('quickSettings').classList.contains('show')) {
+                    toggleQuickSettings();
+                } else if (document.getElementById('shortcutOverlay').classList.contains('show')) {
                     hideShortcuts();
                 }
             }
