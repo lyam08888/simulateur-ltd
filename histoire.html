@@ -694,6 +694,7 @@
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            let mapInitialized = false;
             const header = document.getElementById('header');
             window.addEventListener('scroll', () => {
                 header.classList.toggle('scrolled', window.scrollY > 50);
@@ -760,91 +761,103 @@
             });
             
             // Interactive Map Initialization
-            const map = L.map('interactive-map').setView([20, 0], 2);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-                subdomains: 'abcd',
-                maxZoom: 20
-            }).addTo(map);
+            const mapElement = document.getElementById('interactive-map');
+            if (mapElement && !mapElement._leaflet_id) { // Check if map is not already initialized
+                const map = L.map('interactive-map').setView([20, 0], 2);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                    subdomains: 'abcd',
+                    maxZoom: 20
+                }).addTo(map);
 
-            const constructionsData = [
-                // Africa
-                { name: 'Grande Pyramide de Gizeh', date: '~2560 av. J.-C.', description: 'Chef-d\'œuvre de logistique et de précision.', coords: [29.9792, 31.1342], icon: 'fa-landmark' },
-                { name: 'Grand Zimbabwe', date: 'XIe-XVe siècle', description: 'Impressionnante cité médiévale en pierre, capitale d\'un grand empire.', coords: [-20.2686, 30.9303], icon: 'fa-fort-awesome' },
-                { name: 'Mosquée de Djenné', date: '1907 (reconstruction)', description: 'Le plus grand édifice en terre crue au monde.', coords: [13.9052, -4.5555], icon: 'fa-mosque' },
-                { name: 'Églises de Lalibela', date: 'XIIe-XIIIe siècle', description: 'Ensemble d\'églises monolithiques taillées dans la roche.', coords: [12.0319, 39.0425], icon: 'fa-church' },
-                { name: 'Bibliothèque d\'Alexandrie', date: '2002 (moderne)', description: 'Renaissance moderne de la légendaire bibliothèque antique.', coords: [31.2089, 29.9092], icon: 'fa-book-open' },
+                const constructionsData = [
+                    // Africa
+                    { name: 'Grande Pyramide de Gizeh', date: '~2560 av. J.-C.', description: 'Chef-d\'œuvre de logistique et de précision.', coords: [29.9792, 31.1342], icon: 'fa-landmark' },
+                    { name: 'Grand Zimbabwe', date: 'XIe-XVe siècle', description: 'Impressionnante cité médiévale en pierre, capitale d\'un grand empire.', coords: [-20.2686, 30.9303], icon: 'fa-fort-awesome' },
+                    { name: 'Mosquée de Djenné', date: '1907 (reconstruction)', description: 'Le plus grand édifice en terre crue au monde.', coords: [13.9052, -4.5555], icon: 'fa-mosque' },
+                    { name: 'Églises de Lalibela', date: 'XIIe-XIIIe siècle', description: 'Ensemble d\'églises monolithiques taillées dans la roche.', coords: [12.0319, 39.0425], icon: 'fa-church' },
+                    { name: 'Bibliothèque d\'Alexandrie', date: '2002 (moderne)', description: 'Renaissance moderne de la légendaire bibliothèque antique.', coords: [31.2089, 29.9092], icon: 'fa-book-open' },
 
-                // Asia
-                { name: 'Grande Muraille de Chine', date: 'VIIe s. av. J.-C. - XVIIe s.', description: 'La plus longue structure humaine jamais construite.', coords: [40.4319, 116.5704], icon: 'fa-dragon' },
-                { name: 'Pétra', date: '~300 av. J.-C.', description: 'Cité antique nabatéenne célèbre pour ses monuments taillés dans la roche.', coords: [30.3285, 35.4444], icon: 'fa-archway' },
-                { name: 'Angkor Vat', date: 'XIIe siècle', description: 'Le plus grand monument religieux du monde, chef-d\'œuvre de l\'architecture khmère.', coords: [13.4125, 103.8667], icon: 'fa-gopuram' },
-                { name: 'Taj Mahal', date: '1653', description: 'Mausolée de marbre blanc, joyau de l\'architecture moghole.', coords: [27.1751, 78.0421], icon: 'fa-place-of-worship' },
-                { name: 'Cité Interdite', date: '1420', description: 'Palais impérial au cœur de Pékin, centre du pouvoir chinois pendant 500 ans.', coords: [39.9163, 116.3972], icon: 'fa-torii-gate' },
-                { name: 'Château de Himeji', date: '1346', description: 'Le plus célèbre et le mieux préservé des châteaux japonais.', coords: [34.8394, 134.6939], icon: 'fa-chess-rook' },
-                { name: 'Tours Petronas', date: '1998', description: 'Tours jumelles qui furent les plus hautes du monde jusqu\'en 2004.', coords: [3.1578, 101.7119], icon: 'fa-building' },
-                { name: 'Burj Khalifa', date: '2010', description: 'Actuellement la plus haute structure humaine.', coords: [25.1972, 55.2744], icon: 'fa-building' },
+                    // Asia
+                    { name: 'Grande Muraille de Chine', date: 'VIIe s. av. J.-C. - XVIIe s.', description: 'La plus longue structure humaine jamais construite.', coords: [40.4319, 116.5704], icon: 'fa-dragon' },
+                    { name: 'Pétra', date: '~300 av. J.-C.', description: 'Cité antique nabatéenne célèbre pour ses monuments taillés dans la roche.', coords: [30.3285, 35.4444], icon: 'fa-archway' },
+                    { name: 'Angkor Vat', date: 'XIIe siècle', description: 'Le plus grand monument religieux du monde, chef-d\'œuvre de l\'architecture khmère.', coords: [13.4125, 103.8667], icon: 'fa-gopuram' },
+                    { name: 'Taj Mahal', date: '1653', description: 'Mausolée de marbre blanc, joyau de l\'architecture moghole.', coords: [27.1751, 78.0421], icon: 'fa-place-of-worship' },
+                    { name: 'Cité Interdite', date: '1420', description: 'Palais impérial au cœur de Pékin, centre du pouvoir chinois pendant 500 ans.', coords: [39.9163, 116.3972], icon: 'fa-torii-gate' },
+                    { name: 'Château de Himeji', date: '1346', description: 'Le plus célèbre et le mieux préservé des châteaux japonais.', coords: [34.8394, 134.6939], icon: 'fa-chess-rook' },
+                    { name: 'Tours Petronas', date: '1998', description: 'Tours jumelles qui furent les plus hautes du monde jusqu\'en 2004.', coords: [3.1578, 101.7119], icon: 'fa-building' },
+                    { name: 'Burj Khalifa', date: '2010', description: 'Actuellement la plus haute structure humaine.', coords: [25.1972, 55.2744], icon: 'fa-building' },
+                    { name: 'Borobudur', date: 'IXe siècle', description: 'Le plus grand temple bouddhiste au monde, en Indonésie.', coords: [-7.6079, 110.2038], icon: 'fa-buddha' },
 
-                // Europe
-                { name: 'Stonehenge', date: '~3000-2000 av. J.-C.', description: 'Monument préhistorique composé de mégalithes disposés en cercles.', coords: [51.1789, -1.8262], icon: 'fa-circle-notch' },
-                { name: 'Colisée', date: '80 ap. J.-C.', description: 'Le plus grand amphithéâtre jamais construit dans l\'Empire romain.', coords: [41.8902, 12.4922], icon: 'fa-landmark' },
-                { name: 'Sainte-Sophie', date: '537 ap. J.-C.', description: 'Sa coupole massive a repoussé les limites de l\'architecture byzantine.', coords: [41.0086, 28.9800], icon: 'fa-place-of-worship' },
-                { name: 'Mont Saint-Michel', date: 'VIIIe siècle - XVIe siècle', description: 'Abbaye médiévale fortifiée construite sur un îlot rocheux.', coords: [48.6360, -1.5115], icon: 'fa-church' },
-                { name: 'Tour de Pise', date: '1372', description: 'Célèbre pour son inclinaison inattendue, un défi d\'ingénierie.', coords: [43.7230, 10.3966], icon: 'fa-monument' },
-                { name: 'Château de Versailles', date: '1682', description: 'Symbole de la monarchie absolue française et chef-d\'œuvre de l\'art classique.', coords: [48.8049, 2.1204], icon: 'fa-fort-awesome' },
-                { name: 'Tour Eiffel', date: '1889', description: 'Symbole de la Révolution Industrielle et du potentiel du fer.', coords: [48.8584, 2.2945], icon: 'fa-broadcast-tower' },
-                { name: 'Viaduc de Millau', date: '2004', description: 'Le plus haut pont à haubans du monde.', coords: [44.0775, 3.0236], icon: 'fa-road-bridge' },
+                    // Europe
+                    { name: 'Stonehenge', date: '~3000-2000 av. J.-C.', description: 'Monument préhistorique composé de mégalithes disposés en cercles.', coords: [51.1789, -1.8262], icon: 'fa-circle-notch' },
+                    { name: 'Colisée', date: '80 ap. J.-C.', description: 'Le plus grand amphithéâtre jamais construit dans l\'Empire romain.', coords: [41.8902, 12.4922], icon: 'fa-landmark' },
+                    { name: 'Sainte-Sophie', date: '537 ap. J.-C.', description: 'Sa coupole massive a repoussé les limites de l\'architecture byzantine.', coords: [41.0086, 28.9800], icon: 'fa-place-of-worship' },
+                    { name: 'Mont Saint-Michel', date: 'VIIIe siècle - XVIe siècle', description: 'Abbaye médiévale fortifiée construite sur un îlot rocheux.', coords: [48.6360, -1.5115], icon: 'fa-church' },
+                    { name: 'Tour de Pise', date: '1372', description: 'Célèbre pour son inclinaison inattendue, un défi d\'ingénierie.', coords: [43.7230, 10.3966], icon: 'fa-monument' },
+                    { name: 'Château de Versailles', date: '1682', description: 'Symbole de la monarchie absolue française et chef-d\'œuvre de l\'art classique.', coords: [48.8049, 2.1204], icon: 'fa-fort-awesome' },
+                    { name: 'Tour Eiffel', date: '1889', description: 'Symbole de la Révolution Industrielle et du potentiel du fer.', coords: [48.8584, 2.2945], icon: 'fa-broadcast-tower' },
+                    { name: 'Viaduc de Millau', date: '2004', description: 'Le plus haut pont à haubans du monde.', coords: [44.0775, 3.0236], icon: 'fa-road-bridge' },
+                    { name: 'Kremlin de Moscou', date: '1482-1495 (murs actuels)', description: 'Forteresse historique au cœur de Moscou, siège du pouvoir russe.', coords: [55.7514, 37.6172], icon: 'fa-fort-awesome' },
+                    { name: 'Barrière de la Tamise', date: '1982', description: 'Une des plus grandes barrières anti-inondation mobiles au monde.', coords: [51.4977, 0.0365], icon: 'fa-water' },
+                    { name: 'Pont de l\'Øresund', date: '2000', description: 'Pont-tunnel reliant le Danemark et la Suède, une merveille d\'ingénierie.', coords: [55.6091, 12.8398], icon: 'fa-bridge' },
+                    { name: 'Église en bois debout d\'Urnes', date: '~1130', description: 'Exemple exceptionnel de l\'architecture scandinave en bois.', coords: [61.2981, 7.3236], icon: 'fa-church' },
+                    { name: 'Alhambra', date: '1358', description: 'Palais et forteresse des souverains maures à Grenade, Espagne.', coords: [37.1761, -3.5881], icon: 'fa-place-of-worship' },
+                    { name: 'Cathédrale Saint-Basile', date: '1561', description: 'Célèbre cathédrale orthodoxe sur la Place Rouge à Moscou.', coords: [55.7525, 37.6231], icon: 'fa-place-of-worship' },
 
-                // North America
-                { name: 'Chichén Itzá', date: '~600 ap. J.-C.', description: 'Cité maya emblématique avec sa pyramide de Kukulcan.', coords: [20.6843, -88.5678], icon: 'fa-landmark' },
-                { name: 'Statue de la Liberté', date: '1886', description: 'Don de la France aux États-Unis, avec une structure interne conçue par Gustave Eiffel.', coords: [40.6892, -74.0445], icon: 'fa-monument' },
-                { name: 'Pont de Brooklyn', date: '1883', description: 'Premier pont suspendu à câbles d\'acier.', coords: [40.7061, -73.9969], icon: 'fa-bridge' },
-                { name: 'Hoover Dam', date: '1936', description: 'Barrage-poids en béton sur le fleuve Colorado, une prouesse de l\'ingénierie des années 30.', coords: [36.0162, -114.7377], icon: 'fa-water' },
-                { name: 'Golden Gate Bridge', date: '1937', description: 'Célèbre pont suspendu, icône de San Francisco.', coords: [37.8199, -122.4783], icon: 'fa-bridge' },
-                { name: 'CN Tower', date: '1976', description: 'Tour de communication et d\'observation emblématique de Toronto.', coords: [43.6426, -79.3871], icon: 'fa-broadcast-tower' },
-                
-                // South America
-                { name: 'Machu Picchu', date: '~1450', description: 'Citadelle inca célèbre pour son ingénierie parasismique.', coords: [-13.1631, -72.5450], icon: 'fa-mountain-city' },
-                { name: 'Christ Rédempteur', date: '1931', description: 'Statue Art déco dominant Rio de Janeiro, construite en béton armé.', coords: [-22.9519, -43.2105], icon: 'fa-monument' },
-                { name: 'Canal de Panama', date: '1914', description: 'Projet titanesque reliant les océans Atlantique et Pacifique.', coords: [9.0800, -79.6800], icon: 'fa-water' },
+                    // North America
+                    { name: 'Chichén Itzá', date: '~600 ap. J.-C.', description: 'Cité maya emblématique avec sa pyramide de Kukulcan.', coords: [20.6843, -88.5678], icon: 'fa-landmark' },
+                    { name: 'Statue de la Liberté', date: '1886', description: 'Don de la France aux États-Unis, avec une structure interne conçue par Gustave Eiffel.', coords: [40.6892, -74.0445], icon: 'fa-monument' },
+                    { name: 'Pont de Brooklyn', date: '1883', description: 'Premier pont suspendu à câbles d\'acier.', coords: [40.7061, -73.9969], icon: 'fa-bridge' },
+                    { name: 'Hoover Dam', date: '1936', description: 'Barrage-poids en béton sur le fleuve Colorado, une prouesse de l\'ingénierie des années 30.', coords: [36.0162, -114.7377], icon: 'fa-water' },
+                    { name: 'Golden Gate Bridge', date: '1937', description: 'Célèbre pont suspendu, icône de San Francisco.', coords: [37.8199, -122.4783], icon: 'fa-bridge' },
+                    { name: 'CN Tower', date: '1976', description: 'Tour de communication et d\'observation emblématique de Toronto.', coords: [43.6426, -79.3871], icon: 'fa-broadcast-tower' },
+                    { name: 'Pont de la Confédération', date: '1997', description: 'L\'un des plus longs ponts du monde sur des eaux prises par les glaces en hiver.', coords: [46.2163, -63.8247], icon: 'fa-road-bridge' },
+                    { name: 'Oléoduc trans-Alaska', date: '1977', description: 'Un pipeline de 1287 km traversant des terrains difficiles et des zones de pergélisol.', coords: [64.8378, -147.7164], icon: 'fa-oil-well' },
+                    { name: 'L\'Anse aux Meadows', date: '~1000 ap. J.-C.', description: 'Seul site viking authentifié en Amérique du Nord.', coords: [51.5944, -55.5303], icon: 'fa-anchor' },
+                    
+                    // South America
+                    { name: 'Machu Picchu', date: '~1450', description: 'Citadelle inca célèbre pour son ingénierie parasismique.', coords: [-13.1631, -72.5450], icon: 'fa-mountain-city' },
+                    { name: 'Christ Rédempteur', date: '1931', description: 'Statue Art déco dominant Rio de Janeiro, construite en béton armé.', coords: [-22.9519, -43.2105], icon: 'fa-monument' },
+                    { name: 'Canal de Panama', date: '1914', description: 'Projet titanesque reliant les océans Atlantique et Pacifique.', coords: [9.0800, -79.6800], icon: 'fa-water' },
+                    { name: 'Barrage d\'Itaipu', date: '1984', description: 'L\'une des plus grandes centrales hydroélectriques au monde.', coords: [-25.4081, -54.5882], icon: 'fa-plug-circle-bolt' },
+                    { name: 'Lignes de Nazca', date: '500 av. J.-C. - 500 ap. J.-C.', description: 'Géoglyphes géants tracés dans le désert, visibles uniquement du ciel.', coords: [-14.7392, -75.1306], icon: 'fa-feather-alt' },
 
-                // Oceania and Islands
-                { name: 'Moaï de l\'Île de Pâques', date: '1250-1500', description: 'Statues monumentales monolithiques sculptées par le peuple Rapa Nui.', coords: [-27.1127, -109.3497], icon: 'fa-monument' },
-                { name: 'Opéra de Sydney', date: '1973', description: 'Chef-d\'œuvre de l\'architecture du XXe siècle avec ses "voiles" de béton.', coords: [-33.8568, 151.2153], icon: 'fa-landmark' },
-                { name: 'Nan Madol', date: 'XIIe-XIIIe siècle', description: 'Cité en ruines construite sur des îlots artificiels en Micronésie.', coords: [6.8450, 158.3325], icon: 'fa-water' }
-            ];
+                    // Oceania and Islands
+                    { name: 'Moaï de l\'Île de Pâques', date: '1250-1500', description: 'Statues monumentales monolithiques sculptées par le peuple Rapa Nui.', coords: [-27.1127, -109.3497], icon: 'fa-monument' },
+                    { name: 'Opéra de Sydney', date: '1973', description: 'Chef-d\'œuvre de l\'architecture du XXe siècle avec ses "voiles" de béton.', coords: [-33.8568, 151.2153], icon: 'fa-landmark' },
+                    { name: 'Nan Madol', date: 'XIIe-XIIIe siècle', description: 'Cité en ruines construite sur des îlots artificiels en Micronésie.', coords: [6.8450, 158.3325], icon: 'fa-water' }
+                ];
 
-            const createCustomIcon = (iconClass) => {
-                return L.divIcon({
-                    html: `<i class="fas ${iconClass} map-marker-icon"></i>`,
-                    className: 'map-marker-container', // a class to style the container if needed
-                    iconSize: [30, 30],
-                    iconAnchor: [15, 30],
-                    popupAnchor: [0, -30]
-                });
-            };
+                const createCustomIcon = (iconClass) => {
+                    return L.divIcon({
+                        html: `<i class="fas ${iconClass} map-marker-icon"></i>`,
+                        className: 'map-marker-container', // a class to style the container if needed
+                        iconSize: [30, 30],
+                        iconAnchor: [15, 30],
+                        popupAnchor: [0, -30]
+                    });
+                };
 
-            const markers = L.markerClusterGroup();
+                const markers = L.markerClusterGroup();
 
-            const addMarkersToMap = () => {
-                const mapBounds = map.getBounds();
-                const visibleMarkers = [];
-                
-                const sortedConstructions = constructionsData.sort((a,b) => {
-                    const dateA = parseInt(a.date.replace(/[^0-9-]/g, ''));
-                    const dateB = parseInt(b.date.replace(/[^0-9-]/g, ''));
-                    return dateA - dateB;
-                });
+                const addMarkersToMap = () => {
+                    const sortedConstructions = constructionsData.sort((a,b) => {
+                        const dateA = parseInt(a.date.replace(/[^0-9-]/g, ''));
+                        const dateB = parseInt(b.date.replace(/[^0-9-]/g, ''));
+                        return dateA - dateB;
+                    });
 
-                sortedConstructions.forEach(c => {
-                    const marker = L.marker(c.coords, { icon: createCustomIcon(c.icon) })
-                        .bindPopup(`<h3>${c.name}</h3><p><strong>Date :</strong> ${c.date}</p><p>${c.description}</p>`);
-                    markers.addLayer(marker);
-                });
-                map.addLayer(markers);
-            };
+                    sortedConstructions.forEach(c => {
+                        const marker = L.marker(c.coords, { icon: createCustomIcon(c.icon) })
+                            .bindPopup(`<h3>${c.name}</h3><p><strong>Date :</strong> ${c.date}</p><p>${c.description}</p>`);
+                        markers.addLayer(marker);
+                    });
+                    map.addLayer(markers);
+                };
 
-            addMarkersToMap();
+                addMarkersToMap();
+            }
         });
     </script>
 </body>
