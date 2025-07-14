@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Découvrez l'histoire de la construction et du BTP, de l'Antiquité à nos jours.">
+    <meta name="description" content="Découvrez l'histoire détaillée de la construction et du BTP, de l'Antiquité à nos jours.">
     <title>LTD Simulator - Histoire du BTP</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,10 +35,7 @@
             --text-muted: #94a3b8;
 
             /* Shadows */
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
             --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
 
             /* Animation */
@@ -46,19 +43,13 @@
             --transition-slow: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
             /* Spacing */
-            --spacing-xs: 0.5rem;
             --spacing-sm: 1rem;
             --spacing-md: 1.5rem;
             --spacing-lg: 2rem;
             --spacing-xl: 3rem;
 
             /* Borders */
-            --radius-sm: 0.375rem;
-            --radius: 0.5rem;
-            --radius-md: 0.75rem;
             --radius-lg: 1rem;
-            --radius-xl: 1.5rem;
-            --radius-full: 9999px;
         }
 
         body.light-mode {
@@ -196,7 +187,8 @@
             content: '';
             position: absolute;
             width: 4px;
-            background-color: var(--surface-elevated);
+            background-color: var(--primary);
+            opacity: 0.3;
             top: 0;
             bottom: 0;
             left: 50%;
@@ -219,9 +211,8 @@
             position: absolute;
             width: 50px;
             height: 50px;
-            right: -25px;
-            background-color: var(--surface-elevated);
-            border: 4px solid var(--primary);
+            background-color: var(--surface);
+            border: 3px solid var(--primary);
             top: 32px;
             border-radius: 50%;
             z-index: 1;
@@ -230,31 +221,107 @@
             justify-content: center;
             font-size: 1.5rem;
             color: var(--primary-light);
+            transition: var(--transition);
+            transform: translateX(-50%); /* Center the icon horizontally */
+        }
+        
+        .timeline-item:nth-child(odd) .timeline-icon {
+            left: 100%;
         }
         .timeline-item:nth-child(even) .timeline-icon {
-            left: -25px;
+            left: 0;
         }
+        
+        .timeline-item.active .timeline-icon {
+            background-color: var(--primary);
+            color: white;
+            transform: scale(1.1) translateX(-45%);
+            border-color: var(--primary-light);
+        }
+
         .timeline-content {
-            padding: 2rem;
             background-color: var(--surface);
             position: relative;
             border-radius: var(--radius-lg);
             border: 1px solid var(--glass-border);
             box-shadow: var(--shadow-md);
+            overflow: hidden;
         }
-        .timeline-content h2 {
+        
+        .timeline-header {
+            padding: 2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+        
+        .timeline-header:hover {
+            background-color: var(--surface-hover);
+        }
+
+        .timeline-header h2 {
             color: var(--primary-light);
-            margin-bottom: 0.5rem;
+            margin: 0;
             font-size: 1.5rem;
         }
-        .timeline-content p {
+        
+        .timeline-arrow {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            transition: transform 0.4s ease;
+        }
+        
+        .timeline-header.active .timeline-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .timeline-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+        }
+        
+        .timeline-body p {
             font-size: 0.95rem;
             color: var(--text-secondary);
             line-height: 1.7;
+            margin: 0 2rem;
         }
+
+        .timeline-body .sub-events {
+            list-style: none;
+            padding-left: 1rem;
+            margin: 1rem 2rem 0;
+            border-left: 2px solid var(--primary-dark);
+        }
+
+        .timeline-body .sub-events li {
+            padding: 0.5rem 0 0.5rem 1rem;
+            position: relative;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .timeline-body .sub-events li::before {
+            content: '▪';
+            position: absolute;
+            left: -0.55rem;
+            top: 0.5rem;
+            color: var(--primary);
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        .timeline-body .sub-events strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
         .timeline-date {
             display: inline-block;
-            margin-top: 1rem;
+            margin: 1rem 2rem 2rem;
             font-size: 0.8rem;
             font-weight: 600;
             color: var(--accent);
@@ -282,14 +349,14 @@
             }
             .timeline-item {
                 width: 100%;
-                padding-left: 80px;
+                padding-left: 70px; /* Adjusted padding */
                 padding-right: 15px;
             }
             .timeline-item:nth-child(odd), .timeline-item:nth-child(even) {
                 left: 0;
             }
             .timeline-item .timeline-icon {
-                left: 6px;
+                left: 31px; /* Center on the 31px line */
             }
         }
     </style>
@@ -333,45 +400,101 @@
                 <div class="timeline-item" style="animation-delay: 0.2s;">
                     <div class="timeline-icon"><i class="fas fa-landmark"></i></div>
                     <div class="timeline-content">
-                        <h2>L'Antiquité : Les Bâtisseurs d'Empires</h2>
-                        <p>Les civilisations égyptienne, grecque et romaine posent les fondations de l'ingénierie civile avec des constructions monumentales comme les pyramides, les aqueducs et le Colisée. Utilisation de la pierre de taille, de l'arc en plein cintre et du béton romain.</p>
-                        <span class="timeline-date">~3000 av. J.-C. - 476 ap. J.-C.</span>
+                        <div class="timeline-header">
+                            <h2>L'Antiquité : Les Bâtisseurs d'Empires</h2>
+                            <i class="fas fa-chevron-down timeline-arrow"></i>
+                        </div>
+                        <div class="timeline-body">
+                            <p>Les civilisations égyptienne, grecque et romaine posent les fondations de l'ingénierie civile, avec des outils et des concepts qui perdureront des millénaires.</p>
+                            <ul class="sub-events">
+                                <li><strong>~2650 av. J.-C. :</strong> La <strong>pyramide de Djoser</strong>, première construction monumentale en pierre de taille, conçue par l'architecte Imhotep.</li>
+                                <li><strong>~447 av. J.-C. :</strong> Construction du <strong>Parthénon</strong> à Athènes, apogée de l'architecture grecque et de ses ordres (dorique, ionique, corinthien).</li>
+                                <li><strong>~312 av. J.-C. :</strong> Début de la construction de la <strong>Voie Appienne</strong> et des premiers aqueducs romains, marquant le début des grands travaux publics.</li>
+                                <li><strong>Ier siècle av. J.-C. :</strong> Vitruve écrit <strong>"De architectura"</strong>, le plus ancien traité d'architecture qui nous soit parvenu, définissant les principes de solidité, d'utilité et de beauté.</li>
+                                <li><strong>~80 ap. J.-C. :</strong> Inauguration du <strong>Colisée</strong> de Rome, chef-d'œuvre utilisant le béton romain (opus caementicium) et les systèmes d'arcs et de voûtes.</li>
+                            </ul>
+                            <span class="timeline-date">~3000 av. J.-C. - 476 ap. J.-C.</span>
+                        </div>
                     </div>
                 </div>
                 <!-- Timeline Item 2: Middle Ages -->
                 <div class="timeline-item" style="animation-delay: 0.4s;">
                     <div class="timeline-icon"><i class="fas fa-chess-rook"></i></div>
                     <div class="timeline-content">
-                        <h2>Le Moyen Âge : L'Ère des Cathédrales</h2>
-                        <p>L'art gothique révolutionne la construction avec l'arc-boutant et la croisée d'ogives, permettant d'ériger des cathédrales toujours plus hautes et lumineuses. Les corporations de métiers (maçons, charpentiers) se développent.</p>
-                        <span class="timeline-date">V<sup>e</sup> - XV<sup>e</sup> siècle</span>
+                        <div class="timeline-header">
+                            <h2>Le Moyen Âge : L'Ère des Cathédrales</h2>
+                            <i class="fas fa-chevron-down timeline-arrow"></i>
+                        </div>
+                        <div class="timeline-body">
+                            <p>L'art gothique révolutionne la construction, permettant d'ériger des édifices plus hauts et lumineux, grâce à des innovations structurelles majeures.</p>
+                             <ul class="sub-events">
+                                <li><strong>~1140 :</strong> La basilique de Saint-Denis est considérée comme le premier édifice gothique, introduisant la <strong>croisée d'ogives</strong> et les vitraux.</li>
+                                <li><strong>~1163 :</strong> Début de la construction de <strong>Notre-Dame de Paris</strong>, qui popularise l'usage des arcs-boutants pour soutenir les hautes nefs.</li>
+                                <li><strong>XIIe siècle :</strong> Développement des <strong>corporations de métiers</strong> (compagnonnage) qui organisent et transmettent le savoir-faire des maçons, charpentiers et tailleurs de pierre.</li>
+                                <li><strong>1436 :</strong> Filippo Brunelleschi achève le <strong>dôme de la cathédrale de Florence</strong>, une prouesse technique marquant la transition vers la Renaissance.</li>
+                            </ul>
+                            <span class="timeline-date">V<sup>e</sup> - XV<sup>e</sup> siècle</span>
+                        </div>
                     </div>
                 </div>
                 <!-- Timeline Item 3: Industrial Revolution -->
                 <div class="timeline-item" style="animation-delay: 0.6s;">
                      <div class="timeline-icon"><i class="fas fa-industry"></i></div>
                     <div class="timeline-content">
-                        <h2>La Révolution Industrielle : L'Acier et la Vapeur</h2>
-                        <p>L'invention de la machine à vapeur et la production massive d'acier et de fer transforment le BTP. Apparition des ponts métalliques, des gares et des usines. La Tour Eiffel devient le symbole de cette nouvelle ère.</p>
-                        <span class="timeline-date">XVIII<sup>e</sup> - XIX<sup>e</sup> siècle</span>
+                        <div class="timeline-header">
+                            <h2>La Révolution Industrielle : L'Acier et la Vapeur</h2>
+                            <i class="fas fa-chevron-down timeline-arrow"></i>
+                        </div>
+                        <div class="timeline-body">
+                            <p>L'acier, le verre et la machine à vapeur bouleversent les méthodes de construction, permettant des projets d'une échelle et d'une rapidité inédites.</p>
+                            <ul class="sub-events">
+                                <li><strong>1779 :</strong> Construction de l'<strong>Iron Bridge</strong> en Angleterre, premier grand pont entièrement en fonte, ouvrant la voie aux structures métalliques.</li>
+                                <li><strong>1824 :</strong> Joseph Aspdin brevette le <strong>ciment Portland</strong>, un liant hydraulique fiable et résistant qui deviendra la base du béton moderne.</li>
+                                <li><strong>1851 :</strong> Le <strong>Crystal Palace</strong> de Londres, une immense structure de verre et de fer, est construit en seulement 9 mois grâce à la préfabrication.</li>
+                                <li><strong>1889 :</strong> Inauguration de la <strong>Tour Eiffel</strong> pour l'Exposition Universelle, démontrant le potentiel esthétique et structurel du fer puddlé.</li>
+                            </ul>
+                            <span class="timeline-date">XVIII<sup>e</sup> - XIX<sup>e</sup> siècle</span>
+                        </div>
                     </div>
                 </div>
                 <!-- Timeline Item 4: Modern Era -->
                 <div class="timeline-item" style="animation-delay: 0.8s;">
                     <div class="timeline-icon"><i class="fas fa-city"></i></div>
                     <div class="timeline-content">
-                        <h2>L'Époque Moderne : Béton Armé et Gratte-ciel</h2>
-                        <p>L'invention du béton armé par des pionniers comme François Hennebique permet la construction de structures audacieuses. Le XXe siècle voit l'essor des gratte-ciel, des grands barrages et des autoroutes.</p>
-                        <span class="timeline-date">XX<sup>e</sup> siècle</span>
+                        <div class="timeline-header">
+                            <h2>L'Époque Moderne : Béton Armé et Gratte-ciel</h2>
+                            <i class="fas fa-chevron-down timeline-arrow"></i>
+                        </div>
+                        <div class="timeline-body">
+                            <p>Le béton armé et les structures en acier permettent de repousser les limites de la hauteur et de la forme, redéfinissant le paysage urbain.</p>
+                             <ul class="sub-events">
+                                <li><strong>1892 :</strong> François Hennebique dépose un brevet pour un système complet de construction en <strong>béton armé</strong>, qu'il diffuse dans toute l'Europe.</li>
+                                <li><strong>1928 :</strong> Eugène Freyssinet invente le <strong>béton précontraint</strong>, une avancée majeure permettant des portées plus longues et des structures plus fines.</li>
+                                <li><strong>1931 :</strong> Achèvement de l'<strong>Empire State Building</strong> à New York, qui restera le plus haut du monde pendant 40 ans grâce à son ossature en acier.</li>
+                                <li><strong>Années 1950 :</strong> La reconstruction d'après-guerre entraîne la standardisation et la <strong>préfabrication</strong> à grande échelle, notamment avec les grands ensembles.</li>
+                            </ul>
+                            <span class="timeline-date">XX<sup>e</sup> siècle</span>
+                        </div>
                     </div>
                 </div>
                  <!-- Timeline Item 5: Contemporary Era -->
                 <div class="timeline-item" style="animation-delay: 1s;">
                     <div class="timeline-icon"><i class="fas fa-robot"></i></div>
                     <div class="timeline-content">
-                        <h2>L'Ère Numérique : BIM et Construction Durable</h2>
-                        <p>Aujourd'hui, le BTP est en pleine transformation numérique avec le BIM (Building Information Modeling). L'accent est mis sur la construction durable, l'efficacité énergétique et l'utilisation de nouveaux matériaux intelligents.</p>
-                        <span class="timeline-date">XXI<sup>e</sup> siècle</span>
+                        <div class="timeline-header">
+                            <h2>L'Ère Numérique : BIM et Construction Durable</h2>
+                            <i class="fas fa-chevron-down timeline-arrow"></i>
+                        </div>
+                        <div class="timeline-body">
+                            <p>Le BTP entre dans une nouvelle ère, axée sur la technologie, la collaboration et la responsabilité environnementale.</p>
+                            <ul class="sub-events">
+                                <li><strong>Années 1980 :</strong> Démocratisation de la <strong>Conception Assistée par Ordinateur (CAO)</strong>, qui remplace progressivement la planche à dessin.</li>
+                                <li><strong>Années 2000 :</strong> Essor du <strong>BIM (Building Information Modeling)</strong>, permettant de créer une maquette numérique 3D intelligente et collaborative pour tout le cycle de vie d'un ouvrage.</li>
+                                <li><strong>Années 2010 :</strong> Intégration des drones pour la topographie, l'inspection de chantier et le suivi de l'avancement.</li>
+                                <li><strong>Aujourd'hui :</strong> Focus sur la <strong>construction durable</strong> (matériaux biosourcés, recyclage), l'impression 3D de structures, et l'émergence de la robotique sur les chantiers.</li>
+                            </ul>
+                            <span class="timeline-date">XXI<sup>e</sup> siècle</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -379,12 +502,32 @@
     </main>
 
     <script>
-        // Reusing the same script logic for interactivity
         document.addEventListener('DOMContentLoaded', () => {
             const header = document.getElementById('header');
             window.addEventListener('scroll', () => {
                 header.classList.toggle('scrolled', window.scrollY > 50);
             }, { passive: true });
+
+            const timelineHeaders = document.querySelectorAll('.timeline-header');
+            timelineHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    // Toggle active class on the clicked header
+                    this.classList.toggle('active');
+                    const body = this.nextElementSibling;
+                    
+                    // Toggle the active class on the parent timeline-item for the icon style
+                    const parentItem = this.closest('.timeline-item');
+                    if (parentItem) {
+                        parentItem.classList.toggle('active');
+                    }
+
+                    if (body.style.maxHeight) {
+                        body.style.maxHeight = null;
+                    } else {
+                        body.style.maxHeight = body.scrollHeight + "px";
+                    }
+                });
+            });
         });
     </script>
 </body>
