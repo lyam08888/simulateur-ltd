@@ -1,634 +1,4 @@
-<script>
-        // Global variables
-        let currentTheme = localStorage.getItem('theme') || 'dark';
-        let settings = JSON.parse(localStorage.getItem('settings')) || {
-            animations: true,
-            sounds: false,
-            notifications: true
-        };
-        let commandHistory = [];
-        let selectedCommandIndex = -1;
-        let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-
-        // Command palette data
-        const commands = [
-            { id: 'directeur-travaux', title: 'Directeur de Travaux', description: 'Simulateur de gestion de chantier', icon: '👷', action: () => launchGame('simulateur-directeur-travaux.html') },
-            { id: 'geometre', title: 'Géomètre-Topographe', description: 'Simulateur de topographie', icon: '📍', action: () => launchGame('geometre-topographe.html') },
-            { id: 'projeteur', title: 'Projeteur VRD', description: 'Simulateur de conception', icon: '📐', action: () => launchGame('projeteurvrd.html') },
-            { id: 'test-orientation', title: 'Test d\'Orientation', description: 'Découvrez votre métier idéal', icon: '🧠', action: () => openQuiz() },
-            { id: 'test-comportemental', title: 'Test Comportemental', description: 'Évaluez vos soft skills', icon: '🤝', action: () => launchGame('testperso.html') },
-            { id: 'toggle-theme', title: 'Changer de thème', description: 'Mode sombre/clair', icon: '🌙', action: () => toggleTheme() },
-            { id: 'show-shortcuts', title: 'Raccourcis clavier', description: 'Afficher tous les raccourcis', icon: '⌨️', action: () => showShortcuts() },
-            { id: 'quick-settings', title: 'Paramètres rapides', description: 'Ouvrir les paramètres', icon: '⚙️', action: () => toggleQuickSettings() },
-            { id: 'show-bookmarks', title: 'Favoris', description: 'Voir les éléments favoris', icon: '⭐', action: () => showBookmarks() }
-        ];
-
-        // Initialize theme
-        function initTheme() {
-            document.body.classList.toggle('light-mode', currentTheme === 'light');
-            updateThemeUI();
-            updateSettingsUI();
-        }
-
-        // Update theme UI
-        function updateThemeUI() {
-            const themeIcon = document.getElementById('themeIcon');
-            const themeText = document.getElementById('themeText');
-            const mobileThemeItem = document.getElementById('mobileThemeToggle');
-            const darkModeToggle = document.getElementById('darkModeToggle');
-            
-            if (currentTheme === 'light') {
-                themeIcon.className = 'fas fa-moon';
-                themeText.textContent = 'Sombre';
-                darkModeToggle.classList.remove('active');
-                if (mobileThemeItem) {
-                    mobileThemeItem.querySelector('.mobile-nav-item-icon').textContent = '🌙';
-                    mobileThemeItem.querySelector('h4').textContent = 'Mode Sombre';
-                }
-            } else {
-                themeIcon.className = 'fas fa-sun';
-                themeText.textContent = 'Clair';
-                darkModeToggle.classList.add('active');
-                if (mobileThemeItem) {
-                    mobileThemeItem.querySelector('.mobile-nav-item-icon').textContent = '☀️';
-                    mobileThemeItem.querySelector('h4').textContent = 'Mode Clair';
-                }
-            }
-        }
-
-        // Update settings UI
-        function updateSettingsUI() {
-            document.getElementById('animationsToggle').classList.toggle('active', settings.animations);
-            document.getElementById('soundsToggle').classList.toggle('active', settings.sounds);
-            document.getElementById('notificationsToggle').classList.toggle('active', settings.notifications);
-        }
-
-        // Toggle theme
-        function toggleTheme() {
-            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-            localStorage.setItem('theme', currentTheme);
-            document.body.classList.toggle('light-mode', currentTheme === 'light');
-            updateThemeUI();
-            showNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
-            playSound('switch');
-        }
-
-        // Show notification with types
-        function showNotification(message, type = 'info') {
-            const notification = document.getElementById('notification');
-            const notificationText = document.getElementById('notificationText');
-            const notificationIcon = document.getElementById('notificationIcon');
-            
-            if (notification && notificationText && settings.notifications) {
-                // Remove existing type classes
-                notification.classList.remove('success', 'warning', 'error');
-                
-                // Set icon based on type
-                switch(type) {
-                    case 'success':
-                        notificationIcon.className = 'fas fa-check-circle notification-icon';
-                        notification.classList.add('success');
-                        break;
-                    case 'warning':
-                        notificationIcon.className = 'fas fa-exclamation-triangle notification-icon';
-                        notification.classList.add('warning');
-                        break;
-                    case 'error':
-                        notificationIcon.className = 'fas fa-exclamation-circle notification-icon';
-                        notification.classList.add('error');
-                        break;
-                    default:
-                        notificationIcon.className = 'fas fa-info-circle notification-icon';
-                }
-                
-                notificationText.textContent = message;
-                notification.classList.add('show');
-                
-                // Auto-hide after 3 seconds
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                }, 3000);
-                
-                playSound('notification');
-            }
-        }
-
-        // Play sound effects
-        function playSound(type) {
-            if (!settings.sounds) return;
-            
-            // Create audio context if needed
-            if (!window.audioContext) {
-                window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            
-            // Simple beep sounds
-            const frequencies = {
-                notification: 800,
-                switch: 600,
-                click: 400,
-                success: 1000,
-                error: 300
-            };
-            
-            const oscillator = window.audioContext.createOscillator();
-            const gainNode = window.audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(window.audioContext.destination);
-            
-            oscillator.frequency.setValueAtTime(frequencies[type] || 500, window.audioContext.currentTime);
-            gainNode.gain.setValueAtTime(0.1, window.audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, window.audioContext.currentTime + 0.1);
-            
-            oscillator.start(window.audioContext.currentTime);
-            oscillator.stop(window.audioContext.currentTime + 0.1);
-        }
-
-        // Progress bar functionality
-        function showProgress() {
-            const progressBar = document.getElementById('progressBar');
-            const progressFill = document.getElementById('progressFill');
-            
-            progressBar.classList.add('show');
-            progressFill.style.width = '0%';
-            
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += Math.random() * 20;
-                if (progress >= 100) {
-                    progress = 100;
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        progressBar.classList.remove('show');
-                    }, 500);
-                }
-                progressFill.style.width = progress + '%';
-            }, 100);
-        }
-
-        // Launch game with progress
-        function launchGame(gameFile) {
-            showProgress();
-            showNotification(`Lancement du simulateur...`, 'info');
-            playSound('click');
-            
-            setTimeout(() => {
-                window.location.href = gameFile;
-            }, 2000);
-        }
-
-        // Open quiz modal (placeholder)
-        function openQuiz() {
-            showNotification('Test d\'orientation en cours de chargement...', 'info');
-            playSound('click');
-            // Here you would normally open a quiz modal or navigate to quiz page
-        }
-
-        // Command palette functionality
-        function initCommandPalette() {
-            const commandPalette = document.getElementById('commandPalette');
-            const commandPaletteOverlay = document.getElementById('commandPaletteOverlay');
-            const commandInput = document.getElementById('commandInput');
-            const commandResults = document.getElementById('commandResults');
-
-            function showCommandPalette() {
-                commandPalette.classList.add('show');
-                commandPaletteOverlay.classList.add('show');
-                commandInput.focus();
-                renderCommands(commands);
-                selectedCommandIndex = -1;
-            }
-
-            function hideCommandPalette() {
-                commandPalette.classList.remove('show');
-                commandPaletteOverlay.classList.remove('show');
-                commandInput.value = '';
-            }
-
-            function renderCommands(commandList) {
-                commandResults.innerHTML = '';
-                commandList.forEach((command, index) => {
-                    const item = document.createElement('div');
-                    item.className = 'command-item';
-                    item.innerHTML = `
-                        <div class="command-item-icon">${command.icon}</div>
-                        <div class="command-item-content">
-                            <div class="command-item-title">${command.title}</div>
-                            <div class="command-item-description">${command.description}</div>
-                        </div>
-                    `;
-                    
-                    item.addEventListener('click', () => {
-                        command.action();
-                        hideCommandPalette();
-                        addToCommandHistory(command);
-                    });
-                    
-                    commandResults.appendChild(item);
-                });
-            }
-
-            function addToCommandHistory(command) {
-                commandHistory = commandHistory.filter(cmd => cmd.id !== command.id);
-                commandHistory.unshift(command);
-                if (commandHistory.length > 10) commandHistory.pop();
-                localStorage.setItem('commandHistory', JSON.stringify(commandHistory));
-            }
-
-            commandInput.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase();
-                const filteredCommands = commands.filter(cmd => 
-                    cmd.title.toLowerCase().includes(query) || 
-                    cmd.description.toLowerCase().includes(query)
-                );
-                renderCommands(filteredCommands);
-                selectedCommandIndex = -1;
-            });
-
-            commandInput.addEventListener('keydown', (e) => {
-                const items = commandResults.querySelectorAll('.command-item');
-                
-                if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    selectedCommandIndex = Math.min(selectedCommandIndex + 1, items.length - 1);
-                    updateSelection(items);
-                } else if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    selectedCommandIndex = Math.max(selectedCommandIndex - 1, -1);
-                    updateSelection(items);
-                } else if (e.key === 'Enter' && selectedCommandIndex >= 0) {
-                    e.preventDefault();
-                    items[selectedCommandIndex].click();
-                } else if (e.key === 'Escape') {
-                    hideCommandPalette();
-                }
-            });
-
-            function updateSelection(items) {
-                items.forEach((item, index) => {
-                    item.classList.toggle('selected', index === selectedCommandIndex);
-                });
-            }
-
-            commandPaletteOverlay.addEventListener('click', hideCommandPalette);
-
-            // Expose globally
-            window.showCommandPalette = showCommandPalette;
-            window.hideCommandPalette = hideCommandPalette;
-        }
-
-        // Quick settings functionality
-        function initQuickSettings() {
-            const quickSettings = document.getElementById('quickSettings');
-            const quickSettingsToggle = document.getElementById('quickSettingsToggle');
-            const quickSettingsClose = document.getElementById('quickSettingsClose');
-
-            function toggleQuickSettings() {
-                quickSettings.classList.toggle('show');
-                playSound('click');
-            }
-
-            function hideQuickSettings() {
-                quickSettings.classList.remove('show');
-            }
-
-            quickSettingsToggle.addEventListener('click', toggleQuickSettings);
-            quickSettingsClose.addEventListener('click', hideQuickSettings);
-
-            // Setting toggles
-            document.getElementById('darkModeToggle').addEventListener('click', toggleTheme);
-            
-            document.getElementById('animationsToggle').addEventListener('click', () => {
-                settings.animations = !settings.animations;
-                updateSettingsUI();
-                saveSettings();
-                showNotification(`Animations ${settings.animations ? 'activées' : 'désactivées'}`, 'success');
-            });
-
-            document.getElementById('soundsToggle').addEventListener('click', () => {
-                settings.sounds = !settings.sounds;
-                updateSettingsUI();
-                saveSettings();
-                showNotification(`Sons ${settings.sounds ? 'activés' : 'désactivés'}`, 'success');
-            });
-
-            document.getElementById('notificationsToggle').addEventListener('click', () => {
-                settings.notifications = !settings.notifications;
-                updateSettingsUI();
-                saveSettings();
-                showNotification(`Notifications ${settings.notifications ? 'activées' : 'désactivées'}`, 'success');
-            });
-
-            // Close when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!quickSettings.contains(e.target) && !quickSettingsToggle.contains(e.target)) {
-                    hideQuickSettings();
-                }
-            });
-
-            // Expose globally
-            window.toggleQuickSettings = toggleQuickSettings;
-        }
-
-        // Save settings
-        function saveSettings() {
-            localStorage.setItem('settings', JSON.stringify(settings));
-        }
-
-        // Floating Action Buttons
-        function initFABs() {
-            document.getElementById('helpFab').addEventListener('click', showShortcuts);
-            document.getElementById('feedbackFab').addEventListener('click', () => {
-                showNotification('Merci pour votre feedback ! 🙏', 'success');
-            });
-            document.getElementById('bookmarkFab').addEventListener('click', showBookmarks);
-        }
-
-        // Bookmarks functionality
-        function toggleBookmark(item) {
-            const index = bookmarks.findIndex(b => b.id === item.id);
-            if (index >= 0) {
-                bookmarks.splice(index, 1);
-                showNotification('Retiré des favoris', 'info');
-            } else {
-                bookmarks.push(item);
-                showNotification('Ajouté aux favoris', 'success');
-            }
-            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-        }
-
-        function showBookmarks() {
-            if (bookmarks.length === 0) {
-                showNotification('Aucun favori enregistré', 'info');
-                return;
-            }
-            
-            // For now, just show count - could open a modal
-            showNotification(`Vous avez ${bookmarks.length} favori(s)`, 'info');
-        }
-
-        // Context menu functionality
-        function initContextMenu() {
-            const contextMenu = document.getElementById('contextMenu');
-            let currentTarget = null;
-
-            document.addEventListener('contextmenu', (e) => {
-                // Only show on specific elements
-                if (e.target.closest('.mega-menu-item, .mobile-nav-item')) {
-                    e.preventDefault();
-                    currentTarget = e.target.closest('.mega-menu-item, .mobile-nav-item');
-                    
-                    contextMenu.style.left = e.pageX + 'px';
-                    contextMenu.style.top = e.pageY + 'px';
-                    contextMenu.classList.add('show');
-                }
-            });
-
-            document.addEventListener('click', () => {
-                contextMenu.classList.remove('show');
-            });
-
-            contextMenu.addEventListener('click', (e) => {
-                const action = e.target.closest('.context-menu-item')?.dataset.action;
-                if (!action || !currentTarget) return;
-
-                switch(action) {
-                    case 'copy':
-                        navigator.clipboard?.writeText(currentTarget.textContent);
-                        showNotification('Copié dans le presse-papier', 'success');
-                        break;
-                    case 'bookmark':
-                        const title = currentTarget.querySelector('h4')?.textContent || 'Élément';
-                        toggleBookmark({ id: Date.now(), title });
-                        break;
-                    case 'share':
-                        if (navigator.share) {
-                            navigator.share({ title: 'LTD Simulator', url: window.location.href });
-                        } else {
-                            showNotification('Partage non supporté', 'warning');
-                        }
-                        break;
-                    case 'report':
-                        showNotification('Merci pour le signalement', 'info');
-                        break;
-                }
-                
-                contextMenu.classList.remove('show');
-            });
-        }
-
-        // Keyboard shortcuts
-        function showShortcuts() {
-            document.getElementById('shortcutOverlay').classList.add('show');
-        }
-
-        function hideShortcuts() {
-            document.getElementById('shortcutOverlay').classList.remove('show');
-        }
-
-        // Mobile menu functionality
-        function initMobileMenu() {
-            const mobileToggle = document.getElementById('mobileToggle');
-            const mobileMenu = document.getElementById('mobileMenu');
-            const mobileMenuClose = document.getElementById('mobileMenuClose');
-
-            function toggleMobileMenu() {
-                mobileToggle.classList.toggle('active');
-                mobileMenu.classList.toggle('active');
-                document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
-                playSound('click');
-            }
-
-            mobileToggle.addEventListener('click', toggleMobileMenu);
-            mobileMenuClose.addEventListener('click', toggleMobileMenu);
-
-            // Close mobile menu when clicking on a link
-            mobileMenu.addEventListener('click', (e) => {
-                if (e.target.classList.contains('mobile-nav-item')) {
-                    setTimeout(toggleMobileMenu, 300);
-                }
-            });
-        }
-
-        // Header scroll effect
-        function initHeaderScroll() {
-            const header = document.getElementById('header');
-            
-            window.addEventListener('scroll', () => {
-                header.classList.toggle('scrolled', window.scrollY > 50);
-            });
-        }
-
-        // Search functionality
-        function initSearch() {
-            const searchInput = document.querySelector('.search-input');
-            
-            searchInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    const query = searchInput.value.trim();
-                    if (query) {
-                        showNotification(`Recherche pour: "${query}"`, 'info');
-                        playSound('click');
-                        // Here you would implement actual search functionality
-                    }
-                }
-            });
-
-            searchInput.addEventListener('focus', () => {
-                playSound('click');
-            });
-        }
-
-        // Initialize everything when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            // Load command history
-            commandHistory = JSON.parse(localStorage.getItem('commandHistory')) || [];
-            
-            initTheme();
-            initMobileMenu();
-            initHeaderScroll();
-            initSearch();
-            initCommandPalette();
-            initQuickSettings();
-            initFABs();
-            initContextMenu();
-
-            // Event listeners
-            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-            document.getElementById('mobileThemeToggle').addEventListener('click', (e) => {
-                e.preventDefault();
-                toggleTheme();
-            });
-
-            // Notification close button
-            document.getElementById('notificationClose').addEventListener('click', () => {
-                document.getElementById('notification').classList.remove('show');
-            });
-
-            // Animate elements on scroll
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
-            };
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting && settings.animations) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }
-                });
-            }, observerOptions);
-
-            // Observe animate-in elements
-            document.querySelectorAll('.animate-in').forEach(el => {
-                el.style.opacity = '0';
-                el.style.transform = 'translateY(30px)';
-                el.style.transition = 'all 0.6s ease-out';
-                observer.observe(el);
-            });
-
-            // Add hover effects to cards
-            document.querySelectorAll('[style*="background: var(--surface)"]').forEach(card => {
-                card.addEventListener('mouseenter', () => {
-                    if (settings.animations) {
-                        card.style.transform = 'translateY(-8px)';
-                        card.style.boxShadow = 'var(--shadow-xl)';
-                    }
-                });
-                
-                card.addEventListener('mouseleave', () => {
-                    card.style.transform = 'translateY(0)';
-                    card.style.boxShadow = 'none';
-                });
-            });
-
-            // Show welcome notification
-            setTimeout(() => {
-                showNotification('Bienvenue sur LTD Simulator ! 🏗️', 'success');
-            }, 1000);
-        });
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            // Ctrl+K for command palette
-            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-                e.preventDefault();
-                showCommandPalette();
-            }
-            
-            // Alt+T for theme toggle
-            if (e.altKey && e.key === 't') {
-                e.preventDefault();
-                toggleTheme();
-            }
-            
-            // Alt+S for search focus
-            if (e.altKey && e.key === 's') {
-                e.preventDefault();
-                document.querySelector('.search-input').focus();
-            }
-
-            // Alt+H for home
-            if (e.altKey && e.key === 'h') {
-                e.preventDefault();
-                window.location.href = '#';
-                showNotification('Retour à l\'accueil', 'info');
-            }
-
-            // Alt+P for quick settings
-            if (e.altKey && e.key === 'p') {
-                e.preventDefault();
-                toggleQuickSettings();
-            }
-
-            // F1 for help
-            if (e.key === 'F1') {
-                e.preventDefault();
-                showShortcuts();
-            }
-
-            // Ctrl+B for bookmarks
-            if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
-                e.preventDefault();
-                showBookmarks();
-            }
-
-            // Ctrl+Enter to launch first simulator
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                e.preventDefault();
-                launchGame('simulateur-directeur-travaux.html');
-            }
-            
-            // Escape to close modals
-            if (e.key === 'Escape') {
-                const mobileMenu = document.getElementById('mobileMenu');
-                const commandPalette = document.getElementById('commandPalette');
-                const quickSettings = document.getElementById('quickSettings');
-                const shortcutOverlay = document.getElementById('shortcutOverlay');
-                
-                if (mobileMenu.classList.contains('active')) {
-                    document.getElementById('mobileToggle').click();
-                } else if (commandPalette.classList.contains('show')) {
-                    hideCommandPalette();
-                } else if (quickSettings.classList.contains('show')) {
-                    quickSettings.classList.remove('show');
-                } else if (shortcutOverlay.classList.contains('show')) {
-                    hideShortcuts();
-                }
-            }
-        });
-
-        // Expose global functions
-        window.showNotification = showNotification;
-        window.launchGame = launchGame;
-        window.openQuiz = openQuiz;
-        window.toggleTheme = toggleTheme;
-        window.showShortcuts = showShortcuts;
-        window.hideShortcuts = hideShortcuts;
-        window.playSound = playSound;
-    </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -1906,21 +1276,21 @@
                                 <div class="mega-menu-section">
                                     <h3><i class="fas fa-gamepad"></i> Métiers principaux</h3>
                                     <div class="mega-menu-items">
-                                        <a href="#" class="mega-menu-item" onclick="launchGame('simulateur-directeur-travaux.html')">
+                                        <a href="simulateur-directeur-travaux.html" class="mega-menu-item" onclick="event.preventDefault(); launchGame('simulateur-directeur-travaux.html')">
                                             <div class="mega-menu-item-icon">👷</div>
                                             <div class="mega-menu-item-content">
                                                 <h4>Directeur de Travaux</h4>
                                                 <p>Gérez vos chantiers avec expertise</p>
                                             </div>
                                         </a>
-                                        <a href="#" class="mega-menu-item" onclick="launchGame('geometre-topographe.html')">
+                                        <a href="geometre-topographe.html" class="mega-menu-item" onclick="event.preventDefault(); launchGame('geometre-topographe.html')">
                                             <div class="mega-menu-item-icon">📍</div>
                                             <div class="mega-menu-item-content">
                                                 <h4>Géomètre-Topographe</h4>
                                                 <p>Testez vos compétences en topographie</p>
                                             </div>
                                         </a>
-                                        <a href="#" class="mega-menu-item" onclick="launchGame('projeteurvrd.html')">
+                                        <a href="projeteurvrd.html" class="mega-menu-item" onclick="event.preventDefault(); launchGame('projeteurvrd.html')">
                                             <div class="mega-menu-item-icon">📐</div>
                                             <div class="mega-menu-item-content">
                                                 <h4>Projeteur VRD</h4>
@@ -1932,14 +1302,14 @@
                                 <div class="mega-menu-section">
                                     <h3><i class="fas fa-clock"></i> Prochainement</h3>
                                     <div class="mega-menu-items">
-                                        <a href="#" class="mega-menu-item" onclick="showNotification('Simulateur en développement')">
+                                        <a href="#" class="mega-menu-item" onclick="event.preventDefault(); showNotification('Simulateur en développement', 'info')">
                                             <div class="mega-menu-item-icon">🏛️</div>
                                             <div class="mega-menu-item-content">
                                                 <h4>Architecte <span class="badge soon">Bientôt</span></h4>
                                                 <p>Créez des bâtiments innovants</p>
                                             </div>
                                         </a>
-                                        <a href="#" class="mega-menu-item" onclick="showNotification('Simulateur en développement')">
+                                        <a href="#" class="mega-menu-item" onclick="event.preventDefault(); showNotification('Simulateur en développement', 'info')">
                                             <div class="mega-menu-item-icon">⚡</div>
                                             <div class="mega-menu-item-content">
                                                 <h4>Électricien BTP <span class="badge soon">Bientôt</span></h4>
@@ -1961,21 +1331,21 @@
                                 <div class="mega-menu-section">
                                     <h3><i class="fas fa-brain"></i> Tests disponibles</h3>
                                     <div class="mega-menu-items">
-                                        <a href="#" class="mega-menu-item" onclick="openQuiz()">
+                                        <a href="#" class="mega-menu-item" onclick="event.preventDefault(); openQuiz()">
                                             <div class="mega-menu-item-icon">🧠</div>
                                             <div class="mega-menu-item-content">
                                                 <h4>Test d'Orientation</h4>
                                                 <p>Découvrez votre métier idéal</p>
                                             </div>
                                         </a>
-                                        <a href="#" class="mega-menu-item" onclick="launchGame('testperso.html')">
+                                        <a href="testperso.html" class="mega-menu-item" onclick="event.preventDefault(); launchGame('testperso.html')">
                                             <div class="mega-menu-item-icon">🤝</div>
                                             <div class="mega-menu-item-content">
                                                 <h4>Test Comportemental <span class="badge new">Nouveau</span></h4>
                                                 <p>Évaluez vos soft skills</p>
                                             </div>
                                         </a>
-                                        <a href="#" class="mega-menu-item" onclick="showNotification('Test en développement')">
+                                        <a href="#" class="mega-menu-item" onclick="event.preventDefault(); showNotification('Test en développement', 'info')">
                                             <div class="mega-menu-item-icon">📚</div>
                                             <div class="mega-menu-item-content">
                                                 <h4>Test de Connaissances <span class="badge soon">Bientôt</span></h4>
@@ -1997,21 +1367,21 @@
                                 <div class="mega-menu-section">
                                     <h3><i class="fas fa-book"></i> Apprentissage</h3>
                                     <div class="mega-menu-items">
-                                        <a href="#" class="mega-menu-item">
+                                        <a href="#" class="mega-menu-item" onclick="event.preventDefault(); showNotification('Page en construction', 'info')">
                                             <div class="mega-menu-item-icon">📜</div>
                                             <div class="mega-menu-item-content">
                                                 <h4>Histoire du BTP</h4>
                                                 <p>Découvrez l'évolution du secteur</p>
                                             </div>
                                         </a>
-                                        <a href="#" class="mega-menu-item">
+                                        <a href="#" class="mega-menu-item" onclick="event.preventDefault(); showNotification('Page en construction', 'info')">
                                             <div class="mega-menu-item-icon">💼</div>
                                             <div class="mega-menu-item-content">
                                                 <h4>Offres d'Emploi</h4>
                                                 <p>Trouvez votre prochain poste</p>
                                             </div>
                                         </a>
-                                        <a href="#" class="mega-menu-item">
+                                        <a href="#" class="mega-menu-item" onclick="event.preventDefault(); showNotification('Page en construction', 'info')">
                                             <div class="mega-menu-item-icon">📊</div>
                                             <div class="mega-menu-item-content">
                                                 <h4>Statistiques Secteur</h4>
@@ -2053,7 +1423,7 @@
                         <i class="fas fa-cog"></i>
                         <span>Paramètres</span>
                     </button>
-                    <a href="#" class="login-btn" onclick="showNotification('Connexion en cours de développement')">
+                    <a href="#" class="login-btn" onclick="event.preventDefault(); showNotification('Connexion en cours de développement', 'info')">
                         <i class="fas fa-user"></i>
                         <span>Connexion</span>
                     </a>
@@ -2087,21 +1457,21 @@
             <div class="mobile-nav-section">
                 <h3>Simulateurs</h3>
                 <div class="mobile-nav-items">
-                    <a href="#" class="mobile-nav-item" onclick="launchGame('simulateur-directeur-travaux.html')">
+                    <a href="simulateur-directeur-travaux.html" class="mobile-nav-item" onclick="event.preventDefault(); launchGame('simulateur-directeur-travaux.html')">
                         <div class="mobile-nav-item-icon">👷</div>
                         <div class="mobile-nav-item-content">
                             <h4>Directeur de Travaux</h4>
                             <p>Gérez vos chantiers avec expertise</p>
                         </div>
                     </a>
-                    <a href="#" class="mobile-nav-item" onclick="launchGame('geometre-topographe.html')">
+                    <a href="geometre-topographe.html" class="mobile-nav-item" onclick="event.preventDefault(); launchGame('geometre-topographe.html')">
                         <div class="mobile-nav-item-icon">📍</div>
                         <div class="mobile-nav-item-content">
                             <h4>Géomètre-Topographe</h4>
                             <p>Testez vos compétences en topographie</p>
                         </div>
                     </a>
-                    <a href="#" class="mobile-nav-item" onclick="launchGame('projeteurvrd.html')">
+                    <a href="projeteurvrd.html" class="mobile-nav-item" onclick="event.preventDefault(); launchGame('projeteurvrd.html')">
                         <div class="mobile-nav-item-icon">📐</div>
                         <div class="mobile-nav-item-content">
                             <h4>Projeteur VRD</h4>
@@ -2114,14 +1484,14 @@
             <div class="mobile-nav-section">
                 <h3>Tests & Évaluation</h3>
                 <div class="mobile-nav-items">
-                    <a href="#" class="mobile-nav-item" onclick="openQuiz()">
+                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); openQuiz()">
                         <div class="mobile-nav-item-icon">🧠</div>
                         <div class="mobile-nav-item-content">
                             <h4>Test d'Orientation</h4>
                             <p>Découvrez votre métier idéal</p>
                         </div>
                     </a>
-                    <a href="#" class="mobile-nav-item" onclick="launchGame('testperso.html')">
+                    <a href="testperso.html" class="mobile-nav-item" onclick="event.preventDefault(); launchGame('testperso.html')">
                         <div class="mobile-nav-item-icon">🤝</div>
                         <div class="mobile-nav-item-content">
                             <h4>Test Comportemental</h4>
@@ -2134,14 +1504,14 @@
             <div class="mobile-nav-section">
                 <h3>Ressources</h3>
                 <div class="mobile-nav-items">
-                    <a href="#" class="mobile-nav-item">
+                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); showNotification('Page en construction', 'info')">
                         <div class="mobile-nav-item-icon">📜</div>
                         <div class="mobile-nav-item-content">
                             <h4>Histoire du BTP</h4>
                             <p>Découvrez l'évolution du secteur</p>
                         </div>
                     </a>
-                    <a href="#" class="mobile-nav-item">
+                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); showNotification('Page en construction', 'info')">
                         <div class="mobile-nav-item-icon">💼</div>
                         <div class="mobile-nav-item-content">
                             <h4>Offres d'Emploi</h4>
@@ -2168,7 +1538,7 @@
                             <p>Changer le thème de l'interface</p>
                         </div>
                     </a>
-                    <a href="#" class="mobile-nav-item" onclick="showNotification('Connexion en cours de développement')">
+                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); showNotification('Connexion en cours de développement', 'info')">
                         <div class="mobile-nav-item-icon">👤</div>
                         <div class="mobile-nav-item-content">
                             <h4>Connexion</h4>
@@ -2188,7 +1558,7 @@
             <span class="breadcrumb-separator">
                 <i class="fas fa-chevron-right"></i>
             </span>
-            <span class="breadcrumb-item active"></span>
+            <span class="breadcrumb-item active">Simulateurs BTP</span>
         </nav>
 
         <section class="hero animate-in">
@@ -2222,26 +1592,32 @@
         <section class="quick-actions animate-in" style="margin: 4rem 0;">
             <h2 style="text-align: center; font-size: 2rem; font-weight: 700; margin-bottom: 2rem; color: var(--text-primary);">Actions Rapides</h2>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
-                <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition); cursor: pointer;" onclick="launchGame('simulateur.html')">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">🎯</div>
-                    <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Commencer un Simulateur</h3>
-                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Testez immédiatement vos compétences</p>
-                    <div style="background: var(--primary); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Lancer</div>
-                </div>
+                <a href="simulateur-directeur-travaux.html" onclick="event.preventDefault(); launchGame('simulateur-directeur-travaux.html')" style="text-decoration: none; color: inherit;">
+                    <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🎯</div>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Commencer un Simulateur</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Testez immédiatement vos compétences</p>
+                        <div style="background: var(--primary); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Lancer</div>
+                    </div>
+                </a>
                 
-                <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition); cursor: pointer;" onclick="launchGame('test.html')">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">🧠</div>
-                    <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Tests & Evaluation</h3>
-                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Découvrez votre métier idéal</p>
-                    <div style="background: var(--secondary); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Commencer</div>
-                </div>
+                <a href="#" onclick="event.preventDefault(); openQuiz()" style="text-decoration: none; color: inherit;">
+                    <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🧠</div>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Test d'Orientation</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Découvrez votre métier idéal</p>
+                        <div style="background: var(--secondary); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Commencer</div>
+                    </div>
+                </a>
                 
-                <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition); cursor: pointer;" onclick="showNotification('Section emploi en cours de développement')">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">💼</div>
-                    <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Offres d'Emploi</h3>
-                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Trouvez votre prochain poste</p>
-                    <div style="background: var(--accent); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Explorer</div>
-                </div>
+                <a href="#" onclick="event.preventDefault(); showNotification('Section emploi en cours de développement', 'info')" style="text-decoration: none; color: inherit;">
+                    <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">💼</div>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Offres d'Emploi</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Trouvez votre prochain poste</p>
+                        <div style="background: var(--accent); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Explorer</div>
+                    </div>
+                </a>
             </div>
         </section>
     </main>
@@ -2418,11 +1794,33 @@
     <script>
         // Global variables
         let currentTheme = localStorage.getItem('theme') || 'dark';
+        let settings = JSON.parse(localStorage.getItem('settings')) || {
+            animations: true,
+            sounds: false,
+            notifications: true
+        };
+        let commandHistory = [];
+        let selectedCommandIndex = -1;
+        let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+
+        // Command palette data
+        const commands = [
+            { id: 'directeur-travaux', title: 'Directeur de Travaux', description: 'Simulateur de gestion de chantier', icon: '👷', action: () => launchGame('simulateur-directeur-travaux.html') },
+            { id: 'geometre', title: 'Géomètre-Topographe', description: 'Simulateur de topographie', icon: '📍', action: () => launchGame('geometre-topographe.html') },
+            { id: 'projeteur', title: 'Projeteur VRD', description: 'Simulateur de conception', icon: '📐', action: () => launchGame('projeteurvrd.html') },
+            { id: 'test-orientation', title: 'Test d\'Orientation', description: 'Découvrez votre métier idéal', icon: '🧠', action: () => openQuiz() },
+            { id: 'test-comportemental', title: 'Test Comportemental', description: 'Évaluez vos soft skills', icon: '🤝', action: () => launchGame('testperso.html') },
+            { id: 'toggle-theme', title: 'Changer de thème', description: 'Mode sombre/clair', icon: '🌙', action: () => toggleTheme() },
+            { id: 'show-shortcuts', title: 'Raccourcis clavier', description: 'Afficher tous les raccourcis', icon: '⌨️', action: () => showShortcuts() },
+            { id: 'quick-settings', title: 'Paramètres rapides', description: 'Ouvrir les paramètres', icon: '⚙️', action: () => toggleQuickSettings() },
+            { id: 'show-bookmarks', title: 'Favoris', description: 'Voir les éléments favoris', icon: '⭐', action: () => showBookmarks() }
+        ];
 
         // Initialize theme
         function initTheme() {
             document.body.classList.toggle('light-mode', currentTheme === 'light');
             updateThemeUI();
+            updateSettingsUI();
         }
 
         // Update theme UI
@@ -2430,10 +1828,12 @@
             const themeIcon = document.getElementById('themeIcon');
             const themeText = document.getElementById('themeText');
             const mobileThemeItem = document.getElementById('mobileThemeToggle');
+            const darkModeToggle = document.getElementById('darkModeToggle');
             
             if (currentTheme === 'light') {
                 themeIcon.className = 'fas fa-moon';
                 themeText.textContent = 'Sombre';
+                darkModeToggle.classList.remove('active');
                 if (mobileThemeItem) {
                     mobileThemeItem.querySelector('.mobile-nav-item-icon').textContent = '🌙';
                     mobileThemeItem.querySelector('h4').textContent = 'Mode Sombre';
@@ -2441,11 +1841,19 @@
             } else {
                 themeIcon.className = 'fas fa-sun';
                 themeText.textContent = 'Clair';
+                darkModeToggle.classList.add('active');
                 if (mobileThemeItem) {
                     mobileThemeItem.querySelector('.mobile-nav-item-icon').textContent = '☀️';
                     mobileThemeItem.querySelector('h4').textContent = 'Mode Clair';
                 }
             }
+        }
+
+        // Update settings UI
+        function updateSettingsUI() {
+            document.getElementById('animationsToggle').classList.toggle('active', settings.animations);
+            document.getElementById('soundsToggle').classList.toggle('active', settings.sounds);
+            document.getElementById('notificationsToggle').classList.toggle('active', settings.notifications);
         }
 
         // Toggle theme
@@ -2454,35 +1862,362 @@
             localStorage.setItem('theme', currentTheme);
             document.body.classList.toggle('light-mode', currentTheme === 'light');
             updateThemeUI();
-            showNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`);
+            showNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
+            playSound('switch');
         }
 
-        // Show notification
-        function showNotification(message) {
+        // Show notification with types
+        function showNotification(message, type = 'info') {
             const notification = document.getElementById('notification');
             const notificationText = document.getElementById('notificationText');
+            const notificationIcon = document.getElementById('notificationIcon');
             
-            if (notification && notificationText) {
+            if (notification && notificationText && settings.notifications) {
+                // Remove existing type classes
+                notification.classList.remove('success', 'warning', 'error');
+                
+                // Set icon based on type
+                switch(type) {
+                    case 'success':
+                        notificationIcon.className = 'fas fa-check-circle notification-icon';
+                        notification.classList.add('success');
+                        break;
+                    case 'warning':
+                        notificationIcon.className = 'fas fa-exclamation-triangle notification-icon';
+                        notification.classList.add('warning');
+                        break;
+                    case 'error':
+                        notificationIcon.className = 'fas fa-exclamation-circle notification-icon';
+                        notification.classList.add('error');
+                        break;
+                    default:
+                        notificationIcon.className = 'fas fa-info-circle notification-icon';
+                }
+                
                 notificationText.textContent = message;
                 notification.classList.add('show');
+                
+                // Auto-hide after 3 seconds
                 setTimeout(() => {
                     notification.classList.remove('show');
                 }, 3000);
+                
+                playSound('notification');
             }
         }
 
-        // Launch game
+        // Play sound effects
+        function playSound(type) {
+            if (!settings.sounds) return;
+            
+            // Create audio context if needed
+            if (!window.audioContext) {
+                window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            
+            // Simple beep sounds
+            const frequencies = {
+                notification: 800,
+                switch: 600,
+                click: 400,
+                success: 1000,
+                error: 300
+            };
+            
+            const oscillator = window.audioContext.createOscillator();
+            const gainNode = window.audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(window.audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(frequencies[type] || 500, window.audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.1, window.audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, window.audioContext.currentTime + 0.1);
+            
+            oscillator.start(window.audioContext.currentTime);
+            oscillator.stop(window.audioContext.currentTime + 0.1);
+        }
+
+        // Progress bar functionality
+        function showProgress() {
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            
+            progressBar.classList.add('show');
+            progressFill.style.width = '0%';
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        progressBar.classList.remove('show');
+                    }, 500);
+                }
+                progressFill.style.width = progress + '%';
+            }, 100);
+        }
+
+        // Launch game with progress
         function launchGame(gameFile) {
-            showNotification(`Lancement du simulateur...`);
+            showProgress();
+            showNotification(`Lancement du simulateur...`, 'info');
+            playSound('click');
+            
             setTimeout(() => {
                 window.location.href = gameFile;
-            }, 1000);
+            }, 2000);
         }
 
         // Open quiz modal (placeholder)
         function openQuiz() {
-            showNotification('Test d\'orientation en cours de chargement...');
+            showNotification('Test d\'orientation en cours de chargement...', 'info');
+            playSound('click');
             // Here you would normally open a quiz modal or navigate to quiz page
+        }
+
+        // Command palette functionality
+        function initCommandPalette() {
+            const commandPalette = document.getElementById('commandPalette');
+            const commandPaletteOverlay = document.getElementById('commandPaletteOverlay');
+            const commandInput = document.getElementById('commandInput');
+            const commandResults = document.getElementById('commandResults');
+
+            function showCommandPalette() {
+                commandPalette.classList.add('show');
+                commandPaletteOverlay.classList.add('show');
+                commandInput.focus();
+                renderCommands(commands);
+                selectedCommandIndex = -1;
+            }
+
+            function hideCommandPalette() {
+                commandPalette.classList.remove('show');
+                commandPaletteOverlay.classList.remove('show');
+                commandInput.value = '';
+            }
+
+            function renderCommands(commandList) {
+                commandResults.innerHTML = '';
+                commandList.forEach((command, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'command-item';
+                    item.innerHTML = `
+                        <div class="command-item-icon">${command.icon}</div>
+                        <div class="command-item-content">
+                            <div class="command-item-title">${command.title}</div>
+                            <div class="command-item-description">${command.description}</div>
+                        </div>
+                    `;
+                    
+                    item.addEventListener('click', () => {
+                        command.action();
+                        hideCommandPalette();
+                        addToCommandHistory(command);
+                    });
+                    
+                    commandResults.appendChild(item);
+                });
+            }
+
+            function addToCommandHistory(command) {
+                commandHistory = commandHistory.filter(cmd => cmd.id !== command.id);
+                commandHistory.unshift(command);
+                if (commandHistory.length > 10) commandHistory.pop();
+                localStorage.setItem('commandHistory', JSON.stringify(commandHistory));
+            }
+
+            commandInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                const filteredCommands = commands.filter(cmd => 
+                    cmd.title.toLowerCase().includes(query) || 
+                    cmd.description.toLowerCase().includes(query)
+                );
+                renderCommands(filteredCommands);
+                selectedCommandIndex = -1;
+            });
+
+            commandInput.addEventListener('keydown', (e) => {
+                const items = commandResults.querySelectorAll('.command-item');
+                
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    selectedCommandIndex = Math.min(selectedCommandIndex + 1, items.length - 1);
+                    updateSelection(items);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    selectedCommandIndex = Math.max(selectedCommandIndex - 1, -1);
+                    updateSelection(items);
+                } else if (e.key === 'Enter' && selectedCommandIndex >= 0) {
+                    e.preventDefault();
+                    items[selectedCommandIndex].click();
+                } else if (e.key === 'Escape') {
+                    hideCommandPalette();
+                }
+            });
+
+            function updateSelection(items) {
+                items.forEach((item, index) => {
+                    item.classList.toggle('selected', index === selectedCommandIndex);
+                });
+            }
+
+            commandPaletteOverlay.addEventListener('click', hideCommandPalette);
+
+            // Expose globally
+            window.showCommandPalette = showCommandPalette;
+            window.hideCommandPalette = hideCommandPalette;
+        }
+
+        // Quick settings functionality
+        function initQuickSettings() {
+            const quickSettings = document.getElementById('quickSettings');
+            const quickSettingsToggle = document.getElementById('quickSettingsToggle');
+            const quickSettingsClose = document.getElementById('quickSettingsClose');
+
+            function toggleQuickSettings() {
+                quickSettings.classList.toggle('show');
+                playSound('click');
+            }
+
+            function hideQuickSettings() {
+                quickSettings.classList.remove('show');
+            }
+
+            quickSettingsToggle.addEventListener('click', toggleQuickSettings);
+            quickSettingsClose.addEventListener('click', hideQuickSettings);
+
+            // Setting toggles
+            document.getElementById('darkModeToggle').addEventListener('click', toggleTheme);
+            
+            document.getElementById('animationsToggle').addEventListener('click', () => {
+                settings.animations = !settings.animations;
+                updateSettingsUI();
+                saveSettings();
+                showNotification(`Animations ${settings.animations ? 'activées' : 'désactivées'}`, 'success');
+            });
+
+            document.getElementById('soundsToggle').addEventListener('click', () => {
+                settings.sounds = !settings.sounds;
+                updateSettingsUI();
+                saveSettings();
+                showNotification(`Sons ${settings.sounds ? 'activés' : 'désactivés'}`, 'success');
+            });
+
+            document.getElementById('notificationsToggle').addEventListener('click', () => {
+                settings.notifications = !settings.notifications;
+                updateSettingsUI();
+                saveSettings();
+                showNotification(`Notifications ${settings.notifications ? 'activées' : 'désactivées'}`, 'success');
+            });
+
+            // Close when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!quickSettings.contains(e.target) && !quickSettingsToggle.contains(e.target)) {
+                    hideQuickSettings();
+                }
+            });
+
+            // Expose globally
+            window.toggleQuickSettings = toggleQuickSettings;
+        }
+
+        // Save settings
+        function saveSettings() {
+            localStorage.setItem('settings', JSON.stringify(settings));
+        }
+
+        // Floating Action Buttons
+        function initFABs() {
+            document.getElementById('helpFab').addEventListener('click', showShortcuts);
+            document.getElementById('feedbackFab').addEventListener('click', () => {
+                showNotification('Merci pour votre feedback ! 🙏', 'success');
+            });
+            document.getElementById('bookmarkFab').addEventListener('click', showBookmarks);
+        }
+
+        // Bookmarks functionality
+        function toggleBookmark(item) {
+            const index = bookmarks.findIndex(b => b.id === item.id);
+            if (index >= 0) {
+                bookmarks.splice(index, 1);
+                showNotification('Retiré des favoris', 'info');
+            } else {
+                bookmarks.push(item);
+                showNotification('Ajouté aux favoris', 'success');
+            }
+            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+        }
+
+        function showBookmarks() {
+            if (bookmarks.length === 0) {
+                showNotification('Aucun favori enregistré', 'info');
+                return;
+            }
+            
+            // For now, just show count - could open a modal
+            showNotification(`Vous avez ${bookmarks.length} favori(s)`, 'info');
+        }
+
+        // Context menu functionality
+        function initContextMenu() {
+            const contextMenu = document.getElementById('contextMenu');
+            let currentTarget = null;
+
+            document.addEventListener('contextmenu', (e) => {
+                // Only show on specific elements
+                if (e.target.closest('.mega-menu-item, .mobile-nav-item')) {
+                    e.preventDefault();
+                    currentTarget = e.target.closest('.mega-menu-item, .mobile-nav-item');
+                    
+                    contextMenu.style.left = e.pageX + 'px';
+                    contextMenu.style.top = e.pageY + 'px';
+                    contextMenu.classList.add('show');
+                }
+            });
+
+            document.addEventListener('click', () => {
+                contextMenu.classList.remove('show');
+            });
+
+            contextMenu.addEventListener('click', (e) => {
+                const action = e.target.closest('.context-menu-item')?.dataset.action;
+                if (!action || !currentTarget) return;
+
+                switch(action) {
+                    case 'copy':
+                        navigator.clipboard?.writeText(currentTarget.textContent);
+                        showNotification('Copié dans le presse-papier', 'success');
+                        break;
+                    case 'bookmark':
+                        const title = currentTarget.querySelector('h4')?.textContent || 'Élément';
+                        toggleBookmark({ id: Date.now(), title });
+                        break;
+                    case 'share':
+                        if (navigator.share) {
+                            navigator.share({ title: 'LTD Simulator', url: window.location.href });
+                        } else {
+                            showNotification('Partage non supporté', 'warning');
+                        }
+                        break;
+                    case 'report':
+                        showNotification('Merci pour le signalement', 'info');
+                        break;
+                }
+                
+                contextMenu.classList.remove('show');
+            });
+        }
+
+        // Keyboard shortcuts
+        function showShortcuts() {
+            document.getElementById('shortcutOverlay').classList.add('show');
+        }
+
+        function hideShortcuts() {
+            document.getElementById('shortcutOverlay').classList.remove('show');
         }
 
         // Mobile menu functionality
@@ -2495,6 +2230,7 @@
                 mobileToggle.classList.toggle('active');
                 mobileMenu.classList.toggle('active');
                 document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+                playSound('click');
             }
 
             mobileToggle.addEventListener('click', toggleMobileMenu);
@@ -2502,7 +2238,7 @@
 
             // Close mobile menu when clicking on a link
             mobileMenu.addEventListener('click', (e) => {
-                if (e.target.classList.contains('mobile-nav-item')) {
+                if (e.target.closest('.mobile-nav-item')) {
                     setTimeout(toggleMobileMenu, 300);
                 }
             });
@@ -2525,25 +2261,42 @@
                 if (e.key === 'Enter') {
                     const query = searchInput.value.trim();
                     if (query) {
-                        showNotification(`Recherche pour: "${query}"`);
+                        showNotification(`Recherche pour: "${query}"`, 'info');
+                        playSound('click');
                         // Here you would implement actual search functionality
                     }
                 }
+            });
+
+            searchInput.addEventListener('focus', () => {
+                playSound('click');
             });
         }
 
         // Initialize everything when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
+            // Load command history
+            commandHistory = JSON.parse(localStorage.getItem('commandHistory')) || [];
+            
             initTheme();
             initMobileMenu();
             initHeaderScroll();
             initSearch();
+            initCommandPalette();
+            initQuickSettings();
+            initFABs();
+            initContextMenu();
 
             // Event listeners
             document.getElementById('themeToggle').addEventListener('click', toggleTheme);
             document.getElementById('mobileThemeToggle').addEventListener('click', (e) => {
                 e.preventDefault();
                 toggleTheme();
+            });
+
+            // Notification close button
+            document.getElementById('notificationClose').addEventListener('click', () => {
+                document.getElementById('notification').classList.remove('show');
             });
 
             // Animate elements on scroll
@@ -2554,7 +2307,7 @@
 
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
-                    if (entry.isIntersecting) {
+                    if (entry.isIntersecting && settings.animations) {
                         entry.target.style.opacity = '1';
                         entry.target.style.transform = 'translateY(0)';
                     }
@@ -2569,11 +2322,13 @@
                 observer.observe(el);
             });
 
-            // Add hover effects to stat cards
+            // Add hover effects to cards
             document.querySelectorAll('[style*="background: var(--surface)"]').forEach(card => {
                 card.addEventListener('mouseenter', () => {
-                    card.style.transform = 'translateY(-8px)';
-                    card.style.boxShadow = 'var(--shadow-xl)';
+                    if (settings.animations) {
+                        card.style.transform = 'translateY(-8px)';
+                        card.style.boxShadow = 'var(--shadow-xl)';
+                    }
                 });
                 
                 card.addEventListener('mouseleave', () => {
@@ -2581,30 +2336,91 @@
                     card.style.boxShadow = 'none';
                 });
             });
+
+            // Show welcome notification
+            setTimeout(() => {
+                showNotification('Bienvenue sur LTD Simulator ! 🏗️', 'success');
+            }, 1000);
         });
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
-            // Alt + T for theme toggle
+            // Ctrl+K for command palette
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                showCommandPalette();
+            }
+            
+            // Alt+T for theme toggle
             if (e.altKey && e.key === 't') {
                 e.preventDefault();
                 toggleTheme();
             }
             
-            // Alt + S for search focus
+            // Alt+S for search focus
             if (e.altKey && e.key === 's') {
                 e.preventDefault();
                 document.querySelector('.search-input').focus();
             }
+
+            // Alt+H for home
+            if (e.altKey && e.key === 'h') {
+                e.preventDefault();
+                window.location.href = '#';
+                showNotification('Retour à l\'accueil', 'info');
+            }
+
+            // Alt+P for quick settings
+            if (e.altKey && e.key === 'p') {
+                e.preventDefault();
+                toggleQuickSettings();
+            }
+
+            // F1 for help
+            if (e.key === 'F1') {
+                e.preventDefault();
+                showShortcuts();
+            }
+
+            // Ctrl+B for bookmarks
+            if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+                e.preventDefault();
+                showBookmarks();
+            }
+
+            // Ctrl+Enter to launch first simulator
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                launchGame('simulateur-directeur-travaux.html');
+            }
             
-            // Escape to close mobile menu
+            // Escape to close modals
             if (e.key === 'Escape') {
                 const mobileMenu = document.getElementById('mobileMenu');
+                const commandPalette = document.getElementById('commandPalette');
+                const quickSettings = document.getElementById('quickSettings');
+                const shortcutOverlay = document.getElementById('shortcutOverlay');
+                
                 if (mobileMenu.classList.contains('active')) {
                     document.getElementById('mobileToggle').click();
+                } else if (commandPalette.classList.contains('show')) {
+                    hideCommandPalette();
+                } else if (quickSettings.classList.contains('show')) {
+                    quickSettings.classList.remove('show');
+                } else if (shortcutOverlay.classList.contains('show')) {
+                    hideShortcuts();
                 }
             }
         });
+
+        // Expose global functions
+        window.showNotification = showNotification;
+        window.launchGame = launchGame;
+        window.openQuiz = openQuiz;
+        window.toggleTheme = toggleTheme;
+        window.showShortcuts = showShortcuts;
+        window.hideShortcuts = hideShortcuts;
+        window.playSound = playSound;
     </script>
 </body>
 </html>
