@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Découvrez l'histoire de la construction et du BTP, de l'Antiquité à nos jours.">
+    <title>LTD Simulator - Histoire du BTP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" xintegrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8UoGIt0VOKvOvqVidXekQoPLjh4TTdYIZ589A7l2g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            /* Colors */
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --secondary: #10b981;
+            --secondary-dark: #059669;
+            --accent: #f59e0b;
+            --accent-dark: #d97706;
+            --error: #ef4444;
+
+            /* Surfaces */
+            --background: #0f172a;
+            --surface: #1e293b;
+            --surface-elevated: #334155;
+            --surface-hover: #475569;
+            --glass: rgba(30, 41, 59, 0.5);
+            --glass-border: rgba(255, 255, 255, 0.1);
+
+            /* Text */
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+            /* Animation */
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+            /* Spacing */
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+
+            /* Borders */
+            --radius-sm: 0.375rem;
+            --radius: 0.5rem;
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.5rem;
+            --radius-full: 9999px;
+        }
+
+        body.light-mode {
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --surface-elevated: #e2e8f0;
+            --surface-hover: #cbd5e1;
+            --glass: rgba(255, 255, 255, 0.5);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+        }
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background-color var(--transition-slow), color var(--transition-slow);
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%), radial-gradient(circle at 40% 80%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            background-color: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid var(--glass-border);
+            transition: var(--transition);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 4.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 800;
+            font-size: 1.5rem;
+        }
+        
+        .logo-text {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-desktop { display: flex; align-items: center; gap: var(--spacing-lg); }
+        .nav-menu { display: flex; align-items: center; gap: var(--spacing-md); list-style: none; }
+        .nav-item { position: relative; }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: var(--radius);
+            transition: var(--transition);
+            position: relative;
+        }
+        .nav-link:hover { color: var(--text-primary); background-color: var(--glass); }
+        .nav-link.active { color: var(--primary); background-color: rgba(99, 102, 241, 0.1); }
+        
+        .main-content {
+            margin-top: 4.5rem;
+            padding: var(--spacing-xl) var(--spacing-md);
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .hero { text-align: center; padding: var(--spacing-xl) 0; }
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: var(--spacing-lg);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p { font-size: 1.25rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto; line-height: 1.7; }
+
+        .breadcrumb { display: flex; align-items: center; gap: var(--spacing-xs); margin-bottom: var(--spacing-lg); font-size: 0.875rem; color: var(--text-muted); }
+        .breadcrumb-item { color: var(--text-muted); text-decoration: none; transition: var(--transition); }
+        .breadcrumb-item:hover { color: var(--text-primary); }
+        .breadcrumb-item.active { color: var(--text-primary); font-weight: 500; }
+        .breadcrumb-separator { color: var(--text-muted); }
+
+        /* Timeline Styles */
+        .timeline-section {
+            margin: 4rem 0;
+        }
+        .timeline-container {
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+        .timeline-container::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            background-color: var(--surface-elevated);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -2px;
+            border-radius: 2px;
+        }
+        .timeline-item {
+            padding: 1rem 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+        }
+        .timeline-item:nth-child(odd) {
+            left: 0;
+        }
+        .timeline-item:nth-child(even) {
+            left: 50%;
+        }
+        .timeline-item .timeline-icon {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            right: -25px;
+            background-color: var(--surface-elevated);
+            border: 4px solid var(--primary);
+            top: 32px;
+            border-radius: 50%;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary-light);
+        }
+        .timeline-item:nth-child(even) .timeline-icon {
+            left: -25px;
+        }
+        .timeline-content {
+            padding: 2rem;
+            background-color: var(--surface);
+            position: relative;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-md);
+        }
+        .timeline-content h2 {
+            color: var(--primary-light);
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+        .timeline-content p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        .timeline-date {
+            display: inline-block;
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--accent);
+            background-color: rgba(245, 158, 11, 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-full);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-in {
+             opacity: 0;
+             animation: fadeInUp 0.6s ease-out forwards;
+        }
+        .timeline-item {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .timeline-container::after {
+                left: 31px;
+            }
+            .timeline-item {
+                width: 100%;
+                padding-left: 80px;
+                padding-right: 15px;
+            }
+            .timeline-item:nth-child(odd), .timeline-item:nth-child(even) {
+                left: 0;
+            }
+            .timeline-item .timeline-icon {
+                left: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header (reused for consistency) -->
+    <header class="header" id="header">
+        <nav class="nav-container">
+            <a href="#" class="logo">
+                <span class="logo-icon">🏗️</span>
+                <span class="logo-text">LTD Simulator</span>
+            </a>
+            <div class="nav-desktop">
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="#" class="nav-link">Accueil</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link">Simulateurs</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link active">Histoire du BTP</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link">Tests</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <nav class="breadcrumb animate-in">
+            <a href="#" class="breadcrumb-item">Accueil</a>
+            <span class="breadcrumb-separator"><i class="fas fa-chevron-right"></i></span>
+            <span class="breadcrumb-item active">Histoire du BTP</span>
+        </nav>
+
+        <section class="hero animate-in">
+            <h1>Une Odyssée de la Construction</h1>
+            <p>Découvrez comment les techniques et les innovations ont façonné notre monde, des pyramides antiques aux gratte-ciel modernes.</p>
+        </section>
+
+        <!-- Timeline Section -->
+        <section class="timeline-section">
+            <div class="timeline-container">
+                <!-- Timeline Item 1: Antiquity -->
+                <div class="timeline-item" style="animation-delay: 0.2s;">
+                    <div class="timeline-icon"><i class="fas fa-landmark"></i></div>
+                    <div class="timeline-content">
+                        <h2>L'Antiquité : Les Bâtisseurs d'Empires</h2>
+                        <p>Les civilisations égyptienne, grecque et romaine posent les fondations de l'ingénierie civile avec des constructions monumentales comme les pyramides, les aqueducs et le Colisée. Utilisation de la pierre de taille, de l'arc en plein cintre et du béton romain.</p>
+                        <span class="timeline-date">~3000 av. J.-C. - 476 ap. J.-C.</span>
+                    </div>
+                </div>
+                <!-- Timeline Item 2: Middle Ages -->
+                <div class="timeline-item" style="animation-delay: 0.4s;">
+                    <div class="timeline-icon"><i class="fas fa-chess-rook"></i></div>
+                    <div class="timeline-content">
+                        <h2>Le Moyen Âge : L'Ère des Cathédrales</h2>
+                        <p>L'art gothique révolutionne la construction avec l'arc-boutant et la croisée d'ogives, permettant d'ériger des cathédrales toujours plus hautes et lumineuses. Les corporations de métiers (maçons, charpentiers) se développent.</p>
+                        <span class="timeline-date">V<sup>e</sup> - XV<sup>e</sup> siècle</span>
+                    </div>
+                </div>
+                <!-- Timeline Item 3: Industrial Revolution -->
+                <div class="timeline-item" style="animation-delay: 0.6s;">
+                     <div class="timeline-icon"><i class="fas fa-industry"></i></div>
+                    <div class="timeline-content">
+                        <h2>La Révolution Industrielle : L'Acier et la Vapeur</h2>
+                        <p>L'invention de la machine à vapeur et la production massive d'acier et de fer transforment le BTP. Apparition des ponts métalliques, des gares et des usines. La Tour Eiffel devient le symbole de cette nouvelle ère.</p>
+                        <span class="timeline-date">XVIII<sup>e</sup> - XIX<sup>e</sup> siècle</span>
+                    </div>
+                </div>
+                <!-- Timeline Item 4: Modern Era -->
+                <div class="timeline-item" style="animation-delay: 0.8s;">
+                    <div class="timeline-icon"><i class="fas fa-city"></i></div>
+                    <div class="timeline-content">
+                        <h2>L'Époque Moderne : Béton Armé et Gratte-ciel</h2>
+                        <p>L'invention du béton armé par des pionniers comme François Hennebique permet la construction de structures audacieuses. Le XXe siècle voit l'essor des gratte-ciel, des grands barrages et des autoroutes.</p>
+                        <span class="timeline-date">XX<sup>e</sup> siècle</span>
+                    </div>
+                </div>
+                 <!-- Timeline Item 5: Contemporary Era -->
+                <div class="timeline-item" style="animation-delay: 1s;">
+                    <div class="timeline-icon"><i class="fas fa-robot"></i></div>
+                    <div class="timeline-content">
+                        <h2>L'Ère Numérique : BIM et Construction Durable</h2>
+                        <p>Aujourd'hui, le BTP est en pleine transformation numérique avec le BIM (Building Information Modeling). L'accent est mis sur la construction durable, l'efficacité énergétique et l'utilisation de nouveaux matériaux intelligents.</p>
+                        <span class="timeline-date">XXI<sup>e</sup> siècle</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Reusing the same script logic for interactivity
+        document.addEventListener('DOMContentLoaded', () => {
+            const header = document.getElementById('header');
+            window.addEventListener('scroll', () => {
+                header.classList.toggle('scrolled', window.scrollY > 50);
+            }, { passive: true });
+        });
+    </script>
+</body>
+</html>
