@@ -1260,11 +1260,7 @@
             <div class="nav-desktop">
                 <ul class="nav-menu">
                     <li class="nav-item">
-                        <a href="#" class="nav-link active" onclick="event.preventDefault(); window.scrollTo({top: 0, behavior: 'smooth'}); showNotification('Retour à l\'accueil', 'info');">Accueil</a>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a href="#" class="nav-link has-dropdown">
+                        <a href="#" class="nav-link has-dropdown" onclick="event.preventDefault(); launchGame('simulateur-directeur-travaux.html');">
                             Simulateurs
                         </a>
                         <div class="mega-menu">
@@ -1319,7 +1315,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a href="#" class="nav-link has-dropdown">
+                        <a href="#" class="nav-link has-dropdown" onclick="event.preventDefault(); openQuiz();">
                             Tests & Évaluation
                         </a>
                         <div class="mega-menu">
@@ -1327,7 +1323,7 @@
                                 <div class="mega-menu-section">
                                     <h3><i class="fas fa-brain"></i> Tests disponibles</h3>
                                     <div class="mega-menu-items">
-                                        <a href="#" class="mega-menu-item" onclick="event.preventDefault(); launchGame('test.html')">
+                                        <a href="#" class="mega-menu-item" onclick="event.preventDefault(); openQuiz()">
                                             <div class="mega-menu-item-icon">🧠</div>
                                             <div class="mega-menu-item-content">
                                                 <h4>Test d'Orientation</h4>
@@ -1370,7 +1366,7 @@
                                                 <p>Découvrez l'évolution du secteur</p>
                                             </div>
                                         </a>
-                                        <a href="#" class="mega-menu-item" onclick="event.preventDefault(); launchGame('histoire.html')">
+                                        <a href="#" class="mega-menu-item" onclick="event.preventDefault(); showNotification('Page en construction', 'info')">
                                             <div class="mega-menu-item-icon">💼</div>
                                             <div class="mega-menu-item-content">
                                                 <h4>Offres d'Emploi</h4>
@@ -1480,7 +1476,7 @@
             <div class="mobile-nav-section">
                 <h3>Tests & Évaluation</h3>
                 <div class="mobile-nav-items">
-                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); launchGame('test.html')">
+                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); openQuiz()">
                         <div class="mobile-nav-item-icon">🧠</div>
                         <div class="mobile-nav-item-content">
                             <h4>Test d'Orientation</h4>
@@ -1548,12 +1544,8 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <!-- Breadcrumb -->
-        <nav class="breadcrumb animate-in">
-            <a href="#" class="breadcrumb-item active" onclick="event.preventDefault(); window.scrollTo({top: 0, behavior: 'smooth'});">Accueil</a>
-        </nav>
-
-        <section class="hero animate-in">
+        
+        <section class="hero animate-in" style="padding-top: 0;">
             <h1>Maîtrisez les métiers du BTP</h1>
             <p>Formez-vous aux métiers d'avenir du BTP avec nos simulateurs professionnels. Le secteur recrute massivement : préparez votre carrière dès maintenant !</p>
         </section>
@@ -1584,7 +1576,7 @@
         <section class="quick-actions animate-in" style="margin: 4rem 0;">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
                 
-                <a href="#" onclick="event.preventDefault(); launchGame('simulateur.html')" style="text-decoration: none; color: inherit;">
+                <a href="#" onclick="event.preventDefault(); launchGame('simulateur-directeur-travaux.html')" style="text-decoration: none; color: inherit;">
                     <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
                         <div style="font-size: 3rem; margin-bottom: 1rem;">👷</div>
                         <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Simulateur</h3>
@@ -1593,7 +1585,7 @@
                     </div>
                 </a>
 
-                <a href="#" onclick="event.preventDefault(); launchGame('test.html')" style="text-decoration: none; color: inherit;">
+                <a href="#" onclick="event.preventDefault(); openQuiz()" style="text-decoration: none; color: inherit;">
                     <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
                         <div style="font-size: 3rem; margin-bottom: 1rem;">🧠</div>
                         <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Test & Évaluation</h3>
@@ -1602,7 +1594,7 @@
                     </div>
                 </a>
                 
-                <a href="#" onclick="event.preventDefault(); launchGame('histoire.html')" style="text-decoration: none; color: inherit;">
+                <a href="#" onclick="event.preventDefault(); showNotification('Page en construction', 'info')" style="text-decoration: none; color: inherit;">
                     <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
                         <div style="font-size: 3rem; margin-bottom: 1rem;">📜</div>
                         <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Histoire du BTP</h3>
@@ -1617,6 +1609,15 @@
                         <h3 style="margin-bottom: 1rem; color: var(--text-primary);">LTD International</h3>
                         <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Visitez le site de notre partenaire.</p>
                         <div style="background: var(--primary-light); color: var(--text-primary); padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Visiter</div>
+                    </div>
+                </a>
+                
+                <a href="#" onclick="event.preventDefault(); showNotification('Section emploi en cours de développement', 'info')" style="text-decoration: none; color: inherit;">
+                    <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">💼</div>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Offres d'emploi</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Trouvez votre prochain poste dans le BTP.</p>
+                        <div style="background: var(--secondary-dark); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Rechercher</div>
                     </div>
                 </a>
 
