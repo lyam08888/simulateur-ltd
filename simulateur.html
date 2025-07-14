@@ -772,7 +772,7 @@
             </a>
             <div class="nav-desktop">
                 <ul class="nav-menu">
-                    <li class="nav-item"><a href="#" class="nav-link active">Accueil</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link active">Retour à l'accueil</a></li>
                     <li class="nav-item">
                         <a href="#" class="nav-link has-dropdown">Simulateurs</a>
                         <div class="mega-menu">
@@ -810,26 +810,6 @@
                             </div>
                         </div>
                     </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link has-dropdown">Tests & Évaluation</a>
-                         <div class="mega-menu">
-                            <div class="mega-menu-grid">
-                                <div class="mega-menu-section">
-                                    <h3><i class="fas fa-brain"></i> Tests disponibles</h3>
-                                    <div class="mega-menu-items">
-                                        <a href="#" class="mega-menu-item" onclick="openQuiz()">
-                                            <div class="mega-menu-item-icon">🧠</div>
-                                            <div class="mega-menu-item-content"><h4>Test d'Orientation</h4><p>Découvrez votre métier idéal</p></div>
-                                        </a>
-                                        <a href="#" class="mega-menu-item" onclick="launchGame('testperso.html')">
-                                            <div class="mega-menu-item-icon">🤝</div>
-                                            <div class="mega-menu-item-content"><h4>Test Comportemental <span class="badge new">Nouveau</span></h4><p>Évaluez vos soft skills</p></div>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
                 </ul>
                 <div class="search-container">
                     <i class="fas fa-search search-icon"></i>
@@ -837,7 +817,6 @@
                 </div>
                 <div class="nav-actions">
                     <button class="quick-settings-toggle" id="quickSettingsToggle"><i class="fas fa-cog"></i></button>
-                    <a href="#" class="login-btn" onclick="showNotification('Connexion en cours de développement', 'info')"><i class="fas fa-user"></i><span>Connexion</span></a>
                 </div>
             </div>
             <button class="mobile-toggle" id="mobileToggle">
@@ -859,12 +838,7 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <nav class="breadcrumb animate-in">
-            <a href="#" class="breadcrumb-item">Accueil</a>
-            <span class="breadcrumb-separator"><i class="fas fa-chevron-right"></i></span>
-            <span class="breadcrumb-item active">Simulateurs BTP</span>
-        </nav>
-        <section class="hero animate-in">
+        <section class="hero animate-in" style="padding-top: 0;">
             <h1>Maîtrisez les métiers du BTP</h1>
             <p>Formez-vous aux métiers d'avenir du BTP avec nos simulateurs professionnels. Le secteur recrute massivement : préparez votre carrière dès maintenant !</p>
         </section>
@@ -893,13 +867,6 @@
                     <h3>Projeteur VRD</h3>
                     <p>Concevez les infrastructures de demain, des routes aux réseaux.</p>
                     <button class="launch-button" onclick="launchGame('projeteurvrd.html')">Lancer</button>
-                </div>
-                 <!-- Card 4: Test Comportemental -->
-                <div class="simulator-card">
-                     <div class="simulator-icon">🤝</div>
-                    <h3>Test Comportemental</h3>
-                    <p>Évaluez vos soft skills et votre capacité à gérer des situations complexes.</p>
-                    <button class="launch-button" onclick="launchGame('testperso.html')">Lancer</button>
                 </div>
             </div>
         </section>
@@ -988,11 +955,10 @@
                 notifications: true
             };
             const commands = [
+                { id: 'accueil', title: 'Retour à l\'accueil', description: 'Revenir à la page principale', icon: '🏠', action: () => window.location.href = '#' },
                 { id: 'directeur-travaux', title: 'Directeur de Travaux', description: 'Simulateur de gestion de chantier', icon: '👷', action: () => launchGame('simulateur-directeur-travaux.html') },
                 { id: 'geometre', title: 'Géomètre-Topographe', description: 'Simulateur de topographie', icon: '📍', action: () => launchGame('geometre-topographe.html') },
                 { id: 'projeteur', title: 'Projeteur VRD', description: 'Simulateur de conception', icon: '📐', action: () => launchGame('projeteurvrd.html') },
-                { id: 'test-orientation', title: 'Test d\'Orientation', description: 'Découvrez votre métier idéal', icon: '🧠', action: () => openQuiz() },
-                { id: 'test-comportemental', title: 'Test Comportemental', description: 'Évaluez vos soft skills', icon: '🤝', action: () => launchGame('testperso.html') },
                 { id: 'toggle-theme', title: 'Changer de thème', description: 'Basculer mode sombre/clair', icon: '🌙', action: () => toggleTheme() },
                 { id: 'show-shortcuts', title: 'Raccourcis clavier', description: 'Afficher tous les raccourcis', icon: '⌨️', action: () => showShortcuts() },
                 { id: 'quick-settings', title: 'Paramètres rapides', description: 'Ouvrir les paramètres', icon: '⚙️', action: () => toggleQuickSettings() },
@@ -1056,15 +1022,9 @@
                 }
                 progressBar.classList.add('show');
                 progressFill.style.width = '100%';
-                showNotification(`Lancement du simulateur...`, 'info');
+                showNotification(`Lancement en cours...`, 'info');
                 playSound('success');
                 setTimeout(() => window.location.href = gameFile, 1000);
-            };
-
-            const openQuiz = () => {
-                showNotification('Test d\'orientation en cours de chargement...', 'info');
-                playSound('click');
-                // Placeholder for quiz logic
             };
 
             // --- INITIALIZATION ---
