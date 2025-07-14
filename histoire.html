@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Corrected 'integrity' attribute -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" xintegrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8UoGIt0VOKvOvqVidXekQoPLjh4TTdYIZ589A7l2g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Leaflet CSS for interactive map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
@@ -33,6 +34,7 @@
             --surface-hover: #475569;
             --glass: rgba(30, 41, 59, 0.5);
             --glass-border: rgba(255, 255, 255, 0.1);
+            --header-bg: rgba(15, 23, 42, 0.8);
 
             /* Text */
             --text-primary: #f8fafc;
@@ -48,12 +50,14 @@
             --transition-slow: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
             /* Spacing */
+            --spacing-xs: 0.5rem;
             --spacing-sm: 1rem;
             --spacing-md: 1.5rem;
             --spacing-lg: 2rem;
             --spacing-xl: 3rem;
 
             /* Borders */
+            --radius: 0.5rem;
             --radius-lg: 1rem;
             --radius-full: 9999px;
         }
@@ -65,6 +69,7 @@
             --surface-hover: #cbd5e1;
             --glass: rgba(255, 255, 255, 0.5);
             --glass-border: rgba(0, 0, 0, 0.1);
+            --header-bg: rgba(248, 250, 252, 0.8);
             --text-primary: #1e293b;
             --text-secondary: #475569;
             --text-muted: #64748b;
@@ -104,7 +109,7 @@
             z-index: 1000;
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
-            background-color: rgba(15, 23, 42, 0.8);
+            background-color: var(--header-bg);
             border-bottom: 1px solid var(--glass-border);
             transition: var(--transition);
         }
@@ -151,9 +156,35 @@
             transition: var(--transition);
             position: relative;
         }
-        .nav-link:hover { color: var(--text-primary); background-color: var(--glass); }
-        .nav-link.active { color: var(--primary); background-color: rgba(99, 102, 241, 0.1); }
+        .nav-link:hover { color: var(--text-primary); background-color: var(--surface-hover); }
+        .nav-link.active { color: var(--primary); font-weight: 700; background-color: rgba(99, 102, 241, 0.1); }
         
+        /* Theme Toggle Button */
+        .theme-toggle-btn {
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+        .theme-toggle-btn:hover {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        .theme-toggle-btn .fa-sun { display: none; }
+        .theme-toggle-btn .fa-moon { display: block; }
+
+        body.light-mode .theme-toggle-btn .fa-sun { display: block; }
+        body.light-mode .theme-toggle-btn .fa-moon { display: none; }
+
+
         .main-content {
             margin-top: 4.5rem;
             padding: var(--spacing-xl) var(--spacing-md);
@@ -260,6 +291,14 @@
         }
         
         .timeline-header {
+            /* Reset button styles */
+            background: none;
+            border: none;
+            font: inherit;
+            color: inherit;
+            text-align: left;
+            width: 100%;
+            /* Original styles */
             padding: 2rem;
             cursor: pointer;
             display: flex;
@@ -295,51 +334,63 @@
         }
         
         .timeline-body p {
-            font-size: 1rem; /* Increased font size */
-            color: var(--text-primary); /* IMPROVED: Higher contrast for main text */
-            line-height: 1.8; /* IMPROVED: More vertical space for readability */
-            margin: 0 2rem 1.5rem; /* Added bottom margin */
+            font-size: 1rem;
+            color: var(--text-primary);
+            line-height: 1.8;
+            margin: 0 2rem 1.5rem;
         }
 
         .timeline-body .sub-events {
             list-style: none;
             padding-left: 1rem;
-            margin: 0 2rem 1.5rem; /* Adjusted margins */
+            margin: 0 2rem 1.5rem;
             border-left: 2px solid var(--primary-dark);
         }
 
         .timeline-body .sub-events li {
-            padding: 0.75rem 0 0.75rem 1.5rem; /* Increased padding */
+            padding: 0.75rem 0 0.75rem 1.5rem;
             position: relative;
-            font-size: 0.95rem; /* Increased font size */
+            font-size: 0.95rem;
             color: var(--text-secondary);
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            line-height: 1.6; /* Added for consistency */
+            line-height: 1.6;
         }
         
-        .sub-events li .image-trigger {
+        .image-trigger {
+            /* Reset button styles */
+            background: none;
+            border: none;
+            padding: 0;
+            font: inherit;
+            /* Original styles */
             cursor: pointer;
             color: var(--primary-light);
             transition: color 0.2s;
+            /* To align the icon properly */
+            display: inline-flex;
+            vertical-align: middle;
         }
-        .sub-events li .image-trigger:hover {
+        .image-trigger:hover {
             color: var(--accent);
+        }
+        .image-trigger .fa-camera {
+            font-size: 1em;
         }
 
         .timeline-body .sub-events li::before {
             content: '▪';
             position: absolute;
             left: -0.55rem;
-            top: 0.8rem; /* Adjusted position for new line-height */
+            top: 0.8rem;
             color: var(--primary);
             font-size: 1.2rem;
             line-height: 1;
         }
 
         .timeline-body .sub-events strong {
-            color: var(--primary-light); /* IMPROVED: More distinct color for keywords */
+            color: var(--primary-light);
             font-weight: 600;
         }
 
@@ -488,8 +539,8 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .animate-in {
-             opacity: 0;
-             animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out forwards;
         }
         .timeline-item {
             opacity: 0;
@@ -515,7 +566,7 @@
     </style>
 </head>
 <body>
-    <!-- Header (reused for consistency) -->
+    <!-- Header -->
     <header class="header" id="header">
         <nav class="nav-container">
             <a href="#" class="logo">
@@ -524,11 +575,14 @@
             </a>
             <div class="nav-desktop">
                 <ul class="nav-menu">
-                    <li class="nav-item"><a href="#" class="nav-link">Accueil</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link active">Retour à l'accueil</a></li>
                     <li class="nav-item"><a href="#" class="nav-link">Simulateurs</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link active">Histoire du BTP</a></li>
                     <li class="nav-item"><a href="#" class="nav-link">Tests</a></li>
                 </ul>
+                <button type="button" id="theme-toggle" class="theme-toggle-btn" aria-label="Changer le thème">
+                    <i class="fas fa-sun"></i>
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
         </nav>
     </header>
@@ -538,7 +592,7 @@
         <nav class="breadcrumb animate-in">
             <a href="#" class="breadcrumb-item">Accueil</a>
             <span class="breadcrumb-separator"><i class="fas fa-chevron-right"></i></span>
-            <span class="breadcrumb-item active">Histoire du BTP</span>
+            <span class="breadcrumb-item active"> Histoire du BTP</span>
         </nav>
 
         <section class="hero animate-in">
@@ -558,18 +612,18 @@
                 <div class="timeline-item" style="animation-delay: 0.2s;">
                     <div class="timeline-icon"><i class="fas fa-landmark"></i></div>
                     <div class="timeline-content">
-                        <div class="timeline-header">
+                        <button type="button" class="timeline-header">
                             <h2>L'Antiquité : Les Bâtisseurs d'Empires</h2>
                             <i class="fas fa-chevron-down timeline-arrow"></i>
-                        </div>
+                        </button>
                         <div class="timeline-body">
                             <p>Les civilisations égyptienne, grecque et romaine posent les fondations de l'ingénierie civile, avec des outils et des concepts qui perdureront des millénaires.</p>
                             <ul class="sub-events">
-                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Pyramide+de+Djoser" data-description="La pyramide à degrés de Djoser à Saqqarah."><strong>~2650 av. J.-C. :</strong> La <strong>pyramide de Djoser</strong>, première construction monumentale en pierre de taille, conçue par l'architecte Imhotep. <i class="fas fa-camera image-trigger"></i></li>
-                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Parthénon" data-description="Le Parthénon sur l'Acropole d'Athènes."><strong>~447 av. J.-C. :</strong> Construction du <strong>Parthénon</strong> à Athènes, apogée de l'architecture grecque et de ses ordres (dorique, ionique, corinthien). <i class="fas fa-camera image-trigger"></i></li>
-                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Aqueduc+Romain" data-description="Le Pont du Gard, un aqueduc romain impressionnant."><strong>~312 av. J.-C. :</strong> Début de la construction de la <strong>Voie Appienne</strong> et des premiers aqueducs romains, marquant le début des grands travaux publics. <i class="fas fa-camera image-trigger"></i></li>
+                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Pyramide+de+Djoser" data-description="La pyramide à degrés de Djoser à Saqqarah."><strong>~2650 av. J.-C. :</strong> La <strong>pyramide de Djoser</strong>, première construction monumentale en pierre de taille, conçue par l'architecte Imhotep. <button type="button" class="image-trigger" aria-label="Voir l'image"><i class="fas fa-camera"></i></button></li>
+                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Parthénon" data-description="Le Parthénon sur l'Acropole d'Athènes."><strong>~447 av. J.-C. :</strong> Construction du <strong>Parthénon</strong> à Athènes, apogée de l'architecture grecque et de ses ordres (dorique, ionique, corinthien). <button type="button" class="image-trigger" aria-label="Voir l'image"><i class="fas fa-camera"></i></button></li>
+                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Aqueduc+Romain" data-description="Le Pont du Gard, un aqueduc romain impressionnant."><strong>~312 av. J.-C. :</strong> Début de la construction de la <strong>Voie Appienne</strong> et des premiers aqueducs romains, marquant le début des grands travaux publics. <button type="button" class="image-trigger" aria-label="Voir l'image"><i class="fas fa-camera"></i></button></li>
                                 <li><strong>Ier siècle av. J.-C. :</strong> Vitruve écrit <strong>"De architectura"</strong>, le plus ancien traité d'architecture qui nous soit parvenu, définissant les principes de solidité, d'utilité et de beauté.</li>
-                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Colisée" data-description="Le Colisée de Rome, un amphithéâtre monumental."><strong>~80 ap. J.-C. :</strong> Inauguration du <strong>Colisée</strong> de Rome, chef-d'œuvre utilisant le béton romain (opus caementicium) et les systèmes d'arcs et de voûtes. <i class="fas fa-camera image-trigger"></i></li>
+                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Colisée" data-description="Le Colisée de Rome, un amphithéâtre monumental."><strong>~80 ap. J.-C. :</strong> Inauguration du <strong>Colisée</strong> de Rome, chef-d'œuvre utilisant le béton romain (opus caementicium) et les systèmes d'arcs et de voûtes. <button type="button" class="image-trigger" aria-label="Voir l'image"><i class="fas fa-camera"></i></button></li>
                             </ul>
                             <div class="did-you-know">
                                 <p><strong>Le saviez-vous ?</strong> Le béton romain était si durable qu'il pouvait prendre sous l'eau, une propriété que le béton moderne n'a retrouvée que bien plus tard.</p>
@@ -582,17 +636,17 @@
                 <div class="timeline-item" style="animation-delay: 0.4s;">
                     <div class="timeline-icon"><i class="fas fa-chess-rook"></i></div>
                     <div class="timeline-content">
-                        <div class="timeline-header">
+                        <button type="button" class="timeline-header">
                             <h2>Le Moyen Âge : L'Ère des Cathédrales</h2>
                             <i class="fas fa-chevron-down timeline-arrow"></i>
-                        </div>
+                        </button>
                         <div class="timeline-body">
                             <p>L'art gothique révolutionne la construction, permettant d'ériger des édifices plus hauts et lumineux, grâce à des innovations structurelles majeures.</p>
                              <ul class="sub-events">
-                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Basilique+St-Denis" data-description="Le chœur de la basilique Saint-Denis, berceau de l'art gothique."><strong>~1140 :</strong> La basilique de Saint-Denis est considérée comme le premier édifice gothique, introduisant la <strong>croisée d'ogives</strong> et les vitraux. <i class="fas fa-camera image-trigger"></i></li>
-                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Notre-Dame" data-description="Les arcs-boutants de Notre-Dame de Paris."><strong>~1163 :</strong> Début de la construction de <strong>Notre-Dame de Paris</strong>, qui popularise l'usage des arcs-boutants pour soutenir les hautes nefs. <i class="fas fa-camera image-trigger"></i></li>
+                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Basilique+St-Denis" data-description="Le chœur de la basilique Saint-Denis, berceau de l'art gothique."><strong>~1140 :</strong> La basilique de Saint-Denis est considérée comme le premier édifice gothique, introduisant la <strong>croisée d'ogives</strong> et les vitraux. <button type="button" class="image-trigger" aria-label="Voir l'image"><i class="fas fa-camera"></i></button></li>
+                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Notre-Dame" data-description="Les arcs-boutants de Notre-Dame de Paris."><strong>~1163 :</strong> Début de la construction de <strong>Notre-Dame de Paris</strong>, qui popularise l'usage des arcs-boutants pour soutenir les hautes nefs. <button type="button" class="image-trigger" aria-label="Voir l'image"><i class="fas fa-camera"></i></button></li>
                                 <li><strong>XIIe siècle :</strong> Développement des <strong>corporations de métiers</strong> (compagnonnage) qui organisent et transmettent le savoir-faire des maçons, charpentiers et tailleurs de pierre.</li>
-                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Dôme+de+Florence" data-description="Le dôme de Brunelleschi à Florence."><strong>1436 :</strong> Filippo Brunelleschi achève le <strong>dôme de la cathédrale de Florence</strong>, une prouesse technique marquant la transition vers la Renaissance. <i class="fas fa-camera image-trigger"></i></li>
+                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Dôme+de+Florence" data-description="Le dôme de Brunelleschi à Florence."><strong>1436 :</strong> Filippo Brunelleschi achève le <strong>dôme de la cathédrale de Florence</strong>, une prouesse technique marquant la transition vers la Renaissance. <button type="button" class="image-trigger" aria-label="Voir l'image"><i class="fas fa-camera"></i></button></li>
                             </ul>
                              <div class="did-you-know">
                                 <p><strong>Le saviez-vous ?</strong> Les bâtisseurs de cathédrales utilisaient des engins de levage en bois, comme la "cage à écureuil", actionnés par la force humaine pour monter les pierres à des hauteurs vertigineuses.</p>
@@ -603,20 +657,20 @@
                 </div>
                 <!-- Timeline Item 3: Industrial Revolution -->
                 <div class="timeline-item" style="animation-delay: 0.6s;">
-                     <div class="timeline-icon"><i class="fas fa-industry"></i></div>
+                    <div class="timeline-icon"><i class="fas fa-industry"></i></div>
                     <div class="timeline-content">
-                        <div class="timeline-header">
+                        <button type="button" class="timeline-header">
                             <h2>La Révolution Industrielle : L'Acier et la Vapeur</h2>
                             <i class="fas fa-chevron-down timeline-arrow"></i>
-                        </div>
+                        </button>
                         <div class="timeline-body">
                             <p>L'acier, le verre et la machine à vapeur bouleversent les méthodes de construction, permettant des projets d'une échelle et d'une rapidité inédites.</p>
                             <ul class="sub-events">
-                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Iron+Bridge" data-description="Le pont de Coalbrookdale, ou Iron Bridge."><strong>1779 :</strong> Construction de l'<strong>Iron Bridge</strong> en Angleterre, premier grand pont entièrement en fonte, ouvrant la voie aux structures métalliques. <i class="fas fa-camera image-trigger"></i></li>
+                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Iron+Bridge" data-description="Le pont de Coalbrookdale, ou Iron Bridge."><strong>1779 :</strong> Construction de l'<strong>Iron Bridge</strong> en Angleterre, premier grand pont entièrement en fonte, ouvrant la voie aux structures métalliques. <button type="button" class="image-trigger" aria-label="Voir l'image"><i class="fas fa-camera"></i></button></li>
                                 <li><strong>1824 :</strong> Joseph Aspdin brevette le <strong>ciment Portland</strong>, un liant hydraulique fiable et résistant qui deviendra la base du béton moderne.</li>
-                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Crystal+Palace" data-description="Le Crystal Palace lors de l'Exposition Universelle de 1851."><strong>1851 :</strong> Le <strong>Crystal Palace</strong> de Londres, une immense structure de verre et de fer, est construit en seulement 9 mois grâce à la préfabrication. <i class="fas fa-camera image-trigger"></i></li>
+                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Crystal+Palace" data-description="Le Crystal Palace lors de l'Exposition Universelle de 1851."><strong>1851 :</strong> Le <strong>Crystal Palace</strong> de Londres, une immense structure de verre et de fer, est construit en seulement 9 mois grâce à la préfabrication. <button type="button" class="image-trigger" aria-label="Voir l'image"><i class="fas fa-camera"></i></button></li>
                                 <li><strong>1853 :</strong> Elisha Otis invente l'<strong>ascenseur de sécurité</strong>, rendant possible la construction de bâtiments de grande hauteur.</li>
-                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Tour+Eiffel" data-description="La Tour Eiffel en construction."><strong>1889 :</strong> Inauguration de la <strong>Tour Eiffel</strong> pour l'Exposition Universelle, démontrant le potentiel esthétique et structurel du fer puddlé. <i class="fas fa-camera image-trigger"></i></li>
+                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Tour+Eiffel" data-description="La Tour Eiffel en construction."><strong>1889 :</strong> Inauguration de la <strong>Tour Eiffel</strong> pour l'Exposition Universelle, démontrant le potentiel esthétique et structurel du fer puddlé. <button type="button" class="image-trigger" aria-label="Voir l'image"><i class="fas fa-camera"></i></button></li>
                             </ul>
                              <div class="did-you-know">
                                 <p><strong>Le saviez-vous ?</strong> La Tour Eiffel a été construite en 2 ans, 2 mois et 5 jours, un record pour l'époque, grâce à des techniques de préfabrication et d'assemblage innovantes.</p>
@@ -629,18 +683,18 @@
                 <div class="timeline-item" style="animation-delay: 0.8s;">
                     <div class="timeline-icon"><i class="fas fa-city"></i></div>
                     <div class="timeline-content">
-                        <div class="timeline-header">
+                        <button type="button" class="timeline-header">
                             <h2>L'Époque Moderne : Béton Armé et Gratte-ciel</h2>
                             <i class="fas fa-chevron-down timeline-arrow"></i>
-                        </div>
+                        </button>
                         <div class="timeline-body">
                             <p>Le béton armé et les structures en acier permettent de repousser les limites de la hauteur et de la forme, redéfinissant le paysage urbain.</p>
                              <ul class="sub-events">
                                 <li><strong>1892 :</strong> François Hennebique dépose un brevet pour un système complet de construction en <strong>béton armé</strong>, qu'il diffuse dans toute l'Europe.</li>
                                 <li><strong>1928 :</strong> Eugène Freyssinet invente le <strong>béton précontraint</strong>, une avancée majeure permettant des portées plus longues et des structures plus fines.</li>
-                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Empire+State" data-description="L'Empire State Building, icône de New York."><strong>1931 :</strong> Achèvement de l'<strong>Empire State Building</strong> à New York, qui restera le plus haut du monde pendant 40 ans grâce à son ossature en acier. <i class="fas fa-camera image-trigger"></i></li>
+                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Empire+State" data-description="L'Empire State Building, icône de New York."><strong>1931 :</strong> Achèvement de l'<strong>Empire State Building</strong> à New York, qui restera le plus haut du monde pendant 40 ans grâce à son ossature en acier. <button type="button" class="image-trigger" aria-label="Voir l'image"><i class="fas fa-camera"></i></button></li>
                                 <li><strong>Années 1950 :</strong> La reconstruction d'après-guerre entraîne la standardisation et la <strong>préfabrication</strong> à grande échelle, notamment avec les grands ensembles.</li>
-                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Opéra+de+Sydney" data-description="L'Opéra de Sydney et ses voiles de béton."><strong>1973 :</strong> Inauguration de l'<strong>Opéra de Sydney</strong>, un exemple spectaculaire de l'utilisation de coques en béton pour créer des formes complexes. <i class="fas fa-camera image-trigger"></i></li>
+                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Opéra+de+Sydney" data-description="L'Opéra de Sydney et ses voiles de béton."><strong>1973 :</strong> Inauguration de l'<strong>Opéra de Sydney</strong>, un exemple spectaculaire de l'utilisation de coques en béton pour créer des formes complexes. <button type="button" class="image-trigger" aria-label="Voir l'image"><i class="fas fa-camera"></i></button></li>
                             </ul>
                              <div class="did-you-know">
                                 <p><strong>Le saviez-vous ?</strong> Le Corbusier, avec sa "Cité Radieuse" à Marseille (1952), a été un pionnier de l'architecture moderne en utilisant le béton brut de décoffrage comme un élément esthétique.</p>
@@ -653,16 +707,16 @@
                 <div class="timeline-item" style="animation-delay: 1s;">
                     <div class="timeline-icon"><i class="fas fa-robot"></i></div>
                     <div class="timeline-content">
-                        <div class="timeline-header">
+                        <button type="button" class="timeline-header">
                             <h2>L'Ère Numérique : BIM et Construction Durable</h2>
                             <i class="fas fa-chevron-down timeline-arrow"></i>
-                        </div>
+                        </button>
                         <div class="timeline-body">
                             <p>Le BTP entre dans une nouvelle ère, axée sur la technologie, la collaboration et la responsabilité environnementale.</p>
                             <ul class="sub-events">
                                 <li><strong>Années 1980 :</strong> Démocratisation de la <strong>Conception Assistée par Ordinateur (CAO)</strong>, qui remplace progressivement la planche à dessin.</li>
-                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Maquette+BIM" data-description="Exemple de maquette numérique BIM."><strong>Années 2000 :</strong> Essor du <strong>BIM (Building Information Modeling)</strong>, permettant de créer une maquette numérique 3D intelligente et collaborative pour tout le cycle de vie d'un ouvrage. <i class="fas fa-camera image-trigger"></i></li>
-                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Drone+de+chantier" data-description="Un drone inspectant un chantier de construction."><strong>Années 2010 :</strong> Intégration des drones pour la topographie, l'inspection de chantier et le suivi de l'avancement. <i class="fas fa-camera image-trigger"></i></li>
+                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Maquette+BIM" data-description="Exemple de maquette numérique BIM."><strong>Années 2000 :</strong> Essor du <strong>BIM (Building Information Modeling)</strong>, permettant de créer une maquette numérique 3D intelligente et collaborative pour tout le cycle de vie d'un ouvrage. <button type="button" class="image-trigger" aria-label="Voir l'image"><i class="fas fa-camera"></i></button></li>
+                                <li data-image="https://placehold.co/800x600/1e293b/f8fafc?text=Drone+de+chantier" data-description="Un drone inspectant un chantier de construction."><strong>Années 2010 :</strong> Intégration des drones pour la topographie, l'inspection de chantier et le suivi de l'avancement. <button type="button" class="image-trigger" aria-label="Voir l'image"><i class="fas fa-camera"></i></button></li>
                                 <li><strong>2017 :</strong> Construction du premier pont piétonnier imprimé en 3D en béton aux Pays-Bas.</li>
                                 <li><strong>Aujourd'hui :</strong> Focus sur la <strong>construction durable</strong> (matériaux biosourcés, recyclage), l'impression 3D de structures, et l'émergence de la robotique sur les chantiers.</li>
                             </ul>
@@ -696,13 +750,33 @@
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            let mapInitialized = false;
+            // --- THEME TOGGLER ---
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const docBody = document.body;
+
+            // Apply saved theme on page load
+            if (localStorage.getItem('theme') === 'light') {
+                docBody.classList.add('light-mode');
+            }
+
+            themeToggleBtn.addEventListener('click', () => {
+                docBody.classList.toggle('light-mode');
+                // Save theme preference to localStorage
+                if (docBody.classList.contains('light-mode')) {
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    localStorage.removeItem('theme');
+                }
+            });
+
+            // --- HEADER SCROLL EFFECT ---
             const header = document.getElementById('header');
             window.addEventListener('scroll', () => {
                 header.classList.toggle('scrolled', window.scrollY > 50);
             }, { passive: true });
 
-            const timelineHeaders = document.querySelectorAll('.timeline-header');
+            // --- TIMELINE ACCORDION ---
+            const timelineHeaders = document.querySelectorAll('button.timeline-header');
             timelineHeaders.forEach(header => {
                 header.addEventListener('click', function() {
                     this.classList.toggle('active');
@@ -719,7 +793,7 @@
                 });
             });
 
-            // Filter functionality
+            // --- TIMELINE FILTER ---
             const filterInput = document.getElementById('timeline-filter');
             const timelineItems = document.querySelectorAll('.timeline-item');
             filterInput.addEventListener('input', (e) => {
@@ -734,13 +808,13 @@
                 });
             });
 
-            // Image Modal functionality
+            // --- IMAGE MODAL ---
             const modal = document.getElementById('image-modal');
             const modalImg = document.getElementById('modal-image-content');
             const modalCaption = document.getElementById('modal-caption');
             const closeBtn = document.getElementById('image-modal-close');
 
-            document.querySelectorAll('.image-trigger').forEach(trigger => {
+            document.querySelectorAll('button.image-trigger').forEach(trigger => {
                 trigger.addEventListener('click', (e) => {
                     e.stopPropagation(); // Prevent accordion from closing
                     const parentLi = e.target.closest('li');
@@ -762,7 +836,7 @@
                 }
             });
             
-            // Interactive Map Initialization
+            // --- INTERACTIVE MAP ---
             const mapElement = document.getElementById('interactive-map');
             if (mapElement && !mapElement._leaflet_id) { // Check if map is not already initialized
                 const map = L.map('interactive-map').setView([20, 0], 2);
@@ -834,7 +908,7 @@
                 const createCustomIcon = (iconClass) => {
                     return L.divIcon({
                         html: `<i class="fas ${iconClass} map-marker-icon"></i>`,
-                        className: 'map-marker-container', // a class to style the container if needed
+                        className: 'map-marker-container',
                         iconSize: [30, 30],
                         iconAnchor: [15, 30],
                         popupAnchor: [0, -30]
