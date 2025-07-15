@@ -287,16 +287,49 @@
             border: 1px solid var(--glass-border);
             text-decoration: none;
             color: inherit;
-            transition: var(--transition);
+            transition: var(--transition-slow);
             display: flex;
             flex-direction: column;
             gap: var(--spacing-sm);
+            position: relative; /* Added for badge positioning */
         }
         .news-banner-item:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-md);
-            border-color: var(--primary);
+            transform: translateY(-8px) scale(1.02); /* Enhanced hover effect */
+            box-shadow: var(--shadow-lg); /* Enhanced shadow */
+            border-color: var(--primary-light); /* Lighter border on hover */
         }
+
+        /* --- NOUVEAU --- Badge for new items */
+        .new-badge {
+            position: absolute;
+            top: -12px;
+            right: -12px;
+            background: linear-gradient(45deg, var(--accent), var(--accent-dark));
+            color: white;
+            padding: 0.3rem 0.7rem;
+            border-radius: var(--radius-full);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+            animation: pulse-glow 2.5s infinite ease-in-out;
+            z-index: 1;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 6px 25px rgba(245, 158, 11, 0.6);
+            }
+        }
+        /* --- FIN NOUVEAU --- */
+
         .news-banner-item-icon {
             font-size: 1.75rem;
             color: var(--primary);
@@ -451,9 +484,9 @@
                         <h4>Tests</h4>
                     </a>
                      <a href="challenges.html" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('challenges.html')">
-                        <div class="mobile-nav-item-icon"><i class="fas fa-trophy"></i></div>
-                        <h4>Challenges</h4>
-                    </a>
+                         <div class="mobile-nav-item-icon"><i class="fas fa-trophy"></i></div>
+                         <h4>Challenges</h4>
+                     </a>
                     <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('emploi.html')">
                         <div class="mobile-nav-item-icon"><i class="fas fa-briefcase"></i></div>
                         <h4>Nos offres d'emploi</h4>
@@ -494,6 +527,7 @@
             </div>
             <div class="news-banner-grid">
                 <a href="#" onclick="event.preventDefault(); navigateTo('testperso.html')" class="news-banner-item">
+                    <span class="new-badge">Nouveau</span>
                     <div class="news-banner-item-icon"><i class="fas fa-user-check"></i></div>
                     <div class="news-banner-item-content">
                         <h5>Test Comportemental</h5>
@@ -501,6 +535,7 @@
                     </div>
                 </a>
                 <a href="#" onclick="event.preventDefault(); navigateTo('prixtce.html')" class="news-banner-item">
+                    <span class="new-badge">Nouveau</span>
                     <div class="news-banner-item-icon"><i class="fas fa-calculator"></i></div>
                     <div class="news-banner-item-content">
                         <h5>Challenge Étude de Prix TCE</h5>
@@ -508,6 +543,7 @@
                     </div>
                 </a>
                 <a href="#" onclick="event.preventDefault(); navigateTo('histoire.html')" class="news-banner-item">
+                    <span class="new-badge">Nouveau</span>
                     <div class="news-banner-item-icon"><i class="fas fa-landmark"></i></div>
                     <div class="news-banner-item-content">
                         <h5>Constructions Marquantes</h5>
@@ -574,18 +610,18 @@
             <!-- News Column -->
             <div class="feed-column" id="news-feed-container">
                 <div class="feed-header">
-                       <div class="feed-header-title">
-                        <i class="fas fa-newspaper" style="color: var(--secondary);"></i>
-                        <h2>Actualités BTP</h2>
-                    </div>
-                       <div class="feed-header-actions">
-                        <button class="feed-action-btn" onclick="enableNotifications('news')" title="Activer les notifications pour les actualités">
-                            <i class="fas fa-bell"></i>
-                        </button>
-                        <button class="feed-action-btn" onclick="populateNews(true)" title="Rafraîchir les actualités">
-                            <i class="fas fa-sync-alt"></i>
-                        </button>
-                    </div>
+                     <div class="feed-header-title">
+                         <i class="fas fa-newspaper" style="color: var(--secondary);"></i>
+                         <h2>Actualités BTP</h2>
+                     </div>
+                     <div class="feed-header-actions">
+                         <button class="feed-action-btn" onclick="enableNotifications('news')" title="Activer les notifications pour les actualités">
+                             <i class="fas fa-bell"></i>
+                         </button>
+                         <button class="feed-action-btn" onclick="populateNews(true)" title="Rafraîchir les actualités">
+                             <i class="fas fa-sync-alt"></i>
+                         </button>
+                     </div>
                 </div>
                 <div class="feed-list" id="news-feed">
                     <div class="placeholder">
