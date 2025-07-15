@@ -4,7 +4,7 @@
     "title": "Accueil - LTD Simulator",
     "description": "Maîtrisez les métiers du BTP. Formez-vous aux métiers d'avenir du BTP avec nos simulateurs professionnels, actualités et appels d'offres.",
     "link": "index.html",
-    "keywords": "accueil principal btp simulateur appels d'offre actualités"
+    "keywords": "accueil principal btp simulateur appels d'offre actualités recherche formation carrière thème notifications"
   },
   {
     "type": "page",
@@ -39,7 +39,7 @@
     "title": "Histoire du BTP",
     "description": "Découvrez les grandes étapes et innovations du secteur.",
     "link": "histoire.html",
-    "keywords": "histoire btp étapes innovations explorer"
+    "keywords": "histoire btp étapes innovations explorer constructions marquantes édifices"
   },
   {
     "type": "tenders",
@@ -56,6 +56,27 @@
     "keywords": "construction piscine centre aquatique la rochelle"
   },
   {
+    "type": "tenders",
+    "title": "Aménagement de la ZAC du Parc des Calanques",
+    "description": "Lieu : Marseille (13) | Clôture le : 05/08/2025",
+    "link": "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638165",
+    "keywords": "aménagement zac parc calanques marseille"
+  },
+  {
+    "type": "tenders",
+    "title": "Marché de maîtrise d'oeuvre pour la restructuration d'un EHPAD",
+    "description": "Lieu : Belfort (90) | Clôture le : 02/09/2025",
+    "link": "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638053",
+    "keywords": "maîtrise d'oeuvre restructuration ehpad belfort"
+  },
+  {
+    "type": "tenders",
+    "title": "Travaux d'entretien des voiries communales",
+    "description": "Lieu : Strasbourg (67) | Clôture le : 12/08/2025",
+    "link": "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2637992",
+    "keywords": "entretien voiries communales strasbourg"
+  },
+  {
     "type": "news",
     "title": "L'intelligence artificielle va-t-elle transformer le BTP ?",
     "description": "Source : Batiactu | Publié le : 15/07/2025",
@@ -68,6 +89,27 @@
     "description": "Source : Le Moniteur | Publié le : 14/07/2025",
     "link": "https://www.lemoniteur.fr/article/btp-la-decarbonation-est-en-marche-mais-le-chemin-est-encore-long.2317628",
     "keywords": "décarbonation btp le moniteur"
+  },
+  {
+    "type": "news",
+    "title": "Comment le réemploi des matériaux s'organise dans le BTP",
+    "description": "Source : Batiweb | Publié le : 11/07/2025",
+    "link": "https://www.batiweb.com/actualites/developpement-durable/comment-le-reemploi-des-materiaux-sorganise-dans-le-btp-20240711",
+    "keywords": "réemploi matériaux batiweb développement durable"
+  },
+  {
+    "type": "news",
+    "title": "Lafarge et Bouygues Construction s'allient pour un béton bas carbone",
+    "description": "Source : Batiactu | Publié le : 09/07/2025",
+    "link": "https://www.batiactu.com/edito/lafarge-et-bouygues-construction-s-allient-pour-un-beton-bas-carbone-69815.php",
+    "keywords": "lafarge bouygues construction béton bas carbone batiactu"
+  },
+  {
+    "type": "news",
+    "title": "JO 2024 : le BTP a relevé le défi des délais",
+    "description": "Source : Le Moniteur | Publié le : 05/07/2025",
+    "link": "https://www.lemoniteur.fr/article/jo-2024-le-btp-a-releve-le-defi-des-delais.2316401",
+    "keywords": "jo 2024 jeux olympiques délais le moniteur"
   },
   {
     "type": "simulator",
@@ -102,7 +144,7 @@
     "title": "Test Comportemental",
     "description": "Évaluez vos soft skills et votre manière de réagir en situation professionnelle.",
     "link": "testperso.html",
-    "keywords": "test comportemental soft skills personnalité"
+    "keywords": "test comportemental soft skills personnalité nouveau"
   },
   {
     "type": "challenge",
@@ -130,7 +172,7 @@
     "title": "Challenge Étude de Prix TCE",
     "description": "Réalisez le chiffrage complet tous corps d'état et rédigez le mémoire technique.",
     "link": "prixtce.html",
-    "keywords": "challenge étude de prix tce chiffrage expert"
+    "keywords": "challenge étude de prix tce chiffrage expert nouveau mémoire technique"
   },
   {
     "type": "history",
