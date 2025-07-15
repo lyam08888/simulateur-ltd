@@ -926,22 +926,22 @@
 
         // --- DYNAMIC CONTENT SCRIPT ---
 
-        // Mock data simulating a fetch from an API or RSS feed.
+        // Mock data with specific-looking links
         const allTenders = [
-            { title: "Construction d'un nouveau groupe scolaire à Lyon", location: "Lyon (69)", date: "2025-08-15", link: "https://www.marches-publics.gouv.fr/" },
-            { title: "Rénovation de la façade d'un bâtiment Haussmannien", location: "Paris (75)", date: "2025-08-12", link: "https://www.marches-publics.gouv.fr/" },
-            { title: "Marché de travaux pour la voirie et réseaux divers (VRD)", location: "Marseille (13)", date: "2025-08-10", link: "https://www.marches-publics.gouv.fr/" },
-            { title: "Travaux d'étanchéité pour la piscine municipale", location: "Bordeaux (33)", date: "2025-08-05", link: "https://www.marches-publics.gouv.fr/" },
-            { title: "Installation de 500 bornes de recharge électrique", location: "France Entière", date: "2025-09-01", link: "https://www.marches-publics.gouv.fr/" },
-            { title: "Création d'un parc éolien en mer", location: "Saint-Nazaire (44)", date: "2025-09-20", link: "https://www.marches-publics.gouv.fr/" }
+            { title: "Construction d'un nouveau groupe scolaire à Lyon", location: "Lyon (69)", date: "2025-08-15", link: "https://www.marches-publics.gouv.fr/appels-offres/details/987654" },
+            { title: "Rénovation de la façade d'un bâtiment Haussmannien", location: "Paris (75)", date: "2025-08-12", link: "https://www.marches-publics.gouv.fr/appels-offres/details/987655" },
+            { title: "Marché de travaux pour la voirie et réseaux divers (VRD)", location: "Marseille (13)", date: "2025-08-10", link: "https://www.marches-publics.gouv.fr/appels-offres/details/987656" },
+            { title: "Travaux d'étanchéité pour la piscine municipale", location: "Bordeaux (33)", date: "2025-08-05", link: "https://www.marches-publics.gouv.fr/appels-offres/details/987657" },
+            { title: "Installation de 500 bornes de recharge électrique", location: "France Entière", date: "2025-09-01", link: "https://www.marches-publics.gouv.fr/appels-offres/details/987658" },
+            { title: "Création d'un parc éolien en mer", location: "Saint-Nazaire (44)", date: "2025-09-20", link: "https://www.marches-publics.gouv.fr/appels-offres/details/987659" }
         ];
 
         const allNews = [
-            { title: "Le RE2020 : un an après, quel bilan pour la construction neuve ?", source: "Le Moniteur", date: "2025-07-14", link: "https://www.lemoniteur.fr/" },
-            { title: "Pénurie de matériaux : le secteur du BTP s'adapte", source: "Batiweb", date: "2025-07-13", link: "https://www.batiweb.com/" },
-            { title: "Innovation : l'impression 3D béton arrive sur les chantiers français", source: "Batipole", date: "2025-07-12", link: "https://www.batipole.com/" },
-            { title: "Sécurité : de nouvelles réglementations pour le travail en hauteur", source: "Preventica", date: "2025-07-11", link: "https://www.preventica.com/" },
-            { title: "Le BIM devient incontournable pour les grands projets", source: "Batiactu", date: "2025-07-10", link: "https://www.batiactu.com/" }
+            { title: "Le RE2020 : un an après, quel bilan pour la construction neuve ?", source: "Le Moniteur", date: "2025-07-14", link: "https://www.lemoniteur.fr/article/re2020-bilan-construction-neuve.54321" },
+            { title: "Pénurie de matériaux : le secteur du BTP s'adapte", source: "Batiweb", date: "2025-07-13", link: "https://www.batiweb.com/actualites/penurie-materiaux-btp-adaptation-98765" },
+            { title: "Innovation : l'impression 3D béton arrive sur les chantiers français", source: "Batipole", date: "2025-07-12", link: "https://www.batipole.com/dossier/impression-3d-beton-chantiers.11223" },
+            { title: "Sécurité : de nouvelles réglementations pour le travail en hauteur", source: "Preventica", date: "2025-07-11", link: "https://www.preventica.com/actualite/reglementation-travail-hauteur.45678" },
+            { title: "Le BIM devient incontournable pour les grands projets", source: "Batiactu", date: "2025-07-10", link: "https://www.batiactu.com/edito/bim-incontournable-grands-projets-btp-12345.php" }
         ];
         
         // Function to shuffle array and get a subset
