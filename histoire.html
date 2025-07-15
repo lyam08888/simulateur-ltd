@@ -263,12 +263,6 @@
         .spotlight-card h2 { font-size: 1.5rem; color: var(--primary-light); margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem; }
         .spotlight-card p { color: var(--text-secondary); flex-grow: 1; }
         .spotlight-card .highlight { color: var(--accent); font-weight: 600; }
-
-        /* Video Section */
-        .video-section { margin: 4rem 0; text-align: center; }
-        .video-section h2 { font-size: 2rem; margin-bottom: 2rem; }
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
         
         /* Timeline Styles */
         .timeline-section { margin: 4rem 0; }
@@ -298,6 +292,14 @@
         .did-you-know p { margin: 0; font-size: 0.9rem; font-style: italic; color: var(--text-secondary); }
         .did-you-know strong { color: var(--primary-light); }
         .timeline-date { display: inline-block; margin: 1rem 2rem 2rem; font-size: 0.8rem; font-weight: 600; color: var(--accent); background-color: rgba(245, 158, 11, 0.1); padding: 0.25rem 0.75rem; border-radius: var(--radius-full); }
+        .filter-container { max-width: 1000px; margin: 0 auto 2rem; position: relative; }
+        .filter-input {
+            width: 100%; padding: 1rem 1.5rem; padding-left: 3.5rem;
+            background-color: var(--surface); border: 1px solid var(--glass-border);
+            border-radius: var(--radius-full); color: var(--text-primary); font-size: 1rem;
+        }
+        .filter-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+        .filter-icon { position: absolute; left: 1.5rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
         
         .image-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
         .image-modal.show { opacity: 1; visibility: visible; }
@@ -401,18 +403,22 @@
                     Le <span class="highlight">Béton Armé</span>, breveté par des pionniers comme François Hennebique à la fin du XIXe siècle, a combiné la résistance à la compression du béton et la résistance à la traction de l'acier. Cette innovation a permis de créer des structures plus audacieuses, plus hautes et plus durables, et reste la pierre angulaire de la construction moderne.
                 </p>
             </div>
-        </section>
-
-        <section class="timeline-section">
-            <div class="timeline-container">
-                <!-- Timeline items remain the same -->
+             <div class="spotlight-card">
+                <h2><i class="fas fa-chess-rook"></i> Maître Fortificateur</h2>
+                <p>
+                   <span class="highlight">Vauban (1633-1707)</span>, ingénieur et maréchal de France sous Louis XIV, a révolutionné l'art de la fortification. Ses citadelles en étoile, comme à Neuf-Brisach, sont des chefs-d'œuvre de géométrie et de stratégie défensive.
+                </p>
             </div>
         </section>
 
-        <section class="video-section animate-in" style="animation-delay: 1.2s;">
-            <h2>Plongée dans le Moyen Âge : La Construction des Châteaux Forts</h2>
-            <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/gq-4L22Xw2M" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <div class="filter-container animate-in">
+            <i class="fas fa-search filter-icon"></i>
+            <input type="text" id="timeline-filter" class="filter-input" placeholder="Filtrer la frise par mot-clé (ex: béton, pont, romain)...">
+        </div>
+
+        <section class="timeline-section">
+            <div class="timeline-container" id="timeline-container">
+                <!-- Timeline items will be populated by JS -->
             </div>
         </section>
 
@@ -484,18 +490,101 @@
                  });
             }
 
-            // --- TIMELINE ACCORDION ---
-            document.querySelectorAll('button.timeline-header').forEach(header => {
-                header.addEventListener('click', function() {
-                    this.classList.toggle('active');
-                    const body = this.nextElementSibling;
-                    if (body.style.maxHeight) {
-                        body.style.maxHeight = null;
-                    } else {
-                        body.style.maxHeight = body.scrollHeight + "px";
-                    }
+            // --- TIMELINE DATA & POPULATION ---
+            const timelineContainer = document.getElementById('timeline-container');
+            const timelineData = [
+                {
+                    title: "L'Antiquité : Les Bâtisseurs d'Empires", icon: "fa-landmark", date: "~3000 av. J.-C. - 476 ap. J.-C.",
+                    description: "Les civilisations égyptienne, grecque et romaine posent les fondations de l'ingénierie civile, avec des outils et des concepts qui perdureront des millénaires.",
+                    subEvents: [
+                        { text: "<strong>~2650 av. J.-C. :</strong> La <strong>pyramide de Djoser</strong>, première construction monumentale en pierre de taille, conçue par l'architecte Imhotep.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Pyramide+de+Djoser", imageDesc: "La pyramide à degrés de Djoser à Saqqarah." },
+                        { text: "<strong>~447 av. J.-C. :</strong> Construction du <strong>Parthénon</strong> à Athènes, apogée de l'architecture grecque et de ses ordres (dorique, ionique, corinthien).", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Parthénon", imageDesc: "Le Parthénon sur l'Acropole d'Athènes." },
+                        { text: "<strong>~312 av. J.-C. :</strong> Début de la construction de la <strong>Voie Appienne</strong> et des premiers aqueducs romains, marquant le début des grands travaux publics.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Aqueduc+Romain", imageDesc: "Le Pont du Gard, un aqueduc romain impressionnant." },
+                        { text: "<strong>Ier siècle av. J.-C. :</strong> Vitruve écrit <strong>\"De architectura\"</strong>, le plus ancien traité d'architecture qui nous soit parvenu, définissant les principes de solidité, d'utilité et de beauté." },
+                        { text: "<strong>~80 ap. J.-C. :</strong> Inauguration du <strong>Colisée</strong> de Rome, chef-d'œuvre utilisant le béton romain (opus caementicium) et les systèmes d'arcs et de voûtes.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Colisée", imageDesc: "Le Colisée de Rome, un amphithéâtre monumental." }
+                    ],
+                    didYouKnow: "Le béton romain était si durable qu'il pouvait prendre sous l'eau, une propriété que le béton moderne n'a retrouvée que bien plus tard."
+                },
+                {
+                    title: "Le Moyen Âge : L'Ère des Cathédrales", icon: "fa-chess-rook", date: "V<sup>e</sup> - XV<sup>e</sup> siècle",
+                    description: "L'art gothique révolutionne la construction, permettant d'ériger des édifices plus hauts et lumineux, grâce à des innovations structurelles majeures.",
+                    subEvents: [
+                        { text: "<strong>~1140 :</strong> La basilique de Saint-Denis est considérée comme le premier édifice gothique, introduisant la <strong>croisée d'ogives</strong> et les vitraux.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Basilique+St-Denis", imageDesc: "Le chœur de la basilique Saint-Denis, berceau de l'art gothique." },
+                        { text: "<strong>~1163 :</strong> Début de la construction de <strong>Notre-Dame de Paris</strong>, qui popularise l'usage des arcs-boutants pour soutenir les hautes nefs.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Notre-Dame", imageDesc: "Les arcs-boutants de Notre-Dame de Paris." },
+                        { text: "<strong>XIIe siècle :</strong> Développement des <strong>corporations de métiers</strong> (compagnonnage) qui organisent et transmettent le savoir-faire des maçons, charpentiers et tailleurs de pierre." },
+                        { text: "<strong>1436 :</strong> Filippo Brunelleschi achève le <strong>dôme de la cathédrale de Florence</strong>, une prouesse technique marquant la transition vers la Renaissance.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Dôme+de+Florence", imageDesc: "Le dôme de Brunelleschi à Florence." }
+                    ],
+                    didYouKnow: "Les bâtisseurs de cathédrales utilisaient des engins de levage en bois, comme la \"cage à écureuil\", actionnés par la force humaine pour monter les pierres à des hauteurs vertigineuses."
+                },
+                {
+                    title: "La Révolution Industrielle : L'Acier et la Vapeur", icon: "fa-industry", date: "XVIII<sup>e</sup> - XIX<sup>e</sup> siècle",
+                    description: "L'acier, le verre et la machine à vapeur bouleversent les méthodes de construction, permettant des projets d'une échelle et d'une rapidité inédites.",
+                    subEvents: [
+                        { text: "<strong>1779 :</strong> Construction de l'<strong>Iron Bridge</strong> en Angleterre, premier grand pont entièrement en fonte, ouvrant la voie aux structures métalliques.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Iron+Bridge", imageDesc: "Le pont de Coalbrookdale, ou Iron Bridge." },
+                        { text: "<strong>1824 :</strong> Joseph Aspdin brevette le <strong>ciment Portland</strong>, un liant hydraulique fiable et résistant qui deviendra la base du béton moderne." },
+                        { text: "<strong>1851 :</strong> Le <strong>Crystal Palace</strong> de Londres, une immense structure de verre et de fer, est construit en seulement 9 mois grâce à la préfabrication.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Crystal+Palace", imageDesc: "Le Crystal Palace lors de l'Exposition Universelle de 1851." },
+                        { text: "<strong>1853 :</strong> Elisha Otis invente l'<strong>ascenseur de sécurité</strong>, rendant possible la construction de bâtiments de grande hauteur." },
+                        { text: "<strong>1889 :</strong> Inauguration de la <strong>Tour Eiffel</strong> pour l'Exposition Universelle, démontrant le potentiel esthétique et structurel du fer puddlé.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Tour+Eiffel", imageDesc: "La Tour Eiffel en construction." }
+                    ],
+                    didYouKnow: "La Tour Eiffel a été construite en 2 ans, 2 mois et 5 jours, un record pour l'époque, grâce à des techniques de préfabrication et d'assemblage innovantes."
+                },
+                {
+                    title: "L'Époque Moderne : Béton Armé et Gratte-ciel", icon: "fa-city", date: "XX<sup>e</sup> siècle",
+                    description: "Le béton armé et les structures en acier permettent de repousser les limites de la hauteur et de la forme, redéfinissant le paysage urbain.",
+                    subEvents: [
+                        { text: "<strong>1892 :</strong> François Hennebique dépose un brevet pour un système complet de construction en <strong>béton armé</strong>, qu'il diffuse dans toute l'Europe." },
+                        { text: "<strong>1928 :</strong> Eugène Freyssinet invente le <strong>béton précontraint</strong>, une avancée majeure permettant des portées plus longues et des structures plus fines." },
+                        { text: "<strong>1931 :</strong> Achèvement de l'<strong>Empire State Building</strong> à New York, qui restera le plus haut du monde pendant 40 ans grâce à son ossature en acier.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Empire+State", imageDesc: "L'Empire State Building, icône de New York." },
+                        { text: "<strong>Années 1950 :</strong> La reconstruction d'après-guerre entraîne la standardisation et la <strong>préfabrication</strong> à grande échelle, notamment avec les grands ensembles." },
+                        { text: "<strong>1973 :</strong> Inauguration de l'<strong>Opéra de Sydney</strong>, un exemple spectaculaire de l'utilisation de coques en béton pour créer des formes complexes.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Opéra+de+Sydney", imageDesc: "L'Opéra de Sydney et ses voiles de béton." }
+                    ],
+                    didYouKnow: "Le Corbusier, avec sa \"Cité Radieuse\" à Marseille (1952), a été un pionnier de l'architecture moderne en utilisant le béton brut de décoffrage comme un élément esthétique."
+                },
+                {
+                    title: "L'Ère Numérique : BIM et Construction Durable", icon: "fa-robot", date: "XXI<sup>e</sup> siècle",
+                    description: "Le BTP entre dans une nouvelle ère, axée sur la technologie, la collaboration et la responsabilité environnementale.",
+                    subEvents: [
+                        { text: "<strong>Années 1980 :</strong> Démocratisation de la <strong>Conception Assistée par Ordinateur (CAO)</strong>, qui remplace progressivement la planche à dessin." },
+                        { text: "<strong>Années 2000 :</strong> Essor du <strong>BIM (Building Information Modeling)</strong>, permettant de créer une maquette numérique 3D intelligente et collaborative pour tout le cycle de vie d'un ouvrage.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Maquette+BIM", imageDesc: "Exemple de maquette numérique BIM." },
+                        { text: "<strong>Années 2010 :</strong> Intégration des drones pour la topographie, l'inspection de chantier et le suivi de l'avancement.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Drone+de+chantier", imageDesc: "Un drone inspectant un chantier de construction." },
+                        { text: "<strong>2017 :</strong> Construction du premier pont piétonnier imprimé en 3D en béton aux Pays-Bas." },
+                        { text: "<strong>Aujourd'hui :</strong> Focus sur la <strong>construction durable</strong> (matériaux biosourcés, recyclage), l'impression 3D de structures, et l'émergence de la robotique sur les chantiers." }
+                    ],
+                    didYouKnow: "Le BIM peut réduire les erreurs et les coûts de construction jusqu'à 20% en détectant les conflits (clash detection) avant même le début des travaux."
+                }
+            ];
+
+            if(timelineContainer) {
+                timelineData.forEach((itemData, index) => {
+                    const timelineItem = document.createElement('div');
+                    timelineItem.className = 'timeline-item animate-in';
+                    timelineItem.style.animationDelay = `${0.2 * (index + 1)}s`;
+
+                    let subEventsHtml = '';
+                    itemData.subEvents.forEach(event => {
+                        subEventsHtml += `<li ${event.image ? `data-image="${event.image}" data-description="${event.imageDesc}"` : ''}>${event.text} ${event.image ? '<button type="button" class="image-trigger" aria-label="Voir l\'image"><i class="fas fa-camera"></i></button>' : ''}</li>`;
+                    });
+
+                    timelineItem.innerHTML = `
+                        <div class="timeline-icon"><i class="fas ${itemData.icon}"></i></div>
+                        <div class="timeline-content">
+                            <button type="button" class="timeline-header">
+                                <h2>${itemData.title}</h2>
+                                <i class="fas fa-chevron-down timeline-arrow"></i>
+                            </button>
+                            <div class="timeline-body">
+                                <p>${itemData.description}</p>
+                                <ul class="sub-events">${subEventsHtml}</ul>
+                                <div class="did-you-know">
+                                    <p><strong>Le saviez-vous ?</strong> ${itemData.didYouKnow}</p>
+                                </div>
+                                <span class="timeline-date">${itemData.date}</span>
+                            </div>
+                        </div>
+                    `;
+                    timelineContainer.appendChild(timelineItem);
                 });
-            });
+            }
 
             // --- IMAGE MODAL ---
             const modal = document.getElementById('image-modal');
@@ -536,58 +625,20 @@
                 ).addTo(map);
 
                 const constructionsData = [
-                    // Africa
                     { name: 'Grande Pyramide de Gizeh', date: '~2560 av. J.-C.', description: 'Chef-d\'œuvre de logistique et de précision.', coords: [29.9792, 31.1342], icon: 'fa-landmark' },
-                    { name: 'Grand Zimbabwe', date: 'XIe-XVe siècle', description: 'Impressionnante cité médiévale en pierre, capitale d\'un grand empire.', coords: [-20.2686, 30.9303], icon: 'fa-fort-awesome' },
-                    { name: 'Mosquée de Djenné', date: '1907 (reconstruction)', description: 'Le plus grand édifice en terre crue au monde.', coords: [13.9052, -4.5555], icon: 'fa-mosque' },
-                    { name: 'Églises de Lalibela', date: 'XIIe-XIIIe siècle', description: 'Ensemble d\'églises monolithiques taillées dans la roche.', coords: [12.0319, 39.0425], icon: 'fa-church' },
-
-                    // Asia
                     { name: 'Grande Muraille de Chine', date: 'VIIe s. av. J.-C. - XVIIe s.', description: 'La plus longue structure humaine jamais construite.', coords: [40.4319, 116.5704], icon: 'fa-dragon' },
+                    { name: 'Colisée', date: '80 ap. J.-C.', description: 'Le plus grand amphithéâtre jamais construit dans l\'Empire romain.', coords: [41.8902, 12.4922], icon: 'fa-landmark' },
+                    { name: 'Tour Eiffel', date: '1889', description: 'Symbole de la Révolution Industrielle et du potentiel du fer.', coords: [48.8584, 2.2945], icon: 'fa-broadcast-tower' },
+                    { name: 'Viaduc de Millau', date: '2004', description: 'Le plus haut pont à haubans du monde.', coords: [44.0775, 3.0236], icon: 'fa-road-bridge' },
+                    { name: 'Burj Khalifa', date: '2010', description: 'Actuellement la plus haute structure humaine.', coords: [25.1972, 55.2744], icon: 'fa-building' },
+                    { name: 'Machu Picchu', date: '~1450', description: 'Citadelle inca célèbre pour son ingénierie parasismique.', coords: [-13.1631, -72.5450], icon: 'fa-mountain-city' },
                     { name: 'Pétra', date: '~300 av. J.-C.', description: 'Cité antique nabatéenne célèbre pour ses monuments taillés dans la roche.', coords: [30.3285, 35.4444], icon: 'fa-archway' },
                     { name: 'Angkor Vat', date: 'XIIe siècle', description: 'Le plus grand monument religieux du monde, chef-d\'œuvre de l\'architecture khmère.', coords: [13.4125, 103.8667], icon: 'fa-gopuram' },
                     { name: 'Taj Mahal', date: '1653', description: 'Mausolée de marbre blanc, joyau de l\'architecture moghole.', coords: [27.1751, 78.0421], icon: 'fa-place-of-worship' },
-                    { name: 'Cité Interdite', date: '1420', description: 'Palais impérial au cœur de Pékin, centre du pouvoir chinois pendant 500 ans.', coords: [39.9163, 116.3972], icon: 'fa-torii-gate' },
-                    { name: 'Château de Himeji', date: '1346', description: 'Le plus célèbre et le mieux préservé des châteaux japonais.', coords: [34.8394, 134.6939], icon: 'fa-chess-rook' },
-                    { name: 'Tours Petronas', date: '1998', description: 'Tours jumelles qui furent les plus hautes du monde jusqu\'en 2004.', coords: [3.1578, 101.7119], icon: 'fa-building' },
-                    { name: 'Burj Khalifa', date: '2010', description: 'Actuellement la plus haute structure humaine.', coords: [25.1972, 55.2744], icon: 'fa-building' },
-                    { name: 'Borobudur', date: 'IXe siècle', description: 'Le plus grand temple bouddhiste au monde, en Indonésie.', coords: [-7.6079, 110.2038], icon: 'fa-buddha' },
-                    { name: 'Barrage des Trois-Gorges', date: '2012', description: 'Le plus grand barrage hydroélectrique au monde en termes de capacité installée.', coords: [30.8231, 111.0036], icon: 'fa-water' },
-
-                    // Europe
                     { name: 'Stonehenge', date: '~3000-2000 av. J.-C.', description: 'Monument préhistorique composé de mégalithes disposés en cercles.', coords: [51.1789, -1.8262], icon: 'fa-circle-notch' },
-                    { name: 'Colisée', date: '80 ap. J.-C.', description: 'Le plus grand amphithéâtre jamais construit dans l\'Empire romain.', coords: [41.8902, 12.4922], icon: 'fa-landmark' },
                     { name: 'Sainte-Sophie', date: '537 ap. J.-C.', description: 'Sa coupole massive a repoussé les limites de l\'architecture byzantine.', coords: [41.0086, 28.9800], icon: 'fa-place-of-worship' },
                     { name: 'Mont Saint-Michel', date: 'VIIIe siècle - XVIe siècle', description: 'Abbaye médiévale fortifiée construite sur un îlot rocheux.', coords: [48.6360, -1.5115], icon: 'fa-church' },
-                    { name: 'Tour de Pise', date: '1372', description: 'Célèbre pour son inclinaison inattendue, un défi d\'ingénierie.', coords: [43.7230, 10.3966], icon: 'fa-monument' },
-                    { name: 'Château de Versailles', date: '1682', description: 'Symbole de la monarchie absolue française et chef-d\'œuvre de l\'art classique.', coords: [48.8049, 2.1204], icon: 'fa-fort-awesome' },
-                    { name: 'Tour Eiffel', date: '1889', description: 'Symbole de la Révolution Industrielle et du potentiel du fer.', coords: [48.8584, 2.2945], icon: 'fa-broadcast-tower' },
-                    { name: 'Viaduc de Millau', date: '2004', description: 'Le plus haut pont à haubans du monde.', coords: [44.0775, 3.0236], icon: 'fa-road-bridge' },
-                    { name: 'Kremlin de Moscou', date: '1482-1495 (murs actuels)', description: 'Forteresse historique au cœur de Moscou, siège du pouvoir russe.', coords: [55.7514, 37.6172], icon: 'fa-fort-awesome' },
-                    { name: 'Barrière de la Tamise', date: '1982', description: 'Une des plus grandes barrières anti-inondation mobiles au monde.', coords: [51.4977, 0.0365], icon: 'fa-water' },
-                    { name: 'Pont de l\'Øresund', date: '2000', description: 'Pont-tunnel reliant le Danemark et la Suède, une merveille d\'ingénierie.', coords: [55.6091, 12.8398], icon: 'fa-bridge' },
-                    { name: 'Alhambra', date: '1358', description: 'Palais et forteresse des souverains maures à Grenade, Espagne.', coords: [37.1761, -3.5881], icon: 'fa-place-of-worship' },
-                    { name: 'Cathédrale Saint-Basile', date: '1561', description: 'Célèbre cathédrale orthodoxe sur la Place Rouge à Moscou.', coords: [55.7525, 37.6231], icon: 'fa-place-of-worship' },
-                    { name: 'Sagrada Família', date: '1882 - en cours', description: 'Basilique emblématique d\'Antoni Gaudí, toujours en construction.', coords: [41.4036, 2.1744], icon: 'fa-church' },
-                    { name: 'Tunnel sous la Manche', date: '1994', description: 'Tunnel ferroviaire sous-marin reliant la France et l\'Angleterre.', coords: [50.952, 1.469], icon: 'fa-train-tunnel' },
-
-                    // North America
-                    { name: 'Chichén Itzá', date: '~600 ap. J.-C.', description: 'Cité maya emblématique avec sa pyramide de Kukulcan.', coords: [20.6843, -88.5678], icon: 'fa-landmark' },
-                    { name: 'Statue de la Liberté', date: '1886', description: 'Don de la France aux États-Unis, avec une structure interne conçue par Gustave Eiffel.', coords: [40.6892, -74.0445], icon: 'fa-monument' },
-                    { name: 'Pont de Brooklyn', date: '1883', description: 'Premier pont suspendu à câbles d\'acier.', coords: [40.7061, -73.9969], icon: 'fa-bridge' },
-                    { name: 'Hoover Dam', date: '1936', description: 'Barrage-poids en béton sur le fleuve Colorado, une prouesse de l\'ingénierie des années 30.', coords: [36.0162, -114.7377], icon: 'fa-water' },
                     { name: 'Golden Gate Bridge', date: '1937', description: 'Célèbre pont suspendu, icône de San Francisco.', coords: [37.8199, -122.4783], icon: 'fa-bridge' },
-                    { name: 'CN Tower', date: '1976', description: 'Tour de communication et d\'observation emblématique de Toronto.', coords: [43.6426, -79.3871], icon: 'fa-broadcast-tower' },
-                    
-                    // South America
-                    { name: 'Machu Picchu', date: '~1450', description: 'Citadelle inca célèbre pour son ingénierie parasismique.', coords: [-13.1631, -72.5450], icon: 'fa-mountain-city' },
-                    { name: 'Christ Rédempteur', date: '1931', description: 'Statue Art déco dominant Rio de Janeiro, construite en béton armé.', coords: [-22.9519, -43.2105], icon: 'fa-monument' },
-                    { name: 'Canal de Panama', date: '1914', description: 'Projet titanesque reliant les océans Atlantique et Pacifique.', coords: [9.0800, -79.6800], icon: 'fa-water' },
-                    { name: 'Barrage d\'Itaipu', date: '1984', description: 'L\'une des plus grandes centrales hydroélectriques au monde.', coords: [-25.4081, -54.5882], icon: 'fa-plug-circle-bolt' },
-                    { name: 'Lignes de Nazca', date: '500 av. J.-C. - 500 ap. J.-C.', description: 'Géoglyphes géants tracés dans le désert, visibles uniquement du ciel.', coords: [-14.7392, -75.1306], icon: 'fa-feather-alt' },
-
-                    // Oceania
-                    { name: 'Moaï de l\'Île de Pâques', date: '1250-1500', description: 'Statues monumentales monolithiques sculptées par le peuple Rapa Nui.', coords: [-27.1127, -109.3497], icon: 'fa-monument' },
                     { name: 'Opéra de Sydney', date: '1973', description: 'Chef-d\'œuvre de l\'architecture du XXe siècle avec ses "voiles" de béton.', coords: [-33.8568, 151.2153], icon: 'fa-landmark' }
                 ];
 
