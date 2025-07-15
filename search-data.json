@@ -1,0 +1,65 @@
+[
+  {
+    "type": "page",
+    "title": "Simulateurs",
+    "description": "Gérez des chantiers et testez vos compétences techniques.",
+    "link": "simulateur.html",
+    "keywords": "simulateurs gestion chantiers technique lancer"
+  },
+  {
+    "type": "page",
+    "title": "Tests & Évaluation",
+    "description": "Évaluez vos soft-skills et connaissances techniques.",
+    "link": "test.html",
+    "keywords": "tests évaluation soft-skills connaissances techniques commencer"
+  },
+  {
+    "type": "page",
+    "title": "Challenges Recrutement",
+    "description": "Candidatez différemment et montrez vos compétences.",
+    "link": "challenges.html",
+    "keywords": "challenges recrutement compétences participer"
+  },
+  {
+    "type": "page",
+    "title": "Nos Offres d'Emploi",
+    "description": "Trouvez le poste qui vous correspond dans le secteur du BTP.",
+    "link": "emploi.html",
+    "keywords": "offres emploi poste btp consulter"
+  },
+  {
+    "type": "page",
+    "title": "Histoire du BTP",
+    "description": "Découvrez les grandes étapes et innovations du secteur.",
+    "link": "histoire.html",
+    "keywords": "histoire btp étapes innovations explorer"
+  },
+  {
+    "type": "tenders",
+    "title": "Travaux de rénovation et d'extension de l'école maternelle",
+    "description": "Lieu : Toulouse (31) | Clôture le : 22/08/2025",
+    "link": "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638319",
+    "keywords": "rénovation école toulouse"
+  },
+  {
+    "type": "tenders",
+    "title": "Construction d'un centre aquatique intercommunal",
+    "description": "Lieu : La Rochelle (17) | Clôture le : 16/09/2025",
+    "link": "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638247",
+    "keywords": "construction piscine centre aquatique la rochelle"
+  },
+  {
+    "type": "news",
+    "title": "L'intelligence artificielle va-t-elle transformer le BTP ?",
+    "description": "Source : Batiactu | Publié le : 15/07/2025",
+    "link": "https://www.batiactu.com/edito/l-intelligence-artificielle-va-t-elle-transformer-btp-69887.php",
+    "keywords": "ia intelligence artificielle batiactu"
+  },
+  {
+    "type": "news",
+    "title": "BTP : la décarbonation est en marche",
+    "description": "Source : Le Moniteur | Publié le : 14/07/2025",
+    "link": "https://www.lemoniteur.fr/article/btp-la-decarbonation-est-en-marche-mais-le-chemin-est-encore-long.2317628",
+    "keywords": "décarbonation btp le moniteur"
+  }
+]
