@@ -122,6 +122,10 @@
             border-bottom: 1px solid var(--glass-border);
             transition: var(--transition);
         }
+        
+        body.light-mode .header {
+            background: rgba(255, 255, 255, 0.8);
+        }
 
         .nav-container {
             max-width: 1400px;
@@ -145,6 +149,76 @@
 
         .logo-icon {
             font-size: 2rem;
+        }
+        
+        .nav-desktop {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            list-style: none;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+            background: var(--glass);
+        }
+
+        .nav-link.active {
+            color: var(--accent);
+            background: rgba(245, 158, 11, 0.1);
+        }
+        
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .theme-toggle,
+        .quick-settings-toggle {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover,
+        .quick-settings-toggle:hover {
+            background: var(--surface-elevated);
+            color: var(--text-primary);
+        }
+        
+        .mobile-toggle {
+            display: none;
         }
 
         .main-content {
@@ -319,6 +393,29 @@
             font-size: 1rem;
         }
 
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--surface-elevated);
+            z-index: 1001;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .progress-bar.show {
+            opacity: 1;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 2.5rem;
@@ -326,21 +423,50 @@
             .hero p {
                 font-size: 1.1rem;
             }
+            .nav-desktop {
+                display: none;
+            }
+            .mobile-toggle {
+                display: flex;
+            }
         }
 
     </style>
 </head>
 <body>
-    <!-- Header (simplified for this page, but can be the full one) -->
+    <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <!-- Header -->
     <header class="header">
         <nav class="nav-container">
-            <a href="index.html" class="logo" onclick="event.preventDefault(); window.history.back();">
+            <a href="index.html" class="logo" onclick="event.preventDefault(); navigateTo('index.html');">
                 <span class="logo-icon">🏗️</span>
                 <span class="logo-text">LTD Simulator</span>
             </a>
-             <a href="index.html" class="nav-link" onclick="event.preventDefault(); window.history.back();">
-                <i class="fas fa-arrow-left"></i>&nbsp;Retour
-            </a>
+            <div class="nav-desktop">
+                 <ul class="nav-menu">
+                    <li class="nav-item"><a href="index.html" class="nav-link" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
+                    <li class="nav-item"><a href="index.html" class="nav-link" onclick="event.preventDefault(); navigateTo('index.html')">Simulateurs</a></li>
+                    <li class="nav-item"><a href="index.html" class="nav-link" onclick="event.preventDefault(); navigateTo('index.html')">Tests & Évaluation</a></li>
+                    <li class="nav-item"><a href="challenges.html" class="nav-link active" onclick="event.preventDefault();"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                        <span id="themeText">Sombre</span>
+                    </button>
+                </div>
+            </div>
+             <!-- Mobile Toggle (hidden on desktop) -->
+            <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </button>
         </nav>
     </header>
 
@@ -401,6 +527,22 @@
                 <a href="#" class="challenge-card-button" onclick="event.preventDefault(); showNotification('Challenge en cours de préparation !', 'info')">Participer</a>
             </div>
 
+            <!-- NEW Challenge Card 4 -->
+            <div class="challenge-card">
+                <div class="challenge-card-header">
+                    <div class="challenge-card-icon">💰</div>
+                    <h2 class="challenge-card-title">Challenge Étude de Prix TCE</h2>
+                </div>
+                <p class="challenge-card-description">
+                    À partir d'un dossier de consultation (DCE) pour un petit collectif, réalisez le chiffrage complet tous corps d'état et rédigez le mémoire technique.
+                </p>
+                <div class="challenge-card-meta">
+                    <span class="meta-item"><i class="fas fa-layer-group"></i>Chiffrage</span>
+                    <span class="meta-item"><i class="fas fa-brain"></i>Expert</span>
+                </div>
+                <a href="#" class="challenge-card-button" onclick="event.preventDefault(); showNotification('Challenge en cours de préparation !', 'info')">Participer</a>
+            </div>
+
         </section>
     </main>
 
@@ -416,7 +558,40 @@
     </div>
 
     <script>
-        // Simplified script for this page
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+
+        function showProgress() {
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            
+            if (!progressBar || !progressFill) return;
+
+            progressBar.classList.add('show');
+            progressFill.style.width = '0%';
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        progressBar.classList.remove('show');
+                    }, 500);
+                }
+                progressFill.style.width = progress + '%';
+            }, 100);
+        }
+
+        function navigateTo(pageFile) {
+            showProgress();
+            showNotification(`Chargement de la page...`, 'info');
+            
+            setTimeout(() => {
+                window.location.href = pageFile;
+            }, 1500);
+        }
+
         function showNotification(message, type = 'info') {
             const notification = document.getElementById('notification');
             const notificationText = document.getElementById('notificationText');
@@ -451,10 +626,30 @@
             }
         }
         
-        // Apply theme from localStorage
-        document.addEventListener('DOMContentLoaded', () => {
-            const currentTheme = localStorage.getItem('theme') || 'dark';
+        function updateThemeUI() {
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            
+            if (currentTheme === 'light') {
+                if(themeIcon) themeIcon.className = 'fas fa-moon';
+                if(themeText) themeText.textContent = 'Sombre';
+            } else {
+                if(themeIcon) themeIcon.className = 'fas fa-sun';
+                if(themeText) themeText.textContent = 'Clair';
+            }
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
             document.body.classList.toggle('light-mode', currentTheme === 'light');
+            updateThemeUI();
+            showNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.classList.toggle('light-mode', currentTheme === 'light');
+            updateThemeUI();
         });
     </script>
 </body>
