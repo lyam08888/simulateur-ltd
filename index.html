@@ -62,7 +62,7 @@
 
         /* Light mode */
         body.light-mode {
-            --background: #f1f5f9; /* Slightly adjusted for better contrast */
+            --background: #f1f5f9;
             --surface: #ffffff;
             --surface-elevated: #e2e8f0;
             --surface-hover: #cbd5e1;
@@ -92,7 +92,6 @@
             transition: var(--transition-slow);
         }
 
-        /* Background effects */
         body::before {
             content: '';
             position: fixed;
@@ -112,7 +111,6 @@
             cursor: pointer;
         }
 
-        /* Header */
         .header {
             position: fixed;
             top: 0;
@@ -139,7 +137,6 @@
             height: 4.5rem;
         }
 
-        /* Logo */
         .logo {
             display: flex;
             align-items: center;
@@ -154,11 +151,9 @@
             font-size: 2rem;
         }
 
-        /* Desktop Navigation */
-        .nav-desktop {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-lg);
+        .nav-desktop { display: none; }
+        @media (min-width: 1024px) {
+            .nav-desktop { display: flex; align-items: center; gap: var(--spacing-lg); }
         }
 
         .nav-menu {
@@ -168,9 +163,7 @@
             list-style: none;
         }
 
-        .nav-item {
-            position: relative;
-        }
+        .nav-item { position: relative; }
 
         .nav-link {
             display: flex;
@@ -194,15 +187,13 @@
             background: rgba(99, 102, 241, 0.1);
         }
 
-        /* Action buttons */
         .nav-actions {
             display: flex;
             align-items: center;
             gap: var(--spacing-sm);
         }
 
-        .theme-toggle,
-        .quick-settings-toggle {
+        .theme-toggle {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -212,20 +203,16 @@
             border: 1px solid var(--glass-border);
             border-radius: var(--radius);
             color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
             transition: var(--transition);
         }
 
-        .theme-toggle:hover,
-        .quick-settings-toggle:hover {
+        .theme-toggle:hover {
             background: var(--surface-elevated);
             color: var(--text-primary);
         }
 
-        /* Mobile menu toggle */
         .mobile-toggle {
-            display: none;
+            display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -236,427 +223,90 @@
             border-radius: var(--radius);
             transition: var(--transition);
         }
-
-        .hamburger {
-            position: relative;
-            width: 1.25rem;
-            height: 1rem;
+        @media (min-width: 1024px) {
+            .mobile-toggle { display: none; }
         }
 
-        .hamburger span {
-            position: absolute;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: var(--text-primary);
-            border-radius: 1px;
-            transition: var(--transition);
-        }
-
+        .hamburger { position: relative; width: 1.25rem; height: 1rem; }
+        .hamburger span { position: absolute; left: 0; width: 100%; height: 2px; background: var(--text-primary); border-radius: 1px; transition: var(--transition); }
         .hamburger span:nth-child(1) { top: 0; }
         .hamburger span:nth-child(2) { top: 50%; transform: translateY(-50%); }
         .hamburger span:nth-child(3) { bottom: 0; }
-
-        .mobile-toggle.active .hamburger span:nth-child(1) {
-            top: 50%;
-            transform: translateY(-50%) rotate(45deg);
-        }
+        .mobile-toggle.active .hamburger span:nth-child(1) { top: 50%; transform: translateY(-50%) rotate(45deg); }
         .mobile-toggle.active .hamburger span:nth-child(2) { opacity: 0; }
-        .mobile-toggle.active .hamburger span:nth-child(3) {
-            bottom: 50%;
-            transform: translateY(50%) rotate(-45deg);
-        }
+        .mobile-toggle.active .hamburger span:nth-child(3) { bottom: 50%; transform: translateY(50%) rotate(-45deg); }
         
-        /* Mobile Menu */
-        .mobile-menu {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--background);
-            z-index: 999;
-            display: flex;
-            flex-direction: column;
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition-slow);
-        }
+        .mobile-menu { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--background); z-index: 999; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: var(--transition-slow); }
+        .mobile-menu.active { opacity: 1; visibility: visible; }
+        .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-md); border-bottom: 1px solid var(--glass-border); }
+        .mobile-menu-close { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-primary); }
+        .mobile-menu-content { flex: 1; padding: var(--spacing-lg); overflow-y: auto; }
+        .mobile-nav-section h3 { color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--spacing-md); }
+        .mobile-nav-items { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+        .mobile-nav-item { display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-md); color: var(--text-secondary); text-decoration: none; border-radius: var(--radius-md); }
+        .mobile-nav-item-icon { font-size: 1.25rem; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border-radius: var(--radius); }
 
-        .mobile-menu.active {
-            opacity: 1;
-            visibility: visible;
-        }
+        .main-content { margin-top: 4.5rem; padding: var(--spacing-xl) var(--spacing-md); max-width: 1400px; margin-left: auto; margin-right: auto; }
+        .hero { text-align: center; padding: var(--spacing-xl) 0; }
+        .hero h1 { font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; margin-bottom: var(--spacing-lg); background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .hero p { font-size: 1.25rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.7; }
         
-        .mobile-menu-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: var(--spacing-md);
-            border-bottom: 1px solid var(--glass-border);
-        }
+        .quick-actions a div:hover { transform: translateY(-8px); box-shadow: var(--shadow-xl); }
+        .animate-in { animation: fadeInUp 0.6s ease-out forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        .mobile-menu-close {
-            width: 2.5rem;
-            height: 2.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            color: var(--text-primary);
-        }
+        /* Search Section */
+        .search-section { margin-bottom: var(--spacing-xl); }
+        .search-container { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); display: flex; flex-direction: column; gap: var(--spacing-md); }
+        @media (min-width: 768px) { .search-container { flex-direction: row; align-items: center; } }
+        .search-input-wrapper { position: relative; flex-grow: 1; }
+        .search-input-wrapper i { position: absolute; top: 50%; left: var(--spacing-md); transform: translateY(-50%); color: var(--text-muted); }
+        .search-input-wrapper input { width: 100%; background: var(--background); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 2.5rem; color: var(--text-primary); font-size: 1rem; transition: var(--transition); }
+        .search-input-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); outline: none; }
+        .search-filters { display: flex; flex-direction: column; gap: var(--spacing-md); }
+        @media (min-width: 768px) { .search-filters { flex-direction: row; } }
+        .search-filters select { background: var(--background); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: var(--spacing-sm); color: var(--text-primary); font-size: 1rem; cursor: pointer; -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; padding-right: 2.5rem; }
 
-        .mobile-menu-content {
-            flex: 1;
-            padding: var(--spacing-lg);
-            overflow-y: auto;
-        }
+        .btp-wall-street { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: var(--spacing-xl); margin-top: var(--spacing-xl); }
+        .feed-column { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--glass-border); padding: var(--spacing-lg); overflow: hidden; display: flex; flex-direction: column; transition: var(--transition-slow); }
+        .feed-header { display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-lg); padding-bottom: var(--spacing-md); border-bottom: 1px solid var(--glass-border); }
+        .feed-header-title { display: flex; align-items: center; gap: var(--spacing-sm); flex-grow: 1; }
+        .feed-header i { font-size: 1.5rem; color: var(--primary); }
+        .feed-header h2 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
+        .feed-header-actions { display: flex; gap: var(--spacing-sm); }
+        .feed-action-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-muted); width: 2rem; height: 2rem; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+        .feed-action-btn:hover { background: var(--surface-hover); color: var(--text-primary); }
+        .feed-action-btn.active { color: var(--primary); }
+        .feed-list { flex-grow: 1; min-height: 400px; overflow-y: auto; padding-right: var(--spacing-sm); }
+        .feed-list::-webkit-scrollbar { width: 6px; }
+        .feed-list::-webkit-scrollbar-track { background: transparent; }
+        .feed-list::-webkit-scrollbar-thumb { background: var(--surface-elevated); border-radius: var(--radius-full); }
+        .feed-list::-webkit-scrollbar-thumb:hover { background: var(--surface-hover); }
+        .feed-item { padding: var(--spacing-md) 0; border-bottom: 1px solid var(--glass-border); transition: var(--transition); }
+        .feed-item:last-child { border-bottom: none; }
+        .feed-item a { text-decoration: none; color: var(--text-primary); display: block; padding: var(--spacing-xs); margin: calc(-1 * var(--spacing-xs)); border-radius: var(--radius); }
+        .feed-item a:hover { background-color: var(--glass); }
+        .feed-item-title { font-weight: 600; margin-bottom: var(--spacing-xs); }
+        .feed-item-meta { display: flex; align-items: center; gap: var(--spacing-sm); font-size: 0.875rem; color: var(--text-muted); flex-wrap: wrap; }
+        .feed-item-meta span { display: flex; align-items: center; gap: var(--spacing-xs); }
+        .feed-item-action { margin-top: var(--spacing-sm); display: inline-block; color: var(--primary); font-weight: 600; font-size: 0.875rem; }
+        .feed-item-action:hover { text-decoration: underline; }
+        .placeholder { text-align: center; padding: var(--spacing-xl) 0; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: var(--spacing-sm); }
+        .placeholder i { font-size: 1.5rem; }
 
-        .mobile-nav-section h3 {
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: var(--spacing-md);
-        }
-
-        .mobile-nav-items {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-xs);
-        }
-        
-        .mobile-nav-item {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            padding: var(--spacing-md);
-            color: var(--text-secondary);
-            text-decoration: none;
-            border-radius: var(--radius-md);
-        }
-        
-        .mobile-nav-item-icon {
-            font-size: 1.25rem;
-            width: 2.5rem;
-            height: 2.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--glass);
-            border-radius: var(--radius);
-        }
-
-        /* Main content */
-        .main-content {
-            margin-top: 4.5rem;
-            padding: var(--spacing-xl) var(--spacing-md);
-            max-width: 1400px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .hero {
-            text-align: center;
-            padding: var(--spacing-xl) 0;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            margin-bottom: var(--spacing-lg);
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto;
-            line-height: 1.7;
-        }
-        
-        .quick-actions a div:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-xl);
-        }
-
-        .animate-in {
-            animation: fadeInUp 0.6s ease-out forwards;
-        }
-        
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* BTP Wall Street Section */
-        .btp-wall-street {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: var(--spacing-xl);
-            margin-top: var(--spacing-xl);
-        }
-
-        .feed-column {
-            background: var(--surface);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--glass-border);
-            padding: var(--spacing-lg);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .feed-header {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            margin-bottom: var(--spacing-lg);
-            padding-bottom: var(--spacing-md);
-            border-bottom: 1px solid var(--glass-border);
-        }
-        
-        .feed-header-title {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            flex-grow: 1;
-        }
-
-        .feed-header i {
-            font-size: 1.5rem;
-            color: var(--primary);
-        }
-        
-        .feed-header h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-        
-        .feed-header-actions {
-            display: flex;
-            gap: var(--spacing-sm);
-        }
-
-        .feed-action-btn {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            color: var(--text-muted);
-            width: 2rem;
-            height: 2rem;
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-        }
-        
-        .feed-action-btn:hover {
-            background: var(--surface-hover);
-            color: var(--text-primary);
-        }
-        
-        .feed-action-btn.active {
-            color: var(--primary);
-        }
-
-        .feed-list {
-            flex-grow: 1;
-            max-height: 400px;
-            overflow-y: auto;
-            padding-right: var(--spacing-sm); /* For scrollbar */
-        }
-        
-        /* Custom scrollbar */
-        .feed-list::-webkit-scrollbar {
-            width: 6px;
-        }
-        .feed-list::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .feed-list::-webkit-scrollbar-thumb {
-            background: var(--surface-elevated);
-            border-radius: var(--radius-full);
-        }
-        .feed-list::-webkit-scrollbar-thumb:hover {
-            background: var(--surface-hover);
-        }
-
-        .feed-item {
-            padding: var(--spacing-md) 0;
-            border-bottom: 1px solid var(--glass-border);
-            transition: var(--transition);
-        }
-        
-        .feed-item:last-child {
-            border-bottom: none;
-        }
-
-        .feed-item a {
-            text-decoration: none;
-            color: var(--text-primary);
-            display: block;
-            padding: var(--spacing-xs);
-            margin: calc(-1 * var(--spacing-xs));
-            border-radius: var(--radius);
-        }
-        
-        .feed-item a:hover {
-            background-color: var(--glass);
-        }
-        
-        .feed-item-title {
-            font-weight: 600;
-            margin-bottom: var(--spacing-xs);
-        }
-
-        .feed-item-meta {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            flex-wrap: wrap;
-        }
-        
-        .feed-item-meta span {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-        }
-        
-        .feed-item-action {
-            margin-top: var(--spacing-sm);
-            display: inline-block;
-            color: var(--primary);
-            font-weight: 600;
-            font-size: 0.875rem;
-        }
-        
-        .feed-item-action:hover {
-            text-decoration: underline;
-        }
-        
-        .placeholder {
-            text-align: center;
-            padding: var(--spacing-xl) 0;
-            color: var(--text-muted);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            gap: var(--spacing-sm);
-        }
-        
-        .placeholder i {
-            font-size: 1.5rem;
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .nav-desktop {
-                gap: var(--spacing-sm);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .nav-desktop {
-                display: none;
-            }
-            .mobile-toggle {
-                display: flex;
-            }
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            .btp-wall-street {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        /* Notification System */
-        .notification {
-            position: fixed;
-            bottom: var(--spacing-lg);
-            right: var(--spacing-lg);
-            background: var(--surface);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-lg);
-            padding: var(--spacing-md);
-            box-shadow: var(--shadow-xl);
-            transform: translateX(calc(100% + var(--spacing-lg)));
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1100;
-            backdrop-filter: blur(20px);
-            max-width: 350px;
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        .notification-content {
-            display: flex;
-            align-items: flex-start;
-            gap: var(--spacing-sm);
-        }
-        
-        .notification-icon {
-            font-size: 1.25rem;
-            color: var(--primary);
-            margin-top: 2px;
-        }
-        
-        .notification-text {
-            color: var(--text-primary);
-            font-weight: 500;
-            flex: 1;
-        }
-        
-        .notification-close {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: 0;
-            font-size: 1rem;
-        }
-
+        .notification { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-xl); transform: translateX(calc(100% + var(--spacing-lg))); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1100; backdrop-filter: blur(20px); max-width: 350px; }
+        .notification.show { transform: translateX(0); }
+        .notification-content { display: flex; align-items: flex-start; gap: var(--spacing-sm); }
+        .notification-icon { font-size: 1.25rem; color: var(--primary); margin-top: 2px; }
+        .notification-text { color: var(--text-primary); font-weight: 500; flex: 1; }
+        .notification-close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0; font-size: 1rem; }
         .notification.success .notification-icon { color: var(--secondary); }
         .notification.warning .notification-icon { color: var(--accent); }
         .notification.error .notification-icon { color: #ef4444; }
 
-        .progress-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: var(--surface-elevated);
-            z-index: 1001;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .progress-bar.show {
-            opacity: 1;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            width: 0%;
-            transition: width 0.3s ease;
-        }
+        .progress-bar { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: var(--surface-elevated); z-index: 1001; opacity: 0; transition: opacity 0.3s ease; }
+        .progress-bar.show { opacity: 1; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.3s ease; }
     </style>
 </head>
 <body>
@@ -675,7 +325,7 @@
                  <ul class="nav-menu">
                      <li class="nav-item"><a href="index.html" class="nav-link active" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
                      <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
-                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests & Évaluation</a></li>
+                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
                      <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
                      <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
                      <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')""><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
@@ -736,6 +386,29 @@
 
     <!-- Main Content -->
     <main class="main-content">
+        
+        <!-- Search Section -->
+        <section class="search-section animate-in">
+            <div class="search-container">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Rechercher un mot-clé, un lieu...">
+                </div>
+                <div class="search-filters">
+                    <select id="categoryFilter" title="Filtrer par section">
+                        <option value="all">Toutes les sections</option>
+                        <option value="tenders">Appels d'offre</option>
+                        <option value="news">Actualités</option>
+                    </select>
+                    <select id="sortFilter" title="Trier par">
+                        <option value="date-desc">Plus récent d'abord</option>
+                        <option value="date-asc">Plus ancien d'abord</option>
+                        <option value="title-asc">Titre (A-Z)</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
         <section class="hero animate-in">
             <h1>Maîtrisez les métiers du BTP</h1>
             <p>Formez-vous aux métiers d'avenir du BTP avec nos simulateurs professionnels. Le secteur recrute massivement : préparez votre carrière dès maintenant !</p>
@@ -787,9 +460,9 @@
         </section>
         
         <!-- BTP Wall Street Section -->
-        <section class="btp-wall-street animate-in">
+        <section class="btp-wall-street" id="btp-wall-street">
             <!-- Tenders Column -->
-            <div class="feed-column">
+            <div class="feed-column" id="tenders-column">
                 <div class="feed-header">
                     <div class="feed-header-title">
                         <i class="fas fa-gavel"></i>
@@ -799,7 +472,7 @@
                         <button class="feed-action-btn" id="tenders-notifications" onclick="enableNotifications('tenders')" title="Activer les notifications pour les appels d'offre">
                             <i class="fas fa-bell"></i>
                         </button>
-                        <button class="feed-action-btn" id="tenders-refresh" onclick="refreshTenders()" title="Rafraîchir les appels d'offre">
+                        <button class="feed-action-btn" id="tenders-refresh" onclick="refreshFeeds()" title="Rafraîchir les appels d'offre">
                             <i class="fas fa-sync-alt"></i>
                         </button>
                     </div>
@@ -807,12 +480,12 @@
                 <div class="feed-list" id="tenders-feed">
                     <div class="placeholder">
                         <i class="fas fa-circle-notch fa-spin"></i>
-                        <span>Chargement des appels d'offre...</span>
+                        <span>Chargement...</span>
                     </div>
                 </div>
             </div>
             <!-- News Column -->
-            <div class="feed-column">
+            <div class="feed-column" id="news-column">
                 <div class="feed-header">
                      <div class="feed-header-title">
                         <i class="fas fa-newspaper" style="color: var(--secondary);"></i>
@@ -822,7 +495,7 @@
                         <button class="feed-action-btn" id="news-notifications" onclick="enableNotifications('news')" title="Activer les notifications pour les actualités">
                             <i class="fas fa-bell"></i>
                         </button>
-                        <button class="feed-action-btn" id="news-refresh" onclick="refreshNews()" title="Rafraîchir les actualités">
+                        <button class="feed-action-btn" id="news-refresh" onclick="refreshFeeds()" title="Rafraîchir les actualités">
                             <i class="fas fa-sync-alt"></i>
                         </button>
                     </div>
@@ -830,7 +503,7 @@
                 <div class="feed-list" id="news-feed">
                     <div class="placeholder">
                          <i class="fas fa-circle-notch fa-spin"></i>
-                         <span>Chargement des actualités...</span>
+                         <span>Chargement...</span>
                     </div>
                 </div>
             </div>
@@ -926,118 +599,129 @@
 
         // --- DYNAMIC CONTENT SCRIPT ---
 
-        // REAL data with real links
         const allTenders = [
-            { title: "Travaux de rénovation et d'extension de l'école maternelle", location: "Toulouse (31)", date: "2025-08-22", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638319" },
-            { title: "Construction d'un centre aquatique intercommunal", location: "Agglomération de La Rochelle (17)", date: "2025-09-16", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638247" },
-            { title: "Aménagement de la ZAC du Parc des Calanques", location: "Marseille (13)", date: "2025-08-05", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638165" },
-            { title: "Marché de maîtrise d'oeuvre pour la restructuration d'un EHPAD", location: "Belfort (90)", date: "2025-09-02", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638053" },
-            { title: "Travaux d'entretien des voiries communales", location: "Strasbourg (67)", date: "2025-08-12", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2637992" }
+            { type: 'tenders', title: "Travaux de rénovation et d'extension de l'école maternelle", location: "Toulouse (31)", date: "2025-08-22", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638319" },
+            { type: 'tenders', title: "Construction d'un centre aquatique intercommunal", location: "Agglomération de La Rochelle (17)", date: "2025-09-16", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638247" },
+            { type: 'tenders', title: "Aménagement de la ZAC du Parc des Calanques", location: "Marseille (13)", date: "2025-08-05", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638165" },
+            { type: 'tenders', title: "Marché de maîtrise d'oeuvre pour la restructuration d'un EHPAD", location: "Belfort (90)", date: "2025-09-02", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638053" },
+            { type: 'tenders', title: "Travaux d'entretien des voiries communales", location: "Strasbourg (67)", date: "2025-08-12", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2637992" }
         ];
 
         const allNews = [
-            { title: "L'intelligence artificielle va-t-elle transformer le BTP ?", source: "Batiactu", date: "2025-07-15", link: "https://www.batiactu.com/edito/l-intelligence-artificielle-va-t-elle-transformer-btp-69887.php" },
-            { title: "BTP : la décarbonation est en marche, mais le chemin est encore long", source: "Le Moniteur", date: "2025-07-14", link: "https://www.lemoniteur.fr/article/btp-la-decarbonation-est-en-marche-mais-le-chemin-est-encore-long.2317628" },
-            { title: "Comment le réemploi des matériaux s'organise dans le BTP", source: "Batiweb", date: "2025-07-11", link: "https://www.batiweb.com/actualites/developpement-durable/comment-le-reemploi-des-materiaux-sorganise-dans-le-btp-20240711" },
-            { title: "Lafarge et Bouygues Construction s'allient pour un béton bas carbone", source: "Batiactu", date: "2025-07-09", link: "https://www.batiactu.com/edito/lafarge-et-bouygues-construction-s-allient-pour-un-beton-bas-carbone-69815.php" },
-            { title: "JO 2024 : le BTP a relevé le défi des délais", source: "Le Moniteur", date: "2025-07-05", link: "https://www.lemoniteur.fr/article/jo-2024-le-btp-a-releve-le-defi-des-delais.2316401" }
+            { type: 'news', title: "L'intelligence artificielle va-t-elle transformer le BTP ?", source: "Batiactu", date: "2025-07-15", link: "https://www.batiactu.com/edito/l-intelligence-artificielle-va-t-elle-transformer-btp-69887.php" },
+            { type: 'news', title: "BTP : la décarbonation est en marche, mais le chemin est encore long", source: "Le Moniteur", date: "2025-07-14", link: "https://www.lemoniteur.fr/article/btp-la-decarbonation-est-en-marche-mais-le-chemin-est-encore-long.2317628" },
+            { type: 'news', title: "Comment le réemploi des matériaux s'organise dans le BTP", source: "Batiweb", date: "2025-07-11", link: "https://www.batiweb.com/actualites/developpement-durable/comment-le-reemploi-des-materiaux-sorganise-dans-le-btp-20240711" },
+            { type: 'news', title: "Lafarge et Bouygues Construction s'allient pour un béton bas carbone", source: "Batiactu", date: "2025-07-09", link: "https://www.batiactu.com/edito/lafarge-et-bouygues-construction-s-allient-pour-un-beton-bas-carbone-69815.php" },
+            { type: 'news', title: "JO 2024 : le BTP a relevé le défi des délais", source: "Le Moniteur", date: "2025-07-05", link: "https://www.lemoniteur.fr/article/jo-2024-le-btp-a-releve-le-defi-des-delais.2316401" }
         ];
         
-        // Function to shuffle array and get a subset
-        const getRandomSubset = (arr, size) => [...arr].sort(() => 0.5 - Math.random()).slice(0, size);
+        const allData = [...allTenders, ...allNews];
 
-        function populateTenders(isRefresh = false) {
-            const feed = document.getElementById('tenders-feed');
+        function populateFeed(containerId, data, type) {
+            const feed = document.getElementById(containerId);
             if (!feed) return;
             
-            feed.innerHTML = `<div class="placeholder"><i class="fas fa-circle-notch fa-spin"></i></div>`;
+            feed.innerHTML = ''; // Clear
+            if (data.length === 0) {
+                feed.innerHTML = `<div class="placeholder"><i class="fas fa-search"></i><span>Aucun résultat trouvé.</span></div>`;
+                return;
+            }
 
-            setTimeout(() => {
-                const tendersToShow = getRandomSubset(allTenders, 5);
-                feed.innerHTML = ''; // Clear placeholder
-                if (tendersToShow.length === 0) {
-                    feed.innerHTML = '<div class="placeholder"><i class="fas fa-info-circle"></i><span>Aucun appel d\'offre pour le moment.</span></div>';
-                    return;
-                }
-
-                tendersToShow.forEach(tender => {
-                    const item = document.createElement('div');
-                    item.className = 'feed-item';
-                    item.innerHTML = `
-                        <a href="${tender.link}" target="_blank" rel="noopener noreferrer" onclick="event.preventDefault(); openLink('${tender.link}')">
-                            <div class="feed-item-title">${tender.title}</div>
+            data.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'feed-item';
+                if (type === 'tenders') {
+                    itemEl.innerHTML = `
+                        <a href="${item.link}" target="_blank" rel="noopener noreferrer" onclick="event.preventDefault(); openLink('${item.link}')">
+                            <div class="feed-item-title">${item.title}</div>
                             <div class="feed-item-meta">
-                                <span><i class="fas fa-map-marker-alt"></i> ${tender.location}</span>
-                                <span><i class="fas fa-calendar-alt"></i> Clôture le ${tender.date}</span>
+                                <span><i class="fas fa-map-marker-alt"></i> ${item.location}</span>
+                                <span><i class="fas fa-calendar-alt"></i> Clôture le ${item.date}</span>
                             </div>
-                            <div class="feed-item-action">
-                                Consulter l'offre <i class="fas fa-arrow-right"></i>
-                            </div>
+                            <div class="feed-item-action">Consulter l'offre <i class="fas fa-arrow-right"></i></div>
                         </a>`;
-                    feed.appendChild(item);
-                });
-                
-                if(isRefresh) {
-                    showNotification("Appels d'offre mis à jour.", 'success');
-                    sendSystemNotification("Nouveaux appels d'offre", "La liste des appels d'offre a été actualisée.");
+                } else if (type === 'news') {
+                    itemEl.innerHTML = `
+                        <a href="${item.link}" target="_blank" rel="noopener noreferrer" onclick="event.preventDefault(); openLink('${item.link}')">
+                            <div class="feed-item-title">${item.title}</div>
+                            <div class="feed-item-meta">
+                                <span><i class="fas fa-newspaper"></i> ${item.source}</span>
+                                <span><i class="fas fa-clock"></i> ${item.date}</span>
+                            </div>
+                            <div class="feed-item-action">Lire la suite <i class="fas fa-arrow-right"></i></div>
+                        </a>`;
                 }
-
-            }, 800); // Simulate network delay
+                feed.appendChild(itemEl);
+            });
         }
 
-        function populateNews(isRefresh = false) {
-            const feed = document.getElementById('news-feed');
-            if (!feed) return;
+        function filterAndSortContent() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const category = document.getElementById('categoryFilter').value;
+            const sortBy = document.getElementById('sortFilter').value;
+
+            let filteredData = allData.filter(item => {
+                const inCategory = (category === 'all' || item.type === category);
+                const inSearch = (item.title.toLowerCase().includes(searchTerm) || (item.location && item.location.toLowerCase().includes(searchTerm)) || (item.source && item.source.toLowerCase().includes(searchTerm)));
+                return inCategory && inSearch;
+            });
+
+            filteredData.sort((a, b) => {
+                switch (sortBy) {
+                    case 'date-asc':
+                        return new Date(a.date) - new Date(b.date);
+                    case 'title-asc':
+                        return a.title.localeCompare(b.title);
+                    case 'date-desc':
+                    default:
+                        return new Date(b.date) - new Date(a.date);
+                }
+            });
+
+            const tendersColumn = document.getElementById('tenders-column');
+            const newsColumn = document.getElementById('news-column');
+            const wallStreetContainer = document.getElementById('btp-wall-street');
+
+            const tendersData = filteredData.filter(item => item.type === 'tenders');
+            const newsData = filteredData.filter(item => item.type === 'news');
+
+            if (category === 'tenders') {
+                newsColumn.style.display = 'none';
+                tendersColumn.style.display = 'flex';
+                wallStreetContainer.style.gridTemplateColumns = '1fr';
+                populateFeed('tenders-feed', tendersData, 'tenders');
+            } else if (category === 'news') {
+                tendersColumn.style.display = 'none';
+                newsColumn.style.display = 'flex';
+                wallStreetContainer.style.gridTemplateColumns = '1fr';
+                populateFeed('news-feed', newsData, 'news');
+            } else {
+                tendersColumn.style.display = 'flex';
+                newsColumn.style.display = 'flex';
+                wallStreetContainer.style.gridTemplateColumns = 'repeat(auto-fit, minmax(350px, 1fr))';
+                populateFeed('tenders-feed', tendersData, 'tenders');
+                populateFeed('news-feed', newsData, 'news');
+            }
+        }
+
+        function refreshFeeds(isManual = false) {
+            const icons = document.querySelectorAll('.feed-action-btn[id$="-refresh"] i');
+            if(isManual) {
+                icons.forEach(icon => icon.classList.add('fa-spin'));
+                showNotification("Mise à jour des données...", 'info');
+            }
             
-            feed.innerHTML = `<div class="placeholder"><i class="fas fa-circle-notch fa-spin"></i></div>`;
-
+            // In a real app, you would fetch new data here.
+            // For this demo, we just re-filter and sort.
             setTimeout(() => {
-                const newsToShow = getRandomSubset(allNews, 4);
-                feed.innerHTML = ''; // Clear placeholder
-                if (newsToShow.length === 0) {
-                    feed.innerHTML = '<div class="placeholder"><i class="fas fa-info-circle"></i><span>Aucune actualité pour le moment.</span></div>';
-                    return;
+                filterAndSortContent();
+                if(isManual) {
+                    icons.forEach(icon => icon.classList.remove('fa-spin'));
+                    showNotification("Données actualisées.", 'success');
                 }
-
-                newsToShow.forEach(newsItem => {
-                    const item = document.createElement('div');
-                    item.className = 'feed-item';
-                    item.innerHTML = `
-                        <a href="${newsItem.link}" target="_blank" rel="noopener noreferrer" onclick="event.preventDefault(); openLink('${newsItem.link}')">
-                            <div class="feed-item-title">${newsItem.title}</div>
-                            <div class="feed-item-meta">
-                                <span><i class="fas fa-newspaper"></i> ${newsItem.source}</span>
-                                <span><i class="fas fa-clock"></i> ${newsItem.date}</span>
-                            </div>
-                             <div class="feed-item-action">
-                                Lire la suite <i class="fas fa-arrow-right"></i>
-                            </div>
-                        </a>`;
-                    feed.appendChild(item);
-                });
-                
-                if(isRefresh) {
-                    showNotification("Actualités mises à jour.", 'success');
-                    sendSystemNotification("Nouvelles actualités", "Les dernières actualités du BTP sont disponibles.");
-                }
-
-            }, 800); // Simulate network delay
+            }, 800);
         }
         
-        function refreshTenders() {
-            const icon = document.querySelector('#tenders-refresh i');
-            icon.classList.add('fa-spin');
-            populateTenders(true);
-            setTimeout(() => icon.classList.remove('fa-spin'), 1000);
-        }
-        
-        function refreshNews() {
-            const icon = document.querySelector('#news-refresh i');
-            icon.classList.add('fa-spin');
-            populateNews(true);
-            setTimeout(() => icon.classList.remove('fa-spin'), 1000);
-        }
-
         // --- Notification System ---
         function updateNotifButtonUI() {
             const buttons = document.querySelectorAll('.feed-action-btn[id$="-notifications"]');
@@ -1083,17 +767,14 @@
         }
 
         function sendSystemNotification(title, body) {
-            if (notificationPermission !== 'granted') {
-                return;
-            }
+            if (notificationPermission !== 'granted') return;
             const options = {
                 body: body,
-                icon: 'https://placehold.co/64x64/6366f1/FFFFFF?text=LTD', // A simple placeholder icon
+                icon: 'https://placehold.co/64x64/6366f1/FFFFFF?text=LTD',
                 badge: 'https://placehold.co/64x64/6366f1/FFFFFF?text=LTD'
             };
             new Notification(title, options);
         }
-
 
         document.addEventListener('DOMContentLoaded', () => {
             updateThemeUI();
@@ -1114,10 +795,17 @@
                 observer.observe(el);
             });
 
+            // Add event listeners for filters
+            document.getElementById('searchInput').addEventListener('keyup', filterAndSortContent);
+            document.getElementById('categoryFilter').addEventListener('change', filterAndSortContent);
+            document.getElementById('sortFilter').addEventListener('change', filterAndSortContent);
+            document.querySelectorAll('.feed-action-btn[id$="-refresh"]').forEach(btn => {
+                btn.addEventListener('click', () => refreshFeeds(true));
+            });
+
             // Initial population
             setTimeout(() => {
-                populateTenders();
-                populateNews();
+                filterAndSortContent();
                 updateNotifButtonUI();
             }, 1000);
         });
