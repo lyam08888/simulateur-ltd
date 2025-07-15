@@ -108,7 +108,7 @@
             z-index: -1;
         }
         
-        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle {
+        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn {
             cursor: pointer;
         }
 
@@ -410,6 +410,8 @@
             border: 1px solid var(--glass-border);
             padding: var(--spacing-lg);
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .feed-header {
@@ -419,6 +421,13 @@
             margin-bottom: var(--spacing-lg);
             padding-bottom: var(--spacing-md);
             border-bottom: 1px solid var(--glass-border);
+        }
+        
+        .feed-header-title {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            flex-grow: 1;
         }
 
         .feed-header i {
@@ -431,8 +440,36 @@
             font-weight: 700;
             color: var(--text-primary);
         }
+        
+        .feed-header-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .feed-action-btn {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            width: 2rem;
+            height: 2rem;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .feed-action-btn:hover {
+            background: var(--surface-hover);
+            color: var(--text-primary);
+        }
+        
+        .feed-action-btn.active {
+            color: var(--primary);
+        }
 
         .feed-list {
+            flex-grow: 1;
             max-height: 400px;
             overflow-y: auto;
             padding-right: var(--spacing-sm); /* For scrollbar */
@@ -467,11 +504,13 @@
             text-decoration: none;
             color: var(--text-primary);
             display: block;
+            padding: var(--spacing-xs);
+            margin: calc(-1 * var(--spacing-xs));
+            border-radius: var(--radius);
         }
         
-        .feed-item:hover {
+        .feed-item a:hover {
             background-color: var(--glass);
-            border-radius: var(--radius);
         }
         
         .feed-item-title {
@@ -485,6 +524,7 @@
             gap: var(--spacing-sm);
             font-size: 0.875rem;
             color: var(--text-muted);
+            flex-wrap: wrap;
         }
         
         .feed-item-meta span {
@@ -509,6 +549,16 @@
             text-align: center;
             padding: var(--spacing-xl) 0;
             color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: var(--spacing-sm);
+        }
+        
+        .placeholder i {
+            font-size: 1.5rem;
         }
 
         /* Responsive */
@@ -725,34 +775,62 @@
                         <div style="background: var(--primary-light); color: var(--text-primary); padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Consulter</div>
                     </div>
                 </a>
+                <a href="#" onclick="event.preventDefault(); navigateTo('histoire.html')" style="text-decoration: none; color: inherit;">
+                    <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📜</div>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Histoire du BTP</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Découvrez les grandes étapes et innovations du secteur.</p>
+                        <div style="background: #0d9488; color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Explorer</div>
+                    </div>
+                </a>
             </div>
         </section>
         
-        <!-- NEW: BTP Wall Street Section -->
+        <!-- BTP Wall Street Section -->
         <section class="btp-wall-street animate-in">
             <!-- Tenders Column -->
             <div class="feed-column">
                 <div class="feed-header">
-                    <i class="fas fa-gavel"></i>
-                    <h2>Appels d'offre BTP</h2>
+                    <div class="feed-header-title">
+                        <i class="fas fa-gavel"></i>
+                        <h2>Appels d'offre</h2>
+                    </div>
+                    <div class="feed-header-actions">
+                        <button class="feed-action-btn" id="tenders-notifications" onclick="enableNotifications('tenders')" title="Activer les notifications pour les appels d'offre">
+                            <i class="fas fa-bell"></i>
+                        </button>
+                        <button class="feed-action-btn" id="tenders-refresh" onclick="refreshTenders()" title="Rafraîchir les appels d'offre">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="feed-list" id="tenders-feed">
-                    <!-- Tenders will be injected here by JavaScript -->
                     <div class="placeholder">
-                        <i class="fas fa-circle-notch fa-spin"></i> Chargement des appels d'offre...
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        <span>Chargement des appels d'offre...</span>
                     </div>
                 </div>
             </div>
             <!-- News Column -->
             <div class="feed-column">
                 <div class="feed-header">
-                    <i class="fas fa-newspaper" style="color: var(--secondary);"></i>
-                    <h2>Actualités du BTP</h2>
+                     <div class="feed-header-title">
+                        <i class="fas fa-newspaper" style="color: var(--secondary);"></i>
+                        <h2>Actualités BTP</h2>
+                    </div>
+                     <div class="feed-header-actions">
+                        <button class="feed-action-btn" id="news-notifications" onclick="enableNotifications('news')" title="Activer les notifications pour les actualités">
+                            <i class="fas fa-bell"></i>
+                        </button>
+                        <button class="feed-action-btn" id="news-refresh" onclick="refreshNews()" title="Rafraîchir les actualités">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="feed-list" id="news-feed">
-                    <!-- News will be injected here by JavaScript -->
-                     <div class="placeholder">
-                        <i class="fas fa-circle-notch fa-spin"></i> Chargement des actualités...
+                    <div class="placeholder">
+                         <i class="fas fa-circle-notch fa-spin"></i>
+                         <span>Chargement des actualités...</span>
                     </div>
                 </div>
             </div>
@@ -770,6 +848,7 @@
 
     <script>
         let currentTheme = localStorage.getItem('theme') || 'dark';
+        let notificationPermission = Notification.permission;
 
         function showProgress() {
             const progressBar = document.getElementById('progressBar');
@@ -783,7 +862,10 @@
                 if (progress >= 100) {
                     progress = 100;
                     clearInterval(interval);
-                    setTimeout(() => progressBar.classList.remove('show'), 500);
+                    setTimeout(() => {
+                        progressBar.classList.remove('show');
+                        progressFill.style.width = '0%';
+                    }, 500);
                 }
                 progressFill.style.width = progress + '%';
             }, 100);
@@ -792,37 +874,44 @@
         function navigateTo(pageFile) {
             showProgress();
             showNotification(`Chargement de la page...`, 'info');
-            setTimeout(() => window.location.href = pageFile, 1500);
+            setTimeout(() => window.location.href = pageFile, 1000);
+        }
+        
+        function openLink(url) {
+            showNotification('Ouverture du lien dans un nouvel onglet...', 'info');
+            window.open(url, '_blank', 'noopener,noreferrer');
         }
 
-        function showNotification(message, type = 'info') {
+        function showNotification(message, type = 'info', duration = 3000) {
             const notification = document.getElementById('notification');
             const notificationText = document.getElementById('notificationText');
             const notificationIcon = document.getElementById('notificationIcon');
             if (!notification || !notificationText || !notificationIcon) return;
             
             notification.classList.remove('success', 'warning', 'error');
+            notificationIcon.className = 'notification-icon fas ';
+
             switch(type) {
-                case 'success': notificationIcon.className = 'fas fa-check-circle notification-icon'; notification.classList.add('success'); break;
-                case 'warning': notificationIcon.className = 'fas fa-exclamation-triangle notification-icon'; notification.classList.add('warning'); break;
-                case 'error': notificationIcon.className = 'fas fa-exclamation-circle notification-icon'; notification.classList.add('error'); break;
-                default: notificationIcon.className = 'fas fa-info-circle notification-icon';
+                case 'success': notificationIcon.classList.add('fa-check-circle'); notification.classList.add('success'); break;
+                case 'warning': notificationIcon.classList.add('fa-exclamation-triangle'); notification.classList.add('warning'); break;
+                case 'error': notificationIcon.classList.add('fa-exclamation-circle'); notification.classList.add('error'); break;
+                default: notificationIcon.classList.add('fa-info-circle');
             }
             notificationText.textContent = message;
             notification.classList.add('show');
-            setTimeout(() => notification.classList.remove('show'), 3000);
+            setTimeout(() => notification.classList.remove('show'), duration);
         }
         
         function updateThemeUI() {
             const themeIcon = document.getElementById('themeIcon');
             if (!themeIcon) return;
+            document.body.classList.toggle('light-mode', currentTheme === 'light');
             themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
         }
 
         function toggleTheme() {
             currentTheme = currentTheme === 'light' ? 'dark' : 'light';
             localStorage.setItem('theme', currentTheme);
-            document.body.classList.toggle('light-mode', currentTheme === 'light');
             updateThemeUI();
             showNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
         }
@@ -835,134 +924,179 @@
             document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
         }
 
-        // --- NEW SCRIPT FOR DYNAMIC CONTENT ---
+        // --- DYNAMIC CONTENT SCRIPT ---
 
         // Mock data simulating a fetch from an API or RSS feed.
-        const mockTenders = [
-            {
-                title: "Construction d'un nouveau groupe scolaire à Lyon",
-                location: "Lyon (69)",
-                date: "2025-08-15",
-                link: "#"
-            },
-            {
-                title: "Rénovation de la façade d'un bâtiment Haussmannien",
-                location: "Paris (75)",
-                date: "2025-08-12",
-                link: "#"
-            },
-            {
-                title: "Marché de travaux pour la voirie et réseaux divers (VRD)",
-                location: "Marseille (13)",
-                date: "2025-08-10",
-                link: "#"
-            },
-            {
-                title: "Travaux d'étanchéité pour la piscine municipale",
-                location: "Bordeaux (33)",
-                date: "2025-08-05",
-                link: "#"
-            },
-            {
-                title: "Installation de 500 bornes de recharge électrique",
-                location: "France Entière",
-                date: "2025-09-01",
-                link: "#"
-            }
+        const allTenders = [
+            { title: "Construction d'un nouveau groupe scolaire à Lyon", location: "Lyon (69)", date: "2025-08-15", link: "https://www.marches-publics.gouv.fr/" },
+            { title: "Rénovation de la façade d'un bâtiment Haussmannien", location: "Paris (75)", date: "2025-08-12", link: "https://www.marches-publics.gouv.fr/" },
+            { title: "Marché de travaux pour la voirie et réseaux divers (VRD)", location: "Marseille (13)", date: "2025-08-10", link: "https://www.marches-publics.gouv.fr/" },
+            { title: "Travaux d'étanchéité pour la piscine municipale", location: "Bordeaux (33)", date: "2025-08-05", link: "https://www.marches-publics.gouv.fr/" },
+            { title: "Installation de 500 bornes de recharge électrique", location: "France Entière", date: "2025-09-01", link: "https://www.marches-publics.gouv.fr/" },
+            { title: "Création d'un parc éolien en mer", location: "Saint-Nazaire (44)", date: "2025-09-20", link: "https://www.marches-publics.gouv.fr/" }
         ];
 
-        const mockNews = [
-            {
-                title: "Le RE2020 : un an après, quel bilan pour la construction neuve ?",
-                source: "Le Moniteur",
-                date: "2025-07-14",
-                link: "#"
-            },
-            {
-                title: "Pénurie de matériaux : le secteur du BTP s'adapte",
-                source: "Batiweb",
-                date: "2025-07-13",
-                link: "#"
-            },
-            {
-                title: "Innovation : l'impression 3D béton arrive sur les chantiers français",
-                source: "Batipole",
-                date: "2025-07-12",
-                link: "#"
-            },
-            {
-                title: "Sécurité : de nouvelles réglementations pour le travail en hauteur",
-                source: "Preventica",
-                date: "2025-07-11",
-                link: "#"
-            }
+        const allNews = [
+            { title: "Le RE2020 : un an après, quel bilan pour la construction neuve ?", source: "Le Moniteur", date: "2025-07-14", link: "https://www.lemoniteur.fr/" },
+            { title: "Pénurie de matériaux : le secteur du BTP s'adapte", source: "Batiweb", date: "2025-07-13", link: "https://www.batiweb.com/" },
+            { title: "Innovation : l'impression 3D béton arrive sur les chantiers français", source: "Batipole", date: "2025-07-12", link: "https://www.batipole.com/" },
+            { title: "Sécurité : de nouvelles réglementations pour le travail en hauteur", source: "Preventica", date: "2025-07-11", link: "https://www.preventica.com/" },
+            { title: "Le BIM devient incontournable pour les grands projets", source: "Batiactu", date: "2025-07-10", link: "https://www.batiactu.com/" }
         ];
+        
+        // Function to shuffle array and get a subset
+        const getRandomSubset = (arr, size) => [...arr].sort(() => 0.5 - Math.random()).slice(0, size);
 
-        function populateTenders() {
+        function populateTenders(isRefresh = false) {
             const feed = document.getElementById('tenders-feed');
             if (!feed) return;
+            
+            feed.innerHTML = `<div class="placeholder"><i class="fas fa-circle-notch fa-spin"></i></div>`;
 
-            // Clear placeholder
-            feed.innerHTML = '';
+            setTimeout(() => {
+                const tendersToShow = getRandomSubset(allTenders, 5);
+                feed.innerHTML = ''; // Clear placeholder
+                if (tendersToShow.length === 0) {
+                    feed.innerHTML = '<div class="placeholder"><i class="fas fa-info-circle"></i><span>Aucun appel d\'offre pour le moment.</span></div>';
+                    return;
+                }
 
-            if (mockTenders.length === 0) {
-                feed.innerHTML = '<div class="placeholder">Aucun appel d\'offre pour le moment.</div>';
+                tendersToShow.forEach(tender => {
+                    const item = document.createElement('div');
+                    item.className = 'feed-item';
+                    item.innerHTML = `
+                        <a href="${tender.link}" target="_blank" rel="noopener noreferrer" onclick="event.preventDefault(); openLink('${tender.link}')">
+                            <div class="feed-item-title">${tender.title}</div>
+                            <div class="feed-item-meta">
+                                <span><i class="fas fa-map-marker-alt"></i> ${tender.location}</span>
+                                <span><i class="fas fa-calendar-alt"></i> Clôture le ${tender.date}</span>
+                            </div>
+                            <div class="feed-item-action">
+                                Consulter l'offre <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </a>`;
+                    feed.appendChild(item);
+                });
+                
+                if(isRefresh) {
+                    showNotification("Appels d'offre mis à jour.", 'success');
+                    sendSystemNotification("Nouveaux appels d'offre", "La liste des appels d'offre a été actualisée.");
+                }
+
+            }, 800); // Simulate network delay
+        }
+
+        function populateNews(isRefresh = false) {
+            const feed = document.getElementById('news-feed');
+            if (!feed) return;
+            
+            feed.innerHTML = `<div class="placeholder"><i class="fas fa-circle-notch fa-spin"></i></div>`;
+
+            setTimeout(() => {
+                const newsToShow = getRandomSubset(allNews, 4);
+                feed.innerHTML = ''; // Clear placeholder
+                if (newsToShow.length === 0) {
+                    feed.innerHTML = '<div class="placeholder"><i class="fas fa-info-circle"></i><span>Aucune actualité pour le moment.</span></div>';
+                    return;
+                }
+
+                newsToShow.forEach(newsItem => {
+                    const item = document.createElement('div');
+                    item.className = 'feed-item';
+                    item.innerHTML = `
+                        <a href="${newsItem.link}" target="_blank" rel="noopener noreferrer" onclick="event.preventDefault(); openLink('${newsItem.link}')">
+                            <div class="feed-item-title">${newsItem.title}</div>
+                            <div class="feed-item-meta">
+                                <span><i class="fas fa-newspaper"></i> ${newsItem.source}</span>
+                                <span><i class="fas fa-clock"></i> ${newsItem.date}</span>
+                            </div>
+                             <div class="feed-item-action">
+                                Lire la suite <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </a>`;
+                    feed.appendChild(item);
+                });
+                
+                if(isRefresh) {
+                    showNotification("Actualités mises à jour.", 'success');
+                    sendSystemNotification("Nouvelles actualités", "Les dernières actualités du BTP sont disponibles.");
+                }
+
+            }, 800); // Simulate network delay
+        }
+        
+        function refreshTenders() {
+            const icon = document.querySelector('#tenders-refresh i');
+            icon.classList.add('fa-spin');
+            populateTenders(true);
+            setTimeout(() => icon.classList.remove('fa-spin'), 1000);
+        }
+        
+        function refreshNews() {
+            const icon = document.querySelector('#news-refresh i');
+            icon.classList.add('fa-spin');
+            populateNews(true);
+            setTimeout(() => icon.classList.remove('fa-spin'), 1000);
+        }
+
+        // --- Notification System ---
+        function updateNotifButtonUI() {
+            const buttons = document.querySelectorAll('.feed-action-btn[id$="-notifications"]');
+            if (notificationPermission === 'granted') {
+                buttons.forEach(btn => {
+                    btn.classList.add('active');
+                    btn.title = 'Notifications activées';
+                });
+            } else {
+                 buttons.forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.title = 'Activer les notifications';
+                });
+            }
+        }
+
+        function enableNotifications() {
+            if (!("Notification" in window)) {
+                showNotification("Ce navigateur ne supporte pas les notifications.", 'error');
                 return;
             }
 
-            mockTenders.forEach(tender => {
-                const item = document.createElement('div');
-                item.className = 'feed-item';
-                item.innerHTML = `
-                    <a href="${tender.link}" onclick="event.preventDefault(); showNotification('Redirection vers l\\'offre...', 'info')">
-                        <div class="feed-item-title">${tender.title}</div>
-                        <div class="feed-item-meta">
-                            <span><i class="fas fa-map-marker-alt"></i> ${tender.location}</span>
-                            <span><i class="fas fa-calendar-alt"></i> Clôture le ${tender.date}</span>
-                        </div>
-                        <div class="feed-item-action">
-                            Postuler <i class="fas fa-arrow-right"></i>
-                        </div>
-                    </a>
-                `;
-                feed.appendChild(item);
+            if (notificationPermission === 'granted') {
+                showNotification("Les notifications sont déjà activées.", 'info');
+                return;
+            }
+            
+            if (notificationPermission === 'denied') {
+                showNotification("Les notifications ont été bloquées. Veuillez les autoriser dans les paramètres de votre navigateur.", 'warning', 5000);
+                return;
+            }
+
+            Notification.requestPermission().then(permission => {
+                notificationPermission = permission;
+                if (permission === "granted") {
+                    showNotification("Notifications activées avec succès !", 'success');
+                    sendSystemNotification("LTD Simulator", "Vous recevrez maintenant les dernières nouvelles ici.");
+                } else {
+                    showNotification("Notifications non autorisées.", 'warning');
+                }
+                updateNotifButtonUI();
             });
         }
 
-        function populateNews() {
-            const feed = document.getElementById('news-feed');
-            if (!feed) return;
-
-            // Clear placeholder
-            feed.innerHTML = '';
-
-            if (mockNews.length === 0) {
-                feed.innerHTML = '<div class="placeholder">Aucune actualité pour le moment.</div>';
+        function sendSystemNotification(title, body) {
+            if (notificationPermission !== 'granted') {
                 return;
             }
-
-            mockNews.forEach(newsItem => {
-                const item = document.createElement('div');
-                item.className = 'feed-item';
-                item.innerHTML = `
-                    <a href="${newsItem.link}" onclick="event.preventDefault(); showNotification('Redirection vers l\\'article...', 'info')">
-                        <div class="feed-item-title">${newsItem.title}</div>
-                        <div class="feed-item-meta">
-                            <span><i class="fas fa-newspaper"></i> ${newsItem.source}</span>
-                            <span><i class="fas fa-clock"></i> ${newsItem.date}</span>
-                        </div>
-                         <div class="feed-item-action">
-                            Lire la suite <i class="fas fa-arrow-right"></i>
-                        </div>
-                    </a>
-                `;
-                feed.appendChild(item);
-            });
+            const options = {
+                body: body,
+                icon: 'https://placehold.co/64x64/6366f1/FFFFFF?text=LTD', // A simple placeholder icon
+                badge: 'https://placehold.co/64x64/6366f1/FFFFFF?text=LTD'
+            };
+            new Notification(title, options);
         }
 
 
         document.addEventListener('DOMContentLoaded', () => {
-            document.body.classList.toggle('light-mode', currentTheme === 'light');
             updateThemeUI();
             
             const observer = new IntersectionObserver((entries) => {
@@ -981,10 +1115,11 @@
                 observer.observe(el);
             });
 
-            // Populate the new sections with a slight delay to simulate loading
+            // Initial population
             setTimeout(() => {
                 populateTenders();
                 populateNews();
+                updateNotifButtonUI();
             }, 1000);
         });
     </script>
