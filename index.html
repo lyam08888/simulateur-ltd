@@ -247,10 +247,11 @@
         .mobile-nav-item-icon { font-size: 1.25rem; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border-radius: var(--radius); }
 
         .main-content { margin-top: 4.5rem; padding: var(--spacing-xl) var(--spacing-md); max-width: 1400px; margin-left: auto; margin-right: auto; }
-        .hero { text-align: center; padding: var(--spacing-xl) 0; }
+        .hero { text-align: center; padding: var(--spacing-xl) 0; transition: var(--transition-slow); }
         .hero h1 { font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; margin-bottom: var(--spacing-lg); background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .hero p { font-size: 1.25rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.7; }
         
+        .quick-actions { transition: var(--transition-slow); }
         .quick-actions a div:hover { transform: translateY(-8px); box-shadow: var(--shadow-xl); }
         .animate-in { animation: fadeInUp 0.6s ease-out forwards; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
@@ -325,7 +326,7 @@
                  <ul class="nav-menu">
                      <li class="nav-item"><a href="index.html" class="nav-link active" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
                      <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
-                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
+                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests & Évaluation</a></li>
                      <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
                      <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
                      <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')""><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
@@ -409,14 +410,14 @@
             </div>
         </section>
 
-        <section class="hero animate-in">
+        <section class="hero animate-in" id="hero-section">
             <h1>Maîtrisez les métiers du BTP</h1>
             <p>Formez-vous aux métiers d'avenir du BTP avec nos simulateurs professionnels. Le secteur recrute massivement : préparez votre carrière dès maintenant !</p>
         </section>
 
-        <section class="quick-actions animate-in" style="margin: 4rem 0;">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
-                <a href="#" onclick="event.preventDefault(); navigateTo('simulateur.html')" style="text-decoration: none; color: inherit;">
+        <section class="quick-actions animate-in" id="quick-actions-section" style="margin: 4rem 0;">
+            <div id="quick-actions-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+                <a href="#" class="quick-action-item" data-search-term="simulateurs gestion chantiers technique lancer" onclick="event.preventDefault(); navigateTo('simulateur.html')" style="text-decoration: none; color: inherit;">
                     <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
                         <div style="font-size: 3rem; margin-bottom: 1rem;">👷</div>
                         <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Simulateurs</h3>
@@ -424,7 +425,7 @@
                         <div style="background: var(--primary); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Lancer</div>
                     </div>
                 </a>
-                <a href="#" onclick="event.preventDefault(); navigateTo('test.html')" style="text-decoration: none; color: inherit;">
+                <a href="#" class="quick-action-item" data-search-term="tests évaluation soft-skills connaissances techniques commencer" onclick="event.preventDefault(); navigateTo('test.html')" style="text-decoration: none; color: inherit;">
                     <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
                         <div style="font-size: 3rem; margin-bottom: 1rem;">🧠</div>
                         <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Tests & Évaluation</h3>
@@ -432,7 +433,7 @@
                         <div style="background: var(--secondary); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Commencer</div>
                     </div>
                 </a>
-                <a href="challenges.html" onclick="event.preventDefault(); navigateTo('challenges.html')" style="text-decoration: none; color: inherit;">
+                <a href="challenges.html" class="quick-action-item" data-search-term="challenges recrutement compétences participer" onclick="event.preventDefault(); navigateTo('challenges.html')" style="text-decoration: none; color: inherit;">
                     <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
                         <div style="font-size: 3rem; margin-bottom: 1rem;">🏆</div>
                         <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Challenges Recrutement</h3>
@@ -440,7 +441,7 @@
                         <div style="background: var(--accent); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Participer</div>
                     </div>
                 </a>
-                <a href="#" onclick="event.preventDefault(); navigateTo('emploi.html')" style="text-decoration: none; color: inherit;">
+                <a href="#" class="quick-action-item" data-search-term="offres emploi poste btp consulter" onclick="event.preventDefault(); navigateTo('emploi.html')" style="text-decoration: none; color: inherit;">
                     <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
                         <div style="font-size: 3rem; margin-bottom: 1rem;">💼</div>
                         <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Nos Offres d'Emploi</h3>
@@ -448,7 +449,7 @@
                         <div style="background: var(--primary-light); color: var(--text-primary); padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Consulter</div>
                     </div>
                 </a>
-                <a href="#" onclick="event.preventDefault(); navigateTo('histoire.html')" style="text-decoration: none; color: inherit;">
+                <a href="#" class="quick-action-item" data-search-term="histoire btp étapes innovations explorer" onclick="event.preventDefault(); navigateTo('histoire.html')" style="text-decoration: none; color: inherit;">
                     <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
                         <div style="font-size: 3rem; margin-bottom: 1rem;">📜</div>
                         <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Histoire du BTP</h3>
@@ -660,6 +661,33 @@
             const category = document.getElementById('categoryFilter').value;
             const sortBy = document.getElementById('sortFilter').value;
 
+            // Filter Quick Actions
+            const quickActionItems = document.querySelectorAll('.quick-action-item');
+            const heroSection = document.getElementById('hero-section');
+            const quickActionsSection = document.getElementById('quick-actions-section');
+
+            if (searchTerm.length > 0 || category !== 'all') {
+                heroSection.style.display = 'none';
+            } else {
+                heroSection.style.display = 'block';
+            }
+            
+            if (category === 'all') {
+                quickActionsSection.style.display = 'block';
+                quickActionItems.forEach(item => {
+                    const itemTerms = item.dataset.searchTerm.toLowerCase();
+                    if (itemTerms.includes(searchTerm)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            } else {
+                 quickActionsSection.style.display = 'none';
+            }
+
+
+            // Filter Feeds
             let filteredData = allData.filter(item => {
                 const inCategory = (category === 'all' || item.type === category);
                 const inSearch = (item.title.toLowerCase().includes(searchTerm) || (item.location && item.location.toLowerCase().includes(searchTerm)) || (item.source && item.source.toLowerCase().includes(searchTerm)));
