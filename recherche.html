@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résultats de recherche - LTD Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* Copiez ici le <style> de votre page index.html pour garder le même design */
+        :root {
+            --primary: #6366f1; --primary-dark: #4f46e5; --secondary: #10b981; --accent: #f59e0b;
+            --background: #0f172a; --surface: #1e293b; --surface-elevated: #334155;
+            --glass-border: rgba(255, 255, 255, 0.2); --text-primary: #f8fafc; --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8; --radius: 0.5rem; --radius-lg: 1rem; --spacing-md: 1.5rem;
+            --spacing-xl: 3rem; --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--background); color: var(--text-primary); }
+        .main-content { margin-top: 4.5rem; padding: var(--spacing-xl) var(--spacing-md); max-width: 900px; margin-left: auto; margin-right: auto; }
+        .results-header { margin-bottom: 2rem; }
+        .results-header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .results-header p { color: var(--text-secondary); }
+        .results-header .query { color: var(--accent); font-weight: bold; }
+        .result-item { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); margin-bottom: var(--spacing-md); transition: var(--transition); }
+        .result-item:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .result-item a { text-decoration: none; color: inherit; }
+        .result-item h3 { color: var(--primary); margin-bottom: 0.5rem; }
+        .result-item p { color: var(--text-secondary); line-height: 1.6; }
+        .result-item .type-badge { display: inline-block; background-color: var(--surface-elevated); color: var(--text-muted); padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.8rem; margin-top: 1rem; text-transform: capitalize; }
+        .no-results { text-align: center; padding: 4rem; color: var(--text-muted); font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+    <main class="main-content">
+        <header class="results-header">
+            <h1>Résultats de recherche</h1>
+            <p>Pour la requête : "<span id="query-display" class="query"></span>"</p>
+        </header>
+
+        <div id="results-container">
+            </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const resultsContainer = document.getElementById('results-container');
+            const queryDisplay = document.getElementById('query-display');
+
+            // 1. Récupérer le terme de recherche depuis l'URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const query = urlParams.get('query').toLowerCase();
+            queryDisplay.textContent = query;
+
+            // 2. Charger le fichier de données centralisé
+            fetch('search-data.json')
+                .then(response => response.json())
+                .then(data => {
+                    // 3. Filtrer les données
+                    const results = data.filter(item => 
+                        item.title.toLowerCase().includes(query) ||
+                        item.description.toLowerCase().includes(query) ||
+                        item.keywords.toLowerCase().includes(query)
+                    );
+
+                    // 4. Afficher les résultats
+                    if (results.length > 0) {
+                        results.forEach(item => {
+                            const resultEl = document.createElement('div');
+                            resultEl.className = 'result-item';
+                            resultEl.innerHTML = `
+                                <a href="${item.link}" target="_blank">
+                                    <h3>${item.title}</h3>
+                                    <p>${item.description}</p>
+                                    <span class="type-badge">${item.type}</span>
+                                </a>
+                            `;
+                            resultsContainer.appendChild(resultEl);
+                        });
+                    } else {
+                        resultsContainer.innerHTML = '<p class="no-results">Aucun résultat trouvé pour cette recherche.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error("Erreur de chargement des données de recherche:", error);
+                    resultsContainer.innerHTML = '<p class="no-results">Erreur lors de la recherche. Veuillez réessayer.</p>';
+                });
+        });
+    </script>
+</body>
+</html>
