@@ -246,7 +246,7 @@
             -webkit-text-fill-color: transparent;
         }
         .hero p { font-size: 1.25rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto; line-height: 1.7; }
-        
+
         .search-section { margin-bottom: var(--spacing-xl); }
         .search-container { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); display: flex; flex-direction: column; gap: var(--spacing-md); }
         @media (min-width: 768px) { .search-container { flex-direction: row; align-items: center; } }
@@ -257,119 +257,56 @@
         .search-button { background-color: var(--primary); color: white; border: none; padding: 0.8rem 2rem; border-radius: var(--radius); font-weight: 600; font-size: 1rem; transition: background-color 0.2s; }
         .search-button:hover { background-color: var(--primary-dark); }
 
+        /* Spotlight Section */
+        .spotlight-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin: 4rem 0; }
+        .spotlight-card { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 2rem; display: flex; flex-direction: column; }
+        .spotlight-card h2 { font-size: 1.5rem; color: var(--primary-light); margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem; }
+        .spotlight-card p { color: var(--text-secondary); flex-grow: 1; }
+        .spotlight-card .highlight { color: var(--accent); font-weight: 600; }
+
+        /* Video Section */
+        .video-section { margin: 4rem 0; text-align: center; }
+        .video-section h2 { font-size: 2rem; margin-bottom: 2rem; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        
         /* Timeline Styles */
         .timeline-section { margin: 4rem 0; }
-        .timeline-container {
-            position: relative;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 2rem 0;
-        }
-        .timeline-container::after {
-            content: '';
-            position: absolute;
-            width: 4px;
-            background-color: var(--primary);
-            opacity: 0.3;
-            top: 0;
-            bottom: 0;
-            left: 50%;
-            margin-left: -2px;
-            border-radius: 2px;
-        }
-        .timeline-item {
-            padding: 1rem 40px;
-            position: relative;
-            background-color: inherit;
-            width: 50%;
-        }
+        .timeline-container { position: relative; max-width: 1000px; margin: 0 auto; padding: 2rem 0; }
+        .timeline-container::after { content: ''; position: absolute; width: 4px; background-color: var(--primary); opacity: 0.3; top: 0; bottom: 0; left: 50%; margin-left: -2px; border-radius: 2px; }
+        .timeline-item { padding: 1rem 40px; position: relative; background-color: inherit; width: 50%; }
         .timeline-item:nth-child(odd) { left: 0; }
         .timeline-item:nth-child(even) { left: 50%; }
-        .timeline-item .timeline-icon {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            background-color: var(--surface);
-            border: 3px solid var(--primary);
-            top: 32px;
-            border-radius: 50%;
-            z-index: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: var(--primary-light);
-            transition: var(--transition);
-            transform: translateX(-50%);
-        }
+        .timeline-item .timeline-icon { position: absolute; width: 50px; height: 50px; background-color: var(--surface); border: 3px solid var(--primary); top: 32px; border-radius: 50%; z-index: 1; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--primary-light); transition: var(--transition); transform: translateX(-50%); }
         .timeline-item:nth-child(odd) .timeline-icon { left: 100%; }
         .timeline-item:nth-child(even) .timeline-icon { left: 0; }
-        .timeline-content {
-            background-color: var(--surface);
-            position: relative;
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-md);
-            overflow: hidden;
-        }
-        .timeline-header {
-            background: none; border: none; font: inherit; color: inherit;
-            text-align: left; width: 100%; padding: 2rem; cursor: pointer;
-            display: flex; justify-content: space-between; align-items: center;
-            transition: var(--transition);
-        }
+        .timeline-content { background-color: var(--surface); position: relative; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); box-shadow: var(--shadow-md); overflow: hidden; }
+        .timeline-header { background: none; border: none; font: inherit; color: inherit; text-align: left; width: 100%; padding: 2rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: var(--transition); }
         .timeline-header:hover { background-color: var(--surface-hover); }
         .timeline-header h2 { color: var(--primary-light); margin: 0; font-size: 1.5rem; }
         .timeline-arrow { font-size: 1.2rem; color: var(--text-muted); transition: transform 0.4s ease; }
         .timeline-header.active .timeline-arrow { transform: rotate(180deg); }
-        .timeline-body {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
-        }
+        .timeline-body { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out, padding 0.5s ease-out; }
         .timeline-body p { font-size: 1rem; color: var(--text-primary); line-height: 1.8; margin: 0 2rem 1.5rem; }
         .timeline-body .sub-events { list-style: none; padding-left: 1rem; margin: 0 2rem 1.5rem; border-left: 2px solid var(--primary-dark); }
         .timeline-body .sub-events li { padding: 0.75rem 0 0.75rem 1.5rem; position: relative; font-size: 0.95rem; color: var(--text-secondary); }
-        .image-trigger {
-            background: none; border: none; padding: 0; font: inherit;
-            cursor: pointer; color: var(--primary-light); transition: color 0.2s;
-            display: inline-flex; vertical-align: middle;
-        }
+        .image-trigger { background: none; border: none; padding: 0; font: inherit; cursor: pointer; color: var(--primary-light); transition: color 0.2s; display: inline-flex; vertical-align: middle; }
         .image-trigger:hover { color: var(--accent); }
-        .timeline-body .sub-events li::before {
-            content: '▪'; position: absolute; left: -0.55rem; top: 0.8rem;
-            color: var(--primary); font-size: 1.2rem; line-height: 1;
-        }
+        .timeline-body .sub-events li::before { content: '▪'; position: absolute; left: -0.55rem; top: 0.8rem; color: var(--primary); font-size: 1.2rem; line-height: 1; }
         .timeline-body .sub-events strong { color: var(--primary-light); font-weight: 600; }
-        .did-you-know {
-            background-color: rgba(99, 102, 241, 0.1); border-left: 4px solid var(--primary);
-            margin: 1.5rem 2rem; padding: 1rem 1.5rem; border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
-        }
+        .did-you-know { background-color: rgba(99, 102, 241, 0.1); border-left: 4px solid var(--primary); margin: 1.5rem 2rem; padding: 1rem 1.5rem; border-radius: 0 var(--radius-lg) var(--radius-lg) 0; }
         .did-you-know p { margin: 0; font-size: 0.9rem; font-style: italic; color: var(--text-secondary); }
         .did-you-know strong { color: var(--primary-light); }
-        .timeline-date {
-            display: inline-block; margin: 1rem 2rem 2rem; font-size: 0.8rem; font-weight: 600;
-            color: var(--accent); background-color: rgba(245, 158, 11, 0.1);
-            padding: 0.25rem 0.75rem; border-radius: var(--radius-full);
-        }
+        .timeline-date { display: inline-block; margin: 1rem 2rem 2rem; font-size: 0.8rem; font-weight: 600; color: var(--accent); background-color: rgba(245, 158, 11, 0.1); padding: 0.25rem 0.75rem; border-radius: var(--radius-full); }
         
-        .image-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.85); z-index: 2000;
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s;
-        }
+        .image-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
         .image-modal.show { opacity: 1; visibility: visible; }
         .image-modal-content { max-width: 80vw; max-height: 80vh; text-align: center; }
         .image-modal img { max-width: 100%; max-height: 100%; border-radius: var(--radius-lg); }
         .image-modal-caption { color: white; margin-top: 1rem; font-size: 1rem; }
         .image-modal-close { position: absolute; top: 2rem; right: 2rem; font-size: 2rem; color: white; cursor: pointer; }
 
-        /* Interactive Map Section */
-        #interactive-map {
-            height: 600px; width: 100%; border-radius: var(--radius-lg);
-            border: 1px solid var(--glass-border); background-color: var(--surface); box-shadow: var(--shadow-md);
-        }
+        #interactive-map { height: 600px; width: 100%; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); background-color: var(--surface); box-shadow: var(--shadow-md); }
         .leaflet-popup-content-wrapper { background: var(--surface-elevated); color: var(--text-primary); border-radius: var(--radius-lg); }
         .leaflet-popup-content { margin: 1rem; }
         .leaflet-popup-content h3 { color: var(--primary-light); margin-bottom: 0.5rem; }
@@ -379,10 +316,7 @@
         .map-marker-icon { font-size: 2rem; color: var(--primary); text-shadow: 0 0 5px rgba(0,0,0,0.5); transition: transform 0.2s ease; }
         .map-marker-icon:hover { transform: scale(1.2); }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         .animate-in { opacity: 0; animation: fadeInUp 0.6s ease-out forwards; }
         .timeline-item { opacity: 0; animation: fadeInUp 0.8s ease-out forwards; }
         
@@ -454,6 +388,21 @@
             <p>Découvrez comment les techniques et les innovations ont façonné notre monde, des pyramides antiques aux gratte-ciel modernes.</p>
         </section>
         
+        <section class="spotlight-section animate-in" style="animation-delay: 0.2s;">
+            <div class="spotlight-card">
+                <h2><i class="fas fa-user-tie"></i> Personnage du Jour</h2>
+                <p>
+                    <span class="highlight">Gustave Eiffel (1832-1923)</span>, ingénieur et industriel français, est célèbre pour avoir conçu la tour qui porte son nom. Mais il a aussi révolutionné la construction de ponts et viaducs métalliques, et a conçu l'armature de la Statue de la Liberté.
+                </p>
+            </div>
+            <div class="spotlight-card">
+                <h2><i class="fas fa-lightbulb"></i> Innovation en Lumière</h2>
+                <p>
+                    Le <span class="highlight">Béton Armé</span>, breveté par des pionniers comme François Hennebique à la fin du XIXe siècle, a combiné la résistance à la compression du béton et la résistance à la traction de l'acier. Cette innovation a permis de créer des structures plus audacieuses, plus hautes et plus durables, et reste la pierre angulaire de la construction moderne.
+                </p>
+            </div>
+        </section>
+
         <section class="timeline-section">
             <div class="timeline-container">
                 <div class="timeline-item" style="animation-delay: 0.2s;">
@@ -570,6 +519,13 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <section class="video-section animate-in" style="animation-delay: 1.2s;">
+            <h2>Plongée dans le Moyen Âge : La Construction des Châteaux Forts</h2>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/gq-4L22Xw2M" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         </section>
 
@@ -699,6 +655,15 @@
                     { name: 'Tour Eiffel', date: '1889', description: 'Symbole de la Révolution Industrielle et du potentiel du fer.', coords: [48.8584, 2.2945], icon: 'fa-broadcast-tower' },
                     { name: 'Viaduc de Millau', date: '2004', description: 'Le plus haut pont à haubans du monde.', coords: [44.0775, 3.0236], icon: 'fa-road-bridge' },
                     { name: 'Burj Khalifa', date: '2010', description: 'Actuellement la plus haute structure humaine.', coords: [25.1972, 55.2744], icon: 'fa-building' },
+                    { name: 'Machu Picchu', date: '~1450', description: 'Citadelle inca célèbre pour son ingénierie parasismique.', coords: [-13.1631, -72.5450], icon: 'fa-mountain-city' },
+                    { name: 'Pétra', date: '~300 av. J.-C.', description: 'Cité antique nabatéenne célèbre pour ses monuments taillés dans la roche.', coords: [30.3285, 35.4444], icon: 'fa-archway' },
+                    { name: 'Angkor Vat', date: 'XIIe siècle', description: 'Le plus grand monument religieux du monde, chef-d\'œuvre de l\'architecture khmère.', coords: [13.4125, 103.8667], icon: 'fa-gopuram' },
+                    { name: 'Taj Mahal', date: '1653', description: 'Mausolée de marbre blanc, joyau de l\'architecture moghole.', coords: [27.1751, 78.0421], icon: 'fa-place-of-worship' },
+                    { name: 'Stonehenge', date: '~3000-2000 av. J.-C.', description: 'Monument préhistorique composé de mégalithes disposés en cercles.', coords: [51.1789, -1.8262], icon: 'fa-circle-notch' },
+                    { name: 'Sainte-Sophie', date: '537 ap. J.-C.', description: 'Sa coupole massive a repoussé les limites de l\'architecture byzantine.', coords: [41.0086, 28.9800], icon: 'fa-place-of-worship' },
+                    { name: 'Mont Saint-Michel', date: 'VIIIe siècle - XVIe siècle', description: 'Abbaye médiévale fortifiée construite sur un îlot rocheux.', coords: [48.6360, -1.5115], icon: 'fa-church' },
+                    { name: 'Golden Gate Bridge', date: '1937', description: 'Célèbre pont suspendu, icône de San Francisco.', coords: [37.8199, -122.4783], icon: 'fa-bridge' },
+                    { name: 'Opéra de Sydney', date: '1973', description: 'Chef-d\'œuvre de l\'architecture du XXe siècle avec ses "voiles" de béton.', coords: [-33.8568, 151.2153], icon: 'fa-landmark' }
                 ];
 
                 const createCustomIcon = (iconClass) => L.divIcon({
@@ -724,4 +689,4 @@
         });
     </script>
 </body>
-</ht
+</html>
