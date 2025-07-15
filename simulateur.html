@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Simulateur de gestion de chantier et jeux pédagogiques pour le BTP.">
-    <title>LTD Simulator - Sélection</title>
+    <meta name="description" content="Sélection de simulateurs de gestion de chantier et jeux pédagogiques pour le BTP.">
+    <title>LTD Simulator - Simulateurs</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" xintegrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8UoGIt0VOKvOvqVidXekQoPLjh4TTdYIZ589A7l2g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
             /* Colors */
@@ -19,39 +19,38 @@
             --secondary-dark: #059669;
             --accent: #f59e0b;
             --accent-dark: #d97706;
-            --error: #ef4444;
-
+            
             /* Surfaces */
             --background: #0f172a;
             --surface: #1e293b;
             --surface-elevated: #334155;
             --surface-hover: #475569;
-            --glass: rgba(30, 41, 59, 0.5);
-            --glass-border: rgba(255, 255, 255, 0.1);
-
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            
             /* Text */
             --text-primary: #f8fafc;
             --text-secondary: #cbd5e1;
             --text-muted: #94a3b8;
-
+            
             /* Shadows */
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
             --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-
+            
             /* Animation */
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             --transition-slow: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
+            
             /* Spacing */
             --spacing-xs: 0.5rem;
             --spacing-sm: 1rem;
             --spacing-md: 1.5rem;
             --spacing-lg: 2rem;
             --spacing-xl: 3rem;
-
+            
             /* Borders */
             --radius-sm: 0.375rem;
             --radius: 0.5rem;
@@ -61,19 +60,20 @@
             --radius-full: 9999px;
         }
 
+        /* Light mode */
         body.light-mode {
-            --background: #f8fafc;
+            --background: #f1f5f9;
             --surface: #ffffff;
             --surface-elevated: #e2e8f0;
             --surface-hover: #cbd5e1;
-            --glass: rgba(255, 255, 255, 0.5);
+            --glass: rgba(0, 0, 0, 0.05);
             --glass-border: rgba(0, 0, 0, 0.1);
             --text-primary: #1e293b;
             --text-secondary: #475569;
             --text-muted: #64748b;
         }
 
-        *, *::before, *::after {
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -85,44 +85,47 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--background);
+            background: var(--background);
             color: var(--text-primary);
             line-height: 1.6;
             overflow-x: hidden;
-            transition: background-color var(--transition-slow), color var(--transition-slow);
+            transition: var(--transition-slow);
         }
 
         body::before {
             content: '';
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%), radial-gradient(circle at 40% 80%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
             pointer-events: none;
             z-index: -1;
         }
+        
+        [onclick], .nav-link, .mobile-nav-item, .launch-button, .theme-toggle, .mobile-toggle {
+            cursor: pointer;
+        }
 
+        /* Header */
         .header {
             position: fixed;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             z-index: 1000;
             backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            background-color: rgba(15, 23, 42, 0.8);
+            background: rgba(15, 23, 42, 0.8);
             border-bottom: 1px solid var(--glass-border);
             transition: var(--transition);
         }
 
         body.light-mode .header {
-            background-color: rgba(255, 255, 255, 0.8);
-        }
-
-        .header.scrolled {
-            box-shadow: var(--shadow-lg);
-            background-color: rgba(15, 23, 42, 0.95);
-        }
-
-        body.light-mode .header.scrolled {
-            background-color: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.8);
         }
 
         .nav-container {
@@ -143,20 +146,29 @@
             color: var(--text-primary);
             font-weight: 800;
             font-size: 1.5rem;
-            transition: var(--transition);
-        }
-        .logo:hover { transform: scale(1.02); }
-        .logo-icon { font-size: 2rem; }
-        .logo-text {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
         }
 
-        .nav-desktop { display: flex; align-items: center; gap: var(--spacing-lg); }
-        .nav-menu { display: flex; align-items: center; gap: var(--spacing-md); list-style: none; }
-        .nav-item { position: relative; }
+        .logo-icon {
+            font-size: 2rem;
+        }
+
+        .nav-desktop {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            list-style: none;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
         .nav-link {
             display: flex;
             align-items: center;
@@ -167,45 +179,41 @@
             font-weight: 500;
             border-radius: var(--radius);
             transition: var(--transition);
-            position: relative;
         }
-        .nav-link:hover { color: var(--text-primary); background-color: var(--glass); }
-        .nav-link.active { color: var(--primary); background-color: rgba(99, 102, 241, 0.1); }
-        
-        .search-container { position: relative; display: flex; align-items: center; }
-        .search-input {
-            width: 240px;
-            padding: var(--spacing-xs) var(--spacing-sm);
-            padding-left: 2.5rem;
-            background-color: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-full);
-            color: var(--text-primary);
-            font-size: 0.875rem;
-            transition: var(--transition);
-            backdrop-filter: blur(10px);
-        }
-        .search-input:focus { outline: none; border-color: var(--primary); width: 300px; box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
-        .search-input::placeholder { color: var(--text-muted); }
-        .search-icon { position: absolute; left: var(--spacing-sm); color: var(--text-muted); font-size: 0.875rem; }
 
-        .nav-actions { display: flex; align-items: center; gap: var(--spacing-sm); }
-        .quick-settings-toggle {
+        .nav-link:hover {
+            color: var(--text-primary);
+            background: var(--glass);
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .nav-actions {
             display: flex;
             align-items: center;
-            gap: var(--spacing-xs);
-            padding: var(--spacing-xs) var(--spacing-sm);
-            background-color: var(--glass);
+            gap: var(--spacing-sm);
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--glass);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius);
             color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
             transition: var(--transition);
-            cursor: pointer;
-            backdrop-filter: blur(10px);
         }
-        .quick-settings-toggle:hover { background-color: var(--surface-elevated); color: var(--text-primary); transform: translateY(-1px); }
+
+        .theme-toggle:hover {
+            background: var(--surface-elevated);
+            color: var(--text-primary);
+        }
 
         .mobile-toggle {
             display: none;
@@ -214,35 +222,49 @@
             align-items: center;
             width: 2.5rem;
             height: 2.5rem;
-            background-color: var(--glass);
+            background: var(--glass);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius);
-            cursor: pointer;
             transition: var(--transition);
-            backdrop-filter: blur(10px);
         }
-        .mobile-toggle:hover { background-color: var(--surface-elevated); }
-        .hamburger { position: relative; width: 1.25rem; height: 1rem; }
+
+        .hamburger {
+            position: relative;
+            width: 1.25rem;
+            height: 1rem;
+        }
+
         .hamburger span {
             position: absolute;
             left: 0;
             width: 100%;
             height: 2px;
-            background-color: var(--text-primary);
+            background: var(--text-primary);
             border-radius: 1px;
             transition: var(--transition);
         }
+
         .hamburger span:nth-child(1) { top: 0; }
         .hamburger span:nth-child(2) { top: 50%; transform: translateY(-50%); }
         .hamburger span:nth-child(3) { bottom: 0; }
-        .mobile-toggle.active .hamburger span:nth-child(1) { top: 50%; transform: translateY(-50%) rotate(45deg); }
-        .mobile-toggle.active .hamburger span:nth-child(2) { opacity: 0; }
-        .mobile-toggle.active .hamburger span:nth-child(3) { bottom: 50%; transform: translateY(50%) rotate(-45deg); }
 
+        .mobile-toggle.active .hamburger span:nth-child(1) {
+            top: 50%;
+            transform: translateY(-50%) rotate(45deg);
+        }
+        .mobile-toggle.active .hamburger span:nth-child(2) { opacity: 0; }
+        .mobile-toggle.active .hamburger span:nth-child(3) {
+            bottom: 50%;
+            transform: translateY(50%) rotate(-45deg);
+        }
+        
         .mobile-menu {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: var(--background);
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--background);
             z-index: 999;
             display: flex;
             flex-direction: column;
@@ -250,7 +272,12 @@
             visibility: hidden;
             transition: var(--transition-slow);
         }
-        .mobile-menu.active { opacity: 1; visibility: visible; }
+
+        .mobile-menu.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
         .mobile-menu-header {
             display: flex;
             align-items: center;
@@ -258,22 +285,62 @@
             padding: var(--spacing-md);
             border-bottom: 1px solid var(--glass-border);
         }
+
         .mobile-menu-close {
             width: 2.5rem;
             height: 2.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: var(--glass);
+            background: var(--glass);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius);
             color: var(--text-primary);
-            cursor: pointer;
-            transition: var(--transition);
         }
-        .mobile-menu-close:hover { background-color: var(--surface-elevated); }
-        .mobile-menu-content { flex: 1; padding: var(--spacing-lg); overflow-y: auto; }
+
+        .mobile-menu-content {
+            flex: 1;
+            padding: var(--spacing-lg);
+            overflow-y: auto;
+        }
+
+        .mobile-nav-section h3 {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .mobile-nav-items {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
         
+        .mobile-nav-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+        }
+        
+        .mobile-nav-item-icon {
+            font-size: 1.25rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--glass);
+            border-radius: var(--radius);
+        }
+
+        /* Main content */
         .main-content {
             margin-top: 4.5rem;
             padding: var(--spacing-xl) var(--spacing-md);
@@ -281,44 +348,38 @@
             margin-left: auto;
             margin-right: auto;
         }
-        .hero { text-align: center; padding: var(--spacing-xl) 0; }
+
+        .hero {
+            text-align: center;
+            padding: var(--spacing-xl) 0;
+        }
+
         .hero h1 {
             font-size: 3.5rem;
             font-weight: 800;
             margin-bottom: var(--spacing-lg);
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
             -webkit-background-clip: text;
-            background-clip: text;
             -webkit-text-fill-color: transparent;
-        }
-        .hero p { font-size: 1.25rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.7; }
-
-        @media (max-width: 1024px) {
-            .search-input { width: 200px; }
-            .search-input:focus { width: 240px; }
-        }
-        @media (max-width: 768px) {
-            .nav-desktop { display: none; }
-            .mobile-toggle { display: flex; }
-            .nav-container { padding: 0 var(--spacing-sm); }
-            .hero h1 { font-size: 2.5rem; }
-            .hero p { font-size: 1.1rem; }
-        }
-        @media (max-width: 640px) {
-            .nav-container { height: 4rem; }
-            .main-content { margin-top: 4rem; padding: var(--spacing-lg) var(--spacing-sm); }
-            .logo { font-size: 1.25rem; }
-            .logo-icon { font-size: 1.75rem; }
-            .hero h1 { font-size: 2rem; }
-            .hero p { font-size: 1rem; }
+            background-clip: text;
         }
 
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-in { animation: fadeInUp 0.6s ease-out forwards; }
-
+        .animate-in {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        
         /* Simulator Grid Section */
         .simulators-grid .grid-container {
             display: grid;
@@ -365,7 +426,7 @@
         .simulator-card p {
             color: var(--text-secondary);
             margin-bottom: 2rem;
-            flex-grow: 1; /* Pushes the button to the bottom */
+            flex-grow: 1;
         }
 
         .launch-button {
@@ -375,7 +436,6 @@
             padding: 0.75rem 2.5rem;
             border-radius: var(--radius-full);
             font-weight: 600;
-            cursor: pointer;
             transition: var(--transition);
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -386,30 +446,124 @@
             transform: scale(1.05);
             box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
         }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-desktop {
+                display: none;
+            }
+            .mobile-toggle {
+                display: flex;
+            }
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+        }
+        
+        /* Notification System */
+        .notification {
+            position: fixed;
+            bottom: var(--spacing-lg);
+            right: var(--spacing-lg);
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            box-shadow: var(--shadow-xl);
+            transform: translateX(calc(100% + var(--spacing-lg)));
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1100;
+            backdrop-filter: blur(20px);
+            max-width: 350px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
+        }
+        
+        .notification-icon {
+            font-size: 1.25rem;
+            color: var(--primary);
+            margin-top: 2px;
+        }
+        
+        .notification-text {
+            color: var(--text-primary);
+            font-weight: 500;
+            flex: 1;
+        }
+        
+        .notification-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0;
+            font-size: 1rem;
+        }
+
+        .notification.success .notification-icon { color: var(--secondary); }
+        .notification.warning .notification-icon { color: var(--accent); }
+        .notification.error .notification-icon { color: #ef4444; }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--surface-elevated);
+            z-index: 1001;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .progress-bar.show {
+            opacity: 1;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
     </style>
 </head>
 <body>
+    <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
     <!-- Header -->
     <header class="header" id="header">
         <nav class="nav-container">
-            <a href="#" class="logo">
+            <a href="index.html" class="logo" onclick="event.preventDefault(); navigateTo('index.html');">
                 <span class="logo-icon">🏗️</span>
                 <span class="logo-text">LTD Simulator</span>
             </a>
             <div class="nav-desktop">
-                <ul class="nav-menu">
-                    <li class="nav-item"><a href="index.html" class="nav-link">Retour à l'accueil</a></li>
-                    <li class="nav-item"><a href="test.html" class="nav-link">Tests & Évaluations</a></li>
-                </ul>
-                <div class="search-container">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" class="search-input" placeholder="Rechercher...">
-                </div>
-                <div class="nav-actions">
-                    <button class="quick-settings-toggle" id="quickSettingsToggle"><i class="fas fa-cog"></i></button>
-                </div>
+                 <ul class="nav-menu">
+                     <li class="nav-item"><a href="index.html" class="nav-link" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
+                     <li class="nav-item"><a href="#" class="nav-link active" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
+                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests & Évaluation</a></li>
+                     <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
+                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); showNotification('Section en construction', 'info')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
+                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')""><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
+                 </ul>
+                 <div class="nav-actions">
+                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                         <i class="fas fa-moon" id="themeIcon"></i>
+                     </button>
+                 </div>
             </div>
-            <button class="mobile-toggle" id="mobileToggle">
+            <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
                 <div class="hamburger"><span></span><span></span><span></span></div>
             </button>
         </nav>
@@ -418,24 +572,54 @@
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
         <div class="mobile-menu-header">
-            <a href="#" class="logo"><span class="logo-icon">🏗️</span><span class="logo-text">LTD Sim</span></a>
-            <button class="mobile-menu-close" id="mobileMenuClose"><i class="fas fa-times"></i></button>
+            <a href="index.html" class="logo" onclick="event.preventDefault(); toggleMobileMenu(); navigateTo('index.html');">
+                <span class="logo-icon">🏗️</span>
+                <span class="logo-text">LTD Simulator</span>
+            </a>
+            <button class="mobile-menu-close" onclick="toggleMobileMenu()"><i class="fas fa-times"></i></button>
         </div>
-        <div class="mobile-menu-content" id="mobileMenuContent">
-            <!-- Content is generated by JS -->
+        <div class="mobile-menu-content">
+            <div class="mobile-nav-section">
+                <h3>Navigation</h3>
+                <div class="mobile-nav-items">
+                    <a href="index.html" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('index.html')">
+                        <div class="mobile-nav-item-icon"><i class="fas fa-home"></i></div>
+                        <h4>Accueil</h4>
+                    </a>
+                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('simulateur.html')">
+                        <div class="mobile-nav-item-icon"><i class="fas fa-gamepad"></i></div>
+                        <h4>Simulateurs</h4>
+                    </a>
+                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('test.html')">
+                        <div class="mobile-nav-item-icon"><i class="fas fa-brain"></i></div>
+                        <h4>Tests & Évaluation</h4>
+                    </a>
+                    <a href="challenges.html" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('challenges.html')">
+                        <div class="mobile-nav-item-icon"><i class="fas fa-trophy"></i></div>
+                        <h4>Challenges</h4>
+                    </a>
+                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('emploi.html')">
+                        <div class="mobile-nav-item-icon"><i class="fas fa-briefcase"></i></div>
+                        <h4>Nos offres d'emploi</h4>
+                    </a>
+                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('histoire.html')">
+                        <div class="mobile-nav-item-icon"><i class="fas fa-scroll"></i></div>
+                        <h4>Histoire du BTP</h4>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Main Content -->
     <main class="main-content">
-        <section class="hero animate-in" style="padding-top: 0;">
-            <h1>Maîtrisez les métiers du BTP</h1>
-            <p>Formez-vous aux métiers d'avenir du BTP avec nos simulateurs professionnels. Le secteur recrute massivement : préparez votre carrière dès maintenant !</p>
+        <section class="hero animate-in">
+            <h1>Nos Simulateurs Professionnels</h1>
+            <p>Choisissez un simulateur et plongez dans une expérience réaliste pour tester et perfectionner vos compétences dans les métiers clés du BTP.</p>
         </section>
         
         <!-- Simulator Grid Section -->
         <section class="simulators-grid animate-in" style="margin: 4rem 0;">
-            <h2 style="text-align: center; font-size: 2rem; font-weight: 700; margin-bottom: 2.5rem; color: var(--text-primary);">Nos Simulateurs</h2>
             <div class="grid-container">
                 <!-- Card 1: Directeur de Travaux -->
                 <div class="simulator-card">
@@ -461,80 +645,117 @@
             </div>
         </section>
 
-        <!-- Stats Section -->
-        <section class="stats-section animate-in" style="margin: 4rem 0;">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
-                <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
-                    <div style="font-size: 2.5rem; font-weight: 800; color: var(--primary); margin-bottom: 0.5rem;">1,5M</div>
-                    <div style="color: var(--text-secondary);">Emplois dans le BTP en France</div>
-                </div>
-                <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
-                    <div style="font-size: 2.5rem; font-weight: 800; color: var(--secondary); margin-bottom: 0.5rem;">200k</div>
-                    <div style="color: var(--text-secondary);">Postes à pourvoir d'ici 2025</div>
-                </div>
-                <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
-                    <div style="font-size: 2.5rem; font-weight: 800; color: var(--accent); margin-bottom: 0.5rem;">148Mds€</div>
-                    <div style="color: var(--text-secondary);">Chiffre d'affaires du secteur</div>
-                </div>
-            </div>
-        </section>
     </main>
     
+    <div class="notification" id="notification">
+        <div class="notification-content">
+            <i class="fas fa-info-circle notification-icon" id="notificationIcon"></i>
+            <span class="notification-text" id="notificationText"></span>
+            <button class="notification-close" onclick="this.parentElement.parentElement.classList.remove('show')"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+
     <script>
-        // --- LAUNCH SIMULATOR FUNCTION ---
-        // This function is called when a "Lancer" button is clicked.
-        // It redirects the page to the URL provided for the specific simulator.
-        function launchGame(url) {
-            // A simple alert to show it's working, then redirect.
-            // You can remove the alert in production.
-            console.log(`Lancement de la simulation : ${url}`);
-            window.location.href = url;
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+
+        function showProgress() {
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            if (!progressBar || !progressFill) return;
+            progressBar.classList.add('show');
+            progressFill.style.width = '0%';
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(() => progressBar.classList.remove('show'), 500);
+                }
+                progressFill.style.width = progress + '%';
+            }, 100);
         }
 
-        // --- ALL-PURPOSE SCRIPT ---
-        // Waits for the document to be fully loaded before running scripts.
-        document.addEventListener('DOMContentLoaded', () => {
-            const header = document.getElementById('header');
+        function navigateTo(pageFile) {
+            showProgress();
+            showNotification(`Chargement de la page...`, 'info');
+            // In a real scenario, you'd load the content dynamically.
+            // For this example, we'll simulate a page load.
+            if (window.location.href.endsWith(pageFile)) {
+                 setTimeout(() => progressBar.classList.remove('show'), 500);
+                 return;
+            }
+            setTimeout(() => window.location.href = pageFile, 1500);
+        }
+
+        function launchGame(url) {
+            showProgress();
+            showNotification(`Lancement de la simulation...`, 'success');
+            setTimeout(() => {
+                // In a real app, this would redirect to the game page
+                window.location.href = url;
+            }, 1500);
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            const notificationIcon = document.getElementById('notificationIcon');
+            if (!notification || !notificationText || !notificationIcon) return;
+            
+            notification.classList.remove('success', 'warning', 'error');
+            switch(type) {
+                case 'success': notificationIcon.className = 'fas fa-check-circle notification-icon'; notification.classList.add('success'); break;
+                case 'warning': notificationIcon.className = 'fas fa-exclamation-triangle notification-icon'; notification.classList.add('warning'); break;
+                case 'error': notificationIcon.className = 'fas fa-exclamation-circle notification-icon'; notification.classList.add('error'); break;
+                default: notificationIcon.className = 'fas fa-info-circle notification-icon';
+            }
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => notification.classList.remove('show'), 3000);
+        }
+        
+        function updateThemeUI() {
+            const themeIcon = document.getElementById('themeIcon');
+            if (!themeIcon) return;
+            themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            document.body.classList.toggle('light-mode', currentTheme === 'light');
+            updateThemeUI();
+            showNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
+        }
+        
+        function toggleMobileMenu() {
             const mobileToggle = document.getElementById('mobileToggle');
             const mobileMenu = document.getElementById('mobileMenu');
-            const mobileMenuClose = document.getElementById('mobileMenuClose');
-            const mobileMenuContent = document.getElementById('mobileMenuContent');
-            const desktopNav = document.querySelector('.nav-desktop');
+            mobileToggle.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        }
 
-            // --- Header Scroll Effect ---
-            // Adds a 'scrolled' class to the header when the user scrolls down.
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 20) {
-                    header.classList.add('scrolled');
-                } else {
-                    header.classList.remove('scrolled');
-                }
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.classList.toggle('light-mode', currentTheme === 'light');
+            updateThemeUI();
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.animate-in').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'all 0.6s ease-out';
+                observer.observe(el);
             });
-
-            // --- Mobile Menu Toggle ---
-            // Opens and closes the mobile navigation menu.
-            const toggleMenu = () => {
-                mobileToggle.classList.toggle('active');
-                mobileMenu.classList.toggle('active');
-                document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
-            };
-
-            if (mobileToggle) {
-                mobileToggle.addEventListener('click', toggleMenu);
-            }
-            if (mobileMenuClose) {
-                mobileMenuClose.addEventListener('click', toggleMenu);
-            }
-
-            // --- Populate Mobile Menu ---
-            // Clones the desktop navigation and search bar into the mobile menu for consistency.
-            if (desktopNav && mobileMenuContent) {
-                const navClone = desktopNav.cloneNode(true);
-                // We remove the desktop-only class and add a mobile-specific one for styling if needed
-                navClone.classList.remove('nav-desktop');
-                navClone.classList.add('nav-mobile');
-                mobileMenuContent.appendChild(navClone);
-            }
         });
     </script>
 </body>
