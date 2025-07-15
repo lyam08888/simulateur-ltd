@@ -1351,6 +1351,12 @@
                     </li>
 
                     <li class="nav-item">
+                        <a href="#" class="nav-link" onclick="event.preventDefault(); showNotification('Section Challenges en construction', 'info');">
+                            <i class="fas fa-trophy"></i>&nbsp;Challenges
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
                         <a href="#" class="nav-link has-dropdown">
                             Ressources
                         </a>
@@ -1394,6 +1400,18 @@
                                         </a>
                                     </div>
                                 </div>
+                                <div class="mega-menu-section">
+                                    <h3><i class="fas fa-user-circle"></i> Compte</h3>
+                                    <div class="mega-menu-items">
+                                        <a href="#" class="mega-menu-item" onclick="event.preventDefault(); showNotification('Connexion en cours de développement', 'info')">
+                                            <div class="mega-menu-item-icon"><i class="fas fa-sign-in-alt"></i></div>
+                                            <div class="mega-menu-item-content">
+                                                <h4>Connexion</h4>
+                                                <p>Accédez à votre espace</p>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </li>
@@ -1415,10 +1433,6 @@
                         <i class="fas fa-cog"></i>
                         <span>Paramètres</span>
                     </button>
-                    <a href="#" class="login-btn" onclick="event.preventDefault(); showNotification('Connexion en cours de développement', 'info')">
-                        <i class="fas fa-user"></i>
-                        <span>Connexion</span>
-                    </a>
                 </div>
             </div>
 
@@ -1488,6 +1502,19 @@
                         <div class="mobile-nav-item-content">
                             <h4>Test Comportemental</h4>
                             <p>Évaluez vos soft skills</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+             <div class="mobile-nav-section">
+                <h3>Challenges</h3>
+                <div class="mobile-nav-items">
+                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); showNotification('Section Challenges en construction', 'info');">
+                        <div class="mobile-nav-item-icon">🏆</div>
+                        <div class="mobile-nav-item-content">
+                            <h4>Challenges Recrutement</h4>
+                            <p>Candidatez différemment</p>
                         </div>
                     </a>
                 </div>
@@ -1594,30 +1621,12 @@
                     </div>
                 </a>
                 
-                <a href="#" onclick="event.preventDefault(); launchGame('histoire.html')" style="text-decoration: none; color: inherit;">
+                <a href="#" onclick="event.preventDefault(); showNotification('Découvrez une nouvelle façon de candidater !', 'info')" style="text-decoration: none; color: inherit;">
                     <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
-                        <div style="font-size: 3rem; margin-bottom: 1rem;">📜</div>
-                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Histoire du BTP</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Découvrez l'évolution du secteur.</p>
-                        <div style="background: var(--accent); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Explorer</div>
-                    </div>
-                </a>
-
-                <a href="https://www.ltd-international.com/" target="_blank" style="text-decoration: none; color: inherit;">
-                    <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
-                        <div style="font-size: 3rem; margin-bottom: 1rem;">🏢</div>
-                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">LTD International</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Visitez le site de notre partenaire.</p>
-                        <div style="background: var(--primary-light); color: var(--text-primary); padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Visiter</div>
-                    </div>
-                </a>
-                
-                <a href="#" onclick="event.preventDefault(); showNotification('Section emploi en cours de développement', 'info')" style="text-decoration: none; color: inherit;">
-                    <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
-                        <div style="font-size: 3rem; margin-bottom: 1rem;">💼</div>
-                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Offres d'emploi</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Trouvez votre prochain poste dans le BTP.</p>
-                        <div style="background: var(--secondary-dark); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Rechercher</div>
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🏆</div>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Challenges Recrutement</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Candidatez différemment et montrez vos compétences.</p>
+                        <div style="background: var(--accent); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Participer</div>
                     </div>
                 </a>
 
