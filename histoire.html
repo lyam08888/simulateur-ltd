@@ -8,8 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <!-- Corrected 'integrity' attribute -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" xintegrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8UoGIt0VOKvOvqVidXekQoPLjh4TTdYIZ589A7l2g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <!-- Leaflet CSS for interactive map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <!-- Leaflet.markercluster CSS -->
@@ -25,37 +24,35 @@
             --secondary-dark: #059669;
             --accent: #f59e0b;
             --accent-dark: #d97706;
-            --error: #ef4444;
-
+            
             /* Surfaces */
             --background: #0f172a;
             --surface: #1e293b;
             --surface-elevated: #334155;
             --surface-hover: #475569;
-            --glass: rgba(30, 41, 59, 0.5);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --header-bg: rgba(15, 23, 42, 0.8);
-
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            
             /* Text */
             --text-primary: #f8fafc;
             --text-secondary: #cbd5e1;
             --text-muted: #94a3b8;
-
+            
             /* Shadows */
             --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
             --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-
+            
             /* Animation */
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             --transition-slow: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
+            
             /* Spacing */
             --spacing-xs: 0.5rem;
             --spacing-sm: 1rem;
             --spacing-md: 1.5rem;
             --spacing-lg: 2rem;
             --spacing-xl: 3rem;
-
+            
             /* Borders */
             --radius: 0.5rem;
             --radius-lg: 1rem;
@@ -67,9 +64,8 @@
             --surface: #ffffff;
             --surface-elevated: #e2e8f0;
             --surface-hover: #cbd5e1;
-            --glass: rgba(255, 255, 255, 0.5);
+            --glass: rgba(0, 0, 0, 0.05);
             --glass-border: rgba(0, 0, 0, 0.1);
-            --header-bg: rgba(248, 250, 252, 0.8);
             --text-primary: #1e293b;
             --text-secondary: #475569;
             --text-muted: #64748b;
@@ -108,10 +104,13 @@
             top: 0; left: 0; right: 0;
             z-index: 1000;
             backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            background-color: var(--header-bg);
+            background: rgba(15, 23, 42, 0.8);
             border-bottom: 1px solid var(--glass-border);
             transition: var(--transition);
+        }
+
+        body.light-mode .header {
+            background: rgba(255, 255, 255, 0.8);
         }
 
         .nav-container {
@@ -133,12 +132,9 @@
             font-weight: 800;
             font-size: 1.5rem;
         }
-        
-        .logo-text {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
+
+        .logo-icon {
+            font-size: 2rem;
         }
 
         .nav-desktop { display: flex; align-items: center; gap: var(--spacing-lg); }
@@ -154,36 +150,83 @@
             font-weight: 500;
             border-radius: var(--radius);
             transition: var(--transition);
-            position: relative;
-        }
-        .nav-link:hover { color: var(--text-primary); background-color: var(--surface-hover); }
-        .nav-link.active { color: var(--primary); font-weight: 700; background-color: rgba(99, 102, 241, 0.1); }
-        
-        /* Theme Toggle Button */
-        .theme-toggle-btn {
-            background: var(--surface);
-            border: 1px solid var(--glass-border);
-            color: var(--text-muted);
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 50%;
             cursor: pointer;
+        }
+        .nav-link:hover { color: var(--text-primary); background: var(--glass); }
+        .nav-link.active { color: var(--primary); background: rgba(99, 102, 241, 0.1); }
+
+        .nav-actions { display: flex; align-items: center; gap: var(--spacing-sm); }
+        .theme-toggle {
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            color: var(--text-secondary);
             transition: var(--transition);
+            cursor: pointer;
         }
-        .theme-toggle-btn:hover {
-            color: var(--primary);
-            border-color: var(--primary);
+        .theme-toggle:hover { background: var(--surface-elevated); color: var(--text-primary); }
+        
+        .mobile-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            transition: var(--transition);
+            cursor: pointer;
         }
-        .theme-toggle-btn .fa-sun { display: none; }
-        .theme-toggle-btn .fa-moon { display: block; }
 
-        body.light-mode .theme-toggle-btn .fa-sun { display: block; }
-        body.light-mode .theme-toggle-btn .fa-moon { display: none; }
+        .hamburger { position: relative; width: 1.25rem; height: 1rem; }
+        .hamburger span {
+            position: absolute; left: 0; width: 100%; height: 2px;
+            background: var(--text-primary); border-radius: 1px; transition: var(--transition);
+        }
+        .hamburger span:nth-child(1) { top: 0; }
+        .hamburger span:nth-child(2) { top: 50%; transform: translateY(-50%); }
+        .hamburger span:nth-child(3) { bottom: 0; }
 
+        .mobile-toggle.active .hamburger span:nth-child(1) { top: 50%; transform: translateY(-50%) rotate(45deg); }
+        .mobile-toggle.active .hamburger span:nth-child(2) { opacity: 0; }
+        .mobile-toggle.active .hamburger span:nth-child(3) { bottom: 50%; transform: translateY(50%) rotate(-45deg); }
+
+        .mobile-menu {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--background); z-index: 999; display: flex;
+            flex-direction: column; opacity: 0; visibility: hidden;
+            transition: var(--transition-slow);
+        }
+        .mobile-menu.active { opacity: 1; visibility: visible; }
+        .mobile-menu-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: var(--spacing-md); border-bottom: 1px solid var(--glass-border);
+        }
+        .mobile-menu-close {
+            width: 2.5rem; height: 2.5rem; display: flex; align-items: center;
+            justify-content: center; background: var(--glass); border: 1px solid var(--glass-border);
+            border-radius: var(--radius); color: var(--text-primary); cursor: pointer;
+        }
+        .mobile-menu-content { flex: 1; padding: var(--spacing-lg); overflow-y: auto; }
+        .mobile-nav-items { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+        .mobile-nav-item {
+            display: flex; align-items: center; gap: var(--spacing-sm);
+            padding: var(--spacing-md); color: var(--text-secondary);
+            text-decoration: none; border-radius: var(--radius-md); cursor: pointer;
+        }
+        .mobile-nav-item-icon {
+            font-size: 1.25rem; width: 2.5rem; height: 2.5rem;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--glass); border-radius: var(--radius);
+        }
+        .mobile-nav-item h4 { font-weight: 500; }
 
         .main-content {
             margin-top: 4.5rem;
@@ -204,16 +247,8 @@
         }
         .hero p { font-size: 1.25rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto; line-height: 1.7; }
 
-        .breadcrumb { display: flex; align-items: center; gap: var(--spacing-xs); margin-bottom: var(--spacing-lg); font-size: 0.875rem; color: var(--text-muted); }
-        .breadcrumb-item { color: var(--text-muted); text-decoration: none; transition: var(--transition); }
-        .breadcrumb-item:hover { color: var(--text-primary); }
-        .breadcrumb-item.active { color: var(--text-primary); font-weight: 500; }
-        .breadcrumb-separator { color: var(--text-muted); }
-
         /* Timeline Styles */
-        .timeline-section {
-            margin: 4rem 0;
-        }
+        .timeline-section { margin: 4rem 0; }
         .timeline-container {
             position: relative;
             max-width: 1000px;
@@ -237,18 +272,9 @@
             position: relative;
             background-color: inherit;
             width: 50%;
-            transition: opacity 0.5s;
         }
-        .timeline-item.is-hidden {
-            opacity: 0.1;
-            pointer-events: none;
-        }
-        .timeline-item:nth-child(odd) {
-            left: 0;
-        }
-        .timeline-item:nth-child(even) {
-            left: 50%;
-        }
+        .timeline-item:nth-child(odd) { left: 0; }
+        .timeline-item:nth-child(even) { left: 50%; }
         .timeline-item .timeline-icon {
             position: absolute;
             width: 50px;
@@ -264,23 +290,10 @@
             font-size: 1.5rem;
             color: var(--primary-light);
             transition: var(--transition);
-            transform: translateX(-50%); /* Center the icon horizontally */
+            transform: translateX(-50%);
         }
-        
-        .timeline-item:nth-child(odd) .timeline-icon {
-            left: 100%;
-        }
-        .timeline-item:nth-child(even) .timeline-icon {
-            left: 0;
-        }
-        
-        .timeline-item.active .timeline-icon {
-            background-color: var(--primary);
-            color: white;
-            transform: scale(1.1) translateX(-45%);
-            border-color: var(--primary-light);
-        }
-
+        .timeline-item:nth-child(odd) .timeline-icon { left: 100%; }
+        .timeline-item:nth-child(even) .timeline-icon { left: 0; }
         .timeline-content {
             background-color: var(--surface);
             position: relative;
@@ -289,315 +302,141 @@
             box-shadow: var(--shadow-md);
             overflow: hidden;
         }
-        
         .timeline-header {
-            /* Reset button styles */
-            background: none;
-            border: none;
-            font: inherit;
-            color: inherit;
-            text-align: left;
-            width: 100%;
-            /* Original styles */
-            padding: 2rem;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background: none; border: none; font: inherit; color: inherit;
+            text-align: left; width: 100%; padding: 2rem; cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center;
             transition: var(--transition);
         }
-        
-        .timeline-header:hover {
-            background-color: var(--surface-hover);
-        }
-
-        .timeline-header h2 {
-            color: var(--primary-light);
-            margin: 0;
-            font-size: 1.5rem;
-        }
-        
-        .timeline-arrow {
-            font-size: 1.2rem;
-            color: var(--text-muted);
-            transition: transform 0.4s ease;
-        }
-        
-        .timeline-header.active .timeline-arrow {
-            transform: rotate(180deg);
-        }
-        
+        .timeline-header:hover { background-color: var(--surface-hover); }
+        .timeline-header h2 { color: var(--primary-light); margin: 0; font-size: 1.5rem; }
+        .timeline-arrow { font-size: 1.2rem; color: var(--text-muted); transition: transform 0.4s ease; }
+        .timeline-header.active .timeline-arrow { transform: rotate(180deg); }
         .timeline-body {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.5s ease-out, padding 0.5s ease-out;
         }
-        
-        .timeline-body p {
-            font-size: 1rem;
-            color: var(--text-primary);
-            line-height: 1.8;
-            margin: 0 2rem 1.5rem;
-        }
-
-        .timeline-body .sub-events {
-            list-style: none;
-            padding-left: 1rem;
-            margin: 0 2rem 1.5rem;
-            border-left: 2px solid var(--primary-dark);
-        }
-
-        .timeline-body .sub-events li {
-            padding: 0.75rem 0 0.75rem 1.5rem;
-            position: relative;
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            line-height: 1.6;
-        }
-        
+        .timeline-body p { font-size: 1rem; color: var(--text-primary); line-height: 1.8; margin: 0 2rem 1.5rem; }
+        .timeline-body .sub-events { list-style: none; padding-left: 1rem; margin: 0 2rem 1.5rem; border-left: 2px solid var(--primary-dark); }
+        .timeline-body .sub-events li { padding: 0.75rem 0 0.75rem 1.5rem; position: relative; font-size: 0.95rem; color: var(--text-secondary); }
         .image-trigger {
-            /* Reset button styles */
-            background: none;
-            border: none;
-            padding: 0;
-            font: inherit;
-            /* Original styles */
-            cursor: pointer;
-            color: var(--primary-light);
-            transition: color 0.2s;
-            /* To align the icon properly */
-            display: inline-flex;
-            vertical-align: middle;
+            background: none; border: none; padding: 0; font: inherit;
+            cursor: pointer; color: var(--primary-light); transition: color 0.2s;
+            display: inline-flex; vertical-align: middle;
         }
-        .image-trigger:hover {
-            color: var(--accent);
-        }
-        .image-trigger .fa-camera {
-            font-size: 1em;
-        }
-
+        .image-trigger:hover { color: var(--accent); }
         .timeline-body .sub-events li::before {
-            content: '▪';
-            position: absolute;
-            left: -0.55rem;
-            top: 0.8rem;
-            color: var(--primary);
-            font-size: 1.2rem;
-            line-height: 1;
+            content: '▪'; position: absolute; left: -0.55rem; top: 0.8rem;
+            color: var(--primary); font-size: 1.2rem; line-height: 1;
         }
-
-        .timeline-body .sub-events strong {
-            color: var(--primary-light);
-            font-weight: 600;
-        }
-
+        .timeline-body .sub-events strong { color: var(--primary-light); font-weight: 600; }
         .did-you-know {
-            background-color: rgba(99, 102, 241, 0.1);
-            border-left: 4px solid var(--primary);
-            margin: 1.5rem 2rem;
-            padding: 1rem 1.5rem;
-            border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+            background-color: rgba(99, 102, 241, 0.1); border-left: 4px solid var(--primary);
+            margin: 1.5rem 2rem; padding: 1rem 1.5rem; border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
         }
-        .did-you-know p {
-            margin: 0;
-            font-size: 0.9rem;
-            font-style: italic;
-            color: var(--text-secondary);
-        }
-        .did-you-know strong {
-            color: var(--primary-light);
-        }
-
+        .did-you-know p { margin: 0; font-size: 0.9rem; font-style: italic; color: var(--text-secondary); }
+        .did-you-know strong { color: var(--primary-light); }
         .timeline-date {
-            display: inline-block;
-            margin: 1rem 2rem 2rem;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--accent);
-            background-color: rgba(245, 158, 11, 0.1);
-            padding: 0.25rem 0.75rem;
-            border-radius: var(--radius-full);
+            display: inline-block; margin: 1rem 2rem 2rem; font-size: 0.8rem; font-weight: 600;
+            color: var(--accent); background-color: rgba(245, 158, 11, 0.1);
+            padding: 0.25rem 0.75rem; border-radius: var(--radius-full);
         }
-
-        .filter-container {
-            max-width: 1000px;
-            margin: 0 auto 2rem;
-            position: relative;
-        }
+        .filter-container { max-width: 1000px; margin: 0 auto 2rem; position: relative; }
         .filter-input {
-            width: 100%;
-            padding: 1rem 1.5rem;
-            padding-left: 3.5rem;
-            background-color: var(--surface);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-full);
-            color: var(--text-primary);
-            font-size: 1rem;
+            width: 100%; padding: 1rem 1.5rem; padding-left: 3.5rem;
+            background-color: var(--surface); border: 1px solid var(--glass-border);
+            border-radius: var(--radius-full); color: var(--text-primary); font-size: 1rem;
         }
-        .filter-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-        }
-        .filter-icon {
-            position: absolute;
-            left: 1.5rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-        }
-
+        .filter-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+        .filter-icon { position: absolute; left: 1.5rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        
         .image-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.85); z-index: 2000;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s;
         }
-        .image-modal.show {
-            opacity: 1;
-            visibility: visible;
-        }
-        .image-modal-content {
-            max-width: 80vw;
-            max-height: 80vh;
-            text-align: center;
-        }
-        .image-modal img {
-            max-width: 100%;
-            max-height: 100%;
-            border-radius: var(--radius-lg);
-        }
-        .image-modal-caption {
-            color: white;
-            margin-top: 1rem;
-            font-size: 1rem;
-        }
-        .image-modal-close {
-            position: absolute;
-            top: 2rem;
-            right: 2rem;
-            font-size: 2rem;
-            color: white;
-            cursor: pointer;
-        }
+        .image-modal.show { opacity: 1; visibility: visible; }
+        .image-modal-content { max-width: 80vw; max-height: 80vh; text-align: center; }
+        .image-modal img { max-width: 100%; max-height: 100%; border-radius: var(--radius-lg); }
+        .image-modal-caption { color: white; margin-top: 1rem; font-size: 1rem; }
+        .image-modal-close { position: absolute; top: 2rem; right: 2rem; font-size: 2rem; color: white; cursor: pointer; }
 
         /* Interactive Map Section */
         #interactive-map {
-            height: 600px;
-            width: 100%;
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--glass-border);
-            background-color: var(--surface);
-            box-shadow: var(--shadow-md);
+            height: 600px; width: 100%; border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border); background-color: var(--surface); box-shadow: var(--shadow-md);
         }
-        .leaflet-popup-content-wrapper {
-            background: var(--surface-elevated);
-            color: var(--text-primary);
-            border-radius: var(--radius-lg);
-        }
-        .leaflet-popup-content {
-            margin: 1rem;
-        }
-        .leaflet-popup-content h3 {
-            color: var(--primary-light);
-            margin-bottom: 0.5rem;
-        }
-        .leaflet-popup-content p {
-            margin: 0;
-            color: var(--text-secondary);
-        }
-        .leaflet-popup-tip {
-            background: var(--surface-elevated);
-        }
-        .leaflet-container a.leaflet-popup-close-button {
-            color: var(--text-muted);
-        }
-        .map-marker-icon {
-            font-size: 2rem;
-            color: var(--primary);
-            text-shadow: 0 0 5px rgba(0,0,0,0.5);
-            transition: transform 0.2s ease;
-        }
-        .map-marker-icon:hover {
-            transform: scale(1.2);
-        }
+        .leaflet-popup-content-wrapper { background: var(--surface-elevated); color: var(--text-primary); border-radius: var(--radius-lg); }
+        .leaflet-popup-content { margin: 1rem; }
+        .leaflet-popup-content h3 { color: var(--primary-light); margin-bottom: 0.5rem; }
+        .leaflet-popup-content p { margin: 0; color: var(--text-secondary); }
+        .leaflet-popup-tip { background: var(--surface-elevated); }
+        .leaflet-container a.leaflet-popup-close-button { color: var(--text-muted); }
+        .map-marker-icon { font-size: 2rem; color: var(--primary); text-shadow: 0 0 5px rgba(0,0,0,0.5); transition: transform 0.2s ease; }
+        .map-marker-icon:hover { transform: scale(1.2); }
 
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-in {
-            opacity: 0;
-            animation: fadeInUp 0.6s ease-out forwards;
-        }
-        .timeline-item {
-            opacity: 0;
-            animation: fadeInUp 0.8s ease-out forwards;
-        }
+        .animate-in { opacity: 0; animation: fadeInUp 0.6s ease-out forwards; }
+        .timeline-item { opacity: 0; animation: fadeInUp 0.8s ease-out forwards; }
         
         @media screen and (max-width: 768px) {
-            .timeline-container::after {
-                left: 31px;
-            }
-            .timeline-item {
-                width: 100%;
-                padding-left: 70px; /* Adjusted padding */
-                padding-right: 15px;
-            }
-            .timeline-item:nth-child(odd), .timeline-item:nth-child(even) {
-                left: 0;
-            }
-            .timeline-item .timeline-icon {
-                left: 31px; /* Center on the 31px line */
-            }
+            .nav-desktop { display: none; }
+            .mobile-toggle { display: flex; }
+            .timeline-container::after { left: 31px; }
+            .timeline-item { width: 100%; padding-left: 70px; padding-right: 15px; }
+            .timeline-item:nth-child(odd), .timeline-item:nth-child(even) { left: 0; }
+            .timeline-item .timeline-icon { left: 31px; }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header class="header" id="header">
         <nav class="nav-container">
-            <a href="#" class="logo">
+            <a href="index.html" class="logo" onclick="event.preventDefault(); navigateTo('index.html');">
                 <span class="logo-icon">🏗️</span>
                 <span class="logo-text">LTD Simulator</span>
             </a>
             <div class="nav-desktop">
-                <ul class="nav-menu">
-                    <li class="nav-item"><a href="#" class="nav-link active" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link active" onclick="event.preventDefault();"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
-                    <li class="nav-item"><a href="histoire.html" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')""><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
-                </ul>
-                <button type="button" id="theme-toggle" class="theme-toggle-btn" aria-label="Changer le thème">
-                    <i class="fas fa-sun"></i>
-                    <i class="fas fa-moon"></i>
-                </button>
+                 <ul class="nav-menu">
+                     <li class="nav-item"><a class="nav-link" onclick="navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
+                     <li class="nav-item"><a class="nav-link" onclick="navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
+                     <li class="nav-item"><a class="nav-link" onclick="navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests & Évaluation</a></li>
+                     <li class="nav-item"><a class="nav-link" onclick="navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
+                     <li class="nav-item"><a class="nav-link" onclick="navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
+                     <li class="nav-item"><a class="nav-link active" onclick="navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
+                 </ul>
+                 <div class="nav-actions">
+                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                         <i class="fas fa-moon" id="themeIcon"></i>
+                     </button>
+                 </div>
             </div>
+            <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
+                <div class="hamburger"><span></span><span></span><span></span></div>
+            </button>
         </nav>
     </header>
 
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <a href="index.html" class="logo" onclick="event.preventDefault(); toggleMobileMenu(); navigateTo('index.html');">
+                <span class="logo-icon">🏗️</span>
+                <span class="logo-text">LTD Simulator</span>
+            </a>
+            <button class="mobile-menu-close" onclick="toggleMobileMenu()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="mobile-menu-content">
+            <!-- Content populated by JS -->
+        </div>
+    </div>
+
     <!-- Main Content -->
     <main class="main-content">
-        <nav class="breadcrumb animate-in">
-            <a href="#" class="breadcrumb-item">Accueil</a>
-            <span class="breadcrumb-separator"><i class="fas fa-chevron-right"></i></span>
-            <span class="breadcrumb-item active"> Histoire du BTP</span>
-        </nav>
-
         <section class="hero animate-in">
             <h1>Une Odyssée de la Construction</h1>
             <p>Découvrez comment les techniques et les innovations ont façonné notre monde, des pyramides antiques aux gratte-ciel modernes.</p>
@@ -608,10 +447,8 @@
             <input type="text" id="timeline-filter" class="filter-input" placeholder="Filtrer par mot-clé (ex: béton, pont, romain)...">
         </div>
 
-        <!-- Timeline Section -->
         <section class="timeline-section">
             <div class="timeline-container">
-                <!-- Timeline Item 1: Antiquity -->
                 <div class="timeline-item" style="animation-delay: 0.2s;">
                     <div class="timeline-icon"><i class="fas fa-landmark"></i></div>
                     <div class="timeline-content">
@@ -635,7 +472,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- Timeline Item 2: Middle Ages -->
                 <div class="timeline-item" style="animation-delay: 0.4s;">
                     <div class="timeline-icon"><i class="fas fa-chess-rook"></i></div>
                     <div class="timeline-content">
@@ -658,7 +494,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- Timeline Item 3: Industrial Revolution -->
                 <div class="timeline-item" style="animation-delay: 0.6s;">
                     <div class="timeline-icon"><i class="fas fa-industry"></i></div>
                     <div class="timeline-content">
@@ -682,7 +517,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- Timeline Item 4: Modern Era -->
                 <div class="timeline-item" style="animation-delay: 0.8s;">
                     <div class="timeline-icon"><i class="fas fa-city"></i></div>
                     <div class="timeline-content">
@@ -706,7 +540,6 @@
                         </div>
                     </div>
                 </div>
-                 <!-- Timeline Item 5: Contemporary Era -->
                 <div class="timeline-item" style="animation-delay: 1s;">
                     <div class="timeline-icon"><i class="fas fa-robot"></i></div>
                     <div class="timeline-content">
@@ -748,46 +581,81 @@
         </div>
     </div>
     
-    <!-- Leaflet JS for interactive map -->
+    <!-- Scripts -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- THEME TOGGLER ---
-            const themeToggleBtn = document.getElementById('theme-toggle');
-            const docBody = document.body;
+        let currentTheme = localStorage.getItem('theme') || 'dark';
 
-            // Apply saved theme on page load
-            if (localStorage.getItem('theme') === 'light') {
-                docBody.classList.add('light-mode');
+        function showNotification(message, type = 'info') {
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        function navigateTo(pageFile) {
+            showNotification(`Chargement de ${pageFile}...`, 'info');
+            setTimeout(() => window.location.href = pageFile, 500);
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            document.body.classList.toggle('light-mode', currentTheme === 'light');
+            const themeIcon = document.getElementById('themeIcon');
+            if (themeIcon) {
+                themeIcon.className = currentTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+            }
+        }
+        
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileToggle = document.getElementById('mobileToggle');
+            if (mobileMenu && mobileToggle) {
+                mobileMenu.classList.toggle('active');
+                mobileToggle.classList.toggle('active');
+                document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.classList.toggle('light-mode', currentTheme === 'light');
+            const themeIcon = document.getElementById('themeIcon');
+            if (themeIcon) {
+                themeIcon.className = currentTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+            }
+            
+            // --- Mobile Menu population ---
+            const desktopNavMenu = document.querySelector('.nav-desktop .nav-menu');
+            const mobileMenuContent = document.querySelector('.mobile-menu-content .mobile-nav-items');
+            if (desktopNavMenu && mobileMenuContent) {
+                mobileMenuContent.innerHTML = ''; // Clear existing items
+                const navItems = desktopNavMenu.querySelectorAll('.nav-item');
+                navItems.forEach(item => {
+                    const link = item.querySelector('a').cloneNode(true);
+                    const icon = link.querySelector('i').cloneNode(true);
+                    const text = link.textContent.trim();
+                    
+                    const newNavItem = document.createElement('a');
+                    newNavItem.className = 'mobile-nav-item';
+                    newNavItem.onclick = link.onclick;
+
+                    const newIconContainer = document.createElement('div');
+                    newIconContainer.className = 'mobile-nav-item-icon';
+                    newIconContainer.appendChild(icon);
+
+                    const newText = document.createElement('h4');
+                    newText.textContent = text;
+
+                    newNavItem.appendChild(newIconContainer);
+                    newNavItem.appendChild(newText);
+                    mobileMenuContent.appendChild(newNavItem);
+                });
             }
 
-            themeToggleBtn.addEventListener('click', () => {
-                docBody.classList.toggle('light-mode');
-                // Save theme preference to localStorage
-                if (docBody.classList.contains('light-mode')) {
-                    localStorage.setItem('theme', 'light');
-                } else {
-                    localStorage.removeItem('theme');
-                }
-            });
-
-            // --- HEADER SCROLL EFFECT ---
-            const header = document.getElementById('header');
-            window.addEventListener('scroll', () => {
-                header.classList.toggle('scrolled', window.scrollY > 50);
-            }, { passive: true });
-
             // --- TIMELINE ACCORDION ---
-            const timelineHeaders = document.querySelectorAll('button.timeline-header');
-            timelineHeaders.forEach(header => {
+            document.querySelectorAll('button.timeline-header').forEach(header => {
                 header.addEventListener('click', function() {
                     this.classList.toggle('active');
                     const body = this.nextElementSibling;
-                    const parentItem = this.closest('.timeline-item');
-                    if (parentItem) {
-                        parentItem.classList.toggle('active');
-                    }
                     if (body.style.maxHeight) {
                         body.style.maxHeight = null;
                     } else {
@@ -803,11 +671,7 @@
                 const searchTerm = e.target.value.toLowerCase();
                 timelineItems.forEach(item => {
                     const itemText = item.textContent.toLowerCase();
-                    if (itemText.includes(searchTerm)) {
-                        item.classList.remove('is-hidden');
-                    } else {
-                        item.classList.add('is-hidden');
-                    }
+                    item.style.display = itemText.includes(searchTerm) ? "" : "none";
                 });
             });
 
@@ -819,14 +683,11 @@
 
             document.querySelectorAll('button.image-trigger').forEach(trigger => {
                 trigger.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent accordion from closing
+                    e.stopPropagation();
                     const parentLi = e.target.closest('li');
-                    const imgSrc = parentLi.dataset.image;
-                    const imgDesc = parentLi.dataset.description;
-                    
-                    modalImg.src = imgSrc;
-                    modalImg.alt = imgDesc;
-                    modalCaption.textContent = imgDesc;
+                    modalImg.src = parentLi.dataset.image;
+                    modalImg.alt = parentLi.dataset.description;
+                    modalCaption.textContent = parentLi.dataset.description;
                     modal.classList.add('show');
                 });
             });
@@ -834,20 +695,23 @@
             const closeModal = () => modal.classList.remove('show');
             closeBtn.addEventListener('click', closeModal);
             modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    closeModal();
-                }
+                if (e.target === modal) closeModal();
             });
-            
+
             // --- INTERACTIVE MAP ---
             const mapElement = document.getElementById('interactive-map');
-            if (mapElement && !mapElement._leaflet_id) { // Check if map is not already initialized
-                const map = L.map('interactive-map').setView([20, 0], 2);
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-                    subdomains: 'abcd',
-                    maxZoom: 20
-                }).addTo(map);
+            if (mapElement && typeof L !== 'undefined' && !mapElement._leaflet_id) {
+                const map = L.map('interactive-map').setView([20, 10], 2);
+                L.tileLayer(
+                    document.body.classList.contains('light-mode') 
+                    ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+                    : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', 
+                    {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                        subdomains: 'abcd',
+                        maxZoom: 20
+                    }
+                ).addTo(map);
 
                 const constructionsData = [
                     // Africa
@@ -855,7 +719,6 @@
                     { name: 'Grand Zimbabwe', date: 'XIe-XVe siècle', description: 'Impressionnante cité médiévale en pierre, capitale d\'un grand empire.', coords: [-20.2686, 30.9303], icon: 'fa-fort-awesome' },
                     { name: 'Mosquée de Djenné', date: '1907 (reconstruction)', description: 'Le plus grand édifice en terre crue au monde.', coords: [13.9052, -4.5555], icon: 'fa-mosque' },
                     { name: 'Églises de Lalibela', date: 'XIIe-XIIIe siècle', description: 'Ensemble d\'églises monolithiques taillées dans la roche.', coords: [12.0319, 39.0425], icon: 'fa-church' },
-                    { name: 'Bibliothèque d\'Alexandrie', date: '2002 (moderne)', description: 'Renaissance moderne de la légendaire bibliothèque antique.', coords: [31.2089, 29.9092], icon: 'fa-book-open' },
 
                     // Asia
                     { name: 'Grande Muraille de Chine', date: 'VIIe s. av. J.-C. - XVIIe s.', description: 'La plus longue structure humaine jamais construite.', coords: [40.4319, 116.5704], icon: 'fa-dragon' },
@@ -880,7 +743,6 @@
                     { name: 'Kremlin de Moscou', date: '1482-1495 (murs actuels)', description: 'Forteresse historique au cœur de Moscou, siège du pouvoir russe.', coords: [55.7514, 37.6172], icon: 'fa-fort-awesome' },
                     { name: 'Barrière de la Tamise', date: '1982', description: 'Une des plus grandes barrières anti-inondation mobiles au monde.', coords: [51.4977, 0.0365], icon: 'fa-water' },
                     { name: 'Pont de l\'Øresund', date: '2000', description: 'Pont-tunnel reliant le Danemark et la Suède, une merveille d\'ingénierie.', coords: [55.6091, 12.8398], icon: 'fa-bridge' },
-                    { name: 'Église en bois debout d\'Urnes', date: '~1130', description: 'Exemple exceptionnel de l\'architecture scandinave en bois.', coords: [61.2981, 7.3236], icon: 'fa-church' },
                     { name: 'Alhambra', date: '1358', description: 'Palais et forteresse des souverains maures à Grenade, Espagne.', coords: [37.1761, -3.5881], icon: 'fa-place-of-worship' },
                     { name: 'Cathédrale Saint-Basile', date: '1561', description: 'Célèbre cathédrale orthodoxe sur la Place Rouge à Moscou.', coords: [55.7525, 37.6231], icon: 'fa-place-of-worship' },
 
@@ -891,9 +753,6 @@
                     { name: 'Hoover Dam', date: '1936', description: 'Barrage-poids en béton sur le fleuve Colorado, une prouesse de l\'ingénierie des années 30.', coords: [36.0162, -114.7377], icon: 'fa-water' },
                     { name: 'Golden Gate Bridge', date: '1937', description: 'Célèbre pont suspendu, icône de San Francisco.', coords: [37.8199, -122.4783], icon: 'fa-bridge' },
                     { name: 'CN Tower', date: '1976', description: 'Tour de communication et d\'observation emblématique de Toronto.', coords: [43.6426, -79.3871], icon: 'fa-broadcast-tower' },
-                    { name: 'Pont de la Confédération', date: '1997', description: 'L\'un des plus longs ponts du monde sur des eaux prises par les glaces en hiver.', coords: [46.2163, -63.8247], icon: 'fa-road-bridge' },
-                    { name: 'Oléoduc trans-Alaska', date: '1977', description: 'Un pipeline de 1287 km traversant des terrains difficiles et des zones de pergélisol.', coords: [64.8378, -147.7164], icon: 'fa-oil-well' },
-                    { name: 'L\'Anse aux Meadows', date: '~1000 ap. J.-C.', description: 'Seul site viking authentifié en Amérique du Nord.', coords: [51.5944, -55.5303], icon: 'fa-anchor' },
                     
                     // South America
                     { name: 'Machu Picchu', date: '~1450', description: 'Citadelle inca célèbre pour son ingénierie parasismique.', coords: [-13.1631, -72.5450], icon: 'fa-mountain-city' },
@@ -902,31 +761,22 @@
                     { name: 'Barrage d\'Itaipu', date: '1984', description: 'L\'une des plus grandes centrales hydroélectriques au monde.', coords: [-25.4081, -54.5882], icon: 'fa-plug-circle-bolt' },
                     { name: 'Lignes de Nazca', date: '500 av. J.-C. - 500 ap. J.-C.', description: 'Géoglyphes géants tracés dans le désert, visibles uniquement du ciel.', coords: [-14.7392, -75.1306], icon: 'fa-feather-alt' },
 
-                    // Oceania and Islands
+                    // Oceania
                     { name: 'Moaï de l\'Île de Pâques', date: '1250-1500', description: 'Statues monumentales monolithiques sculptées par le peuple Rapa Nui.', coords: [-27.1127, -109.3497], icon: 'fa-monument' },
-                    { name: 'Opéra de Sydney', date: '1973', description: 'Chef-d\'œuvre de l\'architecture du XXe siècle avec ses "voiles" de béton.', coords: [-33.8568, 151.2153], icon: 'fa-landmark' },
-                    { name: 'Nan Madol', date: 'XIIe-XIIIe siècle', description: 'Cité en ruines construite sur des îlots artificiels en Micronésie.', coords: [6.8450, 158.3325], icon: 'fa-water' }
+                    { name: 'Opéra de Sydney', date: '1973', description: 'Chef-d\'œuvre de l\'architecture du XXe siècle avec ses "voiles" de béton.', coords: [-33.8568, 151.2153], icon: 'fa-landmark' }
                 ];
 
-                const createCustomIcon = (iconClass) => {
-                    return L.divIcon({
-                        html: `<i class="fas ${iconClass} map-marker-icon"></i>`,
-                        className: 'map-marker-container',
-                        iconSize: [30, 30],
-                        iconAnchor: [15, 30],
-                        popupAnchor: [0, -30]
-                    });
-                };
+                const createCustomIcon = (iconClass) => L.divIcon({
+                    html: `<i class="fas ${iconClass} map-marker-icon"></i>`,
+                    className: 'map-marker-container',
+                    iconSize: [30, 30],
+                    iconAnchor: [15, 30],
+                    popupAnchor: [0, -30]
+                });
 
                 const markers = L.markerClusterGroup();
-
                 const addMarkersToMap = () => {
-                    const sortedConstructions = constructionsData.sort((a,b) => {
-                        const dateA = parseInt(a.date.replace(/[^0-9-]/g, ''));
-                        const dateB = parseInt(b.date.replace(/[^0-9-]/g, ''));
-                        return dateA - dateB;
-                    });
-
+                    const sortedConstructions = constructionsData.sort((a,b) => parseInt(a.date.replace(/[^0-9-]/g, '')) - parseInt(b.date.replace(/[^0-9-]/g, '')));
                     sortedConstructions.forEach(c => {
                         const marker = L.marker(c.coords, { icon: createCustomIcon(c.icon) })
                             .bindPopup(`<h3>${c.name}</h3><p><strong>Date :</strong> ${c.date}</p><p>${c.description}</p>`);
@@ -934,7 +784,6 @@
                     });
                     map.addLayer(markers);
                 };
-
                 addMarkersToMap();
             }
         });
