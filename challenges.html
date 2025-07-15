@@ -583,6 +583,19 @@
             }, 100);
         }
 
+        /**
+         * Navigates to a specific game/challenge page.
+         * @param {string} pageFile - The HTML file of the game.
+         */
+        function launchGame(pageFile) {
+            showProgress();
+            showNotification('Lancement du challenge...', 'info');
+            
+            setTimeout(() => {
+                window.location.href = pageFile;
+            }, 1500);
+        }
+
         function navigateTo(pageFile) {
             showProgress();
             showNotification(`Chargement de la page...`, 'info');
