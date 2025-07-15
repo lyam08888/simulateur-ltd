@@ -34,10 +34,7 @@
             --text-muted: #94a3b8;
             
             /* Shadows */
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
             --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
             
             /* Animation */
@@ -45,18 +42,14 @@
             --transition-slow: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             
             /* Spacing */
-            --spacing-xs: 0.5rem;
-            --spacing-sm: 1rem;
             --spacing-md: 1.5rem;
             --spacing-lg: 2rem;
             --spacing-xl: 3rem;
             
             /* Borders */
-            --radius-sm: 0.375rem;
             --radius: 0.5rem;
             --radius-md: 0.75rem;
             --radius-lg: 1rem;
-            --radius-xl: 1.5rem;
             --radius-full: 9999px;
         }
 
@@ -73,364 +66,102 @@
             --text-muted: #64748b;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--background);
-            color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
-            transition: var(--transition-slow);
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; background: var(--background); color: var(--text-primary); line-height: 1.6; overflow-x: hidden; transition: var(--transition-slow); }
 
         body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(245, 158, 11, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: -1;
+            content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(245, 158, 11, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%), radial-gradient(circle at 40% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+            pointer-events: none; z-index: -1;
         }
         
-        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle {
-            cursor: pointer;
-        }
+        [onclick], .nav-link, .mobile-nav-item, .challenge-card-button, .theme-toggle, .mobile-toggle, .search-button { cursor: pointer; }
 
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            backdrop-filter: blur(20px) saturate(180%);
-            background: rgba(15, 23, 42, 0.8);
-            border-bottom: 1px solid var(--glass-border);
-            transition: var(--transition);
-        }
+        .header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; backdrop-filter: blur(20px) saturate(180%); background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid var(--glass-border); transition: var(--transition); }
+        body.light-mode .header { background: rgba(255, 255, 255, 0.8); }
+        .nav-container { max-width: 1400px; margin: 0 auto; padding: 0 var(--spacing-md); display: flex; align-items: center; justify-content: space-between; height: 4.5rem; }
+        .logo { display: flex; align-items: center; gap: 1rem; text-decoration: none; color: var(--text-primary); font-weight: 800; font-size: 1.5rem; }
+        .logo-icon { font-size: 2rem; }
         
-        body.light-mode .header {
-            background: rgba(255, 255, 255, 0.8);
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 var(--spacing-md);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 4.5rem;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            text-decoration: none;
-            color: var(--text-primary);
-            font-weight: 800;
-            font-size: 1.5rem;
-        }
-
-        .logo-icon {
-            font-size: 2rem;
-        }
+        .nav-desktop { display: none; }
+        @media (min-width: 1024px) { .nav-desktop { display: flex; align-items: center; gap: var(--spacing-lg); } }
+        .nav-menu { display: flex; align-items: center; gap: var(--spacing-md); list-style: none; }
+        .nav-link { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; color: var(--text-secondary); text-decoration: none; font-weight: 500; border-radius: var(--radius); transition: var(--transition); }
+        .nav-link:hover { color: var(--text-primary); background: var(--glass); }
+        .nav-link.active { color: var(--accent); background: rgba(245, 158, 11, 0.1); }
+        .nav-actions { display: flex; align-items: center; gap: 1rem; }
+        .theme-toggle { display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-secondary); transition: var(--transition); }
+        .theme-toggle:hover { background: var(--surface-elevated); color: var(--text-primary); }
         
-        .nav-desktop {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-lg);
-        }
-
-        .nav-menu {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-            list-style: none;
-        }
-
-        .nav-item {
-            position: relative;
-        }
+        .mobile-toggle { display: flex; flex-direction: column; justify-content: center; align-items: center; width: 2.5rem; height: 2.5rem; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); transition: var(--transition); }
+        @media (min-width: 1024px) { .mobile-toggle { display: none; } }
+        .hamburger { position: relative; width: 1.25rem; height: 1rem; }
+        .hamburger span { position: absolute; left: 0; width: 100%; height: 2px; background: var(--text-primary); border-radius: 1px; transition: var(--transition); }
+        .hamburger span:nth-child(1) { top: 0; }
+        .hamburger span:nth-child(2) { top: 50%; transform: translateY(-50%); }
+        .hamburger span:nth-child(3) { bottom: 0; }
+        .mobile-toggle.active .hamburger span:nth-child(1) { top: 50%; transform: translateY(-50%) rotate(45deg); }
+        .mobile-toggle.active .hamburger span:nth-child(2) { opacity: 0; }
+        .mobile-toggle.active .hamburger span:nth-child(3) { bottom: 50%; transform: translateY(50%) rotate(-45deg); }
         
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-            padding: var(--spacing-xs) var(--spacing-sm);
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
-            border-radius: var(--radius);
-            transition: var(--transition);
-        }
+        .mobile-menu { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--background); z-index: 999; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: var(--transition-slow); }
+        .mobile-menu.active { opacity: 1; visibility: visible; }
+        .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-md); border-bottom: 1px solid var(--glass-border); }
+        .mobile-menu-close { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-primary); }
+        .mobile-menu-content { flex: 1; padding: var(--spacing-lg); overflow-y: auto; }
+        .mobile-nav-items { display: flex; flex-direction: column; gap: 0.5rem; }
+        .mobile-nav-item { display: flex; align-items: center; gap: 1rem; padding: 1rem; color: var(--text-secondary); text-decoration: none; border-radius: var(--radius-lg); }
+        .mobile-nav-item-icon { font-size: 1.25rem; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border-radius: var(--radius); }
 
-        .nav-link:hover {
-            color: var(--text-primary);
-            background: var(--glass);
-        }
-
-        .nav-link.active {
-            color: var(--accent);
-            background: rgba(245, 158, 11, 0.1);
-        }
+        .main-content { margin-top: 4.5rem; padding: var(--spacing-xl) var(--spacing-md); max-width: 1400px; margin-left: auto; margin-right: auto; }
+        .hero { text-align: center; padding: var(--spacing-xl) 0; }
+        .hero h1 { font-size: 3.5rem; font-weight: 800; margin-bottom: var(--spacing-lg); background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .hero p { font-size: 1.25rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto; line-height: 1.7; }
         
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-in { animation: fadeInUp 0.6s ease-out forwards; }
 
-        .theme-toggle,
-        .quick-settings-toggle {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-            padding: var(--spacing-xs) var(--spacing-sm);
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition);
-        }
-
-        .theme-toggle:hover,
-        .quick-settings-toggle:hover {
-            background: var(--surface-elevated);
-            color: var(--text-primary);
-        }
+        .search-section { margin-bottom: var(--spacing-xl); }
+        .search-container { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); display: flex; flex-direction: column; gap: var(--spacing-md); }
+        @media (min-width: 768px) { .search-container { flex-direction: row; align-items: center; } }
+        .search-input-wrapper { position: relative; flex-grow: 1; }
+        .search-input-wrapper i { position: absolute; top: 50%; left: var(--spacing-md); transform: translateY(-50%); color: var(--text-muted); }
+        .search-input-wrapper input { width: 100%; background: var(--background); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 1rem 1rem 1rem 2.5rem; color: var(--text-primary); font-size: 1rem; transition: var(--transition); }
+        .search-input-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); outline: none; }
+        .search-button { background-color: var(--primary); color: white; border: none; padding: 0.8rem 2rem; border-radius: var(--radius); font-weight: 600; font-size: 1rem; transition: background-color 0.2s; }
+        .search-button:hover { background-color: var(--primary-dark); }
         
-        .mobile-toggle {
-            display: none;
-        }
-
-        .main-content {
-            margin-top: 4.5rem;
-            padding: var(--spacing-xl) var(--spacing-md);
-            max-width: 1400px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .hero {
-            text-align: center;
-            padding: var(--spacing-xl) 0;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            margin-bottom: var(--spacing-lg);
-            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            max-width: 700px;
-            margin: 0 auto;
-            line-height: 1.7;
-        }
-
-        .challenge-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 4rem;
-        }
-
-        .challenge-card {
-            background: var(--surface);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--glass-border);
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            transition: var(--transition-slow);
-        }
-
-        .challenge-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-xl);
-            border-color: var(--accent);
-        }
-
-        .challenge-card-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .challenge-card-icon {
-            font-size: 2.5rem;
-            width: 4rem;
-            height: 4rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--glass);
-            border-radius: var(--radius-md);
-            color: var(--accent);
-        }
-
-        .challenge-card-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
+        .challenge-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 4rem; }
+        .challenge-card { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--glass-border); padding: 2rem; display: flex; flex-direction: column; transition: var(--transition-slow); }
+        .challenge-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-xl); border-color: var(--accent); }
+        .challenge-card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+        .challenge-card-icon { font-size: 2.5rem; width: 4rem; height: 4rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border-radius: var(--radius-md); color: var(--accent); }
+        .challenge-card-title { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); }
+        .challenge-card-description { color: var(--text-secondary); flex-grow: 1; margin-bottom: 1.5rem; }
+        .challenge-card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; font-size: 0.875rem; color: var(--text-muted); }
+        .meta-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; background: var(--surface-elevated); border-radius: var(--radius-full); }
+        .meta-item .fas { color: var(--primary-light); }
+        .challenge-card-button { display: inline-block; background: var(--accent); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); text-align: center; text-decoration: none; font-weight: 600; transition: var(--transition); }
+        .challenge-card-button:hover { background: var(--accent-dark); transform: scale(1.05); }
         
-        .challenge-card-description {
-            color: var(--text-secondary);
-            flex-grow: 1;
-            margin-bottom: 1.5rem;
-        }
-
-        .challenge-card-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            font-size: 0.875rem;
-            color: var(--text-muted);
-        }
-
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.25rem 0.75rem;
-            background: var(--surface-elevated);
-            border-radius: var(--radius-full);
-        }
+        .notification { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-xl); transform: translateX(calc(100% + var(--spacing-lg))); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1100; backdrop-filter: blur(20px); max-width: 350px; }
+        .notification.show { transform: translateX(0); }
+        .notification-content { display: flex; align-items: flex-start; gap: 1rem; }
+        .notification-icon { font-size: 1.25rem; color: var(--primary); margin-top: 2px; }
+        .notification-text { color: var(--text-primary); font-weight: 500; flex: 1; }
+        .notification-close { background: none; border: none; color: var(--text-muted); padding: 0; font-size: 1rem; }
         
-        .meta-item .fas {
-            color: var(--primary-light);
-        }
-
-        .challenge-card-button {
-            display: inline-block;
-            background: var(--accent);
-            color: white;
-            padding: 0.75rem 2rem;
-            border-radius: var(--radius);
-            text-align: center;
-            text-decoration: none;
-            font-weight: 600;
-            transition: var(--transition);
-        }
-
-        .challenge-card-button:hover {
-            background: var(--accent-dark);
-            transform: scale(1.05);
-        }
-        
-        .notification {
-            position: fixed;
-            bottom: var(--spacing-lg);
-            right: var(--spacing-lg);
-            background: var(--surface);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-lg);
-            padding: var(--spacing-md);
-            box-shadow: var(--shadow-xl);
-            transform: translateX(calc(100% + var(--spacing-lg)));
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1100;
-            backdrop-filter: blur(20px);
-            max-width: 350px;
-            min-width: 300px;
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        .notification-content {
-            display: flex;
-            align-items: flex-start;
-            gap: var(--spacing-sm);
-        }
-
-        .notification-icon {
-            font-size: 1.25rem;
-            color: var(--primary);
-            margin-top: 2px;
-        }
-
-        .notification-text {
-            color: var(--text-primary);
-            font-weight: 500;
-            flex: 1;
-        }
-
-        .notification-close {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: 0;
-            font-size: 1rem;
-        }
-
-        .progress-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: var(--surface-elevated);
-            z-index: 1001;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .progress-bar.show {
-            opacity: 1;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            width: 0%;
-            transition: width 0.3s ease;
-        }
+        .progress-bar { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: var(--surface-elevated); z-index: 1001; opacity: 0; transition: opacity 0.3s ease; }
+        .progress-bar.show { opacity: 1; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.3s ease; }
 
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            .hero p {
-                font-size: 1.1rem;
-            }
-            .nav-desktop {
-                display: none;
-            }
-            .mobile-toggle {
-                display: flex;
-            }
+            .hero h1 { font-size: 2.5rem; }
+            .hero p { font-size: 1.1rem; }
+            .nav-desktop { display: none; }
+            .mobile-toggle { display: flex; }
         }
-
     </style>
 </head>
 <body>
@@ -448,39 +179,58 @@
             <div class="nav-desktop">
                  <ul class="nav-menu">
                      <li class="nav-item"><a href="index.html" class="nav-link" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
-                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
-                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
+                     <li class="nav-item"><a href="simulateur.html" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
+                     <li class="nav-item"><a href="test.html" class="nav-link" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
                      <li class="nav-item"><a href="challenges.html" class="nav-link active" onclick="event.preventDefault();"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
-                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
-                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')""><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
-                </ul>
-                <div class="nav-actions">
-                    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
-                        <i class="fas fa-moon" id="themeIcon"></i>
-                        <span id="themeText">Sombre</span>
-                    </button>
-                </div>
+                     <li class="nav-item"><a href="emploi.html" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
+                     <li class="nav-item"><a href="histoire.html" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')""><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
+                 </ul>
+                 <div class="nav-actions">
+                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                         <i class="fas fa-moon" id="themeIcon"></i>
+                     </button>
+                 </div>
             </div>
-             <!-- Mobile Toggle (hidden on desktop) -->
             <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
-                <div class="hamburger">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
+                <div class="hamburger"><span></span><span></span><span></span></div>
             </button>
         </nav>
     </header>
 
+     <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <a href="index.html" class="logo" onclick="event.preventDefault(); toggleMobileMenu(); navigateTo('index.html');">
+                <span class="logo-icon">🏗️</span>
+                <span class="logo-text">LTD Simulator</span>
+            </a>
+            <button class="mobile-menu-close" onclick="toggleMobileMenu()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="mobile-menu-content">
+            <div class="mobile-nav-items">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
     <!-- Main Content -->
     <main class="main-content">
+        <section class="search-section animate-in">
+            <form action="recherche.html" method="GET" class="search-container">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="query" required placeholder="Rechercher sur tout le site...">
+                </div>
+                <button type="submit" class="search-button">Rechercher</button>
+            </form>
+        </section>
         
-        <section class="hero">
+        <section class="hero animate-in">
             <h1>Relevez nos Challenges de Recrutement</h1>
             <p>Prouvez vos compétences techniques et comportementales à travers des mises en situation réalistes. Une nouvelle façon de vous démarquer et de décrocher le poste de vos rêves dans le BTP.</p>
         </section>
 
-        <section class="challenge-grid">
+        <section class="challenge-grid animate-in">
             <!-- Challenge Card 1 -->
             <div class="challenge-card">
                 <div class="challenge-card-header">
@@ -564,108 +314,103 @@
 
         function showProgress() {
             const progressBar = document.getElementById('progressBar');
+            if (!progressBar) return;
             const progressFill = document.getElementById('progressFill');
-            
-            if (!progressBar || !progressFill) return;
-
             progressBar.classList.add('show');
             progressFill.style.width = '0%';
-            
             let progress = 0;
             const interval = setInterval(() => {
                 progress += Math.random() * 20;
                 if (progress >= 100) {
                     progress = 100;
                     clearInterval(interval);
-                    setTimeout(() => {
-                        progressBar.classList.remove('show');
-                    }, 500);
+                    setTimeout(() => progressBar.classList.remove('show'), 500);
                 }
                 progressFill.style.width = progress + '%';
             }, 100);
         }
-
-        /**
-         * Navigates to a specific game/challenge page.
-         * @param {string} pageFile - The HTML file of the game.
-         */
+        
         function launchGame(pageFile) {
             showProgress();
             showNotification('Lancement du challenge...', 'info');
-            
-            setTimeout(() => {
-                window.location.href = pageFile;
-            }, 1500);
+            setTimeout(() => window.location.href = pageFile, 1500);
         }
 
         function navigateTo(pageFile) {
             showProgress();
             showNotification(`Chargement de la page...`, 'info');
-            
-            setTimeout(() => {
-                window.location.href = pageFile;
-            }, 1500);
+            setTimeout(() => window.location.href = pageFile, 1500);
         }
 
         function showNotification(message, type = 'info') {
             const notification = document.getElementById('notification');
+            if (!notification) return;
             const notificationText = document.getElementById('notificationText');
             const notificationIcon = document.getElementById('notificationIcon');
+            notification.classList.remove('success', 'warning', 'error');
             
-            if (notification && notificationText) {
-                notification.classList.remove('success', 'warning', 'error');
-                
-                switch(type) {
-                    case 'success':
-                        notificationIcon.className = 'fas fa-check-circle notification-icon';
-                        notification.classList.add('success');
-                        break;
-                    case 'warning':
-                        notificationIcon.className = 'fas fa-exclamation-triangle notification-icon';
-                        notification.classList.add('warning');
-                        break;
-                    case 'error':
-                        notificationIcon.className = 'fas fa-exclamation-circle notification-icon';
-                        notification.classList.add('error');
-                        break;
-                    default:
-                        notificationIcon.className = 'fas fa-info-circle notification-icon';
-                }
-                
-                notificationText.textContent = message;
-                notification.classList.add('show');
-                
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                }, 3000);
+            switch(type) {
+                case 'success': notificationIcon.className = 'fas fa-check-circle notification-icon'; notification.classList.add('success'); break;
+                case 'warning': notificationIcon.className = 'fas fa-exclamation-triangle notification-icon'; notification.classList.add('warning'); break;
+                case 'error': notificationIcon.className = 'fas fa-exclamation-circle notification-icon'; notification.classList.add('error'); break;
+                default: notificationIcon.className = 'fas fa-info-circle notification-icon';
             }
+            
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => notification.classList.remove('show'), 3000);
         }
         
         function updateThemeUI() {
             const themeIcon = document.getElementById('themeIcon');
-            const themeText = document.getElementById('themeText');
-            
-            if (currentTheme === 'light') {
-                if(themeIcon) themeIcon.className = 'fas fa-moon';
-                if(themeText) themeText.textContent = 'Sombre';
-            } else {
-                if(themeIcon) themeIcon.className = 'fas fa-sun';
-                if(themeText) themeText.textContent = 'Clair';
+            document.body.classList.toggle('light-mode', currentTheme === 'light');
+            if (themeIcon) {
+                themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
             }
         }
 
         function toggleTheme() {
             currentTheme = currentTheme === 'light' ? 'dark' : 'light';
             localStorage.setItem('theme', currentTheme);
-            document.body.classList.toggle('light-mode', currentTheme === 'light');
             updateThemeUI();
             showNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
         }
 
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileToggle = document.getElementById('mobileToggle');
+            mobileMenu.classList.toggle('active');
+            mobileToggle.classList.toggle('active');
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
-            document.body.classList.toggle('light-mode', currentTheme === 'light');
             updateThemeUI();
+            
+            // Populate mobile menu
+            const desktopNav = document.querySelector('.nav-desktop .nav-menu');
+            const mobileNavContainer = document.querySelector('.mobile-menu .mobile-nav-items');
+            if(desktopNav && mobileNavContainer) {
+                mobileNavContainer.innerHTML = ''; // Clear first
+                desktopNav.querySelectorAll('.nav-item').forEach(item => {
+                    const link = item.querySelector('a');
+                    const newNavItem = document.createElement('a');
+                    newNavItem.href = link.href;
+                    newNavItem.className = 'mobile-nav-item';
+                    newNavItem.onclick = link.onclick;
+
+                    const iconDiv = document.createElement('div');
+                    iconDiv.className = 'mobile-nav-item-icon';
+                    iconDiv.innerHTML = link.querySelector('i').outerHTML;
+                    
+                    const textNode = document.createElement('h4');
+                    textNode.textContent = link.textContent.trim();
+
+                    newNavItem.appendChild(iconDiv);
+                    newNavItem.appendChild(textNode);
+                    mobileNavContainer.appendChild(newNavItem);
+                });
+            }
         });
     </script>
 </body>
-</html>
+</ht
