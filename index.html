@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Simulateur de gestion de chantier et jeux pédagogiques pour le BTP.">
+    <meta name="description" content="Simulateur de gestion de chantier, actualités et appels d'offres pour le BTP.">
     <title>LTD Simulator - Accueil</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -62,8 +62,8 @@
 
         /* Light mode */
         body.light-mode {
-            --background: #ffffff;
-            --surface: #f8fafc;
+            --background: #f1f5f9; /* Slightly adjusted for better contrast */
+            --surface: #ffffff;
             --surface-elevated: #e2e8f0;
             --surface-hover: #cbd5e1;
             --glass: rgba(0, 0, 0, 0.05);
@@ -395,6 +395,121 @@
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        
+        /* BTP Wall Street Section */
+        .btp-wall-street {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--spacing-xl);
+            margin-top: var(--spacing-xl);
+        }
+
+        .feed-column {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+            padding: var(--spacing-lg);
+            overflow: hidden;
+        }
+
+        .feed-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .feed-header i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .feed-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .feed-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: var(--spacing-sm); /* For scrollbar */
+        }
+        
+        /* Custom scrollbar */
+        .feed-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .feed-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .feed-list::-webkit-scrollbar-thumb {
+            background: var(--surface-elevated);
+            border-radius: var(--radius-full);
+        }
+        .feed-list::-webkit-scrollbar-thumb:hover {
+            background: var(--surface-hover);
+        }
+
+        .feed-item {
+            padding: var(--spacing-md) 0;
+            border-bottom: 1px solid var(--glass-border);
+            transition: var(--transition);
+        }
+        
+        .feed-item:last-child {
+            border-bottom: none;
+        }
+
+        .feed-item a {
+            text-decoration: none;
+            color: var(--text-primary);
+            display: block;
+        }
+        
+        .feed-item:hover {
+            background-color: var(--glass);
+            border-radius: var(--radius);
+        }
+        
+        .feed-item-title {
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .feed-item-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+        
+        .feed-item-meta span {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        .feed-item-action {
+            margin-top: var(--spacing-sm);
+            display: inline-block;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .feed-item-action:hover {
+            text-decoration: underline;
+        }
+        
+        .placeholder {
+            text-align: center;
+            padding: var(--spacing-xl) 0;
+            color: var(--text-muted);
+        }
 
         /* Responsive */
         @media (max-width: 1024px) {
@@ -412,6 +527,9 @@
             }
             .hero h1 {
                 font-size: 2.5rem;
+            }
+            .btp-wall-street {
+                grid-template-columns: 1fr;
             }
         }
         
@@ -505,18 +623,18 @@
             </a>
             <div class="nav-desktop">
                  <ul class="nav-menu">
-                    <li class="nav-item"><a href="index.html" class="nav-link active" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests & Évaluation</a></li>
-                    <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); showNotification('Section en construction', 'info')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')""><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
-                </ul>
-                <div class="nav-actions">
-                    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
-                        <i class="fas fa-moon" id="themeIcon"></i>
-                    </button>
-                </div>
+                     <li class="nav-item"><a href="index.html" class="nav-link active" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
+                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
+                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests & Évaluation</a></li>
+                     <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
+                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); showNotification('Section en construction', 'info')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
+                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')""><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
+                 </ul>
+                 <div class="nav-actions">
+                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                         <i class="fas fa-moon" id="themeIcon"></i>
+                     </button>
+                 </div>
             </div>
             <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
                 <div class="hamburger"><span></span><span></span><span></span></div>
@@ -609,6 +727,37 @@
                 </a>
             </div>
         </section>
+        
+        <!-- NEW: BTP Wall Street Section -->
+        <section class="btp-wall-street animate-in">
+            <!-- Tenders Column -->
+            <div class="feed-column">
+                <div class="feed-header">
+                    <i class="fas fa-gavel"></i>
+                    <h2>Appels d'offre BTP</h2>
+                </div>
+                <div class="feed-list" id="tenders-feed">
+                    <!-- Tenders will be injected here by JavaScript -->
+                    <div class="placeholder">
+                        <i class="fas fa-circle-notch fa-spin"></i> Chargement des appels d'offre...
+                    </div>
+                </div>
+            </div>
+            <!-- News Column -->
+            <div class="feed-column">
+                <div class="feed-header">
+                    <i class="fas fa-newspaper" style="color: var(--secondary);"></i>
+                    <h2>Actualités du BTP</h2>
+                </div>
+                <div class="feed-list" id="news-feed">
+                    <!-- News will be injected here by JavaScript -->
+                     <div class="placeholder">
+                        <i class="fas fa-circle-notch fa-spin"></i> Chargement des actualités...
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
     
     <div class="notification" id="notification">
@@ -686,6 +835,132 @@
             document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
         }
 
+        // --- NEW SCRIPT FOR DYNAMIC CONTENT ---
+
+        // Mock data simulating a fetch from an API or RSS feed.
+        const mockTenders = [
+            {
+                title: "Construction d'un nouveau groupe scolaire à Lyon",
+                location: "Lyon (69)",
+                date: "2025-08-15",
+                link: "#"
+            },
+            {
+                title: "Rénovation de la façade d'un bâtiment Haussmannien",
+                location: "Paris (75)",
+                date: "2025-08-12",
+                link: "#"
+            },
+            {
+                title: "Marché de travaux pour la voirie et réseaux divers (VRD)",
+                location: "Marseille (13)",
+                date: "2025-08-10",
+                link: "#"
+            },
+            {
+                title: "Travaux d'étanchéité pour la piscine municipale",
+                location: "Bordeaux (33)",
+                date: "2025-08-05",
+                link: "#"
+            },
+            {
+                title: "Installation de 500 bornes de recharge électrique",
+                location: "France Entière",
+                date: "2025-09-01",
+                link: "#"
+            }
+        ];
+
+        const mockNews = [
+            {
+                title: "Le RE2020 : un an après, quel bilan pour la construction neuve ?",
+                source: "Le Moniteur",
+                date: "2025-07-14",
+                link: "#"
+            },
+            {
+                title: "Pénurie de matériaux : le secteur du BTP s'adapte",
+                source: "Batiweb",
+                date: "2025-07-13",
+                link: "#"
+            },
+            {
+                title: "Innovation : l'impression 3D béton arrive sur les chantiers français",
+                source: "Batipole",
+                date: "2025-07-12",
+                link: "#"
+            },
+            {
+                title: "Sécurité : de nouvelles réglementations pour le travail en hauteur",
+                source: "Preventica",
+                date: "2025-07-11",
+                link: "#"
+            }
+        ];
+
+        function populateTenders() {
+            const feed = document.getElementById('tenders-feed');
+            if (!feed) return;
+
+            // Clear placeholder
+            feed.innerHTML = '';
+
+            if (mockTenders.length === 0) {
+                feed.innerHTML = '<div class="placeholder">Aucun appel d\'offre pour le moment.</div>';
+                return;
+            }
+
+            mockTenders.forEach(tender => {
+                const item = document.createElement('div');
+                item.className = 'feed-item';
+                item.innerHTML = `
+                    <a href="${tender.link}" onclick="event.preventDefault(); showNotification('Redirection vers l\\'offre...', 'info')">
+                        <div class="feed-item-title">${tender.title}</div>
+                        <div class="feed-item-meta">
+                            <span><i class="fas fa-map-marker-alt"></i> ${tender.location}</span>
+                            <span><i class="fas fa-calendar-alt"></i> Clôture le ${tender.date}</span>
+                        </div>
+                        <div class="feed-item-action">
+                            Postuler <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </a>
+                `;
+                feed.appendChild(item);
+            });
+        }
+
+        function populateNews() {
+            const feed = document.getElementById('news-feed');
+            if (!feed) return;
+
+            // Clear placeholder
+            feed.innerHTML = '';
+
+            if (mockNews.length === 0) {
+                feed.innerHTML = '<div class="placeholder">Aucune actualité pour le moment.</div>';
+                return;
+            }
+
+            mockNews.forEach(newsItem => {
+                const item = document.createElement('div');
+                item.className = 'feed-item';
+                item.innerHTML = `
+                    <a href="${newsItem.link}" onclick="event.preventDefault(); showNotification('Redirection vers l\\'article...', 'info')">
+                        <div class="feed-item-title">${newsItem.title}</div>
+                        <div class="feed-item-meta">
+                            <span><i class="fas fa-newspaper"></i> ${newsItem.source}</span>
+                            <span><i class="fas fa-clock"></i> ${newsItem.date}</span>
+                        </div>
+                         <div class="feed-item-action">
+                            Lire la suite <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </a>
+                `;
+                feed.appendChild(item);
+            });
+        }
+
+
         document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.toggle('light-mode', currentTheme === 'light');
             updateThemeUI();
@@ -705,6 +980,12 @@
                 el.style.transition = 'all 0.6s ease-out';
                 observer.observe(el);
             });
+
+            // Populate the new sections with a slight delay to simulate loading
+            setTimeout(() => {
+                populateTenders();
+                populateNews();
+            }, 1000);
         });
     </script>
 </body>
