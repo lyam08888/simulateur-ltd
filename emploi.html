@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Découvrez nos offres d'emploi dans le secteur du BTP et rejoignez nos équipes.">
+    <title>LTD Simulator - Nos Offres d'Emploi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            /* Colors */
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --secondary: #10b981;
+            --secondary-dark: #059669;
+            --accent: #f59e0b;
+            --accent-dark: #d97706;
+            
+            /* Surfaces */
+            --background: #0f172a;
+            --surface: #1e293b;
+            --surface-elevated: #334155;
+            --surface-hover: #475569;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            
+            /* Text */
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            
+            /* Shadows */
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            
+            /* Animation & Spacing */
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            
+            /* Borders */
+            --radius: 0.5rem;
+            --radius-lg: 1rem;
+        }
+
+        body.light-mode {
+            --background: #ffffff;
+            --surface: #f8fafc;
+            --surface-elevated: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                radial-gradient(circle at 15% 25%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 85% 75%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        [onclick], .nav-link, .job-card-button { cursor: pointer; }
+
+        .header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px) saturate(180%);
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        
+        body.light-mode .header { background: rgba(255, 255, 255, 0.8); }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 4.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 800;
+            font-size: 1.5rem;
+        }
+
+        .logo-icon { font-size: 2rem; }
+        
+        .nav-desktop { display: flex; align-items: center; gap: var(--spacing-lg); }
+        .nav-menu { display: flex; align-items: center; gap: var(--spacing-md); list-style: none; }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+
+        .nav-link:hover { color: var(--text-primary); background: var(--glass); }
+        .nav-link.active { color: var(--secondary); background: rgba(16, 185, 129, 0.1); }
+
+        .nav-actions { display: flex; align-items: center; gap: 1rem; }
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem; height: 2.5rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            color: var(--text-secondary);
+        }
+        .theme-toggle:hover { background: var(--surface-elevated); color: var(--text-primary); }
+
+        .main-content {
+            margin-top: 4.5rem;
+            padding: var(--spacing-xl) var(--spacing-md);
+            max-width: 1200px;
+            margin-left: auto; margin-right: auto;
+        }
+
+        .hero { text-align: center; padding: var(--spacing-xl) 0; }
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .job-list {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 4rem;
+        }
+
+        .job-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+            padding: 2rem;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .job-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+
+        .job-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        .job-card-title { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); }
+        
+        .job-card-meta { display: flex; flex-wrap: wrap; gap: 1rem; }
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            padding: 0.25rem 0.75rem;
+            background: var(--surface-elevated);
+            border-radius: 9999px;
+        }
+        .meta-item .fas { color: var(--primary-light); }
+        
+        .job-card-description { color: var(--text-secondary); }
+        
+        .job-card-footer { margin-top: auto; padding-top: 1rem; }
+        .job-card-button {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .job-card-button:hover { background: var(--secondary-dark); transform: scale(1.05); }
+
+        .animate-in { animation: fadeInUp 0.6s ease-out forwards; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 1.5rem; right: 1.5rem;
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-xl);
+            transform: translateX(calc(100% + 1.5rem));
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1100;
+            max-width: 350px;
+        }
+        .notification.show { transform: translateX(0); }
+        .notification-content { display: flex; align-items: flex-start; gap: 1rem; }
+        .notification-icon { font-size: 1.25rem; color: var(--primary); margin-top: 2px; }
+        .notification-text { color: var(--text-primary); font-weight: 500; }
+        .notification-close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0; font-size: 1rem; }
+
+        .progress-bar {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 3px;
+            background: var(--surface-elevated);
+            z-index: 1001;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .progress-bar.show { opacity: 1; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.3s ease; }
+        
+        @media (max-width: 768px) {
+            .nav-desktop { display: none; }
+            .mobile-toggle { display: flex; }
+            .hero h1 { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav-container">
+            <a href="index.html" class="logo" onclick="event.preventDefault(); navigateTo('index.html');">
+                <span class="logo-icon">🏗️</span>
+                <span class="logo-text">LTD Simulator</span>
+            </a>
+            <div class="nav-desktop">
+                 <ul class="nav-menu">
+                    <li class="nav-item"><a href="index.html" class="nav-link" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); showNotification('Section en construction', 'info')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); showNotification('Section en construction', 'info')"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
+                    <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
+                    <li class="nav-item"><a href="offers.html" class="nav-link active" onclick="event.preventDefault();"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); showNotification('Section en construction', 'info')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
+                </div>
+            </div>
+            <button class="mobile-toggle" id="mobileToggle" style="display:none;"> <!-- Mobile menu can be implemented if needed -->
+                <div class="hamburger"><span></span><span></span><span></span></div>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <section class="hero animate-in">
+            <h1>Nos Offres d'Emploi</h1>
+            <p>Rejoignez une équipe dynamique et participez à des projets d'envergure. LTD, cabinet de recrutement, recherche ses futurs talents dans tous les métiers du BTP.</p>
+        </section>
+
+        <div class="job-list animate-in" style="animation-delay: 0.2s;">
+            <!-- Job Offer 1 -->
+            <div class="job-card">
+                <div class="job-card-header">
+                    <h2 class="job-card-title">Conducteur de Travaux Principal GO/TCE</h2>
+                </div>
+                <div class="job-card-meta">
+                    <span class="meta-item"><i class="fas fa-map-marker-alt"></i> Paris, Île-de-France</span>
+                    <span class="meta-item"><i class="fas fa-file-contract"></i> CDI</span>
+                </div>
+                <p class="job-card-description">Vous assurez la responsabilité de plusieurs chantiers en gros œuvre et/ou tous corps d'état. Vous êtes garant de la qualité, des délais et du budget.</p>
+                <div class="job-card-footer">
+                    <a href="#" class="job-card-button" onclick="applyForJob('Conducteur de Travaux Principal GO/TCE')">Candidater</a>
+                </div>
+            </div>
+
+            <!-- Job Offer 2 -->
+            <div class="job-card">
+                <div class="job-card-header">
+                    <h2 class="job-card-title">Géomètre Projeteur VRD</h2>
+                </div>
+                <div class="job-card-meta">
+                    <span class="meta-item"><i class="fas fa-map-marker-alt"></i> Lyon, Auvergne-Rhône-Alpes</span>
+                    <span class="meta-item"><i class="fas fa-file-contract"></i> CDI</span>
+                </div>
+                <p class="job-card-description">Au sein du bureau d'études, vous réalisez les plans d'exécution pour des projets de voiries et réseaux divers (VRD) sur les logiciels Mensura ou AutoCAD/Covadis.</p>
+                <div class="job-card-footer">
+                    <a href="#" class="job-card-button" onclick="applyForJob('Géomètre Projeteur VRD')">Candidater</a>
+                </div>
+            </div>
+
+            <!-- Job Offer 3 -->
+            <div class="job-card">
+                <div class="job-card-header">
+                    <h2 class="job-card-title">Ingénieur Étude de Prix Bâtiment</h2>
+                </div>
+                <div class="job-card-meta">
+                    <span class="meta-item"><i class="fas fa-map-marker-alt"></i> Marseille, Provence-Alpes-Côte d'Azur</span>
+                    <span class="meta-item"><i class="fas fa-file-contract"></i> CDI</span>
+                </div>
+                <p class="job-card-description">Vous analysez les dossiers d'appel d'offres, consultez les fournisseurs et sous-traitants, et établissez le chiffrage des projets de construction.</p>
+                <div class="job-card-footer">
+                    <a href="#" class="job-card-button" onclick="applyForJob('Ingénieur Étude de Prix Bâtiment')">Candidater</a>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <div class="notification" id="notification">
+        <div class="notification-content">
+            <i class="fas fa-info-circle notification-icon" id="notificationIcon"></i>
+            <span class="notification-text" id="notificationText"></span>
+            <button class="notification-close" onclick="this.parentElement.parentElement.classList.remove('show')"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+
+    <script>
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+
+        function showProgress() {
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            if (!progressBar || !progressFill) return;
+            progressBar.classList.add('show');
+            progressFill.style.width = '0%';
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(() => progressBar.classList.remove('show'), 500);
+                }
+                progressFill.style.width = progress + '%';
+            }, 100);
+        }
+
+        function navigateTo(pageFile) {
+            showProgress();
+            showNotification(`Chargement de la page...`, 'info');
+            setTimeout(() => window.location.href = pageFile, 1500);
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            const notificationIcon = document.getElementById('notificationIcon');
+            if (!notification || !notificationText || !notificationIcon) return;
+            
+            notification.classList.remove('success', 'warning', 'error');
+            switch(type) {
+                case 'success': notificationIcon.className = 'fas fa-check-circle notification-icon'; notification.classList.add('success'); break;
+                case 'warning': notificationIcon.className = 'fas fa-exclamation-triangle notification-icon'; notification.classList.add('warning'); break;
+                case 'error': notificationIcon.className = 'fas fa-exclamation-circle notification-icon'; notification.classList.add('error'); break;
+                default: notificationIcon.className = 'fas fa-info-circle notification-icon';
+            }
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => notification.classList.remove('show'), 3000);
+        }
+        
+        function updateThemeUI() {
+            const themeIcon = document.getElementById('themeIcon');
+            if (!themeIcon) return;
+            themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            document.body.classList.toggle('light-mode', currentTheme === 'light');
+            updateThemeUI();
+            showNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
+        }
+
+        function applyForJob(jobTitle) {
+            const email = 'l.amara@ltd-international.com';
+            const subject = `Candidature - ${jobTitle}`;
+            const body = `Bonjour,
+
+Je souhaite postuler à l'offre pour le poste de "${jobTitle}".
+
+Veuillez trouver ci-joint mon CV et ma lettre de motivation.
+
+Cordialement,
+
+[Votre Nom]
+
+---
+Pièces jointes obligatoires :
+- CV (Curriculum Vitae)
+- Lettre de motivation`;
+            
+            const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.location.href = mailtoLink;
+            showNotification('Ouverture de votre client e-mail...', 'info');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.classList.toggle('light-mode', currentTheme === 'light');
+            updateThemeUI();
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.animate-in').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'all 0.6s ease-out';
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
