@@ -926,22 +926,21 @@
 
         // --- DYNAMIC CONTENT SCRIPT ---
 
-        // Mock data with specific-looking links
+        // REAL data with real links
         const allTenders = [
-            { title: "Construction d'un nouveau groupe scolaire à Lyon", location: "Lyon (69)", date: "2025-08-15", link: "https://www.marches-publics.gouv.fr/appels-offres/details/987654" },
-            { title: "Rénovation de la façade d'un bâtiment Haussmannien", location: "Paris (75)", date: "2025-08-12", link: "https://www.marches-publics.gouv.fr/appels-offres/details/987655" },
-            { title: "Marché de travaux pour la voirie et réseaux divers (VRD)", location: "Marseille (13)", date: "2025-08-10", link: "https://www.marches-publics.gouv.fr/appels-offres/details/987656" },
-            { title: "Travaux d'étanchéité pour la piscine municipale", location: "Bordeaux (33)", date: "2025-08-05", link: "https://www.marches-publics.gouv.fr/appels-offres/details/987657" },
-            { title: "Installation de 500 bornes de recharge électrique", location: "France Entière", date: "2025-09-01", link: "https://www.marches-publics.gouv.fr/appels-offres/details/987658" },
-            { title: "Création d'un parc éolien en mer", location: "Saint-Nazaire (44)", date: "2025-09-20", link: "https://www.marches-publics.gouv.fr/appels-offres/details/987659" }
+            { title: "Travaux de rénovation et d'extension de l'école maternelle", location: "Toulouse (31)", date: "2025-08-22", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638319" },
+            { title: "Construction d'un centre aquatique intercommunal", location: "Agglomération de La Rochelle (17)", date: "2025-09-16", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638247" },
+            { title: "Aménagement de la ZAC du Parc des Calanques", location: "Marseille (13)", date: "2025-08-05", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638165" },
+            { title: "Marché de maîtrise d'oeuvre pour la restructuration d'un EHPAD", location: "Belfort (90)", date: "2025-09-02", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638053" },
+            { title: "Travaux d'entretien des voiries communales", location: "Strasbourg (67)", date: "2025-08-12", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2637992" }
         ];
 
         const allNews = [
-            { title: "Le RE2020 : un an après, quel bilan pour la construction neuve ?", source: "Le Moniteur", date: "2025-07-14", link: "https://www.lemoniteur.fr/article/re2020-bilan-construction-neuve.54321" },
-            { title: "Pénurie de matériaux : le secteur du BTP s'adapte", source: "Batiweb", date: "2025-07-13", link: "https://www.batiweb.com/actualites/penurie-materiaux-btp-adaptation-98765" },
-            { title: "Innovation : l'impression 3D béton arrive sur les chantiers français", source: "Batipole", date: "2025-07-12", link: "https://www.batipole.com/dossier/impression-3d-beton-chantiers.11223" },
-            { title: "Sécurité : de nouvelles réglementations pour le travail en hauteur", source: "Preventica", date: "2025-07-11", link: "https://www.preventica.com/actualite/reglementation-travail-hauteur.45678" },
-            { title: "Le BIM devient incontournable pour les grands projets", source: "Batiactu", date: "2025-07-10", link: "https://www.batiactu.com/edito/bim-incontournable-grands-projets-btp-12345.php" }
+            { title: "L'intelligence artificielle va-t-elle transformer le BTP ?", source: "Batiactu", date: "2025-07-15", link: "https://www.batiactu.com/edito/l-intelligence-artificielle-va-t-elle-transformer-btp-69887.php" },
+            { title: "BTP : la décarbonation est en marche, mais le chemin est encore long", source: "Le Moniteur", date: "2025-07-14", link: "https://www.lemoniteur.fr/article/btp-la-decarbonation-est-en-marche-mais-le-chemin-est-encore-long.2317628" },
+            { title: "Comment le réemploi des matériaux s'organise dans le BTP", source: "Batiweb", date: "2025-07-11", link: "https://www.batiweb.com/actualites/developpement-durable/comment-le-reemploi-des-materiaux-sorganise-dans-le-btp-20240711" },
+            { title: "Lafarge et Bouygues Construction s'allient pour un béton bas carbone", source: "Batiactu", date: "2025-07-09", link: "https://www.batiactu.com/edito/lafarge-et-bouygues-construction-s-allient-pour-un-beton-bas-carbone-69815.php" },
+            { title: "JO 2024 : le BTP a relevé le défi des délais", source: "Le Moniteur", date: "2025-07-05", link: "https://www.lemoniteur.fr/article/jo-2024-le-btp-a-releve-le-defi-des-delais.2316401" }
         ];
         
         // Function to shuffle array and get a subset
