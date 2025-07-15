@@ -18,6 +18,7 @@
             --secondary: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
+            --info: #3b82f6;
             --background: #0f172a;
             --surface: #1e293b;
             --surface-elevated: #334155;
@@ -92,6 +93,7 @@
         .btn-secondary { background-color: var(--surface-elevated); border-color: var(--text-muted); color: var(--text-secondary); }
         .btn-warning { background-color: var(--warning); border-color: #d97706; }
         .btn-danger { background-color: var(--danger); border-color: #c02626; }
+        .btn-info { background-color: var(--info); border-color: #2563eb; }
         
         .answer-btn {
             width: 100%;
@@ -156,21 +158,20 @@
             position: relative;
             width: 100%;
             padding: 0;
-            margin-bottom: 1.5rem;
+            margin-top: auto;
+            padding-top: 1.5rem;
             overflow-x: auto;
-            -ms-overflow-style: none; /* IE and Edge */
-            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
-        #progress-bar-container::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Opera */
-        }
+        #progress-bar-container::-webkit-scrollbar { display: none; }
         #progress-bar {
-            display: inline-flex; /* Changed to inline-flex */
+            display: inline-flex;
             align-items: center;
             position: relative;
             padding: 0 1rem;
             min-width: 100%;
-            gap: 0.5rem; /* Space between steps */
+            gap: 0.5rem;
         }
         #progress-line-bg { 
             position: absolute;
@@ -189,15 +190,16 @@
             transform: translateY(-50%);
             height: 4px;
             background-color: var(--primary);
-            width: 0%; /* Will be updated by JS */
+            width: 0%;
             z-index: 2;
             transition: width 0.4s ease;
         }
         .progress-step {
             position: relative;
             z-index: 3;
-            width: 2rem;
-            height: 2rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            font-size: 0.7rem;
             background-color: var(--surface);
             border: 3px solid var(--surface-elevated);
             border-radius: 50%;
@@ -220,7 +222,7 @@
             background-color: var(--primary);
             color: white;
         }
-        .progress-step .step-icon { display: none; }
+        .progress-step .step-icon { display: none; font-size: 0.6rem; }
         .progress-step.completed .step-icon { display: block; }
         .progress-step.completed .step-number { display: none; }
 
@@ -288,6 +290,25 @@
         .fab-btn .fa-sun { display: none; }
         body.light-mode .fab-btn .fa-sun { display: block; }
         body.light-mode .fab-btn .fa-moon { display: none; }
+
+        /* Tools Modal */
+        #tools-modal .calc-display {
+            background-color: var(--background);
+            color: var(--text-primary);
+            border-color: var(--glass-border);
+        }
+        #tools-modal .calc-btn {
+            background-color: var(--surface-elevated);
+            color: var(--text-primary);
+        }
+        #tools-modal .calc-btn.operator {
+            background-color: var(--primary);
+        }
+        #tools-modal #notepad {
+            background-color: var(--surface);
+            color: var(--text-secondary);
+            border-color: var(--glass-border);
+        }
     </style>
 </head>
 <body class="dark-mode">
@@ -314,32 +335,35 @@
         </div>
 
         <!-- Écran de jeu -->
-        <div id="game-screen" class="hidden">
-            <div class="flex justify-between items-center mb-4">
-                <div id="score-container" class="text-2xl font-bold">
-                    Score: <span id="score" class="text-primary">0</span>
+        <div id="game-screen" class="hidden flex flex-col" style="min-height: calc(100vh - 4rem);">
+            <div> <!-- Main content wrapper -->
+                <div class="flex justify-between items-center mb-4">
+                    <div id="score-container" class="text-2xl font-bold">
+                        Score: <span id="score" class="text-primary">0</span>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button id="tools-btn" class="btn btn-info"><i class="fas fa-calculator"></i><span class="hidden md:inline">Outils</span></button>
+                        <button id="hint-btn" class="btn btn-warning"><i class="fas fa-lightbulb"></i><span class="hidden md:inline">Astuce</span></button>
+                        <button id="skip-btn" class="btn btn-danger"><i class="fas fa-forward"></i><span class="hidden md:inline">Passer</span></button>
+                    </div>
                 </div>
-                <div class="flex space-x-2">
-                    <button id="hint-btn" class="btn btn-warning"><i class="fas fa-lightbulb"></i><span class="hidden md:inline">Astuce (-50)</span></button>
-                    <button id="skip-btn" class="btn btn-danger"><i class="fas fa-forward"></i><span class="hidden md:inline">Passer (-150)</span></button>
+
+                <div id="timer-bar-container" class="mb-6">
+                    <div id="timer-bar" class="h-full rounded-full" style="width: 100%; background-color: var(--secondary);"></div>
+                </div>
+
+                <div id="question-container" class="card">
+                    <div id="scenario-box" class="hidden"></div>
+                    <h3 id="question-text" class="text-xl md:text-2xl font-semibold mb-6 text-center min-h-[56px] text-text-primary"></h3>
+                    <div id="answers-container" class="flex flex-col items-center"></div>
                 </div>
             </div>
 
-            <!-- Progress Bar -->
+            <!-- Progress Bar at the bottom -->
             <div id="progress-bar-container">
                 <div id="progress-bar">
                     <!-- Steps will be injected here -->
                 </div>
-            </div>
-
-            <div id="timer-bar-container" class="mb-6">
-                <div id="timer-bar" class="h-full rounded-full" style="width: 100%; background-color: var(--secondary);"></div>
-            </div>
-
-            <div id="question-container" class="card">
-                <div id="scenario-box" class="hidden"></div>
-                <h3 id="question-text" class="text-xl md:text-2xl font-semibold mb-6 text-center min-h-[56px] text-text-primary"></h3>
-                <div id="answers-container" class="flex flex-col items-center"></div>
             </div>
         </div>
 
@@ -411,6 +435,48 @@
             </div>
         </div>
     </div>
+    
+    <!-- Tools Modal -->
+    <div id="tools-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-40 p-4">
+        <div class="card pop-in w-full max-w-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-text-primary">Outils</h2>
+                <button id="close-tools-btn" class="text-2xl text-text-muted hover:text-text-primary">&times;</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h3 class="font-semibold mb-2">Calculette</h3>
+                    <div id="calculator" class="p-2 rounded-lg bg-surface">
+                        <div id="calc-display" class="w-full text-right bg-background text-2xl p-2 rounded mb-2 border border-glass-border">0</div>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button class="calc-btn operator">C</button>
+                            <button class="calc-btn operator">/</button>
+                            <button class="calc-btn operator">*</button>
+                            <button class="calc-btn operator">-</button>
+                            <button class="calc-btn">7</button>
+                            <button class="calc-btn">8</button>
+                            <button class="calc-btn">9</button>
+                            <button class="calc-btn operator" rowspan="2">+</button>
+                            <button class="calc-btn">4</button>
+                            <button class="calc-btn">5</button>
+                            <button class="calc-btn">6</button>
+                            <button class="calc-btn">1</button>
+                            <button class="calc-btn">2</button>
+                            <button class="calc-btn">3</button>
+                            <button class="calc-btn operator" rowspan="2">=</button>
+                            <button class="calc-btn col-span-2">0</button>
+                            <button class="calc-btn">.</button>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-2">Bloc-notes</h3>
+                    <textarea id="notepad" class="w-full h-64 p-2 rounded-lg bg-surface border border-glass-border text-text-secondary" placeholder="Vos notes ici..."></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script>
         // --- DOM Elements ---
@@ -439,6 +505,9 @@
 
         const hintBtn = document.getElementById('hint-btn');
         const skipBtn = document.getElementById('skip-btn');
+        const toolsBtn = document.getElementById('tools-btn');
+        const toolsModal = document.getElementById('tools-modal');
+        const closeToolsBtn = document.getElementById('close-tools-btn');
 
         const feedbackModal = document.getElementById('feedback-modal');
         const feedbackTitleEl = document.getElementById('feedback-title');
@@ -448,8 +517,8 @@
         const confirmModal = document.getElementById('confirm-modal');
         const confirmTitleEl = document.getElementById('confirm-title');
         const confirmTextEl = document.getElementById('confirm-text');
-        const confirmYesBtn = document.getElementById('confirm-yes-btn');
-        const confirmNoBtn = document.getElementById('confirm-no-btn');
+        let confirmYesBtn = document.getElementById('confirm-yes-btn');
+        let confirmNoBtn = document.getElementById('confirm-no-btn');
 
         const finalScoreEl = document.getElementById('final-score');
         const finalMaxScoreEl = document.getElementById('final-max-score');
@@ -458,7 +527,6 @@
 
         // --- Game Data ---
         let questions = [
-            // Scenarios
             { type: "scenario-urgent", question: "Que faites-vous IMMÉDIATEMENT ?", context: { from: '"Direction" <direction@groupe.com>', subject: "TR: URGENT - Demande de chiffrage variante", body: "Bonjour,\n\nLe client vient de nous appeler. Il veut remplacer la façade en briques par du bardage métallique. Il me faut une estimation du surcoût/économie pour 14h. Nous sommes en négociation.\n\nMerci." }, options: ["Répondre que le délai est trop court et que c'est impossible.", "Donner une estimation à la louche basée sur votre expérience pour répondre rapidement.", "Lancer un appel à un fournisseur de bardage pour obtenir un prix rapide et calculer une macro-estimation (surface x prix/m²).", "Ignorer l'email et attendre d'avoir plus d'informations."], answer: 2, hint: "Il faut une réponse rapide mais basée sur un minimum de données concrètes.", explanation: "La meilleure option est la 3. Elle permet de donner une estimation rapide mais fondée sur un prix réel, même s'il n'est pas contractuel. C'est le meilleur compromis entre vitesse et fiabilité dans une situation d'urgence." },
             { type: "scenario-email", question: "Comment répondez-vous à cet email ?", context: { from: '"Alain Martin" <a.martin@peinture-express.fr>', subject: "URGENT - Facture 2024-034 non payée", body: "Bonjour,\n\nSauf erreur de ma part, notre facture pour le chantier 'Réhab Arcueil' est échue depuis 15 jours et nous n'avons toujours pas reçu le paiement. C'est inacceptable.\n\nSi nous n'avons pas le virement sous 48h, nous arrêtons nos interventions sur tous vos chantiers.\n\nCordialement,\nAlain Martin" }, options: ["Bonjour, Je transmets au service comptabilité. Ils sont débordés en ce moment. Cordialement.", "Bonjour M. Martin, Je comprends votre position. Je vérifie immédiatement l'état de votre facture auprès de notre comptabilité et je reviens vers vous avec une date de paiement précise avant la fin de journée. Cordialement.", "Le ton de votre email est inacceptable. Sachez que les menaces ne feront pas avancer les choses. La facture sera payée quand elle sera payée.", "Ignorer l'email et appeler directement la comptabilité."], answer: 1, hint: "La diplomatie et la proactivité sont essentielles pour maintenir de bonnes relations avec les sous-traitants.", explanation: "La réponse 2 est la plus professionnelle. Elle montre de l'empathie, ne rejette pas la faute, et propose une action concrète avec un engagement de suivi. Cela permet de désamorcer le conflit tout en traitant le problème de fond." },
             { type: "scenario-email", question: "Il est 17h, la veille du rendu à midi. Que faites-vous en priorité ?", context: { from: '"Sophie Dubois" <s.dubois@promoteur-immo.com>', subject: "Petite modif sur l'offre Arcueil", body: "Bonjour,\n\nJ'espère que vous allez bien. Nous devons rendre l'offre demain à 12h. Serait-il possible de remplacer toutes les menuiseries extérieures en Alu par du Bois-Alu ? C'est mieux pour l'image 'écolo' du projet.\n\nMerci !\nSophie" }, options: ["Répondre \"Pas de problème !\" et modifier rapidement le chiffrage avec une estimation.", "Appeler immédiatement Mme Dubois pour lui expliquer que ce changement majeur est impossible dans le délai imparti et qu'il faut maintenir l'offre en l'état.", "Lancer une consultation express auprès de vos fournisseurs, tout en prévenant Mme Dubois que ce changement aura un impact significatif sur le prix et le délai, et qu'une offre précise ne sera peut-être pas possible pour demain 12h.", "Modifier le chiffrage en ajoutant une grosse plus-value pour se couvrir, sans consulter."], answer: 2, hint: "Comment concilier la demande du client et la réalité technique et économique dans un délai très court ?", explanation: "La réponse 3 est la meilleure approche. Elle montre votre réactivité et votre volonté de satisfaire le client, tout en étant transparent sur les risques (coût, délai). Elle ouvre la porte à une négociation." },
@@ -526,9 +594,9 @@
         function playSound(type) {
             if (!soundsEnabled || !Tone.context.state || Tone.context.state !== 'running') return;
             try {
-                if (type === 'correct') correctSynth.triggerAttackRelease("C5", "8n", Tone.now());
-                else if (type === 'wrong') wrongSynth.triggerAttackRelease("C3", "8n", Tone.now());
-                else if (type === 'click') soundSynth.triggerAttackRelease("C4", "8n", Tone.now());
+                if (type === 'correct') correctSynth.triggerAttackRelease("C5", "8n");
+                else if (type === 'wrong') wrongSynth.triggerAttackRelease("C3", "8n");
+                else if (type === 'click') soundSynth.triggerAttackRelease("C4", "8n");
                 else if (type === 'siren') {
                     sirenSynth.start();
                     setTimeout(() => sirenSynth.stop(), 1000);
@@ -849,10 +917,13 @@
             confirmModal.classList.remove('hidden');
             const newYesBtn = confirmYesBtn.cloneNode(true);
             confirmYesBtn.parentNode.replaceChild(newYesBtn, confirmYesBtn);
-            newYesBtn.addEventListener('click', () => { playSound('click'); onConfirm(); confirmModal.classList.add('hidden'); });
+            confirmYesBtn = newYesBtn;
+            confirmYesBtn.addEventListener('click', () => { playSound('click'); onConfirm(); confirmModal.classList.add('hidden'); });
+            
             const newNoBtn = confirmNoBtn.cloneNode(true);
             confirmNoBtn.parentNode.replaceChild(newNoBtn, confirmNoBtn);
-            newNoBtn.addEventListener('click', () => { playSound('click'); confirmModal.classList.add('hidden'); });
+            confirmNoBtn = newNoBtn;
+            confirmNoBtn.addEventListener('click', () => { playSound('click'); confirmModal.classList.add('hidden'); });
         }
 
         function useHint() {
@@ -981,6 +1052,54 @@
             localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
             fabContainer.classList.remove('open');
         });
+
+        toolsBtn.addEventListener('click', () => {
+            playSound('click');
+            toolsModal.classList.remove('hidden');
+        });
+        closeToolsBtn.addEventListener('click', () => {
+            playSound('click');
+            toolsModal.classList.add('hidden');
+        });
+
+        // Calculator logic
+        const calcDisplay = document.getElementById('calc-display');
+        let currentInput = '';
+        let operator = '';
+        let firstOperand = null;
+        document.querySelectorAll('.calc-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const value = e.target.textContent;
+                if(!isNaN(value) || value === '.') {
+                    if(currentInput === '0' && value !== '.') currentInput = '';
+                    currentInput += value;
+                    calcDisplay.textContent = currentInput;
+                } else if (value === 'C') {
+                    currentInput = '0';
+                    operator = '';
+                    firstOperand = null;
+                    calcDisplay.textContent = currentInput;
+                } else if (['+', '-', '*', '/'].includes(value)) {
+                    if (firstOperand === null) {
+                        firstOperand = parseFloat(currentInput);
+                    } else if (operator) {
+                        const result = eval(`${firstOperand} ${operator} ${currentInput}`);
+                        firstOperand = result;
+                    }
+                    operator = value;
+                    currentInput = '';
+                } else if (value === '=') {
+                    if (firstOperand !== null && operator && currentInput) {
+                        const result = eval(`${firstOperand} ${operator} ${currentInput}`);
+                        calcDisplay.textContent = result;
+                        firstOperand = result;
+                        currentInput = result.toString();
+                        operator = '';
+                    }
+                }
+            });
+        });
+
         // Apply saved theme on load
         if (localStorage.getItem('theme') === 'light') {
             document.body.classList.add('light-mode');
