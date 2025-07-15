@@ -81,7 +81,7 @@
             z-index: -1;
         }
         
-        [onclick], .nav-link, .job-card-button { cursor: pointer; }
+        [onclick], .nav-link, .job-card-button, .search-button { cursor: pointer; }
 
         .header {
             position: fixed;
@@ -170,6 +170,16 @@
             max-width: 700px;
             margin: 0 auto;
         }
+
+        .search-section { margin-bottom: var(--spacing-xl); }
+        .search-container { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); display: flex; flex-direction: column; gap: var(--spacing-md); }
+        @media (min-width: 768px) { .search-container { flex-direction: row; align-items: center; } }
+        .search-input-wrapper { position: relative; flex-grow: 1; }
+        .search-input-wrapper i { position: absolute; top: 50%; left: var(--spacing-md); transform: translateY(-50%); color: var(--text-muted); }
+        .search-input-wrapper input { width: 100%; background: var(--background); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 1rem 1rem 1rem 2.5rem; color: var(--text-primary); font-size: 1rem; transition: var(--transition); }
+        .search-input-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); outline: none; }
+        .search-button { background-color: var(--primary); color: white; border: none; padding: 0.8rem 2rem; border-radius: var(--radius); font-weight: 600; font-size: 1rem; transition: background-color 0.2s; }
+        .search-button:hover { background-color: var(--primary-dark); }
 
         .filters-and-map {
             display: grid;
@@ -340,16 +350,16 @@
             </a>
             <div class="nav-desktop">
                  <ul class="nav-menu">
-                    <li class="nav-item"><a href="index.html" class="nav-link" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); avigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
-                    <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
-                    <li class="nav-item"><a href="offers.html" class="nav-link active" onclick="event.preventDefault();"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
-                </ul>
-                <div class="nav-actions">
-                    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
-                </div>
+                     <li class="nav-item"><a href="index.html" class="nav-link" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
+                     <li class="nav-item"><a href="simulateur.html" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
+                     <li class="nav-item"><a href="test.html" class="nav-link" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
+                     <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
+                     <li class="nav-item"><a href="emploi.html" class="nav-link active" onclick="event.preventDefault();"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
+                     <li class="nav-item"><a href="histoire.html" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
+                 </ul>
+                 <div class="nav-actions">
+                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
+                 </div>
             </div>
             <button class="mobile-toggle" id="mobileToggle" style="display:none;">
                 <div class="hamburger"><span></span><span></span><span></span></div>
@@ -359,6 +369,16 @@
 
     <!-- Main Content -->
     <main class="main-content">
+        <section class="search-section animate-in">
+            <form action="recherche.html" method="GET" class="search-container">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="query" required placeholder="Rechercher sur tout le site...">
+                </div>
+                <button type="submit" class="search-button">Rechercher</button>
+            </form>
+        </section>
+
         <section class="hero animate-in">
             <h1>Nos Offres d'Emploi</h1>
             <p>Rejoignez une équipe dynamique et participez à des projets d'envergure. LTD, cabinet de recrutement, recherche ses futurs talents dans tous les métiers du BTP.</p>
@@ -366,7 +386,7 @@
 
         <section class="filters-and-map animate-in" style="animation-delay: 0.2s;">
             <div class="filter-container">
-                 <input type="text" id="searchInput" placeholder="Rechercher par mot-clé (ex: VRD, Civil)...">
+                 <input type="text" id="localSearchInput" placeholder="Filtrer les offres par mot-clé...">
                  <select id="locationFilter">
                      <option value="all">Toutes les localisations</option>
                  </select>
@@ -469,7 +489,7 @@
         }
 
         function filterAndDisplay() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const searchTerm = document.getElementById('localSearchInput').value.toLowerCase();
             const locationTerm = document.getElementById('locationFilter').value;
             const typeTerm = document.getElementById('typeFilter').value;
 
@@ -493,7 +513,6 @@
         }
 
         function updateMapMarkers(jobs) {
-            // Clear existing markers
             markers.forEach(marker => map.removeLayer(marker));
             markers = [];
 
@@ -554,6 +573,7 @@
         function updateThemeUI() {
             const themeIcon = document.getElementById('themeIcon');
             if (!themeIcon) return;
+            document.body.classList.toggle('light-mode', currentTheme === 'light');
             themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
         }
 
@@ -568,20 +588,7 @@
         function applyForJob(jobTitle) {
             const email = 'l.amara@ltd-international.com';
             const subject = `Candidature - ${jobTitle}`;
-            const body = `Bonjour,
-
-Je souhaite postuler à l'offre pour le poste de "${jobTitle}".
-
-Veuillez trouver ci-joint mon CV et ma lettre de motivation.
-
-Cordialement,
-
-[Votre Nom]
-
----
-Pièces jointes obligatoires :
-- CV (Curriculum Vitae)
-- Lettre de motivation`;
+            const body = `Bonjour,\n\nJe souhaite postuler à l'offre pour le poste de "${jobTitle}".\n\nVeuillez trouver ci-joint mon CV et ma lettre de motivation.\n\nCordialement,\n\n[Votre Nom]\n\n---\nPièces jointes obligatoires :\n- CV (Curriculum Vitae)\n- Lettre de motivation`;
             
             const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
             window.location.href = mailtoLink;
@@ -595,7 +602,7 @@ Pièces jointes obligatoires :
             displayJobs(jobOffers);
             initMap();
             
-            document.getElementById('searchInput').addEventListener('input', filterAndDisplay);
+            document.getElementById('localSearchInput').addEventListener('input', filterAndDisplay);
             document.getElementById('locationFilter').addEventListener('change', filterAndDisplay);
             document.getElementById('typeFilter').addEventListener('change', filterAndDisplay);
 
