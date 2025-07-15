@@ -301,51 +301,8 @@
             <p>Rejoignez une équipe dynamique et participez à des projets d'envergure. LTD, cabinet de recrutement, recherche ses futurs talents dans tous les métiers du BTP.</p>
         </section>
 
-        <div class="job-list animate-in" style="animation-delay: 0.2s;">
-            <!-- Job Offer 1 -->
-            <div class="job-card">
-                <div class="job-card-header">
-                    <h2 class="job-card-title">Conducteur de Travaux Principal GO/TCE</h2>
-                </div>
-                <div class="job-card-meta">
-                    <span class="meta-item"><i class="fas fa-map-marker-alt"></i> Paris, Île-de-France</span>
-                    <span class="meta-item"><i class="fas fa-file-contract"></i> CDI</span>
-                </div>
-                <p class="job-card-description">Vous assurez la responsabilité de plusieurs chantiers en gros œuvre et/ou tous corps d'état. Vous êtes garant de la qualité, des délais et du budget.</p>
-                <div class="job-card-footer">
-                    <a href="#" class="job-card-button" onclick="applyForJob('Conducteur de Travaux Principal GO/TCE')">Candidater</a>
-                </div>
-            </div>
-
-            <!-- Job Offer 2 -->
-            <div class="job-card">
-                <div class="job-card-header">
-                    <h2 class="job-card-title">Géomètre Projeteur VRD</h2>
-                </div>
-                <div class="job-card-meta">
-                    <span class="meta-item"><i class="fas fa-map-marker-alt"></i> Lyon, Auvergne-Rhône-Alpes</span>
-                    <span class="meta-item"><i class="fas fa-file-contract"></i> CDI</span>
-                </div>
-                <p class="job-card-description">Au sein du bureau d'études, vous réalisez les plans d'exécution pour des projets de voiries et réseaux divers (VRD) sur les logiciels Mensura ou AutoCAD/Covadis.</p>
-                <div class="job-card-footer">
-                    <a href="#" class="job-card-button" onclick="applyForJob('Géomètre Projeteur VRD')">Candidater</a>
-                </div>
-            </div>
-
-            <!-- Job Offer 3 -->
-            <div class="job-card">
-                <div class="job-card-header">
-                    <h2 class="job-card-title">Ingénieur Étude de Prix Bâtiment</h2>
-                </div>
-                <div class="job-card-meta">
-                    <span class="meta-item"><i class="fas fa-map-marker-alt"></i> Marseille, Provence-Alpes-Côte d'Azur</span>
-                    <span class="meta-item"><i class="fas fa-file-contract"></i> CDI</span>
-                </div>
-                <p class="job-card-description">Vous analysez les dossiers d'appel d'offres, consultez les fournisseurs et sous-traitants, et établissez le chiffrage des projets de construction.</p>
-                <div class="job-card-footer">
-                    <a href="#" class="job-card-button" onclick="applyForJob('Ingénieur Étude de Prix Bâtiment')">Candidater</a>
-                </div>
-            </div>
+        <div class="job-list animate-in" style="animation-delay: 0.2s;" id="job-list-container">
+            <!-- Job offers will be dynamically inserted here -->
         </div>
     </main>
     
@@ -359,6 +316,61 @@
 
     <script>
         let currentTheme = localStorage.getItem('theme') || 'dark';
+
+        const jobOffers = [
+            "Ingénieur Eau et Assainissement F/H", "Chef de Projet VRD Aménagement Urbain F/H", "Technicien projeteur réseaux électriques F/H",
+            "Ingénieur Génie Civil MOE Hydraulique F/H", "Directeur de pôle VRD F/H", "Conducteur de travaux F/H", "Contrôleur de gestion F/H",
+            "Ingénieur Structure F/H", "Chargé d'affaires génie civil F/H", "Ingénieur Responsable d’Affaires – Aménagements Urbains F/H",
+            "Dessinateur projeteur/Dessinatrice projeteuse F/H", "Ingénieur Electricité Contrôle Commande F/H", "Ingénieur responsable d'affaire - Eau et assainissement F/H",
+            "Ingénieur responsable de projet déchets-énergie F/H", "Directeur de travaux F/H", "Responsable de projet – Infrastructures Réseaux de Chaleur F/H",
+            "Technicien/Ingénieur chargé d'affaires en hydraulique urbaine F/H", "Ingénieur d’études process de traitement de déchets/biomasse F/H",
+            "Ingénieur d'études production F/H", "Chargé·e d’affaires – Hydraulique urbaine F/H", "Ingénieur chargé d’études et travaux F/H",
+            "Chef de projet électricité/Contrôle commande F/H", "Ingénieur chargé d'études hydraulique F/H", "Superviseur de travaux GC VRD F/H",
+            "Directeur projets/Chargé d'affaires opérations internationales F/H", "Ingénieur études traitement des eaux F/H", "Ingénieur responsable de projets Génie Civil F/H",
+            "Ingénieur BIM traitement des eaux F/H", "Responsable d’affaire en infrastructures hydrauliques/Génie Civil F/H", "Ingénieur responsable d’affaires traitement des eaux et des déchets F/H",
+            "Ingénieur responsable de projets hydraulique urbaine F/H", "Ingénieur responsable d’affaires et travaux F/H", "Responsable projets réseaux de chaleur F/H",
+            "Ingénieur responsable de projets traitement des eaux F/H", "Ingénieur traitement des eaux F/H", "Ingénieur expérimenté traitement des eaux assainissement F/H",
+            "Chef de projet multi lots F/H", "Ingénieur chargé d’affaires eau et environnement F/H", "Projeteur VRD F/H",
+            "Ingénieur d'études eau et environnement F/H", "Ingénieur d’études en traitement thermique des déchets F/H", "Responsable projets réseaux de chaleur F/H",
+            "Responsable d’affaire en Infra Déchets/Energie F/H", "Ingénieur responsable d'affaire - eau et assainissement F/H", "Responsable Affaires Aménagement Urbain F/H",
+            "Ingénieur en expertise de services publics F/H", "Ingénieur responsable de projet déchets-énergie F/H", "Ingénieur d'études production d'énergie F/H",
+            "Ingénieur responsable de projet infrastructures hydrauliques F/H", "Projeteur VRD F/H", "Ingénieur directeur grand projet traitement des eaux F/H",
+            "Ingénieur Maîtrise d’Œuvre Infrastructures Hydrauliques F/H", "Ingénieur Chef de Projet Hydraulique – Schémas Directeurs F/H",
+            "Chef de Projet Maîtrise d’Œuvre Infrastructures VRD F/H", "Assistant administratif F/H", "Chef·fe de Projet Génie Civil / Ouvrages d’Art F/H",
+            "Ingénieur·e Études & Travaux – Espaces Verts / Environnement F/H", "Ingénieur·e VRD Confirmé·e – Aménagement Urbain F/H",
+            "Surveillant·e de Travaux – Eau & Assainissement F/H", "Technicien·ne Sites & Sols Pollués F/H", "Responsable de projet Infrastructures eaux potables, eaux usées F/H",
+            "Responsable d'Antenne Aménagements urbains, VRD & Hydraulique F/H", "Chargé/Chargée d'études hydraulique F/H", "Projeteur VRD F/H",
+            "Chef de projet VRD F/H", "Ingénieur responsable de projet infrastructures hydrauliques F/H", "Projeteur VRD F/H",
+            "Ingénieur directeur grand projet traitement des eaux F/H", "Ingénieur Maîtrise d’Œuvre Infrastructures Hydrauliques F/H",
+            "Ingénieur Chef de Projet Hydraulique – Schémas Directeurs F/H", "Chef de Projet Maîtrise d’Œuvre Infrastructures VRD F/H",
+            "Assistant administratif F/H", "Chef·fe de Projet Génie Civil / Ouvrages d’Art F/H", "Ingénieur·e Études & Travaux – Espaces Verts / Environnement F/H",
+            "Ingénieur·e VRD Confirmé·e – Aménagement Urbain F/H"
+        ];
+
+        function populateJobs() {
+            const container = document.getElementById('job-list-container');
+            if (!container) return;
+            
+            let content = '';
+            jobOffers.forEach(jobTitle => {
+                content += `
+                    <div class="job-card">
+                        <div class="job-card-header">
+                            <h2 class="job-card-title">${jobTitle}</h2>
+                        </div>
+                        <div class="job-card-meta">
+                            <span class="meta-item"><i class="fas fa-map-marker-alt"></i> France</span>
+                            <span class="meta-item"><i class="fas fa-file-contract"></i> CDI</span>
+                        </div>
+                        <p class="job-card-description">Rejoignez nos équipes sur des projets passionnants. Nous recherchons des talents motivés pour ce poste.</p>
+                        <div class="job-card-footer">
+                            <a href="#" class="job-card-button" onclick="applyForJob('${jobTitle.replace(/'/g, "\\'")}')">Candidater</a>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = content;
+        }
 
         function showProgress() {
             const progressBar = document.getElementById('progressBar');
@@ -442,6 +454,7 @@ Pièces jointes obligatoires :
         document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.toggle('light-mode', currentTheme === 'light');
             updateThemeUI();
+            populateJobs();
             
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
