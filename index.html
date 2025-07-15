@@ -107,7 +107,7 @@
             z-index: -1;
         }
         
-        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn {
+        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn, .notification-bell {
             cursor: pointer;
         }
 
@@ -204,6 +204,7 @@
             border-radius: var(--radius);
             color: var(--text-secondary);
             transition: var(--transition);
+            position: relative;
         }
 
         .theme-toggle:hover {
@@ -245,12 +246,81 @@
         .mobile-nav-items { display: flex; flex-direction: column; gap: var(--spacing-xs); }
         .mobile-nav-item { display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-md); color: var(--text-secondary); text-decoration: none; border-radius: var(--radius-md); }
         .mobile-nav-item-icon { font-size: 1.25rem; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border-radius: var(--radius); }
+        .mobile-nav-item:hover { background: var(--glass); color: var(--text-primary); }
 
         .main-content { margin-top: 4.5rem; padding: var(--spacing-xl) var(--spacing-md); max-width: 1400px; margin-left: auto; margin-right: auto; }
         .hero { text-align: center; padding: var(--spacing-xl) 0; transition: var(--transition-slow); }
         .hero h1 { font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; margin-bottom: var(--spacing-lg); background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .hero p { font-size: 1.25rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.7; }
         
+        /* News Banner Section */
+        .news-banner {
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            margin: var(--spacing-xl) 0;
+        }
+        .news-banner-header {
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+        }
+        .news-banner-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-xs);
+        }
+        .news-banner-header p {
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .news-banner-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-lg);
+        }
+        .news-banner-item {
+            background: var(--background);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+        .news-banner-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+        .news-banner-item-icon {
+            font-size: 1.75rem;
+            color: var(--primary);
+            width: 3.5rem;
+            height: 3.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface);
+            border-radius: var(--radius-md);
+        }
+        .news-banner-item-content h5 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+        .news-banner-item-content p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+
         .quick-actions { transition: var(--transition-slow); }
         .quick-actions a div:hover { transform: translateY(-8px); box-shadow: var(--shadow-xl); }
         .animate-in { animation: fadeInUp 0.6s ease-out forwards; }
@@ -344,7 +414,7 @@
                      <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')""><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
                  </ul>
                  <div class="nav-actions">
-                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
                          <i class="fas fa-moon" id="themeIcon"></i>
                      </button>
                  </div>
@@ -378,9 +448,9 @@
                     </a>
                     <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('test.html')">
                         <div class="mobile-nav-item-icon"><i class="fas fa-brain"></i></div>
-                        <h4>Tests & Évaluation</h4>
+                        <h4>Tests</h4>
                     </a>
-                    <a href="challenges.html" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('challenges.html')">
+                     <a href="challenges.html" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('challenges.html')">
                         <div class="mobile-nav-item-icon"><i class="fas fa-trophy"></i></div>
                         <h4>Challenges</h4>
                     </a>
@@ -416,6 +486,37 @@
             <p>Formez-vous aux métiers d'avenir du BTP avec nos simulateurs professionnels. Le secteur recrute massivement : préparez votre carrière dès maintenant !</p>
         </section>
 
+        <!-- News Banner Section -->
+        <section class="news-banner animate-in">
+            <div class="news-banner-header">
+                <h2>Les Nouveautés à ne pas manquer</h2>
+                <p>Restez à jour avec nos derniers tests, challenges et actualités du secteur.</p>
+            </div>
+            <div class="news-banner-grid">
+                <a href="#" onclick="event.preventDefault(); navigateTo('test-comportemental.html')" class="news-banner-item">
+                    <div class="news-banner-item-icon"><i class="fas fa-user-check"></i></div>
+                    <div class="news-banner-item-content">
+                        <h5>Test Comportemental</h5>
+                        <p>Évaluez vos soft skills en situation professionnelle.</p>
+                    </div>
+                </a>
+                <a href="#" onclick="event.preventDefault(); navigateTo('challenge-etude-prix.html')" class="news-banner-item">
+                    <div class="news-banner-item-icon"><i class="fas fa-calculator"></i></div>
+                    <div class="news-banner-item-content">
+                        <h5>Challenge Étude de Prix TCE</h5>
+                        <p>Réalisez un chiffrage complet et un mémoire technique.</p>
+                    </div>
+                </a>
+                <a href="#" onclick="event.preventDefault(); navigateTo('constructions-marquantes.html')" class="news-banner-item">
+                    <div class="news-banner-item-icon"><i class="fas fa-landmark"></i></div>
+                    <div class="news-banner-item-content">
+                        <h5>Constructions Marquantes</h5>
+                        <p>Découvrez les édifices emblématiques du monde entier.</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
         <section class="quick-actions animate-in" style="margin: 4rem 0;">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
                 <a href="#" onclick="event.preventDefault(); navigateTo('simulateur.html')" style="text-decoration: none; color: inherit;">
@@ -442,29 +543,13 @@
                         <div style="background: var(--accent); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Participer</div>
                     </div>
                 </a>
-                <a href="#" onclick="event.preventDefault(); navigateTo('emploi.html')" style="text-decoration: none; color: inherit;">
-                    <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
-                        <div style="font-size: 3rem; margin-bottom: 1rem;">💼</div>
-                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Nos Offres d'Emploi</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Trouvez le poste qui vous correspond dans le secteur du BTP.</p>
-                        <div style="background: var(--primary-light); color: var(--text-primary); padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Consulter</div>
-                    </div>
-                </a>
-                <a href="#" onclick="event.preventDefault(); navigateTo('histoire.html')" style="text-decoration: none; color: inherit;">
-                    <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
-                        <div style="font-size: 3rem; margin-bottom: 1rem;">📜</div>
-                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Histoire du BTP</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Découvrez les grandes étapes et innovations du secteur.</p>
-                        <div style="background: #0d9488; color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Explorer</div>
-                    </div>
-                </a>
             </div>
         </section>
         
         <!-- BTP Wall Street Section -->
         <section class="btp-wall-street">
             <!-- Tenders Column -->
-            <div class="feed-column">
+            <div class="feed-column" id="tenders-feed-container">
                 <div class="feed-header">
                     <div class="feed-header-title">
                         <i class="fas fa-gavel"></i>
@@ -487,13 +572,13 @@
                 </div>
             </div>
             <!-- News Column -->
-            <div class="feed-column">
+            <div class="feed-column" id="news-feed-container">
                 <div class="feed-header">
-                     <div class="feed-header-title">
+                       <div class="feed-header-title">
                         <i class="fas fa-newspaper" style="color: var(--secondary);"></i>
                         <h2>Actualités BTP</h2>
                     </div>
-                     <div class="feed-header-actions">
+                       <div class="feed-header-actions">
                         <button class="feed-action-btn" onclick="enableNotifications('news')" title="Activer les notifications pour les actualités">
                             <i class="fas fa-bell"></i>
                         </button>
@@ -663,7 +748,7 @@
         
         // --- Notification System ---
         function updateNotifButtonUI() {
-            const buttons = document.querySelectorAll('.feed-action-btn[id$="-notifications"]');
+            const buttons = document.querySelectorAll('.feed-action-btn[title^="Activer les notifications"]');
             if (notificationPermission === 'granted') {
                 buttons.forEach(btn => {
                     btn.classList.add('active');
