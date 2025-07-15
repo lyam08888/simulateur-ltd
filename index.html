@@ -264,9 +264,21 @@
         .search-input-wrapper i { position: absolute; top: 50%; left: var(--spacing-md); transform: translateY(-50%); color: var(--text-muted); }
         .search-input-wrapper input { width: 100%; background: var(--background); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 2.5rem; color: var(--text-primary); font-size: 1rem; transition: var(--transition); }
         .search-input-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); outline: none; }
-        .search-filters { display: flex; flex-direction: column; gap: var(--spacing-md); }
-        @media (min-width: 768px) { .search-filters { flex-direction: row; } }
-        .search-filters select { background: var(--background); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: var(--spacing-sm); color: var(--text-primary); font-size: 1rem; cursor: pointer; -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; padding-right: 2.5rem; }
+        
+        .search-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .search-button:hover {
+            background-color: var(--primary-dark);
+        }
 
         .btp-wall-street { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: var(--spacing-xl); margin-top: var(--spacing-xl); }
         .feed-column { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--glass-border); padding: var(--spacing-lg); overflow: hidden; display: flex; flex-direction: column; transition: var(--transition-slow); }
@@ -390,34 +402,23 @@
         
         <!-- Search Section -->
         <section class="search-section animate-in">
-            <div class="search-container">
+            <form action="recherche.html" method="GET" class="search-container">
                 <div class="search-input-wrapper">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Rechercher un mot-clé, un lieu...">
+                    <input type="text" name="query" required placeholder="Rechercher sur tout le site...">
                 </div>
-                <div class="search-filters">
-                    <select id="categoryFilter" title="Filtrer par section">
-                        <option value="all">Toutes les sections</option>
-                        <option value="tenders">Appels d'offre</option>
-                        <option value="news">Actualités</option>
-                    </select>
-                    <select id="sortFilter" title="Trier par">
-                        <option value="date-desc">Plus récent d'abord</option>
-                        <option value="date-asc">Plus ancien d'abord</option>
-                        <option value="title-asc">Titre (A-Z)</option>
-                    </select>
-                </div>
-            </div>
+                <button type="submit" class="search-button">Rechercher</button>
+            </form>
         </section>
 
-        <section class="hero animate-in" id="hero-section">
+        <section class="hero animate-in">
             <h1>Maîtrisez les métiers du BTP</h1>
             <p>Formez-vous aux métiers d'avenir du BTP avec nos simulateurs professionnels. Le secteur recrute massivement : préparez votre carrière dès maintenant !</p>
         </section>
 
-        <section class="quick-actions animate-in" id="quick-actions-section" style="margin: 4rem 0;">
-            <div id="quick-actions-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
-                <a href="#" class="quick-action-item" data-search-term="simulateurs gestion chantiers technique lancer" onclick="event.preventDefault(); navigateTo('simulateur.html')" style="text-decoration: none; color: inherit;">
+        <section class="quick-actions animate-in" style="margin: 4rem 0;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+                <a href="#" onclick="event.preventDefault(); navigateTo('simulateur.html')" style="text-decoration: none; color: inherit;">
                     <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
                         <div style="font-size: 3rem; margin-bottom: 1rem;">👷</div>
                         <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Simulateurs</h3>
@@ -425,7 +426,7 @@
                         <div style="background: var(--primary); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Lancer</div>
                     </div>
                 </a>
-                <a href="#" class="quick-action-item" data-search-term="tests évaluation soft-skills connaissances techniques commencer" onclick="event.preventDefault(); navigateTo('test.html')" style="text-decoration: none; color: inherit;">
+                <a href="#" onclick="event.preventDefault(); navigateTo('test.html')" style="text-decoration: none; color: inherit;">
                     <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
                         <div style="font-size: 3rem; margin-bottom: 1rem;">🧠</div>
                         <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Tests & Évaluation</h3>
@@ -433,7 +434,7 @@
                         <div style="background: var(--secondary); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Commencer</div>
                     </div>
                 </a>
-                <a href="challenges.html" class="quick-action-item" data-search-term="challenges recrutement compétences participer" onclick="event.preventDefault(); navigateTo('challenges.html')" style="text-decoration: none; color: inherit;">
+                <a href="challenges.html" onclick="event.preventDefault(); navigateTo('challenges.html')" style="text-decoration: none; color: inherit;">
                     <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
                         <div style="font-size: 3rem; margin-bottom: 1rem;">🏆</div>
                         <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Challenges Recrutement</h3>
@@ -441,7 +442,7 @@
                         <div style="background: var(--accent); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Participer</div>
                     </div>
                 </a>
-                <a href="#" class="quick-action-item" data-search-term="offres emploi poste btp consulter" onclick="event.preventDefault(); navigateTo('emploi.html')" style="text-decoration: none; color: inherit;">
+                <a href="#" onclick="event.preventDefault(); navigateTo('emploi.html')" style="text-decoration: none; color: inherit;">
                     <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
                         <div style="font-size: 3rem; margin-bottom: 1rem;">💼</div>
                         <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Nos Offres d'Emploi</h3>
@@ -449,7 +450,7 @@
                         <div style="background: var(--primary-light); color: var(--text-primary); padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Consulter</div>
                     </div>
                 </a>
-                <a href="#" class="quick-action-item" data-search-term="histoire btp étapes innovations explorer" onclick="event.preventDefault(); navigateTo('histoire.html')" style="text-decoration: none; color: inherit;">
+                <a href="#" onclick="event.preventDefault(); navigateTo('histoire.html')" style="text-decoration: none; color: inherit;">
                     <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
                         <div style="font-size: 3rem; margin-bottom: 1rem;">📜</div>
                         <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Histoire du BTP</h3>
@@ -461,19 +462,19 @@
         </section>
         
         <!-- BTP Wall Street Section -->
-        <section class="btp-wall-street" id="btp-wall-street">
+        <section class="btp-wall-street">
             <!-- Tenders Column -->
-            <div class="feed-column" id="tenders-column">
+            <div class="feed-column">
                 <div class="feed-header">
                     <div class="feed-header-title">
                         <i class="fas fa-gavel"></i>
                         <h2>Appels d'offre</h2>
                     </div>
                     <div class="feed-header-actions">
-                        <button class="feed-action-btn" id="tenders-notifications" onclick="enableNotifications('tenders')" title="Activer les notifications pour les appels d'offre">
+                        <button class="feed-action-btn" onclick="enableNotifications('tenders')" title="Activer les notifications pour les appels d'offre">
                             <i class="fas fa-bell"></i>
                         </button>
-                        <button class="feed-action-btn" id="tenders-refresh" onclick="refreshFeeds()" title="Rafraîchir les appels d'offre">
+                        <button class="feed-action-btn" onclick="populateTenders(true)" title="Rafraîchir les appels d'offre">
                             <i class="fas fa-sync-alt"></i>
                         </button>
                     </div>
@@ -486,17 +487,17 @@
                 </div>
             </div>
             <!-- News Column -->
-            <div class="feed-column" id="news-column">
+            <div class="feed-column">
                 <div class="feed-header">
                      <div class="feed-header-title">
                         <i class="fas fa-newspaper" style="color: var(--secondary);"></i>
                         <h2>Actualités BTP</h2>
                     </div>
                      <div class="feed-header-actions">
-                        <button class="feed-action-btn" id="news-notifications" onclick="enableNotifications('news')" title="Activer les notifications pour les actualités">
+                        <button class="feed-action-btn" onclick="enableNotifications('news')" title="Activer les notifications pour les actualités">
                             <i class="fas fa-bell"></i>
                         </button>
-                        <button class="feed-action-btn" id="news-refresh" onclick="refreshFeeds()" title="Rafraîchir les actualités">
+                        <button class="feed-action-btn" onclick="populateNews(true)" title="Rafraîchir les actualités">
                             <i class="fas fa-sync-alt"></i>
                         </button>
                     </div>
@@ -616,138 +617,48 @@
             { type: 'news', title: "JO 2024 : le BTP a relevé le défi des délais", source: "Le Moniteur", date: "2025-07-05", link: "https://www.lemoniteur.fr/article/jo-2024-le-btp-a-releve-le-defi-des-delais.2316401" }
         ];
         
-        const allData = [...allTenders, ...allNews];
-
-        function populateFeed(containerId, data, type) {
-            const feed = document.getElementById(containerId);
+        function populateTenders(isRefresh = false) {
+            const feed = document.getElementById('tenders-feed');
             if (!feed) return;
             
             feed.innerHTML = ''; // Clear
-            if (data.length === 0) {
-                feed.innerHTML = `<div class="placeholder"><i class="fas fa-search"></i><span>Aucun résultat trouvé.</span></div>`;
-                return;
-            }
-
-            data.forEach(item => {
+            allTenders.forEach(item => {
                 const itemEl = document.createElement('div');
                 itemEl.className = 'feed-item';
-                if (type === 'tenders') {
-                    itemEl.innerHTML = `
-                        <a href="${item.link}" target="_blank" rel="noopener noreferrer" onclick="event.preventDefault(); openLink('${item.link}')">
-                            <div class="feed-item-title">${item.title}</div>
-                            <div class="feed-item-meta">
-                                <span><i class="fas fa-map-marker-alt"></i> ${item.location}</span>
-                                <span><i class="fas fa-calendar-alt"></i> Clôture le ${item.date}</span>
-                            </div>
-                            <div class="feed-item-action">Consulter l'offre <i class="fas fa-arrow-right"></i></div>
-                        </a>`;
-                } else if (type === 'news') {
-                    itemEl.innerHTML = `
-                        <a href="${item.link}" target="_blank" rel="noopener noreferrer" onclick="event.preventDefault(); openLink('${item.link}')">
-                            <div class="feed-item-title">${item.title}</div>
-                            <div class="feed-item-meta">
-                                <span><i class="fas fa-newspaper"></i> ${item.source}</span>
-                                <span><i class="fas fa-clock"></i> ${item.date}</span>
-                            </div>
-                            <div class="feed-item-action">Lire la suite <i class="fas fa-arrow-right"></i></div>
-                        </a>`;
-                }
+                itemEl.innerHTML = `
+                    <a href="${item.link}" target="_blank" rel="noopener noreferrer" onclick="event.preventDefault(); openLink('${item.link}')">
+                        <div class="feed-item-title">${item.title}</div>
+                        <div class="feed-item-meta">
+                            <span><i class="fas fa-map-marker-alt"></i> ${item.location}</span>
+                            <span><i class="fas fa-calendar-alt"></i> Clôture le ${item.date}</span>
+                        </div>
+                        <div class="feed-item-action">Consulter l'offre <i class="fas fa-arrow-right"></i></div>
+                    </a>`;
                 feed.appendChild(itemEl);
             });
+            if(isRefresh) showNotification("Appels d'offre actualisés.", 'success');
         }
 
-        function filterAndSortContent() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const category = document.getElementById('categoryFilter').value;
-            const sortBy = document.getElementById('sortFilter').value;
-
-            // Filter Quick Actions
-            const quickActionItems = document.querySelectorAll('.quick-action-item');
-            const heroSection = document.getElementById('hero-section');
-            const quickActionsSection = document.getElementById('quick-actions-section');
-
-            if (searchTerm.length > 0 || category !== 'all') {
-                heroSection.style.display = 'none';
-            } else {
-                heroSection.style.display = 'block';
-            }
+        function populateNews(isRefresh = false) {
+            const feed = document.getElementById('news-feed');
+            if (!feed) return;
             
-            if (category === 'all') {
-                quickActionsSection.style.display = 'block';
-                quickActionItems.forEach(item => {
-                    const itemTerms = item.dataset.searchTerm.toLowerCase();
-                    if (itemTerms.includes(searchTerm)) {
-                        item.style.display = 'block';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            } else {
-                 quickActionsSection.style.display = 'none';
-            }
-
-
-            // Filter Feeds
-            let filteredData = allData.filter(item => {
-                const inCategory = (category === 'all' || item.type === category);
-                const inSearch = (item.title.toLowerCase().includes(searchTerm) || (item.location && item.location.toLowerCase().includes(searchTerm)) || (item.source && item.source.toLowerCase().includes(searchTerm)));
-                return inCategory && inSearch;
+            feed.innerHTML = ''; // Clear
+            allNews.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'feed-item';
+                itemEl.innerHTML = `
+                    <a href="${item.link}" target="_blank" rel="noopener noreferrer" onclick="event.preventDefault(); openLink('${item.link}')">
+                        <div class="feed-item-title">${item.title}</div>
+                        <div class="feed-item-meta">
+                            <span><i class="fas fa-newspaper"></i> ${item.source}</span>
+                            <span><i class="fas fa-clock"></i> ${item.date}</span>
+                        </div>
+                        <div class="feed-item-action">Lire la suite <i class="fas fa-arrow-right"></i></div>
+                    </a>`;
+                feed.appendChild(itemEl);
             });
-
-            filteredData.sort((a, b) => {
-                switch (sortBy) {
-                    case 'date-asc':
-                        return new Date(a.date) - new Date(b.date);
-                    case 'title-asc':
-                        return a.title.localeCompare(b.title);
-                    case 'date-desc':
-                    default:
-                        return new Date(b.date) - new Date(a.date);
-                }
-            });
-
-            const tendersColumn = document.getElementById('tenders-column');
-            const newsColumn = document.getElementById('news-column');
-            const wallStreetContainer = document.getElementById('btp-wall-street');
-
-            const tendersData = filteredData.filter(item => item.type === 'tenders');
-            const newsData = filteredData.filter(item => item.type === 'news');
-
-            if (category === 'tenders') {
-                newsColumn.style.display = 'none';
-                tendersColumn.style.display = 'flex';
-                wallStreetContainer.style.gridTemplateColumns = '1fr';
-                populateFeed('tenders-feed', tendersData, 'tenders');
-            } else if (category === 'news') {
-                tendersColumn.style.display = 'none';
-                newsColumn.style.display = 'flex';
-                wallStreetContainer.style.gridTemplateColumns = '1fr';
-                populateFeed('news-feed', newsData, 'news');
-            } else {
-                tendersColumn.style.display = 'flex';
-                newsColumn.style.display = 'flex';
-                wallStreetContainer.style.gridTemplateColumns = 'repeat(auto-fit, minmax(350px, 1fr))';
-                populateFeed('tenders-feed', tendersData, 'tenders');
-                populateFeed('news-feed', newsData, 'news');
-            }
-        }
-
-        function refreshFeeds(isManual = false) {
-            const icons = document.querySelectorAll('.feed-action-btn[id$="-refresh"] i');
-            if(isManual) {
-                icons.forEach(icon => icon.classList.add('fa-spin'));
-                showNotification("Mise à jour des données...", 'info');
-            }
-            
-            // In a real app, you would fetch new data here.
-            // For this demo, we just re-filter and sort.
-            setTimeout(() => {
-                filterAndSortContent();
-                if(isManual) {
-                    icons.forEach(icon => icon.classList.remove('fa-spin'));
-                    showNotification("Données actualisées.", 'success');
-                }
-            }, 800);
+            if(isRefresh) showNotification("Actualités actualisées.", 'success');
         }
         
         // --- Notification System ---
@@ -823,17 +734,10 @@
                 observer.observe(el);
             });
 
-            // Add event listeners for filters
-            document.getElementById('searchInput').addEventListener('keyup', filterAndSortContent);
-            document.getElementById('categoryFilter').addEventListener('change', filterAndSortContent);
-            document.getElementById('sortFilter').addEventListener('change', filterAndSortContent);
-            document.querySelectorAll('.feed-action-btn[id$="-refresh"]').forEach(btn => {
-                btn.addEventListener('click', () => refreshFeeds(true));
-            });
-
             // Initial population
             setTimeout(() => {
-                filterAndSortContent();
+                populateTenders();
+                populateNews();
                 updateNotifButtonUI();
             }, 1000);
         });
