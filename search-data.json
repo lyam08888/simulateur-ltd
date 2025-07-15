@@ -1,6 +1,13 @@
 [
   {
     "type": "page",
+    "title": "Accueil - LTD Simulator",
+    "description": "Maîtrisez les métiers du BTP. Formez-vous aux métiers d'avenir du BTP avec nos simulateurs professionnels, actualités et appels d'offres.",
+    "link": "index.html",
+    "keywords": "accueil principal btp simulateur appels d'offre actualités"
+  },
+  {
+    "type": "page",
     "title": "Simulateurs",
     "description": "Gérez des chantiers et testez vos compétences techniques.",
     "link": "simulateur.html",
@@ -61,5 +68,124 @@
     "description": "Source : Le Moniteur | Publié le : 14/07/2025",
     "link": "https://www.lemoniteur.fr/article/btp-la-decarbonation-est-en-marche-mais-le-chemin-est-encore-long.2317628",
     "keywords": "décarbonation btp le moniteur"
+  },
+  {
+    "type": "simulator",
+    "title": "Directeur de Travaux",
+    "description": "Gérez vos chantiers avec expertise, des fondations aux finitions.",
+    "link": "simulateur-directeur-travaux.html",
+    "keywords": "directeur travaux chantier gestion fondations finitions"
+  },
+  {
+    "type": "simulator",
+    "title": "Géomètre-Topographe",
+    "description": "Testez vos compétences en topographie et en implantation sur le terrain.",
+    "link": "geometre-topographe.html",
+    "keywords": "géomètre topographe topographie implantation terrain"
+  },
+  {
+    "type": "simulator",
+    "title": "Projeteur VRD",
+    "description": "Concevez les infrastructures de demain, des routes aux réseaux.",
+    "link": "projeteurvrd.html",
+    "keywords": "projeteur vrd infrastructures routes réseaux conception"
+  },
+  {
+    "type": "test",
+    "title": "Test d'Orientation",
+    "description": "Quel métier du BTP est fait pour vous ? Découvrez votre voie idéale en quelques questions.",
+    "link": "test-orientation.html",
+    "keywords": "test orientation métier btp"
+  },
+  {
+    "type": "test",
+    "title": "Test Comportemental",
+    "description": "Évaluez vos soft skills et votre manière de réagir en situation professionnelle.",
+    "link": "testperso.html",
+    "keywords": "test comportemental soft skills personnalité"
+  },
+  {
+    "type": "challenge",
+    "title": "Challenge Maçonnerie VRD",
+    "description": "Un affaissement de terrain a été détecté sur une route départementale. Proposez une solution de reprise en sous-œuvre.",
+    "link": "challenges.html",
+    "keywords": "challenge maçonnerie vrd affaissement terrain technique difficile"
+  },
+  {
+    "type": "challenge",
+    "title": "Optimisation de Plan de Coffrage",
+    "description": "Réalisez le plan de coffrage du premier étage en optimisant le matériel et le temps.",
+    "link": "challenges.html",
+    "keywords": "challenge optimisation plan coffrage conception intermédiaire"
+  },
+  {
+    "type": "challenge",
+    "title": "Gestion de Crise sur Chantier",
+    "description": "Une grève surprise des livreurs de béton menace d'arrêter votre chantier. Gérez la communication et trouvez une solution.",
+    "link": "challenges.html",
+    "keywords": "challenge gestion crise chantier management"
+  },
+  {
+    "type": "challenge",
+    "title": "Challenge Étude de Prix TCE",
+    "description": "Réalisez le chiffrage complet tous corps d'état et rédigez le mémoire technique.",
+    "link": "prixtce.html",
+    "keywords": "challenge étude de prix tce chiffrage expert"
+  },
+  {
+    "type": "history",
+    "title": "Histoire du BTP : L'Antiquité",
+    "description": "Les civilisations égyptienne, grecque et romaine posent les fondations de l'ingénierie civile.",
+    "link": "histoire.html",
+    "keywords": "histoire antiquité égypte rome pyramide parthénon colisée béton romain"
+  },
+  {
+    "type": "history",
+    "title": "Histoire du BTP : Le Moyen Âge",
+    "description": "L'art gothique révolutionne la construction, permettant d'ériger des cathédrales plus hautes et lumineuses.",
+    "link": "histoire.html",
+    "keywords": "histoire moyen âge gothique cathédrale croisée d'ogives arcs-boutants compagnonnage"
+  },
+  {
+    "type": "history",
+    "title": "Histoire du BTP : La Révolution Industrielle",
+    "description": "L'acier, le verre et la machine à vapeur bouleversent les méthodes de construction.",
+    "link": "histoire.html",
+    "keywords": "histoire révolution industrielle acier vapeur ciment portland tour eiffel"
+  },
+  {
+    "type": "history",
+    "title": "Histoire du BTP : L'Époque Moderne",
+    "description": "Le béton armé et les structures en acier permettent de repousser les limites de la hauteur et de la forme.",
+    "link": "histoire.html",
+    "keywords": "histoire époque moderne béton armé précontraint gratte-ciel le corbusier"
+  },
+  {
+    "type": "history",
+    "title": "Histoire du BTP : L'Ère Numérique",
+    "description": "Le BTP entre dans une nouvelle ère, axée sur la technologie, la collaboration et la responsabilité environnementale.",
+    "link": "histoire.html",
+    "keywords": "histoire ère numérique bim cao drones impression 3d durable"
+  },
+  {
+    "type": "job",
+    "title": "Ingénieur Eau et Assainissement F/H",
+    "description": "Offre d'emploi à Paris, catégorie Ingénierie.",
+    "link": "emploi.html",
+    "keywords": "ingénieur eau assainissement paris ingénierie"
+  },
+  {
+    "type": "job",
+    "title": "Chef de Projet VRD Aménagement Urbain F/H",
+    "description": "Offre d'emploi à Lyon, catégorie Gestion de projet.",
+    "link": "emploi.html",
+    "keywords": "chef projet vrd aménagement urbain lyon"
+  },
+  {
+    "type": "job",
+    "title": "Directeur de pôle VRD F/H",
+    "description": "Offre d'emploi à Bordeaux, catégorie Direction.",
+    "link": "emploi.html",
+    "keywords": "directeur pôle vrd bordeaux direction"
   }
 ]
