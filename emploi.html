@@ -9,6 +9,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Leaflet.js for interactive map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <style>
         :root {
             /* Colors */
@@ -168,6 +171,57 @@
             margin: 0 auto;
         }
 
+        .filters-and-map {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        @media (min-width: 1024px) {
+            .filters-and-map {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .filter-container {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .filter-container input, .filter-container select {
+            width: 100%;
+            background: var(--surface-elevated);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            font-size: 1rem;
+        }
+        .filter-container input::placeholder { color: var(--text-muted); }
+        .filter-container select { appearance: none; }
+
+        #map {
+            height: 400px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+            background-color: var(--surface-elevated);
+        }
+
+        .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+            background: var(--surface);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-lg);
+        }
+        .leaflet-popup-content a {
+            color: var(--secondary);
+        }
+
         .job-list {
             display: grid;
             gap: 1.5rem;
@@ -221,6 +275,15 @@
             transition: var(--transition);
         }
         .job-card-button:hover { background: var(--secondary-dark); transform: scale(1.05); }
+        
+        #no-results {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px dashed var(--glass-border);
+        }
 
         .animate-in { animation: fadeInUp 0.6s ease-out forwards; }
         @keyframes fadeInUp {
@@ -288,7 +351,7 @@
                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
                 </div>
             </div>
-            <button class="mobile-toggle" id="mobileToggle" style="display:none;"> <!-- Mobile menu can be implemented if needed -->
+            <button class="mobile-toggle" id="mobileToggle" style="display:none;">
                 <div class="hamburger"><span></span><span></span><span></span></div>
             </button>
         </nav>
@@ -301,7 +364,20 @@
             <p>Rejoignez une équipe dynamique et participez à des projets d'envergure. LTD, cabinet de recrutement, recherche ses futurs talents dans tous les métiers du BTP.</p>
         </section>
 
-        <div class="job-list animate-in" style="animation-delay: 0.2s;" id="job-list-container">
+        <section class="filters-and-map animate-in" style="animation-delay: 0.2s;">
+            <div class="filter-container">
+                 <input type="text" id="searchInput" placeholder="Rechercher par mot-clé (ex: VRD, Civil)...">
+                 <select id="locationFilter">
+                     <option value="all">Toutes les localisations</option>
+                 </select>
+                 <select id="typeFilter">
+                     <option value="all">Tous les types de poste</option>
+                 </select>
+            </div>
+            <div id="map"></div>
+        </section>
+
+        <div class="job-list animate-in" style="animation-delay: 0.4s;" id="job-list-container">
             <!-- Job offers will be dynamically inserted here -->
         </div>
     </main>
@@ -316,60 +392,121 @@
 
     <script>
         let currentTheme = localStorage.getItem('theme') || 'dark';
+        let map;
+        let markers = [];
 
         const jobOffers = [
-            "Ingénieur Eau et Assainissement F/H", "Chef de Projet VRD Aménagement Urbain F/H", "Technicien projeteur réseaux électriques F/H",
-            "Ingénieur Génie Civil MOE Hydraulique F/H", "Directeur de pôle VRD F/H", "Conducteur de travaux F/H", "Contrôleur de gestion F/H",
-            "Ingénieur Structure F/H", "Chargé d'affaires génie civil F/H", "Ingénieur Responsable d’Affaires – Aménagements Urbains F/H",
-            "Dessinateur projeteur/Dessinatrice projeteuse F/H", "Ingénieur Electricité Contrôle Commande F/H", "Ingénieur responsable d'affaire - Eau et assainissement F/H",
-            "Ingénieur responsable de projet déchets-énergie F/H", "Directeur de travaux F/H", "Responsable de projet – Infrastructures Réseaux de Chaleur F/H",
-            "Technicien/Ingénieur chargé d'affaires en hydraulique urbaine F/H", "Ingénieur d’études process de traitement de déchets/biomasse F/H",
-            "Ingénieur d'études production F/H", "Chargé·e d’affaires – Hydraulique urbaine F/H", "Ingénieur chargé d’études et travaux F/H",
-            "Chef de projet électricité/Contrôle commande F/H", "Ingénieur chargé d'études hydraulique F/H", "Superviseur de travaux GC VRD F/H",
-            "Directeur projets/Chargé d'affaires opérations internationales F/H", "Ingénieur études traitement des eaux F/H", "Ingénieur responsable de projets Génie Civil F/H",
-            "Ingénieur BIM traitement des eaux F/H", "Responsable d’affaire en infrastructures hydrauliques/Génie Civil F/H", "Ingénieur responsable d’affaires traitement des eaux et des déchets F/H",
-            "Ingénieur responsable de projets hydraulique urbaine F/H", "Ingénieur responsable d’affaires et travaux F/H", "Responsable projets réseaux de chaleur F/H",
-            "Ingénieur responsable de projets traitement des eaux F/H", "Ingénieur traitement des eaux F/H", "Ingénieur expérimenté traitement des eaux assainissement F/H",
-            "Chef de projet multi lots F/H", "Ingénieur chargé d’affaires eau et environnement F/H", "Projeteur VRD F/H",
-            "Ingénieur d'études eau et environnement F/H", "Ingénieur d’études en traitement thermique des déchets F/H", "Responsable projets réseaux de chaleur F/H",
-            "Responsable d’affaire en Infra Déchets/Energie F/H", "Ingénieur responsable d'affaire - eau et assainissement F/H", "Responsable Affaires Aménagement Urbain F/H",
-            "Ingénieur en expertise de services publics F/H", "Ingénieur responsable de projet déchets-énergie F/H", "Ingénieur d'études production d'énergie F/H",
-            "Ingénieur responsable de projet infrastructures hydrauliques F/H", "Projeteur VRD F/H", "Ingénieur directeur grand projet traitement des eaux F/H",
-            "Ingénieur Maîtrise d’Œuvre Infrastructures Hydrauliques F/H", "Ingénieur Chef de Projet Hydraulique – Schémas Directeurs F/H",
-            "Chef de Projet Maîtrise d’Œuvre Infrastructures VRD F/H", "Assistant administratif F/H", "Chef·fe de Projet Génie Civil / Ouvrages d’Art F/H",
-            "Ingénieur·e Études & Travaux – Espaces Verts / Environnement F/H", "Ingénieur·e VRD Confirmé·e – Aménagement Urbain F/H",
-            "Surveillant·e de Travaux – Eau & Assainissement F/H", "Technicien·ne Sites & Sols Pollués F/H", "Responsable de projet Infrastructures eaux potables, eaux usées F/H",
-            "Responsable d'Antenne Aménagements urbains, VRD & Hydraulique F/H", "Chargé/Chargée d'études hydraulique F/H", "Projeteur VRD F/H",
-            "Chef de projet VRD F/H", "Ingénieur responsable de projet infrastructures hydrauliques F/H", "Projeteur VRD F/H",
-            "Ingénieur directeur grand projet traitement des eaux F/H", "Ingénieur Maîtrise d’Œuvre Infrastructures Hydrauliques F/H",
-            "Ingénieur Chef de Projet Hydraulique – Schémas Directeurs F/H", "Chef de Projet Maîtrise d’Œuvre Infrastructures VRD F/H",
-            "Assistant administratif F/H", "Chef·fe de Projet Génie Civil / Ouvrages d’Art F/H", "Ingénieur·e Études & Travaux – Espaces Verts / Environnement F/H",
-            "Ingénieur·e VRD Confirmé·e – Aménagement Urbain F/H"
+            { title: "Ingénieur Eau et Assainissement F/H", location: "Paris", type: "Ingénierie", coordinates: [48.8566, 2.3522] },
+            { title: "Chef de Projet VRD Aménagement Urbain F/H", location: "Lyon", type: "Gestion de projet", coordinates: [45.7640, 4.8357] },
+            { title: "Technicien projeteur réseaux électriques F/H", location: "Marseille", type: "Technique", coordinates: [43.2965, 5.3698] },
+            { title: "Ingénieur Génie Civil MOE Hydraulique F/H", location: "Lille", type: "Ingénierie", coordinates: [50.6292, 3.0573] },
+            { title: "Directeur de pôle VRD F/H", location: "Bordeaux", type: "Direction", coordinates: [44.8378, -0.5792] },
+            { title: "Conducteur de travaux F/H", location: "Toulouse", type: "Travaux", coordinates: [43.6047, 1.4442] },
+            { title: "Contrôleur de gestion F/H", location: "Nantes", type: "Finance", coordinates: [47.2184, -1.5536] },
+            { title: "Ingénieur Structure F/H", location: "Strasbourg", type: "Ingénierie", coordinates: [48.5734, 7.7521] },
+            { title: "Chargé d'affaires génie civil F/H", location: "Nice", type: "Commercial", coordinates: [43.7102, 7.2620] },
+            { title: "Ingénieur Responsable d’Affaires – Aménagements Urbains F/H", location: "Paris", type: "Gestion de projet", coordinates: [48.8566, 2.3522] },
+            { title: "Dessinateur projeteur/Dessinatrice projeteuse F/H", location: "Lyon", type: "Conception", coordinates: [45.7640, 4.8357] },
+            { title: "Ingénieur Electricité Contrôle Commande F/H", location: "Marseille", type: "Ingénierie", coordinates: [43.2965, 5.3698] },
+            { title: "Responsable de projet – Infrastructures Réseaux de Chaleur F/H", location: "Grenoble", type: "Gestion de projet", coordinates: [45.1885, 5.7245] },
+            { title: "Superviseur de travaux GC VRD F/H", location: "Rennes", type: "Travaux", coordinates: [48.1173, -1.6778] },
+            { title: "Ingénieur études traitement des eaux F/H", location: "Montpellier", type: "Ingénierie", coordinates: [43.6108, 3.8767] },
+            { title: "Chef de Projet Maîtrise d’Œuvre Infrastructures VRD F/H", location: "Lyon", type: "Gestion de projet", coordinates: [45.7640, 4.8357] },
+            { title: "Assistant administratif F/H", location: "Paris", type: "Administratif", coordinates: [48.8566, 2.3522] },
+            { title: "Ingénieur·e VRD Confirmé·e – Aménagement Urbain F/H", location: "Bordeaux", type: "Ingénierie", coordinates: [44.8378, -0.5792] }
         ];
 
-        function populateJobs() {
+        function populateFilters() {
+            const locationFilter = document.getElementById('locationFilter');
+            const typeFilter = document.getElementById('typeFilter');
+            
+            const locations = [...new Set(jobOffers.map(job => job.location))];
+            const types = [...new Set(jobOffers.map(job => job.type))];
+
+            locations.sort().forEach(location => {
+                const option = document.createElement('option');
+                option.value = location;
+                option.textContent = location;
+                locationFilter.appendChild(option);
+            });
+            
+            types.sort().forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                typeFilter.appendChild(option);
+            });
+        }
+
+        function displayJobs(jobs) {
             const container = document.getElementById('job-list-container');
             if (!container) return;
             
+            if (jobs.length === 0) {
+                container.innerHTML = `<div id="no-results"><h3>Aucune offre ne correspond à votre recherche.</h3><p>Essayez d'autres mots-clés ou filtres.</p></div>`;
+                return;
+            }
+            
             let content = '';
-            jobOffers.forEach(jobTitle => {
+            jobs.forEach(job => {
                 content += `
                     <div class="job-card">
                         <div class="job-card-header">
-                            <h2 class="job-card-title">${jobTitle}</h2>
+                            <h2 class="job-card-title">${job.title}</h2>
                         </div>
                         <div class="job-card-meta">
-                            <span class="meta-item"><i class="fas fa-map-marker-alt"></i> France</span>
-                            <span class="meta-item"><i class="fas fa-file-contract"></i> CDI</span>
+                            <span class="meta-item"><i class="fas fa-map-marker-alt"></i> ${job.location}</span>
+                            <span class="meta-item"><i class="fas fa-file-contract"></i> ${job.type}</span>
                         </div>
                         <p class="job-card-description">Rejoignez nos équipes sur des projets passionnants. Nous recherchons des talents motivés pour ce poste.</p>
                         <div class="job-card-footer">
-                            <a href="#" class="job-card-button" onclick="applyForJob('${jobTitle.replace(/'/g, "\\'")}')">Candidater</a>
+                            <a href="#" class="job-card-button" onclick="applyForJob('${job.title.replace(/'/g, "\\'")}')">Candidater</a>
                         </div>
                     </div>
                 `;
             });
             container.innerHTML = content;
+        }
+
+        function filterAndDisplay() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const locationTerm = document.getElementById('locationFilter').value;
+            const typeTerm = document.getElementById('typeFilter').value;
+
+            const filteredJobs = jobOffers.filter(job => {
+                const titleMatch = job.title.toLowerCase().includes(searchTerm);
+                const locationMatch = locationTerm === 'all' || job.location === locationTerm;
+                const typeMatch = typeTerm === 'all' || job.type === typeTerm;
+                return titleMatch && locationMatch && typeMatch;
+            });
+            
+            displayJobs(filteredJobs);
+            updateMapMarkers(filteredJobs);
+        }
+
+        function initMap() {
+            map = L.map('map').setView([46.603354, 1.888334], 6); // Center of France
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            updateMapMarkers(jobOffers);
+        }
+
+        function updateMapMarkers(jobs) {
+            // Clear existing markers
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+
+            jobs.forEach(job => {
+                const marker = L.marker(job.coordinates).addTo(map);
+                const popupContent = `
+                    <b>${job.title}</b><br>
+                    ${job.location}<br><br>
+                    <a href="#" onclick="applyForJob('${job.title.replace(/'/g, "\\'")}')">Postuler ici</a>
+                `;
+                marker.bindPopup(popupContent);
+                markers.push(marker);
+            });
         }
 
         function showProgress() {
@@ -454,8 +591,14 @@ Pièces jointes obligatoires :
         document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.toggle('light-mode', currentTheme === 'light');
             updateThemeUI();
-            populateJobs();
+            populateFilters();
+            displayJobs(jobOffers);
+            initMap();
             
+            document.getElementById('searchInput').addEventListener('input', filterAndDisplay);
+            document.getElementById('locationFilter').addEventListener('change', filterAndDisplay);
+            document.getElementById('typeFilter').addEventListener('change', filterAndDisplay);
+
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
