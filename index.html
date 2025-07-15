@@ -506,11 +506,11 @@
             <div class="nav-desktop">
                  <ul class="nav-menu">
                     <li class="nav-item"><a href="index.html" class="nav-link active" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); showNotification('Section en construction', 'info')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); showNotification('Section en construction', 'info')"><i class="fas fa-brain"></i>&nbsp;Tests & Évaluation</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests & Évaluation</a></li>
                     <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); showNotification('Section en construction', 'info')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); showNotification('Section en construction', 'info')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')""><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
                 </ul>
                 <div class="nav-actions">
                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
@@ -541,11 +541,11 @@
                         <div class="mobile-nav-item-icon"><i class="fas fa-home"></i></div>
                         <h4>Accueil</h4>
                     </a>
-                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); showNotification('Section en construction', 'info')">
+                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('simulateur.html')">
                         <div class="mobile-nav-item-icon"><i class="fas fa-gamepad"></i></div>
                         <h4>Simulateurs</h4>
                     </a>
-                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); showNotification('Section en construction', 'info')">
+                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('test.html')">
                         <div class="mobile-nav-item-icon"><i class="fas fa-brain"></i></div>
                         <h4>Tests & Évaluation</h4>
                     </a>
@@ -557,7 +557,7 @@
                         <div class="mobile-nav-item-icon"><i class="fas fa-briefcase"></i></div>
                         <h4>Nos offres d'emploi</h4>
                     </a>
-                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); showNotification('Section en construction', 'info')">
+                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('histoire.html')">
                         <div class="mobile-nav-item-icon"><i class="fas fa-scroll"></i></div>
                         <h4>Histoire du BTP</h4>
                     </a>
@@ -575,7 +575,7 @@
 
         <section class="quick-actions animate-in" style="margin: 4rem 0;">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
-                <a href="#" onclick="event.preventDefault(); showNotification('Section en construction', 'info')" style="text-decoration: none; color: inherit;">
+                <a href="#" onclick="event.preventDefault(); navigateTo('simulateur.html')" style="text-decoration: none; color: inherit;">
                     <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
                         <div style="font-size: 3rem; margin-bottom: 1rem;">👷</div>
                         <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Simulateurs</h3>
@@ -583,7 +583,7 @@
                         <div style="background: var(--primary); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Lancer</div>
                     </div>
                 </a>
-                <a href="#" onclick="event.preventDefault(); showNotification('Section en construction', 'info')" style="text-decoration: none; color: inherit;">
+                <a href="#" onclick="event.preventDefault(); navigateTo('test.html')" style="text-decoration: none; color: inherit;">
                     <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
                         <div style="font-size: 3rem; margin-bottom: 1rem;">🧠</div>
                         <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Tests & Évaluation</h3>
