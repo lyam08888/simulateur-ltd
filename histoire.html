@@ -56,6 +56,7 @@
             /* Borders */
             --radius: 0.5rem;
             --radius-lg: 1rem;
+            --radius-xl: 1.5rem;
             --radius-full: 9999px;
         }
 
@@ -137,7 +138,8 @@
             font-size: 2rem;
         }
 
-        .nav-desktop { display: flex; align-items: center; gap: var(--spacing-lg); }
+        .nav-desktop { display: none; }
+        @media (min-width: 1024px) { .nav-desktop { display: flex; align-items: center; gap: var(--spacing-lg); } }
         .nav-menu { display: flex; align-items: center; gap: var(--spacing-md); list-style: none; }
         .nav-item { position: relative; }
         .nav-link {
@@ -153,7 +155,7 @@
             cursor: pointer;
         }
         .nav-link:hover { color: var(--text-primary); background: var(--glass); }
-        .nav-link.active { color: var(--primary); background: rgba(99, 102, 241, 0.1); }
+        .nav-link.active { color: var(--primary); background: rgba(99, 102, 241, 0.1); font-weight: 600; }
 
         .nav-actions { display: flex; align-items: center; gap: var(--spacing-sm); }
         .theme-toggle {
@@ -172,7 +174,7 @@
         .theme-toggle:hover { background: var(--surface-elevated); color: var(--text-primary); }
         
         .mobile-toggle {
-            display: none;
+            display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -184,6 +186,7 @@
             transition: var(--transition);
             cursor: pointer;
         }
+         @media (min-width: 1024px) { .mobile-toggle { display: none; } }
 
         .hamburger { position: relative; width: 1.25rem; height: 1rem; }
         .hamburger span {
@@ -246,16 +249,110 @@
             -webkit-text-fill-color: transparent;
         }
         .hero p { font-size: 1.25rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto; line-height: 1.7; }
-
-        .search-section { margin-bottom: var(--spacing-xl); }
-        .search-container { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); display: flex; flex-direction: column; gap: var(--spacing-md); }
-        @media (min-width: 768px) { .search-container { flex-direction: row; align-items: center; } }
-        .search-input-wrapper { position: relative; flex-grow: 1; }
-        .search-input-wrapper i { position: absolute; top: 50%; left: var(--spacing-md); transform: translateY(-50%); color: var(--text-muted); }
-        .search-input-wrapper input { width: 100%; background: var(--background); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 1rem 1rem 1rem 2.5rem; color: var(--text-primary); font-size: 1rem; transition: var(--transition); }
-        .search-input-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); outline: none; }
-        .search-button { background-color: var(--primary); color: white; border: none; padding: 0.8rem 2rem; border-radius: var(--radius); font-weight: 600; font-size: 1rem; transition: background-color 0.2s; }
-        .search-button:hover { background-color: var(--primary-dark); }
+        
+        .slider-container {
+            position: relative;
+            width: 100%;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            margin-bottom: var(--spacing-xl);
+            background-color: var(--surface);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--glass-border);
+        }
+        .slider-wrapper {
+            display: flex;
+            transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        .slide {
+            min-width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        .slide .slide-background {
+            width: 100%;
+            display: block;
+            aspect-ratio: 16 / 6;
+            transition: transform 8s ease-out;
+            background-color: var(--surface-elevated);
+        }
+        .slide.active .slide-background {
+            transform: scale(1.1);
+        }
+        .slide-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: var(--spacing-lg);
+            background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 10%, transparent);
+            color: var(--text-primary);
+            transform: translateY(100%);
+            transition: transform 0.6s ease-out;
+        }
+        .slide.active .slide-content {
+            transform: translateY(0);
+        }
+        body.light-mode .slide-content {
+             background: linear-gradient(to top, rgba(241, 245, 249, 0.9) 10%, transparent);
+        }
+        .slide-content h3 {
+            font-size: clamp(1.5rem, 3vw, 2.25rem);
+            font-weight: 700;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            margin-bottom: 0.5rem;
+        }
+        .slide-content p {
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            color: var(--text-secondary);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        .slider-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3rem;
+            height: 3rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 9999px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-slow);
+            opacity: 0.7;
+        }
+        .slider-nav:hover {
+            background-color: var(--primary);
+            transform: translateY(-50%) scale(1.1);
+            opacity: 1;
+        }
+        .slider-nav.prev { left: var(--spacing-md); }
+        .slider-nav.next { right: var(--spacing-md); }
+        .slider-dots {
+            position: absolute;
+            bottom: var(--spacing-md);
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+        }
+        .slider-dot {
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 9999px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            transition: var(--transition-slow);
+        }
+        .slider-dot.active {
+            background: var(--primary);
+            transform: scale(1.3);
+            box-shadow: 0 0 10px var(--primary);
+        }
 
         /* Spotlight Section */
         .spotlight-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin: 4rem 0; }
@@ -369,23 +466,64 @@
             <button class="mobile-menu-close" onclick="toggleMobileMenu()"><i class="fas fa-times"></i></button>
         </div>
         <div class="mobile-menu-content">
-            <!-- Content populated by JS -->
+             <div class="mobile-nav-items">
+                <!-- Populated by JS -->
+            </div>
         </div>
     </div>
 
     <!-- Main Content -->
     <main class="main-content">
-        <section class="search-section animate-in">
-            <form action="recherche.html" method="GET" class="search-container">
-                <div class="search-input-wrapper">
-                    <i class="fas fa-search"></i>
-                    <input type="text" name="query" required placeholder="Rechercher sur tout le site...">
+        
+        <!-- Image Slider Section -->
+        <section class="slider-container animate-in" id="imageSlider">
+            <div class="slider-wrapper">
+                <div class="slide">
+                    <div class="slide-background">
+                        <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--primary-light)" stroke-width="1.5">
+                            <path d="M 50 150 Q 200 -50 400 150 T 750 150" opacity="0.6" stroke-width="2"/>
+                            <path d="M 50 170 Q 200 -30 400 170 T 750 170" opacity="0.4" stroke-dasharray="5"/>
+                        </svg>
+                    </div>
+                    <div class="slide-content">
+                        <h3>Des Fondations aux Gratte-ciel</h3>
+                        <p>Un voyage à travers les âges de la construction.</p>
+                    </div>
                 </div>
-                <button type="submit" class="search-button">Rechercher</button>
-            </form>
+                <div class="slide">
+                    <div class="slide-background">
+                        <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--secondary)" stroke-width="2">
+                           <path d="M 100 50 L 700 50 L 700 250 L 100 250 Z" opacity="0.3" stroke-width="4"/>
+                           <path d="M 100 100 L 700 100 M 100 150 L 700 150 M 100 200 L 700 200" opacity="0.5" stroke-dasharray="10"/>
+                           <path d="M 250 50 V 250 M 400 50 V 250 M 550 50 V 250" opacity="0.5" stroke-dasharray="10"/>
+                        </svg>
+                    </div>
+                    <div class="slide-content">
+                        <h3>Les Innovations qui ont tout changé</h3>
+                        <p>De la voûte romaine au béton précontraint.</p>
+                    </div>
+                </div>
+                <div class="slide">
+                    <div class="slide-background">
+                         <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--accent)" stroke-width="1">
+                            <circle cx="400" cy="150" r="120" opacity="0.2"/>
+                            <circle cx="400" cy="150" r="100" opacity="0.3"/>
+                            <circle cx="400" cy="150" r="80" opacity="0.4"/>
+                            <path d="M 400 30 L 400 270 M 280 150 L 520 150 M 310 60 L 490 240 M 310 240 L 490 60" opacity="0.5"/>
+                         </svg>
+                    </div>
+                    <div class="slide-content">
+                        <h3>Explorez les Constructions Marquantes</h3>
+                        <p>Naviguez sur la carte pour découvrir les merveilles de l'ingénierie.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slider-nav prev" id="sliderPrev"><i class="fas fa-chevron-left"></i></div>
+            <div class="slider-nav next" id="sliderNext"><i class="fas fa-chevron-right"></i></div>
+            <div class="slider-dots" id="sliderDots"></div>
         </section>
 
-        <section class="hero animate-in">
+        <section class="hero animate-in" style="animation-delay: 0.1s;">
             <h1>Une Odyssée de la Construction</h1>
             <p>Découvrez comment les techniques et les innovations ont façonné notre monde, des pyramides antiques aux gratte-ciel modernes.</p>
         </section>
@@ -411,7 +549,7 @@
             </div>
         </section>
 
-        <div class="filter-container animate-in">
+        <div class="filter-container animate-in" style="animation-delay: 0.3s;">
             <i class="fas fa-search filter-icon"></i>
             <input type="text" id="timeline-filter" class="filter-input" placeholder="Filtrer la frise par mot-clé (ex: béton, pont, romain)...">
         </div>
@@ -448,8 +586,8 @@
         }
         
         function navigateTo(pageFile) {
-            showNotification(`Chargement de ${pageFile}...`, 'info');
-            setTimeout(() => window.location.href = pageFile, 500);
+            // A simple navigation function, can be expanded with progress bars etc.
+            window.location.href = pageFile;
         }
 
         function toggleTheme() {
@@ -460,6 +598,7 @@
             if (themeIcon) {
                 themeIcon.className = currentTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
             }
+            // Add map tile layer update logic here if needed
         }
         
         function toggleMobileMenu() {
@@ -469,6 +608,88 @@
                 mobileMenu.classList.toggle('active');
                 mobileToggle.classList.toggle('active');
                 document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+            }
+        }
+        
+        function setupSlider() {
+            const slider = document.getElementById('imageSlider');
+            if (!slider) return;
+
+            const wrapper = slider.querySelector('.slider-wrapper');
+            const slides = slider.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('sliderPrev');
+            const nextBtn = document.getElementById('sliderNext');
+            const dotsContainer = document.getElementById('sliderDots');
+            
+            let currentIndex = 0;
+            let slideInterval;
+
+            if (slides.length <= 1) {
+                if(prevBtn) prevBtn.style.display = 'none';
+                if(nextBtn) nextBtn.style.display = 'none';
+                if(dotsContainer) dotsContainer.style.display = 'none';
+                if (slides.length === 1) slides[0].classList.add('active');
+                return;
+            }
+
+            slides.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.classList.add('slider-dot');
+                dot.addEventListener('click', () => {
+                    goToSlide(index);
+                    resetInterval();
+                });
+                dotsContainer.appendChild(dot);
+            });
+            const dots = dotsContainer.querySelectorAll('.slider-dot');
+
+            function goToSlide(index) {
+                if (index === currentIndex && slides[index].classList.contains('active')) return;
+                
+                slides[currentIndex].classList.remove('active');
+                currentIndex = index;
+                slides[currentIndex].classList.add('active');
+                
+                wrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+                
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === currentIndex);
+                });
+            }
+
+            function nextSlide() {
+                const newIndex = (currentIndex + 1) % slides.length;
+                goToSlide(newIndex);
+            }
+
+            function prevSlide() {
+                const newIndex = (currentIndex - 1 + slides.length) % slides.length;
+                goToSlide(newIndex);
+            }
+            
+            function startInterval() {
+                slideInterval = setInterval(nextSlide, 7000); 
+            }
+
+            function resetInterval() {
+                clearInterval(slideInterval);
+                startInterval();
+            }
+
+            nextBtn.addEventListener('click', () => {
+                nextSlide();
+                resetInterval();
+            });
+            prevBtn.addEventListener('click', () => {
+                prevSlide();
+                resetInterval();
+            });
+            
+            // Initial state
+            if (slides.length > 0) {
+                slides[0].classList.add('active');
+                dots[0].classList.add('active');
+                startInterval();
             }
         }
 
@@ -481,13 +702,27 @@
             
             // --- Mobile Menu population ---
             const desktopNavMenu = document.querySelector('.nav-desktop .nav-menu');
-            const mobileMenuContent = document.querySelector('.mobile-menu-content');
-            if (desktopNavMenu && mobileMenuContent) {
-                mobileMenuContent.innerHTML = desktopNavMenu.innerHTML;
-                 mobileMenuContent.querySelectorAll('.nav-item').forEach(item => {
-                    item.classList.remove('nav-item');
-                    item.classList.add('mobile-nav-item');
-                 });
+            const mobileNavContainer = document.querySelector('.mobile-menu .mobile-nav-items');
+            if (desktopNavMenu && mobileNavContainer) {
+                mobileNavContainer.innerHTML = ''; // Clear existing
+                desktopNavMenu.querySelectorAll('.nav-item').forEach(item => {
+                    const link = item.querySelector('a');
+                    const newNavItem = document.createElement('a');
+                    newNavItem.href = '#'; // Prevent navigation
+                    newNavItem.className = 'mobile-nav-item';
+                    newNavItem.onclick = link.onclick;
+
+                    const iconDiv = document.createElement('div');
+                    iconDiv.className = 'mobile-nav-item-icon';
+                    iconDiv.innerHTML = link.querySelector('i').outerHTML;
+                    
+                    const textNode = document.createElement('h4');
+                    textNode.textContent = link.textContent.trim();
+
+                    newNavItem.appendChild(iconDiv);
+                    newNavItem.appendChild(textNode);
+                    mobileNavContainer.appendChild(newNavItem);
+                });
             }
 
             // --- TIMELINE DATA & POPULATION ---
@@ -497,11 +732,11 @@
                     title: "L'Antiquité : Les Bâtisseurs d'Empires", icon: "fa-landmark", date: "~3000 av. J.-C. - 476 ap. J.-C.",
                     description: "Les civilisations égyptienne, grecque et romaine posent les fondations de l'ingénierie civile, avec des outils et des concepts qui perdureront des millénaires.",
                     subEvents: [
-                        { text: "<strong>~2650 av. J.-C. :</strong> La <strong>pyramide de Djoser</strong>, première construction monumentale en pierre de taille, conçue par l'architecte Imhotep.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Pyramide+de+Djoser", imageDesc: "La pyramide à degrés de Djoser à Saqqarah." },
-                        { text: "<strong>~447 av. J.-C. :</strong> Construction du <strong>Parthénon</strong> à Athènes, apogée de l'architecture grecque et de ses ordres (dorique, ionique, corinthien).", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Parthénon", imageDesc: "Le Parthénon sur l'Acropole d'Athènes." },
-                        { text: "<strong>~312 av. J.-C. :</strong> Début de la construction de la <strong>Voie Appienne</strong> et des premiers aqueducs romains, marquant le début des grands travaux publics.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Aqueduc+Romain", imageDesc: "Le Pont du Gard, un aqueduc romain impressionnant." },
+                        { text: "<strong>~2650 av. J.-C. :</strong> La <strong>pyramide de Djoser</strong>, première construction monumentale en pierre de taille, conçue par l'architecte Imhotep.", image: "https://images.unsplash.com/photo-1598434863551-FE6879a3b68d?q=80&w=1935&auto=format&fit=crop", imageDesc: "La pyramide à degrés de Djoser à Saqqarah." },
+                        { text: "<strong>~447 av. J.-C. :</strong> Construction du <strong>Parthénon</strong> à Athènes, apogée de l'architecture grecque et de ses ordres (dorique, ionique, corinthien).", image: "https://images.unsplash.com/photo-1555538965-a39986427354?q=80&w=1974&auto=format&fit=crop", imageDesc: "Le Parthénon sur l'Acropole d'Athènes." },
+                        { text: "<strong>~312 av. J.-C. :</strong> Début de la construction de la <strong>Voie Appienne</strong> et des premiers aqueducs romains, marquant le début des grands travaux publics.", image: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?q=80&w=1996&auto=format&fit=crop", imageDesc: "Le Pont du Gard, un aqueduc romain impressionnant." },
                         { text: "<strong>Ier siècle av. J.-C. :</strong> Vitruve écrit <strong>\"De architectura\"</strong>, le plus ancien traité d'architecture qui nous soit parvenu, définissant les principes de solidité, d'utilité et de beauté." },
-                        { text: "<strong>~80 ap. J.-C. :</strong> Inauguration du <strong>Colisée</strong> de Rome, chef-d'œuvre utilisant le béton romain (opus caementicium) et les systèmes d'arcs et de voûtes.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Colisée", imageDesc: "Le Colisée de Rome, un amphithéâtre monumental." }
+                        { text: "<strong>~80 ap. J.-C. :</strong> Inauguration du <strong>Colisée</strong> de Rome, chef-d'œuvre utilisant le béton romain (opus caementicium) et les systèmes d'arcs et de voûtes.", image: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?q=80&w=1996&auto=format&fit=crop", imageDesc: "Le Colisée de Rome, un amphithéâtre monumental." }
                     ],
                     didYouKnow: "Le béton romain était si durable qu'il pouvait prendre sous l'eau, une propriété que le béton moderne n'a retrouvée que bien plus tard."
                 },
@@ -509,10 +744,10 @@
                     title: "Le Moyen Âge : L'Ère des Cathédrales", icon: "fa-chess-rook", date: "V<sup>e</sup> - XV<sup>e</sup> siècle",
                     description: "L'art gothique révolutionne la construction, permettant d'ériger des édifices plus hauts et lumineux, grâce à des innovations structurelles majeures.",
                     subEvents: [
-                        { text: "<strong>~1140 :</strong> La basilique de Saint-Denis est considérée comme le premier édifice gothique, introduisant la <strong>croisée d'ogives</strong> et les vitraux.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Basilique+St-Denis", imageDesc: "Le chœur de la basilique Saint-Denis, berceau de l'art gothique." },
-                        { text: "<strong>~1163 :</strong> Début de la construction de <strong>Notre-Dame de Paris</strong>, qui popularise l'usage des arcs-boutants pour soutenir les hautes nefs.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Notre-Dame", imageDesc: "Les arcs-boutants de Notre-Dame de Paris." },
+                        { text: "<strong>~1140 :</strong> La basilique de Saint-Denis est considérée comme le premier édifice gothique, introduisant la <strong>croisée d'ogives</strong> et les vitraux.", image: "https://images.unsplash.com/photo-1598328212269-5a9f2a0b3cca?q=80&w=1935&auto=format&fit=crop", imageDesc: "Le chœur de la basilique Saint-Denis, berceau de l'art gothique." },
+                        { text: "<strong>~1163 :</strong> Début de la construction de <strong>Notre-Dame de Paris</strong>, qui popularise l'usage des arcs-boutants pour soutenir les hautes nefs.", image: "https://images.unsplash.com/photo-1556776223-2371279b9446?q=80&w=1932&auto=format&fit=crop", imageDesc: "Les arcs-boutants de Notre-Dame de Paris." },
                         { text: "<strong>XIIe siècle :</strong> Développement des <strong>corporations de métiers</strong> (compagnonnage) qui organisent et transmettent le savoir-faire des maçons, charpentiers et tailleurs de pierre." },
-                        { text: "<strong>1436 :</strong> Filippo Brunelleschi achève le <strong>dôme de la cathédrale de Florence</strong>, une prouesse technique marquant la transition vers la Renaissance.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Dôme+de+Florence", imageDesc: "Le dôme de Brunelleschi à Florence." }
+                        { text: "<strong>1436 :</strong> Filippo Brunelleschi achève le <strong>dôme de la cathédrale de Florence</strong>, une prouesse technique marquant la transition vers la Renaissance.", image: "https://images.unsplash.com/photo-1589330273594-e6b2e5a619c9?q=80&w=1935&auto=format&fit=crop", imageDesc: "Le dôme de Brunelleschi à Florence." }
                     ],
                     didYouKnow: "Les bâtisseurs de cathédrales utilisaient des engins de levage en bois, comme la \"cage à écureuil\", actionnés par la force humaine pour monter les pierres à des hauteurs vertigineuses."
                 },
@@ -520,11 +755,11 @@
                     title: "La Révolution Industrielle : L'Acier et la Vapeur", icon: "fa-industry", date: "XVIII<sup>e</sup> - XIX<sup>e</sup> siècle",
                     description: "L'acier, le verre et la machine à vapeur bouleversent les méthodes de construction, permettant des projets d'une échelle et d'une rapidité inédites.",
                     subEvents: [
-                        { text: "<strong>1779 :</strong> Construction de l'<strong>Iron Bridge</strong> en Angleterre, premier grand pont entièrement en fonte, ouvrant la voie aux structures métalliques.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Iron+Bridge", imageDesc: "Le pont de Coalbrookdale, ou Iron Bridge." },
+                        { text: "<strong>1779 :</strong> Construction de l'<strong>Iron Bridge</strong> en Angleterre, premier grand pont entièrement en fonte, ouvrant la voie aux structures métalliques.", image: "https://images.unsplash.com/photo-1628178881954-5399581e5d26?q=80&w=1974&auto=format&fit=crop", imageDesc: "Le pont de Coalbrookdale, ou Iron Bridge." },
                         { text: "<strong>1824 :</strong> Joseph Aspdin brevette le <strong>ciment Portland</strong>, un liant hydraulique fiable et résistant qui deviendra la base du béton moderne." },
-                        { text: "<strong>1851 :</strong> Le <strong>Crystal Palace</strong> de Londres, une immense structure de verre et de fer, est construit en seulement 9 mois grâce à la préfabrication.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Crystal+Palace", imageDesc: "Le Crystal Palace lors de l'Exposition Universelle de 1851." },
+                        { text: "<strong>1851 :</strong> Le <strong>Crystal Palace</strong> de Londres, une immense structure de verre et de fer, est construit en seulement 9 mois grâce à la préfabrication.", image: "https://upload.wikimedia.org/wikipedia/commons/4/45/Crystal_Palace_-_interior.jpg", imageDesc: "Le Crystal Palace lors de l'Exposition Universelle de 1851." },
                         { text: "<strong>1853 :</strong> Elisha Otis invente l'<strong>ascenseur de sécurité</strong>, rendant possible la construction de bâtiments de grande hauteur." },
-                        { text: "<strong>1889 :</strong> Inauguration de la <strong>Tour Eiffel</strong> pour l'Exposition Universelle, démontrant le potentiel esthétique et structurel du fer puddlé.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Tour+Eiffel", imageDesc: "La Tour Eiffel en construction." }
+                        { text: "<strong>1889 :</strong> Inauguration de la <strong>Tour Eiffel</strong> pour l'Exposition Universelle, démontrant le potentiel esthétique et structurel du fer puddlé.", image: "https://images.unsplash.com/photo-1543349689-9a4d426bee8e?q=80&w=1974&auto=format&fit=crop", imageDesc: "La Tour Eiffel." }
                     ],
                     didYouKnow: "La Tour Eiffel a été construite en 2 ans, 2 mois et 5 jours, un record pour l'époque, grâce à des techniques de préfabrication et d'assemblage innovantes."
                 },
@@ -534,9 +769,9 @@
                     subEvents: [
                         { text: "<strong>1892 :</strong> François Hennebique dépose un brevet pour un système complet de construction en <strong>béton armé</strong>, qu'il diffuse dans toute l'Europe." },
                         { text: "<strong>1928 :</strong> Eugène Freyssinet invente le <strong>béton précontraint</strong>, une avancée majeure permettant des portées plus longues et des structures plus fines." },
-                        { text: "<strong>1931 :</strong> Achèvement de l'<strong>Empire State Building</strong> à New York, qui restera le plus haut du monde pendant 40 ans grâce à son ossature en acier.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Empire+State", imageDesc: "L'Empire State Building, icône de New York." },
+                        { text: "<strong>1931 :</strong> Achèvement de l'<strong>Empire State Building</strong> à New York, qui restera le plus haut du monde pendant 40 ans grâce à son ossature en acier.", image: "https://images.unsplash.com/photo-1555143363-c9c113540503?q=80&w=1974&auto=format&fit=crop", imageDesc: "L'Empire State Building, icône de New York." },
                         { text: "<strong>Années 1950 :</strong> La reconstruction d'après-guerre entraîne la standardisation et la <strong>préfabrication</strong> à grande échelle, notamment avec les grands ensembles." },
-                        { text: "<strong>1973 :</strong> Inauguration de l'<strong>Opéra de Sydney</strong>, un exemple spectaculaire de l'utilisation de coques en béton pour créer des formes complexes.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Opéra+de+Sydney", imageDesc: "L'Opéra de Sydney et ses voiles de béton." }
+                        { text: "<strong>1973 :</strong> Inauguration de l'<strong>Opéra de Sydney</strong>, un exemple spectaculaire de l'utilisation de coques en béton pour créer des formes complexes.", image: "https://images.unsplash.com/photo-1524293581917-878a6d017c71?q=80&w=2070&auto=format&fit=crop", imageDesc: "L'Opéra de Sydney et ses voiles de béton." }
                     ],
                     didYouKnow: "Le Corbusier, avec sa \"Cité Radieuse\" à Marseille (1952), a été un pionnier de l'architecture moderne en utilisant le béton brut de décoffrage comme un élément esthétique."
                 },
@@ -545,8 +780,8 @@
                     description: "Le BTP entre dans une nouvelle ère, axée sur la technologie, la collaboration et la responsabilité environnementale.",
                     subEvents: [
                         { text: "<strong>Années 1980 :</strong> Démocratisation de la <strong>Conception Assistée par Ordinateur (CAO)</strong>, qui remplace progressivement la planche à dessin." },
-                        { text: "<strong>Années 2000 :</strong> Essor du <strong>BIM (Building Information Modeling)</strong>, permettant de créer une maquette numérique 3D intelligente et collaborative pour tout le cycle de vie d'un ouvrage.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Maquette+BIM", imageDesc: "Exemple de maquette numérique BIM." },
-                        { text: "<strong>Années 2010 :</strong> Intégration des drones pour la topographie, l'inspection de chantier et le suivi de l'avancement.", image: "https://placehold.co/800x600/1e293b/f8fafc?text=Drone+de+chantier", imageDesc: "Un drone inspectant un chantier de construction." },
+                        { text: "<strong>Années 2000 :</strong> Essor du <strong>BIM (Building Information Modeling)</strong>, permettant de créer une maquette numérique 3D intelligente et collaborative pour tout le cycle de vie d'un ouvrage.", image: "https://images.unsplash.com/photo-1631124235563-a7c3b035e403?q=80&w=1932&auto=format&fit=crop", imageDesc: "Exemple de maquette numérique BIM." },
+                        { text: "<strong>Années 2010 :</strong> Intégration des drones pour la topographie, l'inspection de chantier et le suivi de l'avancement.", image: "https://images.unsplash.com/photo-1533050181512-53610991c686?q=80&w=2070&auto=format&fit=crop", imageDesc: "Un drone inspectant un chantier de construction." },
                         { text: "<strong>2017 :</strong> Construction du premier pont piétonnier imprimé en 3D en béton aux Pays-Bas." },
                         { text: "<strong>Aujourd'hui :</strong> Focus sur la <strong>construction durable</strong> (matériaux biosourcés, recyclage), l'impression 3D de structures, et l'émergence de la robotique sur les chantiers." }
                     ],
@@ -585,6 +820,19 @@
                     timelineContainer.appendChild(timelineItem);
                 });
             }
+            
+            // Accordion Logic
+            document.querySelectorAll('.timeline-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const body = header.nextElementSibling;
+                    header.classList.toggle('active');
+                    if (body.style.maxHeight) {
+                        body.style.maxHeight = null;
+                    } else {
+                        body.style.maxHeight = body.scrollHeight + "px";
+                    }
+                });
+            });
 
             // --- IMAGE MODAL ---
             const modal = document.getElementById('image-modal');
@@ -662,6 +910,24 @@
                 };
                 addMarkersToMap();
             }
+            
+            // Timeline filter
+            const filterInput = document.getElementById('timeline-filter');
+            if(filterInput) {
+                filterInput.addEventListener('input', (e) => {
+                    const searchTerm = e.target.value.toLowerCase();
+                    document.querySelectorAll('.timeline-item').forEach(item => {
+                        const itemText = item.textContent.toLowerCase();
+                        if (itemText.includes(searchTerm)) {
+                            item.style.display = '';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            }
+            
+            setupSlider();
         });
     </script>
 </body>
