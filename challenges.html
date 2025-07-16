@@ -36,6 +36,7 @@
             /* Shadows */
             --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
             --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            --shadow-glow: 0 0 15px 0px rgba(245, 158, 11, 0.4);
             
             /* Animation */
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -55,8 +56,8 @@
 
         /* Light mode */
         body.light-mode {
-            --background: #ffffff;
-            --surface: #f8fafc;
+            --background: #f1f5f9;
+            --surface: #ffffff;
             --surface-elevated: #e2e8f0;
             --surface-hover: #cbd5e1;
             --glass: rgba(0, 0, 0, 0.05);
@@ -64,6 +65,7 @@
             --text-primary: #1e293b;
             --text-secondary: #475569;
             --text-muted: #64748b;
+            --shadow-glow: 0 0 15px 0px rgba(245, 158, 11, 0.3);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -89,7 +91,7 @@
         .nav-menu { display: flex; align-items: center; gap: var(--spacing-md); list-style: none; }
         .nav-link { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; color: var(--text-secondary); text-decoration: none; font-weight: 500; border-radius: var(--radius); transition: var(--transition); }
         .nav-link:hover { color: var(--text-primary); background: var(--glass); }
-        .nav-link.active { color: var(--accent); background: rgba(245, 158, 11, 0.1); }
+        .nav-link.active { color: var(--accent); font-weight: 600; background: rgba(245, 158, 11, 0.1); }
         .nav-actions { display: flex; align-items: center; gap: 1rem; }
         .theme-toggle { display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-secondary); transition: var(--transition); }
         .theme-toggle:hover { background: var(--surface-elevated); color: var(--text-primary); }
@@ -122,6 +124,114 @@
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         .animate-in { animation: fadeInUp 0.6s ease-out forwards; }
 
+        .slider-container {
+            position: relative;
+            width: 100%;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            margin-bottom: var(--spacing-xl);
+            background-color: var(--surface);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--glass-border);
+        }
+        .slider-wrapper {
+            display: flex;
+            transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        .slide {
+            min-width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        .slide .slide-background {
+            width: 100%;
+            display: block;
+            aspect-ratio: 16 / 6;
+            transition: transform 8s ease-out;
+            background-color: var(--surface-elevated);
+        }
+        .slide.active .slide-background {
+            transform: scale(1.1);
+        }
+        .slide-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: var(--spacing-lg);
+            background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 10%, transparent);
+            color: var(--text-primary);
+            transform: translateY(100%);
+            transition: transform 0.6s ease-out;
+        }
+        .slide.active .slide-content {
+            transform: translateY(0);
+        }
+        body.light-mode .slide-content {
+             background: linear-gradient(to top, rgba(241, 245, 249, 0.9) 10%, transparent);
+        }
+        .slide-content h3 {
+            font-size: clamp(1.5rem, 3vw, 2.25rem);
+            font-weight: 700;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            margin-bottom: 0.5rem;
+        }
+        .slide-content p {
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            color: var(--text-secondary);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        .slider-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3rem;
+            height: 3rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-full);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-slow);
+            opacity: 0.7;
+        }
+        .slider-nav:hover {
+            background-color: var(--accent);
+            transform: translateY(-50%) scale(1.1);
+            opacity: 1;
+        }
+        .slider-nav.prev {
+            left: var(--spacing-md);
+        }
+        .slider-nav.next {
+            right: var(--spacing-md);
+        }
+        .slider-dots {
+            position: absolute;
+            bottom: var(--spacing-md);
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+        }
+        .slider-dot {
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: var(--radius-full);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            transition: var(--transition-slow);
+        }
+        .slider-dot.active {
+            background: var(--accent);
+            transform: scale(1.3);
+            box-shadow: 0 0 10px var(--accent);
+        }
+
         .search-section { margin-bottom: var(--spacing-xl); }
         .search-container { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); display: flex; flex-direction: column; gap: var(--spacing-md); }
         @media (min-width: 768px) { .search-container { flex-direction: row; align-items: center; } }
@@ -132,17 +242,35 @@
         .search-button { background-color: var(--primary); color: white; border: none; padding: 0.8rem 2rem; border-radius: var(--radius); font-weight: 600; font-size: 1rem; transition: background-color 0.2s; }
         .search-button:hover { background-color: var(--primary-dark); }
         
-        .challenge-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 4rem; }
-        .challenge-card { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--glass-border); padding: 2rem; display: flex; flex-direction: column; transition: var(--transition-slow); }
-        .challenge-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-xl); border-color: var(--accent); }
+        .challenge-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; margin-top: 4rem; }
+        .challenge-card { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--glass-border); display: flex; flex-direction: column; transition: var(--transition-slow); box-shadow: var(--shadow-md); overflow: hidden; }
+        .challenge-card:hover { transform: translateY(-10px); box-shadow: var(--shadow-glow); border-color: var(--accent); }
+        
+        .challenge-card-image {
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            overflow: hidden;
+            background-color: var(--surface-elevated);
+        }
+        .challenge-card-image svg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease-out;
+        }
+        .challenge-card:hover .challenge-card-image svg {
+            transform: scale(1.05);
+        }
+
+        .challenge-card-content { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
         .challenge-card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
-        .challenge-card-icon { font-size: 2.5rem; width: 4rem; height: 4rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border-radius: var(--radius-md); color: var(--accent); }
+        .challenge-card-icon { font-size: 2.5rem; width: 4rem; height: 4rem; display: flex; align-items: center; justify-content: center; background: var(--background); border-radius: var(--radius-full); color: var(--accent); margin-top: -4rem; border: 4px solid var(--surface); box-shadow: var(--shadow-md); }
         .challenge-card-title { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); }
         .challenge-card-description { color: var(--text-secondary); flex-grow: 1; margin-bottom: 1.5rem; }
         .challenge-card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; font-size: 0.875rem; color: var(--text-muted); }
         .meta-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; background: var(--surface-elevated); border-radius: var(--radius-full); }
         .meta-item .fas { color: var(--primary-light); }
-        .challenge-card-button { display: inline-block; background: var(--accent); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); text-align: center; text-decoration: none; font-weight: 600; transition: var(--transition); }
+        .challenge-card-button { display: inline-block; background: var(--accent); color: white; padding: 0.75rem 2rem; border-radius: var(--radius-full); text-align: center; text-decoration: none; font-weight: 600; transition: var(--transition); margin-top: auto; }
         .challenge-card-button:hover { background: var(--accent-dark); transform: scale(1.05); }
         
         .notification { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-xl); transform: translateX(calc(100% + var(--spacing-lg))); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1100; backdrop-filter: blur(20px); max-width: 350px; }
@@ -215,11 +343,59 @@
 
     <!-- Main Content -->
     <main class="main-content">
+        
+        <!-- Image Slider Section -->
+        <section class="slider-container animate-in" id="imageSlider">
+            <div class="slider-wrapper">
+                <div class="slide">
+                    <div class="slide-background">
+                        <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M 100 150 L 250 150 L 300 100 L 350 200 L 400 120 L 450 180 L 500 100 L 550 150 L 700 150" opacity="0.8" stroke-width="3"/>
+                            <path d="M 150 100 L 200 200 M 600 100 L 650 200" opacity="0.5" stroke-dasharray="4"/>
+                        </svg>
+                    </div>
+                    <div class="slide-content">
+                        <h3>Prouvez votre Talent</h3>
+                        <p>Nos challenges sont conçus pour tester vos compétences en conditions réelles.</p>
+                    </div>
+                </div>
+                <div class="slide">
+                    <div class="slide-background">
+                        <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--primary-light)" stroke-width="1.5">
+                            <rect x="150" y="50" width="500" height="200" rx="10" opacity="0.3" />
+                            <path d="M 150 100 h 500 M 150 150 h 500 M 150 200 h 500" opacity="0.5" />
+                            <path d="M 250 50 v 200 M 350 50 v 200 M 450 50 v 200 M 550 50 v 200" opacity="0.3" stroke-dasharray="5"/>
+                        </svg>
+                    </div>
+                    <div class="slide-content">
+                        <h3>Des Scénarios Concrets</h3>
+                        <p>Plongez dans des études de cas réalistes et des problématiques de chantier.</p>
+                    </div>
+                </div>
+                <div class="slide">
+                    <div class="slide-background">
+                         <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--secondary)" stroke-width="2">
+                            <path d="M 200 250 L 400 50 L 600 250 Z" stroke-width="4" opacity="0.8" />
+                            <path d="M 200 250 h 400" stroke-width="4" opacity="0.8"/>
+                            <path d="M 300 150 h 200" stroke-dasharray="5" opacity="0.6"/>
+                         </svg>
+                    </div>
+                    <div class="slide-content">
+                        <h3>Démarquez-vous des autres Candidats</h3>
+                        <p>Une performance réussie est votre meilleur CV pour attirer les recruteurs.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slider-nav prev" id="sliderPrev"><i class="fas fa-chevron-left"></i></div>
+            <div class="slider-nav next" id="sliderNext"><i class="fas fa-chevron-right"></i></div>
+            <div class="slider-dots" id="sliderDots"></div>
+        </section>
+
         <section class="search-section animate-in">
             <form action="recherche.html" method="GET" class="search-container">
                 <div class="search-input-wrapper">
                     <i class="fas fa-search"></i>
-                    <input type="text" name="query" required placeholder="Rechercher sur tout le site...">
+                    <input type="text" name="query" required placeholder="Rechercher un challenge...">
                 </div>
                 <button type="submit" class="search-button">Rechercher</button>
             </form>
@@ -233,66 +409,123 @@
         <section class="challenge-grid animate-in">
             <!-- Challenge Card 1 -->
             <div class="challenge-card">
-                <div class="challenge-card-header">
-                    <div class="challenge-card-icon">🧱</div>
-                    <h2 class="challenge-card-title">Challenge Maçonnerie VRD</h2>
+                <div class="challenge-card-image">
+                    <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--primary-light)" opacity="0.6">
+                            <rect x="20" y="80" width="160" height="30" rx="3" fill="var(--primary-light)" fill-opacity="0.2" />
+                            <path d="M 20 80 h 160" stroke-dasharray="5" />
+                            <path d="M 30 60 h 20 v 20 h -20 z" />
+                            <path d="M 90 60 h 20 v 20 h -20 z" />
+                            <path d="M 150 60 h 20 v 20 h -20 z" />
+                        </g>
+                        <g stroke="var(--accent)" opacity="0.9">
+                            <path d="M 100 20 l 20 30 h -40 z" stroke-width="3"/>
+                        </g>
+                    </svg>
                 </div>
-                <p class="challenge-card-description">
-                    Un affaissement de terrain a été détecté sur une route départementale. Vous devez proposer une solution de reprise en sous-œuvre, planifier les travaux et estimer les coûts.
-                </p>
-                <div class="challenge-card-meta">
-                    <span class="meta-item"><i class="fas fa-layer-group"></i>Technique</span>
-                    <span class="meta-item"><i class="fas fa-brain"></i>Difficile</span>
+                <div class="challenge-card-content">
+                    <div class="challenge-card-header">
+                        <div class="challenge-card-icon"><i class="fas fa-road"></i></div>
+                        <h2 class="challenge-card-title">Challenge Maçonnerie VRD</h2>
+                    </div>
+                    <p class="challenge-card-description">
+                        Un affaissement de terrain a été détecté sur une route départementale. Vous devez proposer une solution de reprise en sous-œuvre, planifier les travaux et estimer les coûts.
+                    </p>
+                    <div class="challenge-card-meta">
+                        <span class="meta-item"><i class="fas fa-layer-group"></i>Technique</span>
+                        <span class="meta-item"><i class="fas fa-brain"></i>Difficile</span>
+                    </div>
+                    <a href="#" class="challenge-card-button" onclick="event.preventDefault(); showNotification('Challenge en cours de préparation !', 'info')">Participer</a>
                 </div>
-                <a href="#" class="challenge-card-button" onclick="event.preventDefault(); showNotification('Challenge en cours de préparation !', 'info')">Participer</a>
             </div>
 
             <!-- Challenge Card 2 -->
             <div class="challenge-card">
-                <div class="challenge-card-header">
-                    <div class="challenge-card-icon">🗺️</div>
-                    <h2 class="challenge-card-title">Optimisation de Plan de Coffrage</h2>
+                <div class="challenge-card-image">
+                    <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--primary-light)" opacity="0.7">
+                            <rect x="20" y="20" width="160" height="90" rx="5" stroke-dasharray="4" />
+                            <path d="M 20 50 h 160 M 20 85 h 160 M 70 20 v 90 M 130 20 v 90" />
+                        </g>
+                        <g stroke="var(--secondary)" opacity="0.9">
+                            <rect x="30" y="60" width="30" height="15" stroke-width="3" />
+                            <rect x="80" y="30" width="40" height="45" stroke-width="3" />
+                        </g>
+                    </svg>
                 </div>
-                <p class="challenge-card-description">
-                    À partir des plans d'architecte d'un petit immeuble, réalisez le plan de coffrage du premier étage en optimisant l'utilisation du matériel et le temps de main-d'œuvre.
-                </p>
-                <div class="challenge-card-meta">
-                    <span class="meta-item"><i class="fas fa-layer-group"></i>Conception</span>
-                    <span class="meta-item"><i class="fas fa-brain"></i>Intermédiaire</span>
+                <div class="challenge-card-content">
+                    <div class="challenge-card-header">
+                        <div class="challenge-card-icon"><i class="fas fa-ruler-combined"></i></div>
+                        <h2 class="challenge-card-title">Optimisation de Plan de Coffrage</h2>
+                    </div>
+                    <p class="challenge-card-description">
+                        À partir des plans d'architecte d'un petit immeuble, réalisez le plan de coffrage du premier étage en optimisant l'utilisation du matériel et le temps de main-d'œuvre.
+                    </p>
+                    <div class="challenge-card-meta">
+                        <span class="meta-item"><i class="fas fa-layer-group"></i>Conception</span>
+                        <span class="meta-item"><i class="fas fa-brain"></i>Intermédiaire</span>
+                    </div>
+                    <a href="#" class="challenge-card-button" onclick="event.preventDefault(); showNotification('Challenge en cours de préparation !', 'info')">Participer</a>
                 </div>
-                <a href="#" class="challenge-card-button" onclick="event.preventDefault(); showNotification('Challenge en cours de préparation !', 'info')">Participer</a>
             </div>
 
             <!-- Challenge Card 3 -->
             <div class="challenge-card">
-                <div class="challenge-card-header">
-                    <div class="challenge-card-icon">🔥</div>
-                    <h2 class="challenge-card-title">Gestion de Crise sur Chantier</h2>
+                 <div class="challenge-card-image">
+                    <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--accent)" opacity="0.8">
+                           <path d="M 100 70 l -40 40 M 100 70 l 40 40 M 100 70 l -40 -40 M 100 70 l 40 -40" />
+                           <path d="M 100 70 l 0 -50" stroke-dasharray="5" />
+                        </g>
+                        <g stroke="var(--primary-light)" opacity="0.9">
+                            <circle cx="100" cy="70" r="25" stroke-width="2" />
+                            <circle cx="100" cy="70" r="35" stroke-width="1" stroke-dasharray="2" />
+                        </g>
+                    </svg>
                 </div>
-                <p class="challenge-card-description">
-                    Une grève surprise des livreurs de béton menace d'arrêter votre chantier. Gérez la communication avec les équipes, le client et trouvez une solution alternative en urgence.
-                </p>
-                <div class="challenge-card-meta">
-                    <span class="meta-item"><i class="fas fa-layer-group"></i>Management</span>
-                    <span class="meta-item"><i class="fas fa-brain"></i>Intermédiaire</span>
+                <div class="challenge-card-content">
+                    <div class="challenge-card-header">
+                        <div class="challenge-card-icon"><i class="fas fa-fire-extinguisher"></i></div>
+                        <h2 class="challenge-card-title">Gestion de Crise sur Chantier</h2>
+                    </div>
+                    <p class="challenge-card-description">
+                        Une grève surprise des livreurs de béton menace d'arrêter votre chantier. Gérez la communication avec les équipes, le client et trouvez une solution alternative en urgence.
+                    </p>
+                    <div class="challenge-card-meta">
+                        <span class="meta-item"><i class="fas fa-layer-group"></i>Management</span>
+                        <span class="meta-item"><i class="fas fa-brain"></i>Intermédiaire</span>
+                    </div>
+                    <a href="#" class="challenge-card-button" onclick="event.preventDefault(); showNotification('Challenge en cours de préparation !', 'info')">Participer</a>
                 </div>
-                <a href="#" class="challenge-card-button" onclick="event.preventDefault(); showNotification('Challenge en cours de préparation !', 'info')">Participer</a>
             </div>
 
-            <!-- NEW Challenge Card 4 -->
+            <!-- Challenge Card 4 -->
             <div class="challenge-card">
-                <div class="challenge-card-header">
-                    <div class="challenge-card-icon">💰</div>
-                    <h2 class="challenge-card-title">Challenge Étude de Prix TCE</h2>
+                <div class="challenge-card-image">
+                    <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--secondary)" opacity="0.7">
+                            <rect x="40" y="30" width="120" height="70" rx="5" />
+                            <path d="M 50 45 h 100 M 50 60 h 100 M 50 75 h 100 M 50 90 h 100" />
+                        </g>
+                        <g stroke="var(--primary)" opacity="0.9">
+                            <path d="M 60 70 l 20 -20 l 20 30 l 20 -40 l 20 15" stroke-width="3" />
+                        </g>
+                    </svg>
                 </div>
-                <p class="challenge-card-description">
-                    À partir d'un dossier de consultation (DCE) pour un petit collectif, réalisez le chiffrage complet tous corps d'état et rédigez le mémoire technique.
-                </p>
-                <div class="challenge-card-meta">
-                    <span class="meta-item"><i class="fas fa-layer-group"></i>Chiffrage</span>
-                    <span class="meta-item"><i class="fas fa-brain"></i>Expert</span>
+                <div class="challenge-card-content">
+                    <div class="challenge-card-header">
+                        <div class="challenge-card-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                        <h2 class="challenge-card-title">Challenge Étude de Prix TCE</h2>
+                    </div>
+                    <p class="challenge-card-description">
+                        À partir d'un dossier de consultation (DCE) pour un petit collectif, réalisez le chiffrage complet tous corps d'état et rédigez le mémoire technique.
+                    </p>
+                    <div class="challenge-card-meta">
+                        <span class="meta-item"><i class="fas fa-layer-group"></i>Chiffrage</span>
+                        <span class="meta-item"><i class="fas fa-brain"></i>Expert</span>
+                    </div>
+                    <a href="#" class="challenge-card-button" onclick="event.preventDefault(); launchGame('prixtce.html')">Participer</a>
                 </div>
-                <a href="#" class="challenge-card-button" onclick="event.preventDefault(); launchGame('prixtce.html')">Participer</a>
             </div>
 
         </section>
@@ -339,6 +572,10 @@
         function navigateTo(pageFile) {
             showProgress();
             showNotification(`Chargement de la page...`, 'info');
+            if (window.location.href.endsWith(pageFile)) {
+                 setTimeout(() => document.getElementById('progressBar').classList.remove('show'), 500);
+                 return;
+            }
             setTimeout(() => window.location.href = pageFile, 1500);
         }
 
@@ -382,6 +619,86 @@
             mobileMenu.classList.toggle('active');
             mobileToggle.classList.toggle('active');
         }
+        
+        function setupSlider() {
+            const slider = document.getElementById('imageSlider');
+            if (!slider) return;
+
+            const wrapper = slider.querySelector('.slider-wrapper');
+            const slides = slider.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('sliderPrev');
+            const nextBtn = document.getElementById('sliderNext');
+            const dotsContainer = document.getElementById('sliderDots');
+            
+            let currentIndex = 0;
+            let slideInterval;
+
+            if (slides.length <= 1) {
+                if(prevBtn) prevBtn.style.display = 'none';
+                if(nextBtn) nextBtn.style.display = 'none';
+                if(dotsContainer) dotsContainer.style.display = 'none';
+                if (slides.length === 1) slides[0].classList.add('active');
+                return;
+            }
+
+            slides.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.classList.add('slider-dot');
+                dot.addEventListener('click', () => {
+                    goToSlide(index);
+                    resetInterval();
+                });
+                dotsContainer.appendChild(dot);
+            });
+            const dots = dotsContainer.querySelectorAll('.slider-dot');
+
+            function goToSlide(index) {
+                if (index === currentIndex && slides[index].classList.contains('active')) return;
+                
+                slides[currentIndex].classList.remove('active');
+                currentIndex = index;
+                slides[currentIndex].classList.add('active');
+                
+                wrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+                
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === currentIndex);
+                });
+            }
+
+            function nextSlide() {
+                const newIndex = (currentIndex + 1) % slides.length;
+                goToSlide(newIndex);
+            }
+
+            function prevSlide() {
+                const newIndex = (currentIndex - 1 + slides.length) % slides.length;
+                goToSlide(newIndex);
+            }
+            
+            function startInterval() {
+                slideInterval = setInterval(nextSlide, 7000); 
+            }
+
+            function resetInterval() {
+                clearInterval(slideInterval);
+                startInterval();
+            }
+
+            nextBtn.addEventListener('click', () => {
+                nextSlide();
+                resetInterval();
+            });
+            prevBtn.addEventListener('click', () => {
+                prevSlide();
+                resetInterval();
+            });
+            
+            // Initial state
+            slides[0].classList.add('active');
+            dots[0].classList.add('active');
+            startInterval();
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             updateThemeUI();
@@ -410,7 +727,9 @@
                     mobileNavContainer.appendChild(newNavItem);
                 });
             }
+            
+            setupSlider();
         });
     </script>
 </body>
-<</html>
+</html>
