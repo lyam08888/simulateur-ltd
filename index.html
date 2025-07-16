@@ -166,9 +166,7 @@
         }
 
         .nav-desktop { display: none; }
-        @media (min-width: 1024px) {
-            .nav-desktop { display: flex; align-items: center; gap: var(--spacing-lg); }
-        }
+        @media (min-width: 1024px) { .nav-desktop { display: flex; align-items: center; flex-grow: 1; justify-content: flex-end; gap: var(--spacing-md); } }
 
         .nav-menu {
             display: flex;
@@ -202,6 +200,36 @@
             color: var(--text-primary);
             background: linear-gradient(45deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.2));
             font-weight: 600;
+        }
+
+        .header-search {
+            position: relative;
+            width: 280px;
+        }
+        .header-search input {
+            width: 100%;
+            background-color: var(--surface);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            border-radius: var(--radius);
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        .header-search input::placeholder { color: var(--text-muted); }
+        .header-search input:focus {
+            background-color: var(--surface-elevated);
+            border-color: var(--primary);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 2px var(--primary-dark);
+            outline: none;
+        }
+        .header-search .fa-search {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
         }
 
         .nav-actions {
@@ -260,6 +288,7 @@
         .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-md); border-bottom: 1px solid var(--glass-border); }
         .mobile-menu-close { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-primary); }
         .mobile-menu-content { flex: 1; padding: var(--spacing-lg); overflow-y: auto; }
+        .mobile-search-wrapper { padding-bottom: var(--spacing-lg); margin-bottom: var(--spacing-lg); border-bottom: 1px solid var(--glass-border); }
         .mobile-nav-section h3 { color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--spacing-md); }
         .mobile-nav-items { display: flex; flex-direction: column; gap: var(--spacing-xs); }
         .mobile-nav-item { display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-md); color: var(--text-secondary); text-decoration: none; border-radius: var(--radius-md); }
@@ -564,31 +593,7 @@
             opacity: 1;
             transform: translateY(0);
         }
-
-        .search-section { margin-bottom: var(--spacing-xl); }
-        .search-container { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); display: flex; flex-direction: column; gap: var(--spacing-md); }
-        @media (min-width: 768px) { .search-container { flex-direction: row; align-items: center; } }
-        .search-input-wrapper { position: relative; flex-grow: 1; }
-        .search-input-wrapper i { position: absolute; top: 50%; left: var(--spacing-md); transform: translateY(-50%); color: var(--text-muted); }
-        .search-input-wrapper input { width: 100%; background: var(--background); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 2.5rem; color: var(--text-primary); font-size: 1rem; transition: var(--transition); }
-        .search-input-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); outline: none; }
         
-        .search-button {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.8rem 2rem;
-            border-radius: var(--radius);
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .search-button:hover {
-            background-color: var(--primary-dark);
-            transform: scale(1.05);
-        }
-
         .btp-wall-street { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: var(--spacing-xl); margin-top: var(--spacing-xl); }
         .feed-column { 
             background: var(--surface); 
@@ -910,6 +915,10 @@
                 <span class="logo-text">LTD Simulator</span>
             </a>
             <div class="nav-desktop">
+                 <form action="recherche.html" method="GET" class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="search" name="query" placeholder="Rechercher..." aria-label="Rechercher">
+                </form>
                  <ul class="nav-menu">
                      <li class="nav-item"><a href="index.html" class="nav-link active" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
                      <li class="nav-item"><a href="simulateur.html" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
@@ -940,6 +949,12 @@
             <button class="mobile-menu-close" onclick="toggleMobileMenu()"><i class="fas fa-times"></i></button>
         </div>
         <div class="mobile-menu-content">
+            <div class="mobile-search-wrapper">
+                <form action="recherche.html" method="GET" class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="search" name="query" placeholder="Rechercher..." aria-label="Rechercher">
+                </form>
+            </div>
             <div class="mobile-nav-section">
                 <h3>Navigation</h3>
                 <div class="mobile-nav-items">
@@ -988,17 +1003,6 @@
             <div class="slider-dots" id="sliderDots"></div>
         </section>
         
-        <!-- Search Section -->
-        <section class="search-section animate-in">
-            <form action="recherche.html" method="GET" class="search-container">
-                <div class="search-input-wrapper">
-                    <i class="fas fa-search"></i>
-                    <input type="text" name="query" required placeholder="Rechercher sur tout le site...">
-                </div>
-                <button type="submit" class="search-button">Rechercher</button>
-            </form>
-        </section>
-
         <section class="hero animate-in">
             <h1>Maîtrisez les métiers du BTP</h1>
             <p>Formez-vous aux métiers d'avenir du BTP avec nos simulateurs professionnels. Le secteur recrute massivement : préparez votre carrière dès maintenant !</p>
@@ -1511,9 +1515,11 @@
             });
             
             // Initial state
-            slides[0].classList.add('active');
-            dots[0].classList.add('active');
-            startInterval();
+            if (slides.length > 0) {
+                slides[0].classList.add('active');
+                dots[0].classList.add('active');
+                startInterval();
+            }
         }
 
         function setupChatbot() {
