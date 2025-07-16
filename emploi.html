@@ -42,6 +42,7 @@
             
             /* Animation & Spacing */
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             --spacing-md: 1.5rem;
             --spacing-lg: 2rem;
             --spacing-xl: 3rem;
@@ -49,12 +50,16 @@
             /* Borders */
             --radius: 0.5rem;
             --radius-lg: 1rem;
+            --radius-xl: 1.5rem;
         }
 
         body.light-mode {
-            --background: #ffffff;
-            --surface: #f8fafc;
+            --background: #f1f5f9;
+            --surface: #ffffff;
             --surface-elevated: #e2e8f0;
+            --surface-hover: #cbd5e1;
+            --glass: rgba(0, 0, 0, 0.05);
+            --glass-border: rgba(0, 0, 0, 0.1);
             --text-primary: #1e293b;
             --text-secondary: #475569;
             --text-muted: #64748b;
@@ -81,7 +86,7 @@
             z-index: -1;
         }
         
-        [onclick], .nav-link, .job-card-button, .search-button { cursor: pointer; }
+        [onclick], .nav-link, .job-card-button, .search-button, .mobile-toggle, .theme-toggle { cursor: pointer; }
 
         .header {
             position: fixed;
@@ -116,7 +121,8 @@
 
         .logo-icon { font-size: 2rem; }
         
-        .nav-desktop { display: flex; align-items: center; gap: var(--spacing-lg); }
+        .nav-desktop { display: none; }
+        @media (min-width: 1024px) { .nav-desktop { display: flex; align-items: center; gap: var(--spacing-lg); } }
         .nav-menu { display: flex; align-items: center; gap: var(--spacing-md); list-style: none; }
         
         .nav-link {
@@ -132,7 +138,7 @@
         }
 
         .nav-link:hover { color: var(--text-primary); background: var(--glass); }
-        .nav-link.active { color: var(--secondary); background: rgba(16, 185, 129, 0.1); }
+        .nav-link.active { color: var(--secondary); background: rgba(16, 185, 129, 0.1); font-weight: 600; }
 
         .nav-actions { display: flex; align-items: center; gap: 1rem; }
         .theme-toggle {
@@ -146,6 +152,26 @@
             color: var(--text-secondary);
         }
         .theme-toggle:hover { background: var(--surface-elevated); color: var(--text-primary); }
+
+        .mobile-toggle { display: flex; flex-direction: column; justify-content: center; align-items: center; width: 2.5rem; height: 2.5rem; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); transition: var(--transition); }
+        @media (min-width: 1024px) { .mobile-toggle { display: none; } }
+        .hamburger { position: relative; width: 1.25rem; height: 1rem; }
+        .hamburger span { position: absolute; left: 0; width: 100%; height: 2px; background: var(--text-primary); border-radius: 1px; transition: var(--transition); }
+        .hamburger span:nth-child(1) { top: 0; }
+        .hamburger span:nth-child(2) { top: 50%; transform: translateY(-50%); }
+        .hamburger span:nth-child(3) { bottom: 0; }
+        .mobile-toggle.active .hamburger span:nth-child(1) { top: 50%; transform: translateY(-50%) rotate(45deg); }
+        .mobile-toggle.active .hamburger span:nth-child(2) { opacity: 0; }
+        .mobile-toggle.active .hamburger span:nth-child(3) { bottom: 50%; transform: translateY(50%) rotate(-45deg); }
+        
+        .mobile-menu { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--background); z-index: 999; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: var(--transition-slow); }
+        .mobile-menu.active { opacity: 1; visibility: visible; }
+        .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-md); border-bottom: 1px solid var(--glass-border); }
+        .mobile-menu-close { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-primary); }
+        .mobile-menu-content { flex: 1; padding: var(--spacing-lg); overflow-y: auto; }
+        .mobile-nav-items { display: flex; flex-direction: column; gap: 0.5rem; }
+        .mobile-nav-item { display: flex; align-items: center; gap: 1rem; padding: 1rem; color: var(--text-secondary); text-decoration: none; border-radius: var(--radius-lg); }
+        .mobile-nav-item-icon { font-size: 1.25rem; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border-radius: var(--radius); }
 
         .main-content {
             margin-top: 4.5rem;
@@ -169,6 +195,110 @@
             color: var(--text-secondary);
             max-width: 700px;
             margin: 0 auto;
+        }
+
+        .slider-container {
+            position: relative;
+            width: 100%;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            margin-bottom: var(--spacing-xl);
+            background-color: var(--surface);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--glass-border);
+        }
+        .slider-wrapper {
+            display: flex;
+            transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        .slide {
+            min-width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        .slide .slide-background {
+            width: 100%;
+            display: block;
+            aspect-ratio: 16 / 6;
+            transition: transform 8s ease-out;
+            background-color: var(--surface-elevated);
+        }
+        .slide.active .slide-background {
+            transform: scale(1.1);
+        }
+        .slide-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: var(--spacing-lg);
+            background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 10%, transparent);
+            color: var(--text-primary);
+            transform: translateY(100%);
+            transition: transform 0.6s ease-out;
+        }
+        .slide.active .slide-content {
+            transform: translateY(0);
+        }
+        body.light-mode .slide-content {
+             background: linear-gradient(to top, rgba(241, 245, 249, 0.9) 10%, transparent);
+        }
+        .slide-content h3 {
+            font-size: clamp(1.5rem, 3vw, 2.25rem);
+            font-weight: 700;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            margin-bottom: 0.5rem;
+        }
+        .slide-content p {
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            color: var(--text-secondary);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        .slider-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3rem;
+            height: 3rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 9999px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-slow);
+            opacity: 0.7;
+        }
+        .slider-nav:hover {
+            background-color: var(--secondary);
+            transform: translateY(-50%) scale(1.1);
+            opacity: 1;
+        }
+        .slider-nav.prev { left: var(--spacing-md); }
+        .slider-nav.next { right: var(--spacing-md); }
+        .slider-dots {
+            position: absolute;
+            bottom: var(--spacing-md);
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+        }
+        .slider-dot {
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 9999px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            transition: var(--transition-slow);
+        }
+        .slider-dot.active {
+            background: var(--secondary);
+            transform: scale(1.3);
+            box-shadow: 0 0 10px var(--secondary);
         }
 
         .search-section { margin-bottom: var(--spacing-xl); }
@@ -361,32 +491,90 @@
                      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
                  </div>
             </div>
-            <button class="mobile-toggle" id="mobileToggle" style="display:none;">
+            <button class="mobile-toggle" id="mobileToggle">
                 <span class="hamburger"><span></span><span></span><span></span></span>
             </button>
         </nav>
     </header>
+    
+     <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <a href="index.html" class="logo" onclick="event.preventDefault(); toggleMobileMenu(); navigateTo('index.html');">
+                <span class="logo-icon">🏗️</span>
+                <span class="logo-text">LTD Simulator</span>
+            </a>
+            <button class="mobile-menu-close" onclick="toggleMobileMenu()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="mobile-menu-content">
+             <div class="mobile-nav-items">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
 
     <!-- Main Content -->
     <main class="main-content">
-        <section class="search-section animate-in">
-            <form action="recherche.html" method="GET" class="search-container">
-                <div class="search-input-wrapper">
-                    <i class="fas fa-search"></i>
-                    <input type="text" name="query" required placeholder="Rechercher sur tout le site...">
+        
+        <!-- Image Slider Section -->
+        <section class="slider-container animate-in" id="imageSlider">
+            <div class="slider-wrapper">
+                <div class="slide">
+                    <div class="slide-background">
+                        <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--secondary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M 100 200 C 250 50, 350 250, 500 150 S 650 250, 800 100" opacity="0.7"/>
+                            <circle cx="150" cy="150" r="10" fill="var(--secondary)"/>
+                            <circle cx="300" cy="200" r="10" fill="var(--secondary)"/>
+                            <circle cx="500" cy="150" r="10" fill="var(--secondary)"/>
+                            <circle cx="680" cy="180" r="10" fill="var(--secondary)"/>
+                        </svg>
+                    </div>
+                    <div class="slide-content">
+                        <h3>Construisez Votre Avenir</h3>
+                        <p>Découvrez des opportunités uniques pour faire évoluer votre carrière.</p>
+                    </div>
                 </div>
-                <button type="submit" class="search-button">Rechercher</button>
-            </form>
+                <div class="slide">
+                    <div class="slide-background">
+                        <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--primary-light)" stroke-width="1.5">
+                           <path d="M 250 150 a 150 150 0 1 1 300 0" opacity="0.5" />
+                           <path d="M 325 150 a 75 75 0 1 1 150 0" opacity="0.7" />
+                           <circle cx="400" cy="150" r="20" fill="var(--primary-light)" fill-opacity="0.5" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="slide-content">
+                        <h3>Trouvez le Poste Idéal</h3>
+                        <p>Utilisez nos filtres pour trouver l'offre qui correspond à votre profil.</p>
+                    </div>
+                </div>
+                <div class="slide">
+                    <div class="slide-background">
+                         <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--accent)" stroke-width="2">
+                            <path d="M 200 200 L 250 100 L 300 200" opacity="0.8"/>
+                            <path d="M 350 200 L 400 100 L 450 200" opacity="0.8"/>
+                            <path d="M 500 200 L 550 100 L 600 200" opacity="0.8"/>
+                            <path d="M 150 200 h 500" stroke-width="4"/>
+                         </svg>
+                    </div>
+                    <div class="slide-content">
+                        <h3>Rejoignez les Meilleurs</h3>
+                        <p>Nous connectons les talents du BTP avec les entreprises leaders du secteur.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slider-nav prev" id="sliderPrev"><i class="fas fa-chevron-left"></i></div>
+            <div class="slider-nav next" id="sliderNext"><i class="fas fa-chevron-right"></i></div>
+            <div class="slider-dots" id="sliderDots"></div>
         </section>
 
-        <section class="hero animate-in">
+        <section class="hero animate-in" style="animation-delay: 0.1s;">
             <h1>Nos Offres d'Emploi</h1>
             <p>Rejoignez une équipe dynamique et participez à des projets d'envergure. LTD, cabinet de recrutement, recherche ses futurs talents dans tous les métiers du BTP.</p>
         </section>
 
         <section class="filters-and-map animate-in" style="animation-delay: 0.2s;">
             <div class="filter-container">
-                 <input type="text" id="localSearchInput" placeholder="Filtrer les offres par mot-clé...">
+                 <input type="text" id="localSearchInput" placeholder="Filtrer par mot-clé (ex: Ingénieur, VRD)...">
                  <select id="locationFilter">
                      <option value="all">Toutes les localisations</option>
                  </select>
@@ -462,30 +650,30 @@
             const container = document.getElementById('job-list-container');
             if (!container) return;
             
+            container.innerHTML = '';
             if (jobs.length === 0) {
                 container.innerHTML = `<div id="no-results"><h3>Aucune offre ne correspond à votre recherche.</h3><p>Essayez d'autres mots-clés ou filtres.</p></div>`;
                 return;
             }
             
-            let content = '';
             jobs.forEach(job => {
-                content += `
-                    <div class="job-card">
-                        <div class="job-card-header">
-                            <h2 class="job-card-title">${job.title}</h2>
-                        </div>
-                        <div class="job-card-meta">
-                            <span class="meta-item"><i class="fas fa-map-marker-alt"></i> ${job.location}</span>
-                            <span class="meta-item"><i class="fas fa-file-contract"></i> ${job.type}</span>
-                        </div>
-                        <p class="job-card-description">Rejoignez nos équipes sur des projets passionnants. Nous recherchons des talents motivés pour ce poste.</p>
-                        <div class="job-card-footer">
-                            <a href="#" class="job-card-button" onclick="applyForJob('${job.title.replace(/'/g, "\\'")}')">Candidater</a>
-                        </div>
+                const jobCard = document.createElement('div');
+                jobCard.className = 'job-card';
+                jobCard.innerHTML = `
+                    <div class="job-card-header">
+                        <h2 class="job-card-title">${job.title}</h2>
+                    </div>
+                    <div class="job-card-meta">
+                        <span class="meta-item"><i class="fas fa-map-marker-alt"></i> ${job.location}</span>
+                        <span class="meta-item"><i class="fas fa-file-contract"></i> ${job.type}</span>
+                    </div>
+                    <p class="job-card-description">Rejoignez nos équipes sur des projets passionnants. Nous recherchons des talents motivés pour ce poste.</p>
+                    <div class="job-card-footer">
+                        <a href="#" class="job-card-button" onclick="applyForJob('${job.title.replace(/'/g, "\\'")}')">Candidater</a>
                     </div>
                 `;
+                container.appendChild(jobCard);
             });
-            container.innerHTML = content;
         }
 
         function filterAndDisplay() {
@@ -595,6 +783,95 @@
             showNotification('Ouverture de votre client e-mail...', 'info');
         }
 
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileToggle = document.getElementById('mobileToggle');
+            mobileMenu.classList.toggle('active');
+            mobileToggle.classList.toggle('active');
+        }
+        
+        function setupSlider() {
+            const slider = document.getElementById('imageSlider');
+            if (!slider) return;
+
+            const wrapper = slider.querySelector('.slider-wrapper');
+            const slides = slider.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('sliderPrev');
+            const nextBtn = document.getElementById('sliderNext');
+            const dotsContainer = document.getElementById('sliderDots');
+            
+            let currentIndex = 0;
+            let slideInterval;
+
+            if (slides.length <= 1) {
+                if(prevBtn) prevBtn.style.display = 'none';
+                if(nextBtn) nextBtn.style.display = 'none';
+                if(dotsContainer) dotsContainer.style.display = 'none';
+                if (slides.length === 1) slides[0].classList.add('active');
+                return;
+            }
+
+            slides.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.classList.add('slider-dot');
+                dot.addEventListener('click', () => {
+                    goToSlide(index);
+                    resetInterval();
+                });
+                dotsContainer.appendChild(dot);
+            });
+            const dots = dotsContainer.querySelectorAll('.slider-dot');
+
+            function goToSlide(index) {
+                if (index === currentIndex && slides[index].classList.contains('active')) return;
+                
+                slides[currentIndex].classList.remove('active');
+                currentIndex = index;
+                slides[currentIndex].classList.add('active');
+                
+                wrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+                
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === currentIndex);
+                });
+            }
+
+            function nextSlide() {
+                const newIndex = (currentIndex + 1) % slides.length;
+                goToSlide(newIndex);
+            }
+
+            function prevSlide() {
+                const newIndex = (currentIndex - 1 + slides.length) % slides.length;
+                goToSlide(newIndex);
+            }
+            
+            function startInterval() {
+                slideInterval = setInterval(nextSlide, 7000); 
+            }
+
+            function resetInterval() {
+                clearInterval(slideInterval);
+                startInterval();
+            }
+
+            nextBtn.addEventListener('click', () => {
+                nextSlide();
+                resetInterval();
+            });
+            prevBtn.addEventListener('click', () => {
+                prevSlide();
+                resetInterval();
+            });
+            
+            // Initial state
+            if (slides.length > 0) {
+                slides[0].classList.add('active');
+                dots[0].classList.add('active');
+                startInterval();
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.toggle('light-mode', currentTheme === 'light');
             updateThemeUI();
@@ -621,6 +898,32 @@
                 el.style.transition = 'all 0.6s ease-out';
                 observer.observe(el);
             });
+            
+            const desktopNav = document.querySelector('.nav-desktop .nav-menu');
+            const mobileNavContainer = document.querySelector('.mobile-menu .mobile-nav-items');
+            if(desktopNav && mobileNavContainer) {
+                mobileNavContainer.innerHTML = ''; // Clear previous
+                desktopNav.querySelectorAll('.nav-item').forEach(item => {
+                    const link = item.querySelector('a');
+                    const newNavItem = document.createElement('a');
+                    newNavItem.href = link.href;
+                    newNavItem.className = 'mobile-nav-item';
+                    newNavItem.onclick = link.onclick;
+
+                    const iconDiv = document.createElement('div');
+                    iconDiv.className = 'mobile-nav-item-icon';
+                    iconDiv.innerHTML = link.querySelector('i').outerHTML;
+                    
+                    const textNode = document.createElement('h4');
+                    textNode.textContent = link.textContent.trim();
+
+                    newNavItem.appendChild(iconDiv);
+                    newNavItem.appendChild(textNode);
+                    mobileNavContainer.appendChild(newNavItem);
+                });
+            }
+            
+            setupSlider();
         });
     </script>
 </body>
