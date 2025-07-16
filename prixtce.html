@@ -160,6 +160,20 @@
             animation: shake-horizontal 0.8s cubic-bezier(.455,.03,.515,.955) both;
         }
 
+        @keyframes question-fade-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .question-animation {
+            animation: question-fade-in 0.4s ease-out forwards;
+        }
+
+        .answer-animation {
+            opacity: 0;
+            animation: question-fade-in 0.4s ease-out forwards;
+        }
+
+
         #score-container {
             transition: transform 0.2s ease;
             background-color: var(--surface);
@@ -640,15 +654,6 @@
             displayQuestion();
         }
         
-        function typeWriter(text, i = 0) {
-            if (i < text.length) {
-                questionTextEl.innerHTML = text.substring(0, i + 1) + '<span class="animate-ping">|</span>';
-                setTimeout(() => typeWriter(text, i + 1), 20);
-            } else {
-                 questionTextEl.innerHTML = text;
-            }
-        }
-        
         function displayScenario(question) {
             scenarioBox.classList.remove('hidden');
             scenarioBox.classList.add('bg-black/20', 'p-4', 'rounded-lg', 'mb-6', 'border', 'border-glass-border', 'text-left');
@@ -740,6 +745,11 @@
             const currentQuestion = questions[currentQuestionIndex];
             let duration = 30;
 
+            questionTextEl.classList.remove('question-animation');
+            void questionTextEl.offsetWidth; // Trigger reflow
+            questionTextEl.classList.add('question-animation');
+            questionTextEl.textContent = currentQuestion.question;
+
             if (currentQuestion.type && currentQuestion.type.startsWith('scenario')) {
                 displayScenario(currentQuestion);
                 if(currentQuestion.type.includes('urgent')) {
@@ -748,8 +758,6 @@
                     duration = 15;
                 }
             }
-            
-            typeWriter(currentQuestion.question);
             
             if (currentQuestion.type === 'order') displayOrderQuestion(currentQuestion);
             else if (currentQuestion.type === 'multi-select') displayMultiSelectQuestion(currentQuestion);
@@ -770,10 +778,11 @@
                 question.options.map((option, index) => ({ text: option, originalIndex: index }))
             );
 
-            shuffledOptions.forEach(optionObj => {
+            shuffledOptions.forEach((optionObj, i) => {
                 const button = document.createElement('button');
                 button.innerHTML = `<span>${optionObj.text}</span>`;
-                button.classList.add('answer-btn');
+                button.classList.add('answer-btn', 'answer-animation');
+                button.style.animationDelay = `${i * 100}ms`;
                 button.dataset.index = optionObj.originalIndex;
                 button.addEventListener('click', () => selectAnswer(optionObj.originalIndex));
                 grid.appendChild(button);
@@ -787,10 +796,11 @@
                 question.options.map((option, index) => ({ text: option, originalIndex: index }))
             );
 
-            shuffledOptions.forEach(optionObj => {
+            shuffledOptions.forEach((optionObj, i) => {
                 const button = document.createElement('button');
                 button.innerHTML = `<i class="far fa-square"></i><span>${optionObj.text}</span>`;
-                button.classList.add('answer-btn');
+                button.classList.add('answer-btn', 'answer-animation');
+                button.style.animationDelay = `${i * 100}ms`;
                 button.dataset.index = optionObj.originalIndex;
                 button.addEventListener('click', () => {
                     button.classList.toggle('selected');
@@ -803,7 +813,8 @@
 
             const submitBtn = document.createElement('button');
             submitBtn.textContent = 'Valider la sélection';
-            submitBtn.className = 'btn btn-primary mt-6';
+            submitBtn.className = 'btn btn-primary mt-6 answer-animation';
+            submitBtn.style.animationDelay = `${shuffledOptions.length * 100}ms`;
             submitBtn.addEventListener('click', () => {
                 const selectedIndexes = [];
                 answersContainer.querySelectorAll('.answer-btn.selected').forEach(btn => {
@@ -819,10 +830,11 @@
             list.id = 'sortable-list';
             list.className = 'space-y-3 w-full';
             const shuffledOptions = shuffleArray([...question.options]);
-            shuffledOptions.forEach((option) => {
+            shuffledOptions.forEach((option, i) => {
                 const item = document.createElement('div');
                 item.textContent = option;
-                item.className = 'p-4 bg-surface rounded-lg border border-glass-border draggable w-full';
+                item.className = 'p-4 bg-surface rounded-lg border border-glass-border draggable w-full answer-animation';
+                item.style.animationDelay = `${i * 100}ms`;
                 item.draggable = true;
                 item.dataset.originalText = option;
                 list.appendChild(item);
@@ -832,7 +844,8 @@
             
             const submitBtn = document.createElement('button');
             submitBtn.textContent = 'Valider l\'ordre';
-            submitBtn.className = 'btn btn-primary mt-6';
+            submitBtn.className = 'btn btn-primary mt-6 answer-animation';
+            submitBtn.style.animationDelay = `${shuffledOptions.length * 100}ms`;
             submitBtn.addEventListener('click', () => {
                 const orderedOptions = [...list.children].map(child => child.dataset.originalText);
                 const originalIndexes = orderedOptions.map(opt => question.options.indexOf(opt));
