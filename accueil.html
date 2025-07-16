@@ -1,3 +1,6 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
 <script>
         // Global variables
         let currentTheme = localStorage.getItem('theme') || 'dark';
@@ -628,16 +631,14 @@
         window.showShortcuts = showShortcuts;
         window.hideShortcuts = hideShortcuts;
         window.playSound = playSound;
-    </script><!DOCTYPE html>
-<html lang="fr">
-<head>
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Simulateur de gestion de chantier et jeux pédagogiques pour le BTP.">
     <title>LTD Simulator - Menu Modernisé</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;amp;family=JetBrains+Mono:wght@400;500&amp;amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -2062,11 +2063,11 @@
 
             <!-- Mobile Toggle -->
             <button class="mobile-toggle" id="mobileToggle">
-                <div class="hamburger">
+                <span class="hamburger">
                     <span></span>
                     <span></span>
                     <span></span>
-                </div>
+                </span>
             </button>
         </nav>
     </header>
@@ -2250,15 +2251,15 @@
     <div class="fab-container">
         <button class="fab" id="helpFab">
             <i class="fas fa-question"></i>
-            <div class="fab-tooltip">Aide (F1)</div>
+            <span class="fab-tooltip">Aide (F1)</span>
         </button>
         <button class="fab secondary" id="feedbackFab">
             <i class="fas fa-comment"></i>
-            <div class="fab-tooltip">Feedback</div>
+            <span class="fab-tooltip">Feedback</span>
         </button>
         <button class="fab accent" id="bookmarkFab">
             <i class="fas fa-bookmark"></i>
-            <div class="fab-tooltip">Favoris</div>
+            <span class="fab-tooltip">Favoris</span>
         </button>
     </div>
 
