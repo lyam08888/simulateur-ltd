@@ -267,7 +267,8 @@
         .mobile-nav-item:hover { background: var(--glass); color: var(--text-primary); }
 
         .main-content { margin-top: 4.5rem; padding: var(--spacing-xl) var(--spacing-md); max-width: 1400px; margin-left: auto; margin-right: auto; }
-        .hero { text-align: center; padding: var(--spacing-xl) 0; transition: var(--transition-slow); }
+        
+        .hero { text-align: center; padding: var(--spacing-xl) 0; }
         .hero h1 { 
             font-size: clamp(2.8rem, 5vw, 4rem); 
             font-weight: 800; 
@@ -286,7 +287,7 @@
         }
         .hero p { font-size: 1.25rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.7; }
         
-        /* --- AMÉLIORATION: Image Slider --- */
+        /* --- Image Slider --- */
         .slider-container {
             position: relative;
             width: 100%;
@@ -306,14 +307,15 @@
             position: relative;
             overflow: hidden;
         }
-        .slide img {
+        .slide .slide-background {
             width: 100%;
             display: block;
             aspect-ratio: 16 / 6;
             object-fit: cover;
             transition: transform 8s ease-out;
+            background-color: var(--surface-elevated);
         }
-        .slide.active img {
+        .slide.active .slide-background {
             transform: scale(1.1);
         }
         .slide-content {
@@ -394,7 +396,6 @@
             transform: scale(1.3);
             box-shadow: 0 0 10px var(--primary-light);
         }
-        /* --- FIN AMÉLIORATION --- */
 
         .news-banner {
             background: var(--surface);
@@ -439,14 +440,8 @@
             box-shadow: var(--shadow-glow);
             border-color: var(--primary-light);
         }
-        .news-banner-item img {
-            width: 100%;
+        .news-banner-item .card-image-top {
             height: 150px;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-        .news-banner-item:hover img {
-            transform: scale(1.05);
         }
         .news-banner-item-content {
             padding: var(--spacing-md);
@@ -493,10 +488,28 @@
             line-height: 1.5;
         }
 
-        .quick-actions { transition: var(--transition-slow); }
+        .quick-actions-grid {
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+        
+        .card-image-top {
+            height: 180px;
+            width: 100%;
+            overflow: hidden;
+            background-color: var(--surface-elevated);
+        }
+        .card-image-top svg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease-out;
+        }
+
         .quick-action-card {
             background: var(--surface); 
-            padding: 0; 
             border-radius: var(--radius-lg); 
             border: 1px solid var(--glass-border); 
             text-align: center; 
@@ -505,17 +518,16 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            text-decoration: none;
+            color: inherit;
         }
         .quick-action-card:hover { 
             transform: translateY(-10px); 
             box-shadow: var(--shadow-glow); 
             border-color: var(--primary);
         }
-        .quick-action-card img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            display: block;
+        .quick-action-card:hover .card-image-top svg {
+            transform: scale(1.05);
         }
         .quick-action-card-content {
             padding: 1.5rem;
@@ -533,6 +545,7 @@
             font-weight: 600;
             transition: var(--transition-slow);
             margin-top: 1.5rem;
+            text-decoration: none;
         }
         .quick-action-card:hover .btn {
             transform: scale(1.05);
@@ -542,8 +555,15 @@
         .quick-action-card .btn-accent { background: var(--accent); }
 
 
-        .animate-in { animation: fadeInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-in {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .animate-in.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
         .search-section { margin-bottom: var(--spacing-xl); }
         .search-container { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); display: flex; flex-direction: column; gap: var(--spacing-md); }
@@ -579,11 +599,8 @@
             display: flex;
             flex-direction: column;
         }
-        .feed-column img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            display: block;
+        .feed-column:hover .card-image-top svg {
+            transform: scale(1.05);
         }
         .feed-content {
             padding: var(--spacing-lg);
@@ -895,11 +912,11 @@
             <div class="nav-desktop">
                  <ul class="nav-menu">
                      <li class="nav-item"><a href="index.html" class="nav-link active" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
-                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
-                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
+                     <li class="nav-item"><a href="simulateur.html" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
+                     <li class="nav-item"><a href="test.html" class="nav-link" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
                      <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
-                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
+                     <li class="nav-item"><a href="emploi.html" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
+                    <li class="nav-item"><a href="histoire.html" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
                  </ul>
                  <div class="nav-actions">
                      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
@@ -926,30 +943,7 @@
             <div class="mobile-nav-section">
                 <h3>Navigation</h3>
                 <div class="mobile-nav-items">
-                    <a href="index.html" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('index.html')">
-                        <div class="mobile-nav-item-icon"><i class="fas fa-home"></i></div>
-                        <h4>Accueil</h4>
-                    </a>
-                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('simulateur.html')">
-                        <div class="mobile-nav-item-icon"><i class="fas fa-gamepad"></i></div>
-                        <h4>Simulateurs</h4>
-                    </a>
-                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('test.html')">
-                        <div class="mobile-nav-item-icon"><i class="fas fa-brain"></i></div>
-                        <h4>Tests</h4>
-                    </a>
-                     <a href="challenges.html" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('challenges.html')">
-                         <div class="mobile-nav-item-icon"><i class="fas fa-trophy"></i></div>
-                         <h4>Challenges</h4>
-                     </a>
-                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('emploi.html')">
-                        <div class="mobile-nav-item-icon"><i class="fas fa-briefcase"></i></div>
-                        <h4>Nos offres d'emploi</h4>
-                    </a>
-                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('histoire.html')">
-                        <div class="mobile-nav-item-icon"><i class="fas fa-scroll"></i></div>
-                        <h4>Histoire du BTP</h4>
-                    </a>
+                    <!-- Mobile nav items will be populated by JS -->
                 </div>
             </div>
         </div>
@@ -962,27 +956,27 @@
         <section class="slider-container animate-in" id="imageSlider">
             <div class="slider-wrapper">
                 <div class="slide">
-                    <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&amp;w=2070&amp;auto=format&amp;fit=crop" 
-                         onerror="this.onerror=null;this.src='https://placehold.co/1400x450/1e293b/f8fafc?text=Chantier+Moderne';" 
-                         alt="Chantier de construction moderne">
+                    <div class="slide-background">
+                        <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--primary-light)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M 0,150 C 200,50 300,250 500,150 S 700,250 800,150" opacity="0.3"/><path d="M 0,170 C 150,90 350,270 550,170 S 750,270 800,170" opacity="0.3"/><path d="M 0,190 C 100,130 400,290 600,190 S 700,290 800,190" opacity="0.3"/></svg>
+                    </div>
                     <div class="slide-content">
                         <h3>Le BTP de Demain</h3>
                         <p>Explorez les technologies qui révolutionnent la construction.</p>
                     </div>
                 </div>
                 <div class="slide">
-                    <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&amp;w=2053&amp;auto=format&amp;fit=crop" 
-                         onerror="this.onerror=null;this.src='https://placehold.co/1400x450/6366f1/FFFFFF?text=Innovation+%26+Formation';" 
-                         alt="Innovation et formation dans le BTP">
+                    <div class="slide-background">
+                        <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--secondary)" stroke-width="1"><circle cx="400" cy="150" r="120" opacity="0.2"/><circle cx="400" cy="150" r="100" opacity="0.3"/><circle cx="400" cy="150" r="80" opacity="0.4"/><path d="M 400 30 L 400 270 M 280 150 L 520 150 M 310 60 L 490 240 M 310 240 L 490 60" opacity="0.5"/></svg>
+                    </div>
                     <div class="slide-content">
                         <h3>Innovez avec nos Simulateurs</h3>
                         <p>Développez vos compétences sur des cas pratiques et réalistes.</p>
                     </div>
                 </div>
                 <div class="slide">
-                    <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&amp;w=2070&amp;auto=format&amp;fit=crop" 
-                         onerror="this.onerror=null;this.src='https://placehold.co/1400x450/10b981/FFFFFF?text=Carrières+d'Avenir';" 
-                         alt="Opportunités de carrière dans le BTP">
+                    <div class="slide-background">
+                        <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="var(--accent)" stroke="var(--accent-dark)" stroke-width="0.5"><path d="M 0 300 L 200 100 L 400 250 L 600 50 L 800 200 L 800 300 Z" opacity="0.3"/><path d="M 0 300 L 150 150 L 350 280 L 550 80 L 750 230 L 800 300 Z" opacity="0.4"/></svg>
+                    </div>
                     <div class="slide-content">
                         <h3>Votre Carrière Commence Ici</h3>
                         <p>Découvrez des challenges et des offres d'emploi uniques.</p>
@@ -1017,24 +1011,57 @@
                 <p>Restez à jour avec nos derniers tests, challenges et actualités du secteur.</p>
             </div>
             <div class="news-banner-grid">
-                <a href="#" onclick="event.preventDefault(); navigateTo('testperso.html')" class="news-banner-item">
-                    <img src="https://images.unsplash.com/photo-1573497491208-6b1acb260507?q=80&amp;w=870&amp;auto=format&amp;fit=crop" alt="Illustration d'un test comportemental" onerror="this.onerror=null;this.src='https://placehold.co/400x150/1e293b/f8fafc?text=Test+Comportemental';">
+                <a href="testperso.html" onclick="event.preventDefault(); navigateTo('testperso.html')" class="news-banner-item">
+                    <div class="card-image-top">
+                        <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <g stroke="var(--primary-light)" opacity="0.7">
+                                <path d="M 100,45 A 25,25 0 1 1 100,95 A 25,25 0 0 1 100,45" stroke-width="3" />
+                                <path d="M 100,45 V 25 M 100,95 V 115 M 75,70 H 55 M 125,70 H 145 M 82,52 L 70,40 M 118,52 L 130,40 M 82,88 L 70,100 M 118,88 L 130,100" />
+                            </g>
+                            <g stroke="var(--secondary)" opacity="0.9">
+                                <path d="M 100,70 m -15,0 a 15,15 0 1,0 30,0 a 15,15 0 1,0 -30,0" fill="var(--secondary)" fill-opacity="0.2"/>
+                                <path d="M 95,65 L 105,75 M 95,75 L 105,65" stroke-width="3"/>
+                            </g>
+                        </svg>
+                    </div>
                     <span class="new-badge">Nouveau</span>
                     <div class="news-banner-item-content">
                         <h5>Test Comportemental</h5>
                         <p>Évaluez vos soft skills en situation professionnelle.</p>
                     </div>
                 </a>
-                <a href="#" onclick="event.preventDefault(); navigateTo('prixtce.html')" class="news-banner-item">
-                     <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&amp;w=1032&amp;auto=format&amp;fit=crop" alt="Illustration d'une étude de prix" onerror="this.onerror=null;this.src='https://placehold.co/400x150/1e293b/f8fafc?text=Étude+de+Prix';">
+                <a href="prixtce.html" onclick="event.preventDefault(); navigateTo('prixtce.html')" class="news-banner-item">
+                     <div class="card-image-top">
+                        <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <g stroke="var(--accent)" opacity="0.8">
+                                <rect x="60" y="30" width="80" height="70" rx="5" stroke-width="3" fill="var(--accent)" fill-opacity="0.1"/>
+                                <path d="M 70 50 h 60 M 70 65 h 60 M 70 80 h 25 M 105 80 h 25"/>
+                            </g>
+                            <g stroke="var(--primary-light)" opacity="0.9">
+                                <path d="M 40 100 h 120" />
+                                <path d="M 40 100 l -10 -20 h 140 l -10 20" stroke-dasharray="4" />
+                            </g>
+                        </svg>
+                    </div>
                     <span class="new-badge">Nouveau</span>
                     <div class="news-banner-item-content">
                         <h5>Challenge Étude de Prix TCE</h5>
                         <p>Réalisez un chiffrage complet et un mémoire technique.</p>
                     </div>
                 </a>
-                <a href="#" onclick="event.preventDefault(); navigateTo('histoire.html')" class="news-banner-item">
-                    <img src="https://images.unsplash.com/photo-1519010470956-6d877008eaa4?q=80&amp;w=870&amp;auto=format&amp;fit=crop" alt="Illustration de constructions marquantes" onerror="this.onerror=null;this.src='https://placehold.co/400x150/1e293b/f8fafc?text=Constructions';">
+                <a href="histoire.html" onclick="event.preventDefault(); navigateTo('histoire.html')" class="news-banner-item">
+                    <div class="card-image-top">
+                        <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <g stroke="var(--text-muted)" opacity="0.7">
+                                <path d="M 20 110 L 60 40 L 100 110 Z" stroke-width="3"/>
+                                <path d="M 120 110 a 35 35 0 0 1 70 0 v -30 a 35 35 0 0 0 -70 0 z" stroke-width="3" />
+                            </g>
+                            <g stroke="var(--secondary)" opacity="0.9">
+                                <rect x="100" y="60" width="60" height="50" rx="3" />
+                                <rect x="30" y="80" width="60" height="30" rx="3" />
+                            </g>
+                        </svg>
+                    </div>
                     <span class="new-badge">Nouveau</span>
                     <div class="news-banner-item-content">
                         <h5>Constructions Marquantes</h5>
@@ -1044,46 +1071,86 @@
             </div>
         </section>
 
-        <section class="quick-actions animate-in" style="margin: 4rem 0;">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
-                <a href="#" onclick="event.preventDefault(); navigateTo('simulateur.html')" style="text-decoration: none; color: inherit;">
-                    <div class="quick-action-card">
-                        <div class="card-image-header" style="background-image: url('https://images.unsplash.com/photo-1618090584247-d5051393a064?q=80&amp;w=870&amp;auto=format&amp;fit=crop');"></div>
-                        <div class="quick-action-card-content">
-                            <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Simulateurs</h3>
-                            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Gérez des chantiers et testez vos compétences techniques.</p>
-                            <div class="btn">Lancer</div>
-                        </div>
+        <section class="quick-actions-grid animate-in">
+            <a href="simulateur.html" onclick="event.preventDefault(); navigateTo('simulateur.html')" class="quick-action-card">
+                <div class="card-image-top">
+                    <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--primary)" opacity="0.8">
+                            <rect x="30" y="20" width="140" height="90" rx="8" stroke-width="3" fill="var(--primary)" fill-opacity="0.1"/>
+                            <path d="M 30 40 h 140" />
+                            <path d="M 70 20 v 20 M 130 20 v 20 M 100 20 v 20"/>
+                        </g>
+                        <g stroke="var(--primary-light)" opacity="0.9">
+                            <path d="M 60 90 v -20 l 10 -10 h 20 l 10 10 v 20" />
+                            <path d="M 120 90 v -30 l 10 -10 h 10" />
+                            <path d="M 100 50 l 30 -15" stroke-dasharray="3"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="quick-action-card-content">
+                    <div>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Simulateurs</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Gérez des chantiers et testez vos compétences techniques.</p>
                     </div>
-                </a>
-                <a href="#" onclick="event.preventDefault(); navigateTo('test.html')" style="text-decoration: none; color: inherit;">
-                    <div class="quick-action-card">
-                        <div class="card-image-header" style="background-image: url('https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?q=80&amp;w=765&amp;auto=format&amp;fit=crop');"></div>
-                        <div class="quick-action-card-content">
-                            <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Tests & Évaluation</h3>
-                            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Évaluez vos soft-skills et connaissances techniques.</p>
-                            <div class="btn btn-secondary">Commencer</div>
-                        </div>
+                    <div class="btn">Lancer</div>
+                </div>
+            </a>
+            <a href="test.html" onclick="event.preventDefault(); navigateTo('test.html')" class="quick-action-card">
+                <div class="card-image-top">
+                    <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--secondary)" opacity="0.8">
+                            <path d="M 50 25 h 100 v 80 h -20 l -10 -10 h -40 l -10 10 h -20 z" stroke-width="3" fill="var(--secondary)" fill-opacity="0.1"/>
+                            <path d="M 70 50 h 60 M 70 65 h 60 M 70 80 h 30"/>
+                        </g>
+                        <g stroke="var(--secondary-dark)" opacity="0.9">
+                            <path d="M 120 80 l -5 5 l 5 -5 l -5 -5 l 5 5" stroke-width="3"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="quick-action-card-content">
+                    <div>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Tests & Évaluation</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Évaluez vos soft-skills et connaissances techniques.</p>
                     </div>
-                </a>
-                <a href="challenges.html" onclick="event.preventDefault(); navigateTo('challenges.html')" style="text-decoration: none; color: inherit;">
-                    <div class="quick-action-card">
-                        <div class="card-image-header" style="background-image: url('https://images.unsplash.com/photo-1560415755-bd80d06eda60?q=80&amp;w=870&amp;auto=format&amp;fit=crop');"></div>
-                        <div class="quick-action-card-content">
-                            <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Challenges Recrutement</h3>
-                            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Candidatez différemment et montrez vos compétences.</p>
-                            <div class="btn btn-accent">Participer</div>
-                        </div>
+                    <div class="btn btn-secondary">Commencer</div>
+                </div>
+            </a>
+            <a href="challenges.html" onclick="event.preventDefault(); navigateTo('challenges.html')" class="quick-action-card">
+                <div class="card-image-top">
+                    <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--accent)" opacity="0.8">
+                            <path d="M 70 100 v -20 a 30 30 0 1 1 60 0 v 20" />
+                            <path d="M 60 40 h 80" stroke-width="4"/>
+                            <path d="M 80 40 a 20 20 0 0 1 40 0" fill="var(--accent)" fill-opacity="0.2"/>
+                        </g>
+                        <g stroke="var(--accent-dark)" opacity="0.9">
+                            <path d="M 100 20 v 20" />
+                        </g>
+                    </svg>
+                </div>
+                <div class="quick-action-card-content">
+                    <div>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Challenges Recrutement</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Candidatez différemment et montrez vos compétences.</p>
                     </div>
-                </a>
-            </div>
+                    <div class="btn btn-accent">Participer</div>
+                </div>
+            </a>
         </section>
         
         <!-- BTP Wall Street Section -->
         <section class="btp-wall-street">
             <!-- Tenders Column -->
             <div class="feed-column" id="tenders-feed-container">
-                <div class="card-image-header" style="background-image: url('https://images.unsplash.com/photo-1600880292210-85938b638942?q=80&amp;w=870&amp;auto=format&amp;fit=crop');"></div>
+                <div class="card-image-top">
+                     <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--primary-light)" opacity="0.8">
+                           <path d="M 60 100 l 80 -80" />
+                           <path d="M 140 100 l -80 -80" />
+                           <rect x="50" y="95" width="100" height="15" rx="5" />
+                        </g>
+                     </svg>
+                </div>
                 <div class="feed-content">
                     <div class="feed-header">
                         <div class="feed-header-title">
@@ -1109,7 +1176,16 @@
             </div>
             <!-- News Column -->
             <div class="feed-column" id="news-feed-container">
-                <div class="card-image-header" style="background-image: url('https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=869&amp;auto=format&amp;fit=crop');"></div>
+                <div class="card-image-top">
+                    <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--secondary)" opacity="0.8">
+                            <path d="M 40 20 h 120 v 90 h -120 z" stroke-width="3" fill="var(--secondary)" fill-opacity="0.1"/>
+                            <path d="M 40 45 h 120" />
+                            <path d="M 60 20 v 25" />
+                            <path d="M 50 60 h 100 M 50 75 h 100 M 50 90 h 60" />
+                        </g>
+                    </svg>
+                </div>
                 <div class="feed-content">
                     <div class="feed-header">
                          <div class="feed-header-title">
@@ -1127,8 +1203,8 @@
                     </div>
                     <div class="feed-list" id="news-feed">
                         <div class="placeholder">
-                             <i class="fas fa-circle-notch fa-spin"></i>
-                             <span>Chargement...</span>
+                            <i class="fas fa-circle-notch fa-spin"></i>
+                            <span>Chargement...</span>
                         </div>
                     </div>
                 </div>
@@ -1193,6 +1269,10 @@
         function navigateTo(pageFile) {
             showProgress();
             showNotification(`Chargement de la page...`, 'info');
+            if (window.location.href.endsWith(pageFile)) {
+                 setTimeout(() => document.getElementById('progressBar').classList.remove('show'), 500);
+                 return;
+            }
             setTimeout(() => window.location.href = pageFile, 1000);
         }
         
@@ -1369,6 +1449,14 @@
             let currentIndex = 0;
             let slideInterval;
 
+            if (slides.length <= 1) {
+                if(prevBtn) prevBtn.style.display = 'none';
+                if(nextBtn) nextBtn.style.display = 'none';
+                if(dotsContainer) dotsContainer.style.display = 'none';
+                if (slides.length === 1) slides[0].classList.add('active');
+                return;
+            }
+
             slides.forEach((_, index) => {
                 const dot = document.createElement('div');
                 dot.classList.add('slider-dot');
@@ -1381,7 +1469,7 @@
             const dots = dotsContainer.querySelectorAll('.slider-dot');
 
             function goToSlide(index) {
-                if (index === currentIndex) return;
+                if (index === currentIndex && slides[index].classList.contains('active')) return;
                 
                 slides[currentIndex].classList.remove('active');
                 currentIndex = index;
@@ -1544,14 +1632,14 @@
                 if (tendersResults.length > 0) {
                     response += "<br><strong>Appels d'offre :</strong><ul>";
                     tendersResults.forEach(item => {
-                        response += `<li><a href="#" onclick="openLink('${item.link}')">${item.title} (${item.location})</a></li>`;
+                        response += `<li><a href="${item.link}" onclick="event.preventDefault(); openLink('${item.link}')">${item.title} (${item.location})</a></li>`;
                     });
                     response += "</ul>";
                 }
                 if (newsResults.length > 0) {
                     response += "<br><strong>Actualités :</strong><ul>";
                     newsResults.forEach(item => {
-                        response += `<li><a href="#" onclick="openLink('${item.link}')">${item.title}</a> (Source: ${item.source})</li>`;
+                        response += `<li><a href="${item.link}" onclick="event.preventDefault(); openLink('${item.link}')">${item.title}</a> (Source: ${item.source})</li>`;
                     });
                     response += "</ul>";
                 }
@@ -1568,7 +1656,7 @@
                         return { text: searchSite(query) };
                     }},
                     { pattern: /bonjour|salut|hello|yo/i, action: () => ({ text: "Bonjour ! Comment puis-je vous assister aujourd'hui ?", replies: ["Simulateurs", "Offres d'emploi", "Rechercher"] }) },
-                    { pattern: /simulateur|simulation/i, action: () => ({ text: "Nos simulateurs vous permettent de gérer des chantiers virtuels et de tester vos compétences. Vous pouvez y accéder via le menu 'Simulateurs' en haut de la page." }) },
+                    { pattern: /simulateur|simulation/i, action: () => ({ text: "Nos simulateurs vous permettent de gérer des chantiers virtuels et de tester vos compétences. Vous pouvez y accéder via le menu 'Simulateurs' en haut de la page, ou en cliquant sur la carte correspondante." }) },
                     { pattern: /emploi|recrute|carrière|challenge/i, action: () => ({ text: "Nous avons des offres d'emploi et des challenges de recrutement. Consultez la section 'Nos offres d'emploi' ou 'Challenges' pour en savoir plus." }) },
                     { pattern: /test|évaluation/i, action: () => ({ text: "Nous proposons des tests techniques et comportementaux pour évaluer vos compétences. Rendez-vous dans la section 'Tests'." }) },
                     { pattern: /merci|remercie/i, action: () => ({ text: "De rien ! N'hésitez pas si vous avez d'autres questions." }) },
@@ -1596,6 +1684,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             updateThemeUI();
             
+            // Animate on scroll
             const observer = new IntersectionObserver((entries, obs) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -1609,6 +1698,32 @@
                 observer.observe(el);
             });
 
+            // Populate mobile nav
+            const desktopNav = document.querySelector('.nav-desktop .nav-menu');
+            const mobileNavContainer = document.querySelector('.mobile-menu .mobile-nav-items');
+            if(desktopNav && mobileNavContainer) {
+                mobileNavContainer.innerHTML = ''; // Clear previous
+                desktopNav.querySelectorAll('.nav-item').forEach(item => {
+                    const link = item.querySelector('a');
+                    const newNavItem = document.createElement('a');
+                    newNavItem.href = link.href;
+                    newNavItem.className = 'mobile-nav-item';
+                    newNavItem.onclick = link.onclick;
+
+                    const iconDiv = document.createElement('div');
+                    iconDiv.className = 'mobile-nav-item-icon';
+                    iconDiv.innerHTML = link.querySelector('i').outerHTML;
+                    
+                    const textNode = document.createElement('h4');
+                    textNode.textContent = link.textContent.trim();
+
+                    newNavItem.appendChild(iconDiv);
+                    newNavItem.appendChild(textNode);
+                    mobileNavContainer.appendChild(newNavItem);
+                });
+            }
+
+            // Populate feeds after a short delay
             setTimeout(() => {
                 populateTenders();
                 populateNews();
@@ -1616,7 +1731,7 @@
             }, 1000);
             
             setupSlider();
-            setupChatbot(); // Initialisation du chatbot
+            setupChatbot();
         });
     </script>
 </body>
