@@ -503,6 +503,8 @@
             transition: var(--transition-slow);
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
         .quick-action-card:hover { 
             transform: translateY(-10px); 
@@ -517,6 +519,10 @@
         }
         .quick-action-card-content {
             padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
         .quick-action-card .btn {
             background: var(--primary); 
@@ -569,7 +575,9 @@
             border-radius: var(--radius-lg); 
             border: 1px solid var(--glass-border); 
             overflow: hidden; 
-            transition: var(--transition-slow); 
+            transition: var(--transition-slow);
+            display: flex;
+            flex-direction: column;
         }
         .feed-column > img {
             width: 100%;
