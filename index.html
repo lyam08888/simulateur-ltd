@@ -25,8 +25,8 @@
             --surface: #1e293b;
             --surface-elevated: #334155;
             --surface-hover: #475569;
-            --glass: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.15);
             
             /* Text */
             --text-primary: #f8fafc;
@@ -39,10 +39,11 @@
             --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
             --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-            
+            --shadow-glow: 0 0 15px 0px rgba(99, 102, 241, 0.3);
+
             /* Animation */
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-slow: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             
             /* Spacing */
             --spacing-xs: 0.5rem;
@@ -71,6 +72,7 @@
             --text-primary: #1e293b;
             --text-secondary: #475569;
             --text-muted: #64748b;
+            --shadow-glow: 0 0 15px 0px rgba(99, 102, 241, 0.2);
         }
 
         * {
@@ -100,11 +102,18 @@
             right: 0;
             bottom: 0;
             background: 
-                radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 80%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 50% 85%, rgba(245, 158, 11, 0.1) 0%, transparent 40%);
             pointer-events: none;
             z-index: -1;
+            animation: background-pan 30s linear infinite;
+        }
+        
+        @keyframes background-pan {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
         
         [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn, .notification-bell {
@@ -145,6 +154,11 @@
             color: var(--text-primary);
             font-weight: 800;
             font-size: 1.5rem;
+            transition: var(--transition);
+        }
+        .logo:hover {
+            transform: scale(1.05);
+            text-shadow: 0 0 10px var(--primary-light);
         }
 
         .logo-icon {
@@ -175,6 +189,8 @@
             font-weight: 500;
             border-radius: var(--radius);
             transition: var(--transition);
+            position: relative;
+            overflow: hidden;
         }
 
         .nav-link:hover {
@@ -183,8 +199,9 @@
         }
 
         .nav-link.active {
-            color: var(--primary);
-            background: rgba(99, 102, 241, 0.1);
+            color: var(--text-primary);
+            background: linear-gradient(45deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.2));
+            font-weight: 600;
         }
 
         .nav-actions {
@@ -210,6 +227,7 @@
         .theme-toggle:hover {
             background: var(--surface-elevated);
             color: var(--text-primary);
+            transform: rotate(15deg);
         }
 
         .mobile-toggle {
@@ -250,10 +268,134 @@
 
         .main-content { margin-top: 4.5rem; padding: var(--spacing-xl) var(--spacing-md); max-width: 1400px; margin-left: auto; margin-right: auto; }
         .hero { text-align: center; padding: var(--spacing-xl) 0; transition: var(--transition-slow); }
-        .hero h1 { font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; margin-bottom: var(--spacing-lg); background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .hero h1 { 
+            font-size: clamp(2.8rem, 5vw, 4rem); 
+            font-weight: 800; 
+            margin-bottom: var(--spacing-lg); 
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary) 50%, var(--accent) 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: text-gradient-pan 5s ease infinite;
+        }
+        @keyframes text-gradient-pan {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
         .hero p { font-size: 1.25rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.7; }
         
-        /* News Banner Section */
+        /* --- AMÉLIORATION: Image Slider --- */
+        .slider-container {
+            position: relative;
+            width: 100%;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            margin-bottom: var(--spacing-xl);
+            background-color: var(--surface);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--glass-border);
+        }
+        .slider-wrapper {
+            display: flex;
+            transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        .slide {
+            min-width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        .slide img {
+            width: 100%;
+            display: block;
+            aspect-ratio: 16 / 6;
+            object-fit: cover;
+            transition: transform 8s ease-out;
+        }
+        .slide.active img {
+            transform: scale(1.1);
+        }
+        .slide-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: var(--spacing-lg);
+            background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 10%, transparent);
+            color: var(--text-primary);
+            transform: translateY(100%);
+            transition: transform 0.6s ease-out;
+        }
+        .slide.active .slide-content {
+            transform: translateY(0);
+        }
+        body.light-mode .slide-content {
+             background: linear-gradient(to top, rgba(241, 245, 249, 0.9) 10%, transparent);
+        }
+        .slide-content h3 {
+            font-size: clamp(1.5rem, 3vw, 2.25rem);
+            font-weight: 700;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            margin-bottom: var(--spacing-xs);
+        }
+        .slide-content p {
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            color: var(--text-secondary);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        .slider-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3rem;
+            height: 3rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-full);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-slow);
+            opacity: 0.7;
+        }
+        .slider-nav:hover {
+            background-color: var(--primary);
+            transform: translateY(-50%) scale(1.1);
+            opacity: 1;
+        }
+        .slider-nav.prev {
+            left: var(--spacing-md);
+        }
+        .slider-nav.next {
+            right: var(--spacing-md);
+        }
+        .slider-dots {
+            position: absolute;
+            bottom: var(--spacing-md);
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        .slider-dot {
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: var(--radius-full);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            transition: var(--transition-slow);
+        }
+        .slider-dot.active {
+            background: var(--primary);
+            transform: scale(1.3);
+            box-shadow: 0 0 10px var(--primary-light);
+        }
+        /* --- FIN AMÉLIORATION --- */
+
         .news-banner {
             background: var(--surface);
             border: 1px solid var(--glass-border);
@@ -291,15 +433,14 @@
             display: flex;
             flex-direction: column;
             gap: var(--spacing-sm);
-            position: relative; /* Added for badge positioning */
+            position: relative;
         }
         .news-banner-item:hover {
-            transform: translateY(-8px) scale(1.02); /* Enhanced hover effect */
-            box-shadow: var(--shadow-lg); /* Enhanced shadow */
-            border-color: var(--primary-light); /* Lighter border on hover */
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-glow);
+            border-color: var(--primary-light);
         }
 
-        /* --- NOUVEAU --- Badge for new items */
         .new-badge {
             position: absolute;
             top: -12px;
@@ -328,7 +469,6 @@
                 box-shadow: 0 6px 25px rgba(245, 158, 11, 0.6);
             }
         }
-        /* --- FIN NOUVEAU --- */
 
         .news-banner-item-icon {
             font-size: 1.75rem;
@@ -353,13 +493,50 @@
             line-height: 1.5;
         }
 
-
         .quick-actions { transition: var(--transition-slow); }
-        .quick-actions a div:hover { transform: translateY(-8px); box-shadow: var(--shadow-xl); }
-        .animate-in { animation: fadeInUp 0.6s ease-out forwards; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .quick-action-card {
+            background: var(--surface); 
+            padding: 2rem; 
+            border-radius: var(--radius-lg); 
+            border: 1px solid var(--glass-border); 
+            text-align: center; 
+            transition: var(--transition-slow);
+            position: relative;
+            overflow: hidden;
+        }
+        .quick-action-card:hover { 
+            transform: translateY(-10px); 
+            box-shadow: var(--shadow-glow); 
+            border-color: var(--primary);
+        }
+        .quick-action-card .icon {
+            font-size: 3rem; 
+            margin-bottom: 1rem;
+            transition: var(--transition-slow);
+        }
+        .quick-action-card:hover .icon {
+            transform: scale(1.2) rotate(-10deg);
+        }
+        .quick-action-card .btn {
+            background: var(--primary); 
+            color: white; 
+            padding: 0.75rem 2rem; 
+            border-radius: var(--radius); 
+            display: inline-block; 
+            font-weight: 600;
+            transition: var(--transition-slow);
+        }
+        .quick-action-card:hover .btn {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .quick-action-card .btn-secondary { background: var(--secondary); }
+        .quick-action-card .btn-accent { background: var(--accent); }
 
-        /* Search Section */
+
+        .animate-in { animation: fadeInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
         .search-section { margin-bottom: var(--spacing-xl); }
         .search-container { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); display: flex; flex-direction: column; gap: var(--spacing-md); }
         @media (min-width: 768px) { .search-container { flex-direction: row; align-items: center; } }
@@ -377,10 +554,11 @@
             font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: var(--transition);
         }
         .search-button:hover {
             background-color: var(--primary-dark);
+            transform: scale(1.05);
         }
 
         .btp-wall-street { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: var(--spacing-xl); margin-top: var(--spacing-xl); }
@@ -390,8 +568,8 @@
         .feed-header i { font-size: 1.5rem; color: var(--primary); }
         .feed-header h2 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
         .feed-header-actions { display: flex; gap: var(--spacing-sm); }
-        .feed-action-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-muted); width: 2rem; height: 2rem; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; transition: var(--transition); }
-        .feed-action-btn:hover { background: var(--surface-hover); color: var(--text-primary); }
+        .feed-action-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-muted); width: 2.2rem; height: 2.2rem; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+        .feed-action-btn:hover { background: var(--surface-hover); color: var(--text-primary); transform: scale(1.1); }
         .feed-action-btn.active { color: var(--primary); }
         .feed-list { flex-grow: 1; min-height: 400px; overflow-y: auto; padding-right: var(--spacing-sm); }
         .feed-list::-webkit-scrollbar { width: 6px; }
@@ -400,7 +578,7 @@
         .feed-list::-webkit-scrollbar-thumb:hover { background: var(--surface-hover); }
         .feed-item { padding: var(--spacing-md) 0; border-bottom: 1px solid var(--glass-border); transition: var(--transition); }
         .feed-item:last-child { border-bottom: none; }
-        .feed-item a { text-decoration: none; color: var(--text-primary); display: block; padding: var(--spacing-xs); margin: calc(-1 * var(--spacing-xs)); border-radius: var(--radius); }
+        .feed-item a { text-decoration: none; color: var(--text-primary); display: block; padding: var(--spacing-xs); margin: calc(-1 * var(--spacing-xs)); border-radius: var(--radius); transition: background-color 0.3s; }
         .feed-item a:hover { background-color: var(--glass); }
         .feed-item-title { font-weight: 600; margin-bottom: var(--spacing-xs); }
         .feed-item-meta { display: flex; align-items: center; gap: var(--spacing-sm); font-size: 0.875rem; color: var(--text-muted); flex-wrap: wrap; }
@@ -420,9 +598,9 @@
         .notification.warning .notification-icon { color: var(--accent); }
         .notification.error .notification-icon { color: #ef4444; }
 
-        .progress-bar { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: var(--surface-elevated); z-index: 1001; opacity: 0; transition: opacity 0.3s ease; }
+        .progress-bar { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: transparent; z-index: 1001; opacity: 0; transition: opacity 0.3s ease; }
         .progress-bar.show { opacity: 1; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.3s ease; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.3s ease; box-shadow: 0 0 10px var(--primary), 0 0 5px var(--secondary); }
     </style>
 </head>
 <body>
@@ -503,6 +681,42 @@
     <!-- Main Content -->
     <main class="main-content">
         
+        <!-- Image Slider Section -->
+        <section class="slider-container animate-in" id="imageSlider">
+            <div class="slider-wrapper">
+                <div class="slide">
+                    <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop" 
+                         onerror="this.onerror=null;this.src='https://placehold.co/1400x450/1e293b/f8fafc?text=Chantier+Moderne';" 
+                         alt="Chantier de construction moderne">
+                    <div class="slide-content">
+                        <h3>Le BTP de Demain</h3>
+                        <p>Explorez les technologies qui révolutionnent la construction.</p>
+                    </div>
+                </div>
+                <div class="slide">
+                    <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=2053&auto=format&fit=crop" 
+                         onerror="this.onerror=null;this.src='https://placehold.co/1400x450/6366f1/FFFFFF?text=Innovation+%26+Formation';" 
+                         alt="Innovation et formation dans le BTP">
+                    <div class="slide-content">
+                        <h3>Innovez avec nos Simulateurs</h3>
+                        <p>Développez vos compétences sur des cas pratiques et réalistes.</p>
+                    </div>
+                </div>
+                <div class="slide">
+                    <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=2070&auto=format&fit=crop" 
+                         onerror="this.onerror=null;this.src='https://placehold.co/1400x450/10b981/FFFFFF?text=Carrières+d'Avenir';" 
+                         alt="Opportunités de carrière dans le BTP">
+                    <div class="slide-content">
+                        <h3>Votre Carrière Commence Ici</h3>
+                        <p>Découvrez des challenges et des offres d'emploi uniques.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slider-nav prev" id="sliderPrev"><i class="fas fa-chevron-left"></i></div>
+            <div class="slider-nav next" id="sliderNext"><i class="fas fa-chevron-right"></i></div>
+            <div class="slider-dots" id="sliderDots"></div>
+        </section>
+        
         <!-- Search Section -->
         <section class="search-section animate-in">
             <form action="recherche.html" method="GET" class="search-container">
@@ -556,27 +770,27 @@
         <section class="quick-actions animate-in" style="margin: 4rem 0;">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
                 <a href="#" onclick="event.preventDefault(); navigateTo('simulateur.html')" style="text-decoration: none; color: inherit;">
-                    <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
-                        <div style="font-size: 3rem; margin-bottom: 1rem;">👷</div>
+                    <div class="quick-action-card">
+                        <div class="icon">👷</div>
                         <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Simulateurs</h3>
                         <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Gérez des chantiers et testez vos compétences techniques.</p>
-                        <div style="background: var(--primary); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Lancer</div>
+                        <div class="btn">Lancer</div>
                     </div>
                 </a>
                 <a href="#" onclick="event.preventDefault(); navigateTo('test.html')" style="text-decoration: none; color: inherit;">
-                    <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
-                        <div style="font-size: 3rem; margin-bottom: 1rem;">🧠</div>
+                    <div class="quick-action-card">
+                        <div class="icon">🧠</div>
                         <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Tests & Évaluation</h3>
                         <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Évaluez vos soft-skills et connaissances techniques.</p>
-                        <div style="background: var(--secondary); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Commencer</div>
+                        <div class="btn btn-secondary">Commencer</div>
                     </div>
                 </a>
                 <a href="challenges.html" onclick="event.preventDefault(); navigateTo('challenges.html')" style="text-decoration: none; color: inherit;">
-                    <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: var(--transition);">
-                        <div style="font-size: 3rem; margin-bottom: 1rem;">🏆</div>
+                    <div class="quick-action-card">
+                        <div class="icon">🏆</div>
                         <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Challenges Recrutement</h3>
                         <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Candidatez différemment et montrez vos compétences.</p>
-                        <div style="background: var(--accent); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); display: inline-block; font-weight: 600;">Participer</div>
+                        <div class="btn btn-accent">Participer</div>
                     </div>
                 </a>
             </div>
@@ -720,8 +934,6 @@
             document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
         }
 
-        // --- DYNAMIC CONTENT SCRIPT ---
-
         const allTenders = [
             { type: 'tenders', title: "Travaux de rénovation et d'extension de l'école maternelle", location: "Toulouse (31)", date: "2025-08-22", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638319" },
             { type: 'tenders', title: "Construction d'un centre aquatique intercommunal", location: "Agglomération de La Rochelle (17)", date: "2025-09-16", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638247" },
@@ -742,7 +954,7 @@
             const feed = document.getElementById('tenders-feed');
             if (!feed) return;
             
-            feed.innerHTML = ''; // Clear
+            feed.innerHTML = ''; 
             allTenders.forEach(item => {
                 const itemEl = document.createElement('div');
                 itemEl.className = 'feed-item';
@@ -764,7 +976,7 @@
             const feed = document.getElementById('news-feed');
             if (!feed) return;
             
-            feed.innerHTML = ''; // Clear
+            feed.innerHTML = '';
             allNews.forEach(item => {
                 const itemEl = document.createElement('div');
                 itemEl.className = 'feed-item';
@@ -782,7 +994,6 @@
             if(isRefresh) showNotification("Actualités actualisées.", 'success');
         }
         
-        // --- Notification System ---
         function updateNotifButtonUI() {
             const buttons = document.querySelectorAll('.feed-action-btn[title^="Activer les notifications"]');
             if (notificationPermission === 'granted') {
@@ -836,31 +1047,102 @@
             new Notification(title, options);
         }
 
+        function setupSlider() {
+            const slider = document.getElementById('imageSlider');
+            if (!slider) return;
+
+            const wrapper = slider.querySelector('.slider-wrapper');
+            const slides = slider.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('sliderPrev');
+            const nextBtn = document.getElementById('sliderNext');
+            const dotsContainer = document.getElementById('sliderDots');
+            
+            let currentIndex = 0;
+            let slideInterval;
+
+            slides.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.classList.add('slider-dot');
+                dot.addEventListener('click', () => {
+                    goToSlide(index);
+                    resetInterval();
+                });
+                dotsContainer.appendChild(dot);
+            });
+            const dots = dotsContainer.querySelectorAll('.slider-dot');
+
+            function goToSlide(index) {
+                if (index === currentIndex) return;
+                
+                slides[currentIndex].classList.remove('active');
+                currentIndex = index;
+                slides[currentIndex].classList.add('active');
+                
+                wrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+                
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === currentIndex);
+                });
+            }
+
+            function nextSlide() {
+                const newIndex = (currentIndex + 1) % slides.length;
+                goToSlide(newIndex);
+            }
+
+            function prevSlide() {
+                const newIndex = (currentIndex - 1 + slides.length) % slides.length;
+                goToSlide(newIndex);
+            }
+            
+            function startInterval() {
+                slideInterval = setInterval(nextSlide, 7000); 
+            }
+
+            function resetInterval() {
+                clearInterval(slideInterval);
+                startInterval();
+            }
+
+            nextBtn.addEventListener('click', () => {
+                nextSlide();
+                resetInterval();
+            });
+            prevBtn.addEventListener('click', () => {
+                prevSlide();
+                resetInterval();
+            });
+            
+            // Initial state
+            slides[0].classList.add('active');
+            dots[0].classList.add('active');
+            startInterval();
+        }
+
+
         document.addEventListener('DOMContentLoaded', () => {
             updateThemeUI();
             
-            const observer = new IntersectionObserver((entries) => {
+            const observer = new IntersectionObserver((entries, obs) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
+                        entry.target.classList.add('is-visible');
+                        obs.unobserve(entry.target);
                     }
                 });
             }, { threshold: 0.1 });
 
             document.querySelectorAll('.animate-in').forEach(el => {
-                el.style.opacity = '0';
-                el.style.transform = 'translateY(30px)';
-                el.style.transition = 'all 0.6s ease-out';
                 observer.observe(el);
             });
 
-            // Initial population
             setTimeout(() => {
                 populateTenders();
                 populateNews();
                 updateNotifButtonUI();
             }, 1000);
+            
+            setupSlider();
         });
     </script>
 </body>
