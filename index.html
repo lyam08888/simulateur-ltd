@@ -424,7 +424,6 @@
         }
         .news-banner-item {
             background: var(--background);
-            padding: var(--spacing-md);
             border-radius: var(--radius-lg);
             border: 1px solid var(--glass-border);
             text-decoration: none;
@@ -432,19 +431,31 @@
             transition: var(--transition-slow);
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-sm);
             position: relative;
+            overflow: hidden;
         }
         .news-banner-item:hover {
             transform: translateY(-8px) scale(1.02);
             box-shadow: var(--shadow-glow);
             border-color: var(--primary-light);
         }
+        .news-banner-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .news-banner-item:hover img {
+            transform: scale(1.05);
+        }
+        .news-banner-item-content {
+            padding: var(--spacing-md);
+        }
 
         .new-badge {
             position: absolute;
-            top: -12px;
-            right: -12px;
+            top: 12px;
+            right: 12px;
             background: linear-gradient(45deg, var(--accent), var(--accent-dark));
             color: white;
             padding: 0.3rem 0.7rem;
@@ -470,17 +481,6 @@
             }
         }
 
-        .news-banner-item-icon {
-            font-size: 1.75rem;
-            color: var(--primary);
-            width: 3.5rem;
-            height: 3.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--surface);
-            border-radius: var(--radius-md);
-        }
         .news-banner-item-content h5 {
             font-size: 1.1rem;
             font-weight: 600;
@@ -496,7 +496,7 @@
         .quick-actions { transition: var(--transition-slow); }
         .quick-action-card {
             background: var(--surface); 
-            padding: 2rem; 
+            padding: 0; 
             border-radius: var(--radius-lg); 
             border: 1px solid var(--glass-border); 
             text-align: center; 
@@ -509,13 +509,14 @@
             box-shadow: var(--shadow-glow); 
             border-color: var(--primary);
         }
-        .quick-action-card .icon {
-            font-size: 3rem; 
-            margin-bottom: 1rem;
-            transition: var(--transition-slow);
+        .quick-action-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
         }
-        .quick-action-card:hover .icon {
-            transform: scale(1.2) rotate(-10deg);
+        .quick-action-card-content {
+            padding: 1.5rem;
         }
         .quick-action-card .btn {
             background: var(--primary); 
@@ -525,6 +526,7 @@
             display: inline-block; 
             font-weight: 600;
             transition: var(--transition-slow);
+            margin-top: 1.5rem;
         }
         .quick-action-card:hover .btn {
             transform: scale(1.05);
@@ -562,7 +564,25 @@
         }
 
         .btp-wall-street { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: var(--spacing-xl); margin-top: var(--spacing-xl); }
-        .feed-column { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--glass-border); padding: var(--spacing-lg); overflow: hidden; display: flex; flex-direction: column; transition: var(--transition-slow); }
+        .feed-column { 
+            background: var(--surface); 
+            border-radius: var(--radius-lg); 
+            border: 1px solid var(--glass-border); 
+            overflow: hidden; 
+            transition: var(--transition-slow); 
+        }
+        .feed-column > img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+        }
+        .feed-content {
+            padding: var(--spacing-lg);
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
         .feed-header { display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-lg); padding-bottom: var(--spacing-md); border-bottom: 1px solid var(--glass-border); }
         .feed-header-title { display: flex; align-items: center; gap: var(--spacing-sm); flex-grow: 1; }
         .feed-header i { font-size: 1.5rem; color: var(--primary); }
@@ -990,24 +1010,24 @@
             </div>
             <div class="news-banner-grid">
                 <a href="#" onclick="event.preventDefault(); navigateTo('testperso.html')" class="news-banner-item">
+                    <img src="https://images.unsplash.com/photo-1573497491208-6b1acb260507?q=80&w=870&auto=format&fit=crop" alt="Illustration d'un test comportemental" onerror="this.onerror=null;this.src='https://placehold.co/400x150/1e293b/f8fafc?text=Test+Comportemental';">
                     <span class="new-badge">Nouveau</span>
-                    <div class="news-banner-item-icon"><i class="fas fa-user-check"></i></div>
                     <div class="news-banner-item-content">
                         <h5>Test Comportemental</h5>
                         <p>Évaluez vos soft skills en situation professionnelle.</p>
                     </div>
                 </a>
                 <a href="#" onclick="event.preventDefault(); navigateTo('prixtce.html')" class="news-banner-item">
+                     <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1032&auto=format&fit=crop" alt="Illustration d'une étude de prix" onerror="this.onerror=null;this.src='https://placehold.co/400x150/1e293b/f8fafc?text=Étude+de+Prix';">
                     <span class="new-badge">Nouveau</span>
-                    <div class="news-banner-item-icon"><i class="fas fa-calculator"></i></div>
                     <div class="news-banner-item-content">
                         <h5>Challenge Étude de Prix TCE</h5>
                         <p>Réalisez un chiffrage complet et un mémoire technique.</p>
                     </div>
                 </a>
                 <a href="#" onclick="event.preventDefault(); navigateTo('histoire.html')" class="news-banner-item">
+                    <img src="https://images.unsplash.com/photo-1519010470956-6d877008eaa4?q=80&w=870&auto=format&fit=crop" alt="Illustration de constructions marquantes" onerror="this.onerror=null;this.src='https://placehold.co/400x150/1e293b/f8fafc?text=Constructions';">
                     <span class="new-badge">Nouveau</span>
-                    <div class="news-banner-item-icon"><i class="fas fa-landmark"></i></div>
                     <div class="news-banner-item-content">
                         <h5>Constructions Marquantes</h5>
                         <p>Découvrez les édifices emblématiques du monde entier.</p>
@@ -1020,26 +1040,32 @@
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
                 <a href="#" onclick="event.preventDefault(); navigateTo('simulateur.html')" style="text-decoration: none; color: inherit;">
                     <div class="quick-action-card">
-                        <div class="icon">👷</div>
-                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Simulateurs</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Gérez des chantiers et testez vos compétences techniques.</p>
-                        <div class="btn">Lancer</div>
+                        <img src="https://images.unsplash.com/photo-1618090584247-d5051393a064?q=80&w=870&auto=format&fit=crop" alt="Illustration de simulateurs de chantier" onerror="this.onerror=null;this.src='https://placehold.co/400x180/1e293b/f8fafc?text=Simulateurs';">
+                        <div class="quick-action-card-content">
+                            <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Simulateurs</h3>
+                            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Gérez des chantiers et testez vos compétences techniques.</p>
+                            <div class="btn">Lancer</div>
+                        </div>
                     </div>
                 </a>
                 <a href="#" onclick="event.preventDefault(); navigateTo('test.html')" style="text-decoration: none; color: inherit;">
                     <div class="quick-action-card">
-                        <div class="icon">🧠</div>
-                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Tests & Évaluation</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Évaluez vos soft-skills et connaissances techniques.</p>
-                        <div class="btn btn-secondary">Commencer</div>
+                        <img src="https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?q=80&w=765&auto=format&fit=crop" alt="Illustration de tests et évaluations" onerror="this.onerror=null;this.src='https://placehold.co/400x180/1e293b/f8fafc?text=Tests';">
+                        <div class="quick-action-card-content">
+                            <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Tests & Évaluation</h3>
+                            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Évaluez vos soft-skills et connaissances techniques.</p>
+                            <div class="btn btn-secondary">Commencer</div>
+                        </div>
                     </div>
                 </a>
                 <a href="challenges.html" onclick="event.preventDefault(); navigateTo('challenges.html')" style="text-decoration: none; color: inherit;">
                     <div class="quick-action-card">
-                        <div class="icon">🏆</div>
-                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Challenges Recrutement</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Candidatez différemment et montrez vos compétences.</p>
-                        <div class="btn btn-accent">Participer</div>
+                        <img src="https://images.unsplash.com/photo-1560415755-bd80d06eda60?q=80&w=870&auto=format&fit=crop" alt="Illustration de challenges de recrutement" onerror="this.onerror=null;this.src='https://placehold.co/400x180/1e293b/f8fafc?text=Challenges';">
+                        <div class="quick-action-card-content">
+                            <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Challenges Recrutement</h3>
+                            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Candidatez différemment et montrez vos compétences.</p>
+                            <div class="btn btn-accent">Participer</div>
+                        </div>
                     </div>
                 </a>
             </div>
@@ -1049,47 +1075,53 @@
         <section class="btp-wall-street">
             <!-- Tenders Column -->
             <div class="feed-column" id="tenders-feed-container">
-                <div class="feed-header">
-                    <div class="feed-header-title">
-                        <i class="fas fa-gavel"></i>
-                        <h2>Appels d'offre</h2>
+                <img src="https://images.unsplash.com/photo-1600880292210-85938b638942?q=80&w=870&auto=format&fit=crop" alt="Illustration d'appels d'offres" onerror="this.onerror=null;this.src='https://placehold.co/400x180/1e293b/f8fafc?text=Appels+d\'offre';">
+                <div class="feed-content">
+                    <div class="feed-header">
+                        <div class="feed-header-title">
+                            <i class="fas fa-gavel"></i>
+                            <h2>Appels d'offre</h2>
+                        </div>
+                        <div class="feed-header-actions">
+                            <button class="feed-action-btn" onclick="enableNotifications('tenders')" title="Activer les notifications pour les appels d'offre">
+                                <i class="fas fa-bell"></i>
+                            </button>
+                            <button class="feed-action-btn" onclick="populateTenders(true)" title="Rafraîchir les appels d'offre">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="feed-header-actions">
-                        <button class="feed-action-btn" onclick="enableNotifications('tenders')" title="Activer les notifications pour les appels d'offre">
-                            <i class="fas fa-bell"></i>
-                        </button>
-                        <button class="feed-action-btn" onclick="populateTenders(true)" title="Rafraîchir les appels d'offre">
-                            <i class="fas fa-sync-alt"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="feed-list" id="tenders-feed">
-                    <div class="placeholder">
-                        <i class="fas fa-circle-notch fa-spin"></i>
-                        <span>Chargement...</span>
+                    <div class="feed-list" id="tenders-feed">
+                        <div class="placeholder">
+                            <i class="fas fa-circle-notch fa-spin"></i>
+                            <span>Chargement...</span>
+                        </div>
                     </div>
                 </div>
             </div>
             <!-- News Column -->
             <div class="feed-column" id="news-feed-container">
-                <div class="feed-header">
-                     <div class="feed-header-title">
-                         <i class="fas fa-newspaper" style="color: var(--secondary);"></i>
-                         <h2>Actualités BTP</h2>
-                     </div>
-                     <div class="feed-header-actions">
-                         <button class="feed-action-btn" onclick="enableNotifications('news')" title="Activer les notifications pour les actualités">
-                             <i class="fas fa-bell"></i>
-                         </button>
-                         <button class="feed-action-btn" onclick="populateNews(true)" title="Rafraîchir les actualités">
-                             <i class="fas fa-sync-alt"></i>
-                         </button>
-                     </div>
-                </div>
-                <div class="feed-list" id="news-feed">
-                    <div class="placeholder">
-                         <i class="fas fa-circle-notch fa-spin"></i>
-                         <span>Chargement...</span>
+                <img src="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&w=869&auto=format&fit=crop" alt="Illustration d'actualités BTP" onerror="this.onerror=null;this.src='https://placehold.co/400x180/1e293b/f8fafc?text=Actualités';">
+                <div class="feed-content">
+                    <div class="feed-header">
+                         <div class="feed-header-title">
+                             <i class="fas fa-newspaper" style="color: var(--secondary);"></i>
+                             <h2>Actualités BTP</h2>
+                         </div>
+                         <div class="feed-header-actions">
+                             <button class="feed-action-btn" onclick="enableNotifications('news')" title="Activer les notifications pour les actualités">
+                                 <i class="fas fa-bell"></i>
+                             </button>
+                             <button class="feed-action-btn" onclick="populateNews(true)" title="Rafraîchir les actualités">
+                                 <i class="fas fa-sync-alt"></i>
+                             </button>
+                         </div>
+                    </div>
+                    <div class="feed-list" id="news-feed">
+                        <div class="placeholder">
+                             <i class="fas fa-circle-notch fa-spin"></i>
+                             <span>Chargement...</span>
+                        </div>
                     </div>
                 </div>
             </div>
