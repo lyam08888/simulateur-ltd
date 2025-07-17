@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Outil de génération de CV par IA intégré à la plateforme LTD Simulator.">
+    <title>LTD Simulator - Outil CV IA</title>
+    <!-- Fonts & Icons from your template -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- PDF & React Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        /* --- Styles from your site template --- */
+        :root {
+            --primary: #6366f1; --primary-dark: #4f46e5; --primary-light: #a5b4fc;
+            --secondary: #10b981; --secondary-dark: #059669; --accent: #f59e0b; --accent-dark: #d97706;
+            --background: #0f172a; --surface: #1e293b; --surface-elevated: #334155;
+            --glass: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.15);
+            --text-primary: #f8fafc; --text-secondary: #cbd5e1; --text-muted: #94a3b8;
+            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); --transition-slow: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius: 0.5rem; --radius-lg: 1rem; --radius-full: 9999px;
+            --spacing-sm: 1rem; --spacing-md: 1.5rem; --spacing-lg: 2rem;
+        }
+        body.light-mode {
+            --background: #f1f5f9; --surface: #ffffff; --surface-elevated: #e2e8f0;
+            --glass: rgba(0, 0, 0, 0.05); --glass-border: rgba(0, 0, 0, 0.1);
+            --text-primary: #1e293b; --text-secondary: #475569; --text-muted: #64748b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background); color: var(--text-primary);
+            line-height: 1.6; overflow-x: hidden; transition: var(--transition-slow);
+        }
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 40%), radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 40%);
+            pointer-events: none; z-index: -1; animation: background-pan 30s linear infinite;
+        }
+        @keyframes background-pan { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .header { position: sticky; top: 0; left: 0; right: 0; z-index: 1000; backdrop-filter: blur(20px) saturate(180%); background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid var(--glass-border); }
+        body.light-mode .header { background: rgba(255, 255, 255, 0.8); }
+        .nav-container { max-width: 1400px; margin: 0 auto; padding: 0 var(--spacing-sm); display: flex; align-items: center; justify-content: space-between; height: 4.5rem; }
+        .logo { display: flex; align-items: center; gap: var(--spacing-sm); text-decoration: none; color: var(--text-primary); font-weight: 800; font-size: 1.2rem; }
+        .logo-icon { height: 1.8rem; width: auto; }
+        .nav-desktop { display: none; }
+        .nav-menu { display: flex; align-items: center; gap: var(--spacing-xs); list-style: none; }
+        .nav-link { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; color: var(--text-secondary); text-decoration: none; font-weight: 500; border-radius: var(--radius); transition: var(--transition); }
+        .nav-link:hover { color: var(--text-primary); background: var(--glass); }
+        .nav-link.active { color: var(--text-primary); background: linear-gradient(45deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.2)); font-weight: 600; }
+        .nav-actions { display: flex; align-items: center; gap: var(--spacing-sm); }
+        .theme-toggle { display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-secondary); transition: var(--transition); cursor: pointer; }
+        .theme-toggle:hover { background: var(--surface-elevated); color: var(--text-primary); transform: rotate(15deg); }
+        .mobile-toggle { display: flex; }
+        .main-content { margin-top: 4.5rem; padding: var(--spacing-lg) var(--spacing-sm); max-width: 1600px; margin-left: auto; margin-right: auto; }
+        .hero { text-align: center; padding-bottom: var(--spacing-xl); }
+        .hero h1 { font-size: clamp(2.2rem, 8vw, 3.5rem); font-weight: 800; margin-bottom: 1rem; background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .hero p { font-size: 1.1rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto; line-height: 1.7; }
+        @media (min-width: 1024px) { .mobile-toggle { display: none; } .nav-desktop { display: flex; align-items: center; flex-grow: 1; justify-content: flex-end; gap: var(--spacing-sm); } }
+        
+        /* --- CV Generator Specific Styles --- */
+        .control-panel { background: var(--surface); padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); box-shadow: var(--shadow-md); }
+        .control-panel label { color: var(--text-secondary); font-weight: 500; }
+        .control-panel textarea, .control-panel input[type=range], .control-panel input[type=color] { background: var(--background); border: 1px solid var(--glass-border); color: var(--text-primary); border-radius: var(--radius); padding: 0.75rem; transition: var(--transition); width: 100%; }
+        .control-panel textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-dark); outline: none; }
+        .control-panel button { border: none; padding: 0.75rem 1rem; border-radius: var(--radius); font-weight: 600; transition: var(--transition); cursor: pointer; width: 100%; }
+        .control-panel button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-primary:hover:not(:disabled) { background-color: var(--primary-dark); }
+        .btn-secondary { background-color: var(--secondary); color: white; }
+        .btn-secondary:hover:not(:disabled) { background-color: var(--secondary-dark); }
+        .btn-accent { background-color: var(--accent); color: white; }
+        .btn-accent:hover:not(:disabled) { background-color: var(--accent-dark); }
+        .btn-purple { background-color: #8b5cf6; color: white; }
+        .btn-purple:hover:not(:disabled) { background-color: #7c3aed; }
+        .error-message { background-color: #ef4444; color: white; padding: 1rem; border-radius: var(--radius); margin-top: 1rem; }
+        .cv-preview-container { width: 21cm; height: 29.7cm; overflow: hidden; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: auto; transition: all 0.2s ease-in-out; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useRef, useEffect } = React;
+        const { jsPDF } = window.jspdf;
+
+        // --- Schéma JSON et logique API (inchangés) ---
+        const CV_SCHEMA = {
+            type: "OBJECT", properties: { name: { type: "STRING" }, title: { type: "STRING" }, contact: { type: "OBJECT", properties: { phone: { type: "STRING" }, email: { type: "STRING" }, address: { type: "STRING" } } }, sections: { type: "OBJECT", properties: { "Profil": { type: "ARRAY", items: { type: "STRING" } }, "Expérience": { type: "ARRAY", items: { type: "OBJECT", properties: { title: { type: "STRING" }, company: { type: "STRING" }, dates: { type: "STRING" }, description: { type: "ARRAY", items: { type: "STRING" } } } } }, "Formation": { type: "ARRAY", items: { type: "OBJECT", properties: { title: { type: "STRING" }, school: { type: "STRING" }, dates: { type: "STRING" }, description: { type: "ARRAY", items: { type: "STRING" } } } } }, "Compétences": { type: "ARRAY", items: { type: "STRING" } }, "Savoir-faire": { type: "ARRAY", items: { type: "STRING" } }, "Savoir-être": { type: "ARRAY", items: { type: "STRING" } }, "Langues": { type: "ARRAY", items: { type: "STRING" } }, "Centres d'intérêt": { type: "ARRAY", items: { type: "STRING" } } } } }
+        };
+        const getGeminiPayload = (text, instruction) => ({ contents: [{ role: "user", parts: [{ text: instruction.replace('${text}', text) }] }], generationConfig: { responseMimeType: "application/json", responseSchema: CV_SCHEMA } });
+
+        const SidebarSection = ({ title, children, accentColor }) => (
+            <div><h2 className="text-xl font-bold border-b-2 pb-2 mb-4 mt-6" style={{borderColor: accentColor}}>{title}</h2>{children}</div>
+        );
+        const MainSection = ({ title, children, isCompact, accentColor }) => (
+            <section className={isCompact ? "mt-4" : "mt-6"}><h2 className="text-2xl font-bold border-b-2 border-gray-200 pb-2 mb-4" style={{color: accentColor}}>{title}</h2>{children}</section>
+        );
+        
+        const CvPreview = React.forwardRef(({ cvData, options }, ref) => {
+            if (!cvData) {
+                return <div className="cv-preview-container flex items-center justify-center p-8 text-center" style={{backgroundColor: 'var(--surface)', color: 'var(--text-muted)'}}><div><p className="text-xl">L'aperçu de votre CV apparaîtra ici.</p></div></div>;
+            }
+            const { name, title, contact, sections } = cvData;
+            const { compact, fontSize, accentColor, sidebarColor } = options;
+            const mainPaddings = compact ? "p-6" : "p-8";
+            const renderableSections = { "Profil": sections?.Profil, "Expérience": sections?.Expérience, "Formation": sections?.Formation, "Compétences": sections?.Compétences, "Savoir-faire": sections?.["Savoir-faire"], "Savoir-être": sections?.["Savoir-être"], "Langues": sections?.Langues, "Centres d'intérêt": sections?.["Centres d'intérêt"] };
+            return (
+                <div ref={ref} className="cv-preview-container grid grid-cols-12" style={{ fontSize: `${fontSize}px` }}>
+                    <aside className={`col-span-4 text-white flex flex-col ${mainPaddings}`} style={{ backgroundColor: sidebarColor }}>
+                        <div className="flex-grow">
+                            {options.showContact && contact && (
+                                <SidebarSection title="CONTACT" accentColor={accentColor}>
+                                    <div className="space-y-3 text-sm">
+                                        {contact.phone && <p className="flex items-start"><i className="fas fa-phone-alt fa-fw mr-2 mt-1"></i><span>{contact.phone}</span></p>}
+                                        {contact.email && <p className="flex items-start"><i className="fas fa-envelope fa-fw mr-2 mt-1"></i><span>{contact.email}</span></p>}
+                                        {contact.address && <p className="flex items-start"><i className="fas fa-map-marker-alt fa-fw mr-2 mt-1"></i><span>{contact.address}</span></p>}
+                                    </div>
+                                </SidebarSection>
+                            )}
+                             {options.showSavoirEtre && renderableSections["Savoir-être"] && <SidebarSection title="SAVOIR-ÊTRE" accentColor={accentColor}><ul className="list-disc list-inside space-y-2 text-sm">{renderableSections["Savoir-être"].map((item, i) => <li key={i}>{item}</li>)}</ul></SidebarSection>}
+                             {options.showLangues && renderableSections.Langues && <SidebarSection title="LANGUES" accentColor={accentColor}><div className="text-sm space-y-1">{renderableSections.Langues.map((item, i) => <p key={i}>{item}</p>)}</div></SidebarSection>}
+                        </div>
+                        <div className="mt-auto pt-6 border-t text-xs" style={{borderColor: accentColor}}>
+                            <p className="font-bold">Lyes AMARA</p><p>Responsable d’activité recrutement – BTP – France</p><p className="mt-2">Fixe : 01 56 02 12 25 / Mobile : 06 34 25 32 96</p><p>Mail : l.amara@ltd-international.com</p>
+                        </div>
+                    </aside>
+                    <main className={`col-span-8 ${mainPaddings}`} style={{color: '#1e293b'}}>
+                        <header className="text-center md:text-left mb-8"><h1 className="text-4xl font-extrabold" style={{color: accentColor}}>{name}</h1><h2 className="text-xl font-semibold text-gray-600">{title}</h2></header>
+                        {options.showProfil && renderableSections.Profil && <MainSection title="PROFIL" isCompact={compact} accentColor={accentColor}><p className="text-gray-700 text-sm">{renderableSections.Profil.join(' ')}</p></MainSection>}
+                        {options.showSavoirFaire && renderableSections["Savoir-faire"] && <MainSection title="SAVOIR-FAIRE" isCompact={compact} accentColor={accentColor}><ul className="list-disc list-inside text-sm text-gray-700 mt-2 space-y-1">{renderableSections["Savoir-faire"].map((item, i) => <li key={i}>{item}</li>)}</ul></MainSection>}
+                        {options.showCompetences && renderableSections.Compétences && <MainSection title="COMPÉTENCES" isCompact={compact} accentColor={accentColor}><ul className="list-disc list-inside text-sm text-gray-700 mt-2 space-y-1">{renderableSections.Compétences.map((item, i) => <li key={i}>{item}</li>)}</ul></MainSection>}
+                        {options.showExperience && renderableSections.Expérience && (
+                            <MainSection title="EXPÉRIENCES" isCompact={compact} accentColor={accentColor}>
+                                <div className={compact ? "space-y-3" : "space-y-5"}>
+                                    {renderableSections.Expérience.map((exp, i) => (
+                                        <div key={i}>
+                                            <div className="flex justify-between items-baseline"><h3 className="font-bold text-md text-gray-800">{exp.title}</h3>{!options.hideDates && <p className="text-xs font-medium shrink-0 ml-2" style={{color: accentColor}}>{exp.dates}</p>}</div>
+                                            <p className="text-sm font-semibold text-gray-600 italic">{exp.company}</p>
+                                            {!options.hideExpDesc && <ul className="list-disc list-inside text-sm text-gray-700 mt-2 space-y-1">{exp.description?.map((desc, j) => <li key={j}>{desc}</li>)}</ul>}
+                                        </div>
+                                    ))}
+                                </div>
+                            </MainSection>
+                        )}
+                         {options.showFormation && renderableSections.Formation && (
+                             <MainSection title="FORMATION" isCompact={compact} accentColor={accentColor}>
+                                <div className="space-y-4">
+                                    {renderableSections.Formation.map((form, i) => (
+                                        <div key={i}>
+                                            <div className="flex justify-between items-baseline"><h3 className="font-bold text-md text-gray-800">{form.title}</h3>{!options.hideDates && <p className="text-xs font-medium shrink-0 ml-2" style={{color: accentColor}}>{form.dates}</p>}</div>
+                                            <p className="text-sm font-semibold text-gray-600 italic">{form.school}</p>
+                                            {!options.hideFormDesc && form.description && <p className="text-sm text-gray-700 mt-1">{form.description.join(', ')}</p>}
+                                        </div>
+                                    ))}
+                                </div>
+                            </MainSection>
+                        )}
+                    </main>
+                </div>
+            );
+        });
+
+        function CvTool() {
+            const [inputText, setInputText] = useState('');
+            const [cvData, setCvData] = useState(null);
+            const [isGenerating, setIsGenerating] = useState(false);
+            const [error, setError] = useState(null);
+            const [postGenOptions, setPostGenOptions] = useState({
+                compact: false, hideExpDesc: false, hideFormDesc: false, hideDates: false, fontSize: 14,
+                sidebarColor: '#1e293b', accentColor: '#6366f1',
+                showProfil: true, showExperience: true, showFormation: true, showCompetences: true,
+                showSavoirFaire: true, showSavoirEtre: true, showLangues: true, showContact: true,
+            });
+            const cvPreviewRef = useRef(null);
+
+            const handleApiCall = async (instruction) => {
+                const textToProcess = instruction.includes('${text}') ? inputText : JSON.stringify(cvData);
+                if (!textToProcess.trim()) { setError("Veuillez coller un CV ou générer une première version."); return; }
+                setIsGenerating(true);
+                setError(null);
+                const payload = getGeminiPayload(textToProcess, instruction);
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                try {
+                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    if (!response.ok) throw new Error(`Erreur API: ${response.status}`);
+                    const result = await response.json();
+                    if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0]) {
+                        setCvData(JSON.parse(result.candidates[0].content.parts[0].text));
+                    } else { throw new Error("Format de réponse API inattendu."); }
+                } catch (err) {
+                    console.error("Erreur API:", err);
+                    setError("Désolé, une erreur est survenue. Le texte est peut-être trop complexe.");
+                } finally {
+                    setIsGenerating(false);
+                }
+            };
+            
+            const handleDownloadPdf = () => {
+                const input = cvPreviewRef.current;
+                if (!input) return;
+                html2canvas(input, { scale: 3, useCORS: true }).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+                    pdf.addImage(imgData, 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
+                    pdf.save('cv-ia.pdf');
+                });
+            };
+
+            const handleOptionChange = (e) => {
+                const { name, checked, type, value } = e.target;
+                setPostGenOptions(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+            };
+
+            const initialGenInstruction = "Analyse ce CV : ${text}. Synthétise-le pour une page A4. Extrais nom, titre, contact, et les sections : Profil, Expérience, Formation, Compétences, Langues. Sois concis.";
+            const summarizeInstruction = "Analyse ce CV : ${text}. **Synthétise-le de manière agressive** pour qu'il tienne sur une seule page. Garde uniquement l'essentiel.";
+            const developInstruction = "Voici un CV en JSON : ${text}. Enrichis-le. Crée un 'Profil' engageant. Génère des listes pour 'Savoir-faire' (compétences techniques) et 'Savoir-être' (qualités humaines) à partir des données. Ajoute une section 'Compétences' si absente. Retourne le JSON complet.";
+
+            return (
+                <>
+                    <section className="hero">
+                        <h1>Outil de Génération de CV par IA</h1>
+                        <p>Transformez un texte brut en un CV professionnel et stylisé en quelques clics. Synthétisez, développez et personnalisez le rendu final.</p>
+                    </section>
+                    <div className="flex flex-col xl:flex-row gap-8">
+                        <div className="xl:w-[450px] shrink-0">
+                            <div className="control-panel flex flex-col gap-4 xl:sticky top-28 h-fit max-h-[calc(100vh-8rem)] overflow-y-auto">
+                                <div><h2 className="text-2xl font-bold">Panneau de Contrôle</h2></div>
+                                <div className="flex-grow flex flex-col">
+                                    <label className="font-semibold mb-2">1. Collez le CV du candidat</label>
+                                    <textarea value={inputText} onChange={(e) => setInputText(e.target.value)} placeholder="L'IA se chargera de synthétiser..." className="w-full h-32"></textarea>
+                                </div>
+                                {error && <div className="error-message">{error}</div>}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <button onClick={() => handleApiCall(initialGenInstruction)} disabled={isGenerating} className="btn-primary">Générer</button>
+                                    <button onClick={() => handleApiCall(summarizeInstruction)} disabled={isGenerating || !cvData} className="btn-accent">Synthétiser</button>
+                                </div>
+                                <button onClick={() => handleApiCall(developInstruction)} disabled={isGenerating || !cvData} className="btn-purple">Analyser & Développer</button>
+                                {cvData && (
+                                    <div className="border-t pt-4 space-y-4 border-[var(--glass-border)]">
+                                        <h3 className="font-semibold">Personnalisation du rendu</h3>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div><label className="text-sm">Couleur sidebar</label><input type="color" name="sidebarColor" value={postGenOptions.sidebarColor} onChange={handleOptionChange}/></div>
+                                            <div><label className="text-sm">Couleur accent</label><input type="color" name="accentColor" value={postGenOptions.accentColor} onChange={handleOptionChange}/></div>
+                                        </div>
+                                        <div><label className="text-sm">Taille police: {postGenOptions.fontSize}px</label><input type="range" name="fontSize" min="10" max="16" value={postGenOptions.fontSize} onChange={handleOptionChange}/></div>
+                                        <h4 className="font-semibold text-sm pt-2 border-t border-[var(--glass-border)]">Afficher les sections</h4>
+                                        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                                            {Object.keys(postGenOptions).filter(k => k.startsWith('show')).map(key => (
+                                                <div key={key} className="flex items-center"><input type="checkbox" name={key} checked={postGenOptions[key]} onChange={handleOptionChange} className="h-4 w-4 rounded bg-[var(--background)] border-[var(--glass-border)]"/><label className="ml-2">{key.replace('show', '')}</label></div>
+                                            ))}
+                                        </div>
+                                        <h4 className="font-semibold text-sm pt-2 border-t border-[var(--glass-border)]">Options de contenu</h4>
+                                        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                                            <div className="flex items-center"><input type="checkbox" name="hideExpDesc" checked={postGenOptions.hideExpDesc} onChange={handleOptionChange} className="h-4 w-4 rounded"/><label className="ml-2">Masquer détails exp.</label></div>
+                                            <div className="flex items-center"><input type="checkbox" name="hideFormDesc" checked={postGenOptions.hideFormDesc} onChange={handleOptionChange} className="h-4 w-4 rounded"/><label className="ml-2">Masquer détails form.</label></div>
+                                            <div className="flex items-center"><input type="checkbox" name="hideDates" checked={postGenOptions.hideDates} onChange={handleOptionChange} className="h-4 w-4 rounded"/><label className="ml-2">Masquer les dates</label></div>
+                                        </div>
+                                        <button onClick={handleDownloadPdf} className="w-full btn-secondary">Télécharger en PDF</button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <div className="flex-grow flex justify-center items-start">
+                            <CvPreview cvData={cvData} options={postGenOptions} ref={cvPreviewRef} />
+                        </div>
+                    </div>
+                </>
+            );
+        }
+
+        function SiteLayout() {
+            useEffect(() => {
+                const theme = localStorage.getItem('theme') || 'dark';
+                document.body.classList.toggle('light-mode', theme === 'light');
+                const themeIcon = document.getElementById('themeIcon');
+                if(themeIcon) themeIcon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+            }, []);
+
+            const toggleTheme = () => {
+                const isLight = document.body.classList.toggle('light-mode');
+                localStorage.setItem('theme', isLight ? 'light' : 'dark');
+                const themeIcon = document.getElementById('themeIcon');
+                if(themeIcon) themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+            };
+
+            return (
+                <>
+                    <header className="header">
+                        <nav className="nav-container">
+                            <a href="#" className="logo">
+                                <svg className="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
+                                    <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fillOpacity="0.7"></path>
+                                    <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+                                </svg>
+                                <span>LTD Simulator</span>
+                            </a>
+                            <div className="nav-desktop">
+                                <ul className="nav-menu">
+                                   <li className="nav-item"><a href="#" className="nav-link"><i className="fas fa-home"></i>&nbsp;Accueil</a></li>
+                                   <li className="nav-item"><a href="#" className="nav-link"><i className="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
+                                   <li className="nav-item"><a href="#" className="nav-link"><i className="fas fa-brain"></i>&nbsp;Tests</a></li>
+                                   <li className="nav-item"><a href="#" className="nav-link"><i className="fas fa-trophy"></i>&nbsp;Challenges</a></li>
+                                   <li className="nav-item"><a href="#" className="nav-link"><i className="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
+                                   <li className="nav-item"><a href="#" className="nav-link"><i className="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
+                                   <li className="nav-item"><a href="#" className="nav-link"><i className="fas fa-question-circle"></i>&nbsp;Quiz</a></li>
+                                   <li className="nav-item"><a href="#" className="nav-link active"><i className="fas fa-tools"></i>&nbsp;Outils CV</a></li>
+                                </ul>
+                                <div className="nav-actions">
+                                   <button className="theme-toggle" id="themeToggle" onClick={toggleTheme} title="Changer de thème">
+                                       <i className="fas fa-sun" id="themeIcon"></i>
+                                   </button>
+                                </div>
+                            </div>
+                            <button className="mobile-toggle" id="mobileToggle">
+                                <span className="hamburger"><span></span><span></span><span></span></span>
+                            </button>
+                        </nav>
+                    </header>
+                    <main className="main-content">
+                        <CvTool />
+                    </main>
+                </>
+            );
+        }
+
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<SiteLayout />);
+    </script>
+</body>
+</html>
