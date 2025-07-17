@@ -137,9 +137,9 @@
         }
 
         .nav-container {
-            max-width: 1400px;
+            max-width: 1600px; /* MODIFIÉ: Augmentation de la largeur pour le nouveau menu */
             margin: 0 auto;
-            padding: 0 var(--spacing-sm); /* MODIFIÉ: Moins de padding sur mobile */
+            padding: 0 var(--spacing-sm); 
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -153,7 +153,7 @@
             text-decoration: none;
             color: var(--text-primary);
             font-weight: 800;
-            font-size: 1.25rem; /* MODIFIÉ: Légèrement plus petit sur mobile */
+            font-size: 1.25rem; 
             transition: var(--transition);
         }
         .logo:hover {
@@ -162,7 +162,7 @@
         }
 
         .logo-icon {
-            font-size: 1.75rem; /* MODIFIÉ: Légèrement plus petit sur mobile */
+            font-size: 1.75rem;
         }
 
         .nav-desktop { display: none; } /* Caché par défaut (Mobile First) */
@@ -284,7 +284,6 @@
         .mobile-menu-close { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-primary); }
         .mobile-menu-content { flex: 1; padding: var(--spacing-lg) var(--spacing-sm); overflow-y: auto; }
         .mobile-search-wrapper { padding-bottom: var(--spacing-lg); margin-bottom: var(--spacing-lg); border-bottom: 1px solid var(--glass-border); }
-        /* CORRIGÉ: S'assure que la barre de recherche prend toute la largeur dans le menu mobile */
         .mobile-search-wrapper .header-search { width: 100%; }
         .mobile-nav-section h3 { color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--spacing-md); }
         .mobile-nav-items { display: flex; flex-direction: column; gap: var(--spacing-xs); }
@@ -292,11 +291,17 @@
         .mobile-nav-item-icon { font-size: 1.25rem; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border-radius: var(--radius); }
         .mobile-nav-item:hover { background: var(--glass); color: var(--text-primary); }
 
-        .main-content { margin-top: 4.5rem; padding: var(--spacing-lg) var(--spacing-sm); max-width: 1400px; margin-left: auto; margin-right: auto; }
+        .main-content { 
+            margin-top: 4.5rem; 
+            padding: var(--spacing-lg) var(--spacing-sm); 
+            max-width: 1600px; /* MODIFIÉ: Augmentation de la largeur pour correspondre au menu */
+            margin-left: auto; 
+            margin-right: auto; 
+        }
         
         .hero { text-align: center; padding: var(--spacing-lg) 0; }
         .hero h1 { 
-            font-size: clamp(2.2rem, 8vw, 4rem); /* MODIFIÉ: Mieux adapté au mobile */
+            font-size: clamp(2.2rem, 8vw, 4rem); 
             font-weight: 800; 
             margin-bottom: var(--spacing-lg); 
             background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary) 50%, var(--accent) 100%); 
@@ -336,7 +341,7 @@
         .slide .slide-background {
             width: 100%;
             display: block;
-            aspect-ratio: 4 / 3; /* MODIFIÉ: Meilleur ratio pour mobile */
+            aspect-ratio: 4 / 3; 
             object-fit: cover;
             transition: transform 8s ease-out;
             background-color: var(--surface-elevated);
@@ -349,7 +354,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            padding: var(--spacing-md); /* MODIFIÉ */
+            padding: var(--spacing-md); 
             background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 10%, transparent);
             color: var(--text-primary);
             transform: translateY(100%);
@@ -362,13 +367,13 @@
              background: linear-gradient(to top, rgba(241, 245, 249, 0.9) 10%, transparent);
         }
         .slide-content h3 {
-            font-size: clamp(1.2rem, 4vw, 2rem); /* MODIFIÉ */
+            font-size: clamp(1.2rem, 4vw, 2rem); 
             font-weight: 700;
             text-shadow: 0 2px 5px rgba(0,0,0,0.5);
             margin-bottom: var(--spacing-xs);
         }
         .slide-content p {
-            font-size: clamp(0.8rem, 2.5vw, 1rem); /* MODIFIÉ */
+            font-size: clamp(0.8rem, 2.5vw, 1rem); 
             color: var(--text-secondary);
             text-shadow: 0 1px 3px rgba(0,0,0,0.5);
         }
@@ -376,8 +381,8 @@
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            width: 2.5rem; /* MODIFIÉ */
-            height: 2.5rem; /* MODIFIÉ */
+            width: 2.5rem; 
+            height: 2.5rem;
             background: var(--glass);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-full);
@@ -395,10 +400,10 @@
             opacity: 1;
         }
         .slider-nav.prev {
-            left: var(--spacing-sm); /* MODIFIÉ */
+            left: var(--spacing-sm); 
         }
         .slider-nav.next {
-            right: var(--spacing-sm); /* MODIFIÉ */
+            right: var(--spacing-sm); 
         }
         .slider-dots {
             position: absolute;
@@ -427,7 +432,7 @@
             background: var(--surface);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-xl);
-            padding: var(--spacing-lg); /* MODIFIÉ */
+            padding: var(--spacing-lg); 
             margin: var(--spacing-xl) 0;
         }
         .news-banner-header {
@@ -435,7 +440,7 @@
             margin-bottom: var(--spacing-lg);
         }
         .news-banner-header h2 {
-            font-size: 1.75rem; /* MODIFIÉ */
+            font-size: 1.75rem; 
             font-weight: 700;
             margin-bottom: var(--spacing-xs);
         }
@@ -517,7 +522,7 @@
         .quick-actions-grid {
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-            gap: var(--spacing-md); /* MODIFIÉ */
+            gap: var(--spacing-md); 
             margin: 4rem 0;
         }
         
@@ -591,7 +596,6 @@
             transform: translateY(0);
         }
         
-        /* CORRIGÉ: La principale cause du problème de débordement sur mobile */
         .btp-wall-street { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-lg); margin-top: var(--spacing-xl); }
         
         .feed-column { 
@@ -706,7 +710,7 @@
             transform: translateY(20px) scale(0.95);
             visibility: hidden;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            max-height: 70vh; /* AJOUTÉ: Empêche le chatbot d'être trop grand */
+            max-height: 70vh; 
         }
 
         .chatbot-container.active {
@@ -989,7 +993,7 @@
                      <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
                      <li class="nav-item"><a href="emploi.html" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
                      <li class="nav-item"><a href="histoire.html" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
-                     <li class="nav-item"><a href="quizz.html" class="nav-link" onclick="event.preventDefault(); navigateTo('quiz.html')"><i class="fas fa-question-circle"></i>&nbsp;Quiz</a></li>
+                     <li class="nav-item"><a href="quizz.html" class="nav-link" onclick="event.preventDefault(); navigateTo('quizz.html')"><i class="fas fa-question-circle"></i>&nbsp;Quiz</a></li>
                  </ul>
                  <div class="nav-actions">
                      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
