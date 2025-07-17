@@ -91,7 +91,6 @@
             background: var(--background);
             color: var(--text-primary);
             line-height: 1.6;
-            /* overflow-x: hidden prévient le défilement horizontal, ce qui est bon pour le mobile. */
             overflow-x: hidden;
             transition: var(--transition-slow);
         }
@@ -147,6 +146,7 @@
             align-items: center;
             justify-content: space-between;
             height: 4.5rem;
+            gap: var(--spacing-md);
         }
 
         .logo {
@@ -172,16 +172,14 @@
         }
         
         .logo-text-extended {
-            display: none; /* Le texte étendu du logo est caché par défaut */
+            display: none;
         }
 
-        /* --- Stratégie de Navigation "Mobile-First" --- */
-        /* Par défaut (sur mobile), la navigation pour ordinateur est cachée. */
+        /* --- Mobile Navigation --- */
         .nav-desktop { 
             display: none; 
         } 
 
-        /* Par défaut (sur mobile), le bouton du menu (hamburger) est visible. */
         .mobile-toggle {
             display: flex;
             flex-direction: column;
@@ -204,7 +202,6 @@
         .mobile-toggle.active .hamburger span:nth-child(2) { opacity: 0; }
         .mobile-toggle.active .hamburger span:nth-child(3) { bottom: 50%; transform: translateY(50%) rotate(-45deg); }
 
-        /* Le menu mobile est une modale qui prend tout l'écran, cachée par défaut */
         .mobile-menu { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--background); z-index: 999; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: var(--transition-slow); }
         .mobile-menu.active { opacity: 1; visibility: visible; }
         .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--spacing-sm); height: 4.5rem; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
@@ -218,7 +215,7 @@
         .mobile-nav-item-icon { font-size: 1.25rem; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border-radius: var(--radius); }
         .mobile-nav-item:hover { background: var(--glass); color: var(--text-primary); }
 
-        /* Styles pour la navigation de bureau (utilisés sur écrans larges) */
+        /* --- Desktop Navigation --- */
         .nav-menu {
             display: flex;
             align-items: center;
@@ -298,7 +295,6 @@
 
         /* --- Contenu Principal --- */
         .main-content { 
-            /* La marge haute compense la hauteur du header fixe */
             margin-top: 4.5rem; 
             padding: var(--spacing-lg) var(--spacing-sm); 
             max-width: 1400px; 
@@ -308,7 +304,6 @@
         
         .hero { text-align: center; padding: var(--spacing-lg) 0; }
         .hero h1 { 
-            /* clamp() est excellent pour des tailles de police fluides et responsives */
             font-size: clamp(2.2rem, 8vw, 4rem); 
             font-weight: 800; 
             margin-bottom: var(--spacing-lg); 
@@ -437,7 +432,6 @@
         }
 
         /* --- Grilles de contenu --- */
-        /* Par défaut, les grilles ont une seule colonne, parfait pour le mobile. */
         .news-banner-grid,
         .quick-actions-grid {
             display: grid;
@@ -610,55 +604,16 @@
         .progress-bar.show { opacity: 1; }
         .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.3s ease; box-shadow: 0 0 10px var(--primary), 0 0 5px var(--secondary); }
         
-        /* --- Chatbot Styles --- */
-        .chatbot-toggler { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); width: 4rem; height: 4rem; background: linear-gradient(45deg, var(--primary), var(--primary-dark)); color: white; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; cursor: pointer; box-shadow: var(--shadow-lg), 0 0 20px rgba(99, 102, 241, 0.5); z-index: 1050; transition: var(--transition-slow); animation: pulse-glow-chat 2.5s infinite ease-in-out; }
-        .chatbot-toggler:hover { transform: scale(1.1) rotate(-10deg); box-shadow: var(--shadow-xl), 0 0 30px var(--primary); }
-        @keyframes pulse-glow-chat {
-            0%, 100% { transform: scale(1); box-shadow: var(--shadow-lg), 0 0 20px rgba(99, 102, 241, 0.4); }
-            50% { transform: scale(1.05); box-shadow: var(--shadow-lg), 0 0 30px rgba(99, 102, 241, 0.6); }
-        }
-        .chatbot-container { position: fixed; bottom: calc(var(--spacing-lg) + 5rem); right: var(--spacing-lg); width: 90%; max-width: 400px; background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-xl); box-shadow: var(--shadow-xl); z-index: 1200; display: flex; flex-direction: column; overflow: hidden; opacity: 0; transform: translateY(20px) scale(0.95); visibility: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); max-height: 70vh; }
-        .chatbot-container.active { opacity: 1; transform: translateY(0) scale(1); visibility: visible; }
-        .chatbot-header { display: flex; justify-content: space-between; align-items: center; padding: var(--spacing-sm) var(--spacing-md); background: var(--surface-elevated); border-bottom: 1px solid var(--glass-border); }
-        .chatbot-header h3 { font-weight: 600; font-size: 1.1rem; color: var(--text-primary); }
-        .chatbot-close-btn { background: none; border: none; color: var(--text-muted); font-size: 1.25rem; cursor: pointer; transition: var(--transition); }
-        .chatbot-close-btn:hover { color: var(--text-primary); transform: rotate(90deg); }
-        .chatbot-messages { flex: 1; padding: var(--spacing-md); overflow-y: auto; height: 300px; display: flex; flex-direction: column; gap: var(--spacing-sm); }
-        .chatbot-messages::-webkit-scrollbar { width: 5px; }
-        .chatbot-messages::-webkit-scrollbar-track { background: transparent; }
-        .chatbot-messages::-webkit-scrollbar-thumb { background: var(--surface-elevated); border-radius: var(--radius-full); }
-        .message { max-width: 85%; padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-lg); line-height: 1.4; word-wrap: break-word; animation: message-fade-in 0.4s ease; }
-        @keyframes message-fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .message.user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: var(--radius-sm); }
-        .message.bot { background: var(--surface-elevated); color: var(--text-secondary); align-self: flex-start; border-bottom-left-radius: var(--radius-sm); }
-        .message.bot a { color: var(--primary-light); text-decoration: underline; }
-        .message.bot strong { color: var(--text-primary); font-weight: 600; }
-        .chatbot-input-form { display: flex; padding: var(--spacing-sm); border-top: 1px solid var(--glass-border); background: var(--surface); }
-        #chatbotInput { flex: 1; background: var(--background); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: var(--spacing-sm); color: var(--text-primary); font-size: 1rem; transition: var(--transition); margin-right: var(--spacing-sm); }
-        #chatbotInput:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); }
-        #chatbotSendBtn { background: var(--primary); border: none; color: white; width: 3rem; height: 3rem; border-radius: var(--radius); font-size: 1.2rem; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; }
-        #chatbotSendBtn:hover { background: var(--primary-dark); transform: scale(1.1); }
-        .quick-replies { display: flex; flex-wrap: wrap; gap: var(--spacing-xs); margin-top: var(--spacing-sm); align-self: flex-start; }
-        .quick-reply-btn { background: var(--surface-elevated); border: 1px solid var(--glass-border); color: var(--text-secondary); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-full); cursor: pointer; transition: var(--transition); }
-        .quick-reply-btn:hover { background: var(--primary); color: white; border-color: var(--primary-dark); }
-        .typing-indicator { display: flex; align-items: center; gap: 5px; }
-        .typing-indicator span { width: 8px; height: 8px; background-color: var(--text-muted); border-radius: 50%; animation: typing-bounce 1s infinite; }
-        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes typing-bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
 
         /* --- Media Queries pour la réactivité --- */
 
-        /* Pour les écrans de 640px et plus (petites tablettes, grands téléphones) */
         @media (min-width: 640px) {
-            /* Les grilles passent à deux colonnes */
             .news-banner-grid,
             .quick-actions-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
 
-        /* Pour les écrans de 768px et plus (tablettes) */
         @media (min-width: 768px) {
             .nav-container {
                 padding: 0 var(--spacing-md);
@@ -693,37 +648,33 @@
             }
         }
 
-        /* Pour les écrans de 1024px et plus (ordinateurs portables) */
         @media (min-width: 1024px) {
-            /* On cache le bouton du menu mobile... */
             .mobile-toggle {
                 display: none;
             }
-            /* ...et on affiche la navigation pour ordinateur. */
             .nav-desktop {
                 display: flex;
                 align-items: center;
                 flex-grow: 1;
-                justify-content: flex-end;
+                justify-content: flex-start; 
                 gap: var(--spacing-sm); 
             }
             .header-search {
                 width: 280px;
-                margin-right: var(--spacing-md);
             }
             .nav-menu {
                 gap: var(--spacing-xs); 
             }
-            /* Les grilles passent à trois colonnes */
+            .nav-actions {
+                margin-left: auto;
+            }
             .news-banner-grid,
             .quick-actions-grid {
                 grid-template-columns: repeat(3, 1fr);
             }
         }
 
-        /* Pour les écrans très larges de 1280px et plus */
         @media (min-width: 1280px) {
-            /* On affiche le texte complet du logo */
             .logo-text-extended {
                 display: inline;
             }
@@ -747,12 +698,14 @@
                 <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
             </a>
             
-            <!-- Cette div contient la navigation pour les grands écrans. Elle est cachée sur mobile par le CSS. -->
+            <!-- Navigation pour ordinateur -->
             <div class="nav-desktop">
+                 <!-- La barre de recherche est maintenant le premier élément après le logo -->
                  <form action="recherche.html" method="GET" class="header-search">
                      <i class="fas fa-search"></i>
                      <input type="search" name="query" placeholder="Rechercher..." aria-label="Rechercher">
                  </form>
+                 <!-- Le menu de navigation suit la barre de recherche -->
                  <ul class="nav-menu">
                      <li class="nav-item"><a href="index.html" class="nav-link active" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
                      <li class="nav-item"><a href="simulateur.html" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
@@ -762,6 +715,7 @@
                      <li class="nav-item"><a href="histoire.html" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
                      <li class="nav-item"><a href="quizz.html" class="nav-link" onclick="event.preventDefault(); navigateTo('quizz.html')"><i class="fas fa-question-circle"></i>&nbsp;Quiz</a></li>
                  </ul>
+                 <!-- Les actions (comme le changement de thème) sont poussées à droite -->
                  <div class="nav-actions">
                      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
                          <i class="fas fa-moon" id="themeIcon"></i>
@@ -769,14 +723,14 @@
                  </div>
             </div>
 
-            <!-- Ce bouton est visible sur mobile et permet d'ouvrir le menu de navigation. -->
+            <!-- Bouton pour le menu mobile -->
             <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
                 <span class="hamburger"><span></span><span></span><span></span></span>
             </button>
         </nav>
     </header>
 
-    <!-- Mobile Menu (caché par défaut) -->
+    <!-- Menu Mobile -->
     <div class="mobile-menu" id="mobileMenu">
         <div class="mobile-menu-header">
             <a href="index.html" class="logo" onclick="event.preventDefault(); toggleMobileMenu(); navigateTo('index.html');">
@@ -804,10 +758,9 @@
         </div>
     </div>
 
-    <!-- Main Content -->
+    <!-- Contenu Principal -->
     <main class="main-content">
         
-        <!-- Image Slider Section -->
         <section class="slider-container animate-in" id="imageSlider">
             <div class="slider-wrapper">
                 <div class="slide">
@@ -848,7 +801,6 @@
             <p>Formez-vous aux métiers d'avenir du BTP avec nos simulateurs professionnels. Le secteur recrute massivement : préparez votre carrière dès maintenant !</p>
         </section>
 
-        <!-- News Banner Section -->
         <section class="news-banner animate-in">
             <div class="news-banner-header">
                 <h2>Les Nouveautés à ne pas manquer</h2>
@@ -995,343 +947,172 @@
         </div>
     </div>
 
-    <!-- Chatbot -->
-    <div class="chatbot-container" id="chatbotContainer">
-        <div class="chatbot-header">
-            <h3>Assistant BTP</h3>
-            <button class="chatbot-close-btn" id="chatbotCloseBtn" title="Fermer le chat"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="chatbot-messages" id="chatbotMessages">
-            <!-- Messages will be appended here by JavaScript -->
-        </div>
-        <div class="chatbot-input-form">
-            <input type="text" id="chatbotInput" placeholder="Posez votre question...">
-            <button id="chatbotSendBtn" title="Envoyer le message"><i class="fas fa-paper-plane"></i></button>
-        </div>
-    </div>
-
-    <div class="chatbot-toggler" id="chatbotToggler" title="Ouvrir l'assistant">
-        <i class="fas fa-comments"></i>
-    </div>
-
-
     <script>
-        let currentTheme = localStorage.getItem('theme') || 'dark';
-        let notificationPermission = Notification.permission;
+        // Envelopper tout le script dans une IIFE (Immediately Invoked Function Expression)
+        // pour éviter de polluer l'espace de noms global.
+        (function() {
+            "use strict"; // Activer le mode strict pour un code plus sûr
 
-        function showProgress() {
-            const progressBar = document.getElementById('progressBar');
-            const progressFill = document.getElementById('progressFill');
-            if (!progressBar || !progressFill) return;
-            progressBar.classList.add('show');
-            progressFill.style.width = '0%';
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += Math.random() * 20;
-                if (progress >= 100) {
-                    progress = 100;
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        progressBar.classList.remove('show');
-                        progressFill.style.width = '0%';
-                    }, 500);
+            // Variable globale pour le thème, initialisée depuis le localStorage
+            let currentTheme = localStorage.getItem('theme') || 'dark';
+
+            /**
+             * Affiche et anime la barre de progression en haut de la page.
+             */
+            function showProgress() {
+                const progressBar = document.getElementById('progressBar');
+                const progressFill = document.getElementById('progressFill');
+                if (!progressBar || !progressFill) return;
+
+                progressBar.classList.add('show');
+                progressFill.style.width = '0%';
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += Math.random() * 20;
+                    if (progress >= 100) {
+                        progress = 100;
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            progressBar.classList.remove('show');
+                            // Réinitialiser la largeur après la disparition pour la prochaine utilisation
+                            setTimeout(() => {
+                                progressFill.style.width = '0%';
+                            }, 300);
+                        }, 500);
+                    }
+                    progressFill.style.width = progress + '%';
+                }, 100);
+            }
+
+            /**
+             * Affiche une notification en bas à droite de l'écran.
+             * @param {string} message Le texte à afficher.
+             * @param {string} type Le type de notification ('info', 'success', 'warning', 'error').
+             * @param {number} duration La durée d'affichage en millisecondes.
+             */
+            function showNotification(message, type = 'info', duration = 3000) {
+                const notification = document.getElementById('notification');
+                const notificationText = document.getElementById('notificationText');
+                const notificationIcon = document.getElementById('notificationIcon');
+                if (!notification || !notificationText || !notificationIcon) return;
+                
+                notification.classList.remove('success', 'warning', 'error');
+                notificationIcon.className = 'notification-icon fas'; // Réinitialise les classes de l'icône
+
+                switch(type) {
+                    case 'success':
+                        notificationIcon.classList.add('fa-check-circle');
+                        notification.classList.add('success');
+                        break;
+                    case 'warning':
+                        notificationIcon.classList.add('fa-exclamation-triangle');
+                        notification.classList.add('warning');
+                        break;
+                    case 'error':
+                        notificationIcon.classList.add('fa-exclamation-circle');
+                        notification.classList.add('error');
+                        break;
+                    default:
+                        notificationIcon.classList.add('fa-info-circle');
                 }
-                progressFill.style.width = progress + '%';
-            }, 100);
-        }
-
-        function navigateTo(pageFile) {
-            showProgress();
-            showNotification(`Chargement de la page...`, 'info');
-            if (window.location.href.endsWith(pageFile)) {
-                 setTimeout(() => document.getElementById('progressBar').classList.remove('show'), 500);
-                 return;
-            }
-            setTimeout(() => window.location.href = pageFile, 1000);
-        }
-        
-        function openLink(url) {
-            showNotification('Ouverture du lien dans un nouvel onglet...', 'info');
-            window.open(url, '_blank', 'noopener,noreferrer');
-        }
-
-        function showNotification(message, type = 'info', duration = 3000) {
-            const notification = document.getElementById('notification');
-            const notificationText = document.getElementById('notificationText');
-            const notificationIcon = document.getElementById('notificationIcon');
-            if (!notification || !notificationText || !notificationIcon) return;
-            
-            notification.classList.remove('success', 'warning', 'error');
-            notificationIcon.className = 'notification-icon fas ';
-
-            switch(type) {
-                case 'success': notificationIcon.classList.add('fa-check-circle'); notification.classList.add('success'); break;
-                case 'warning': notificationIcon.classList.add('fa-exclamation-triangle'); notification.classList.add('warning'); break;
-                case 'error': notificationIcon.classList.add('fa-exclamation-circle'); notification.classList.add('error'); break;
-                default: notificationIcon.classList.add('fa-info-circle');
-            }
-            notificationText.textContent = message;
-            notification.classList.add('show');
-            setTimeout(() => notification.classList.remove('show'), duration);
-        }
-        
-        function updateThemeUI() {
-            const themeIcon = document.getElementById('themeIcon');
-            if (!themeIcon) return;
-            document.body.classList.toggle('light-mode', currentTheme === 'light');
-            themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
-        }
-
-        function toggleTheme() {
-            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-            localStorage.setItem('theme', currentTheme);
-            updateThemeUI();
-            showNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
-        }
-        
-        function toggleMobileMenu() {
-            const mobileToggle = document.getElementById('mobileToggle');
-            const mobileMenu = document.getElementById('mobileMenu');
-            mobileToggle.classList.toggle('active');
-            mobileMenu.classList.toggle('active');
-            // Empêche le défilement du body lorsque le menu est ouvert
-            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
-        }
-
-        function setupSlider() {
-            const slider = document.getElementById('imageSlider');
-            if (!slider) return;
-
-            const wrapper = slider.querySelector('.slider-wrapper');
-            const slides = slider.querySelectorAll('.slide');
-            const prevBtn = document.getElementById('sliderPrev');
-            const nextBtn = document.getElementById('sliderNext');
-            const dotsContainer = document.getElementById('sliderDots');
-            
-            let currentIndex = 0;
-            let slideInterval;
-
-            if (slides.length <= 1) {
-                if(prevBtn) prevBtn.style.display = 'none';
-                if(nextBtn) nextBtn.style.display = 'none';
-                if(dotsContainer) dotsContainer.style.display = 'none';
-                if (slides.length === 1) slides[0].classList.add('active');
-                return;
+                notificationText.textContent = message;
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, duration);
             }
 
-            slides.forEach((_, index) => {
-                const dot = document.createElement('div');
-                dot.classList.add('slider-dot');
-                dot.addEventListener('click', () => {
-                    goToSlide(index);
-                    resetInterval();
-                });
-                dotsContainer.appendChild(dot);
-            });
-            const dots = dotsContainer.querySelectorAll('.slider-dot');
+            /**
+             * Met à jour l'interface utilisateur en fonction du thème (clair/sombre).
+             */
+            function updateThemeUI() {
+                const themeIcon = document.getElementById('themeIcon');
+                if (!themeIcon) return;
+                document.body.classList.toggle('light-mode', currentTheme === 'light');
+                themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+            }
 
-            function goToSlide(index) {
-                if (slides.length === 0) return;
-                if (index === currentIndex && slides[currentIndex].classList.contains('active')) return;
+            /**
+             * Initialise et gère le carrousel d'images.
+             */
+            function setupSlider() {
+                const slider = document.getElementById('imageSlider');
+                if (!slider) return;
+
+                const wrapper = slider.querySelector('.slider-wrapper');
+                const slides = slider.querySelectorAll('.slide');
+                const prevBtn = document.getElementById('sliderPrev');
+                const nextBtn = document.getElementById('sliderNext');
+                const dotsContainer = document.getElementById('sliderDots');
                 
-                slides[currentIndex].classList.remove('active');
-                currentIndex = (index + slides.length) % slides.length;
-                slides[currentIndex].classList.add('active');
-                
-                wrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
-                
-                if (dots.length > 0) {
-                    dots.forEach((dot, i) => {
-                        dot.classList.toggle('active', i === currentIndex);
+                if (!wrapper || slides.length === 0 || !prevBtn || !nextBtn || !dotsContainer) return;
+
+                let currentIndex = 0;
+                let slideInterval;
+
+                if (slides.length <= 1) {
+                    prevBtn.style.display = 'none';
+                    nextBtn.style.display = 'none';
+                    dotsContainer.style.display = 'none';
+                    if (slides.length === 1) slides[0].classList.add('active');
+                    return;
+                }
+
+                // Créer les points de navigation
+                slides.forEach((_, index) => {
+                    const dot = document.createElement('div');
+                    dot.classList.add('slider-dot');
+                    dot.addEventListener('click', () => {
+                        goToSlide(index);
+                        resetInterval();
                     });
+                    dotsContainer.appendChild(dot);
+                });
+                const dots = dotsContainer.querySelectorAll('.slider-dot');
+
+                function goToSlide(index) {
+                    slides[currentIndex].classList.remove('active');
+                    dots[currentIndex].classList.remove('active');
+                    
+                    currentIndex = (index + slides.length) % slides.length;
+                    
+                    slides[currentIndex].classList.add('active');
+                    dots[currentIndex].classList.add('active');
+                    
+                    wrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
                 }
-            }
 
-            function nextSlide() { goToSlide(currentIndex + 1); }
-            function prevSlide() { goToSlide(currentIndex - 1); }
-            
-            function startInterval() {
-                slideInterval = setInterval(nextSlide, 7000); 
-            }
+                function nextSlide() { goToSlide(currentIndex + 1); }
+                function prevSlide() { goToSlide(currentIndex - 1); }
+                
+                function startInterval() {
+                    slideInterval = setInterval(nextSlide, 7000); 
+                }
 
-            function resetInterval() {
-                clearInterval(slideInterval);
-                startInterval();
-            }
+                function resetInterval() {
+                    clearInterval(slideInterval);
+                    startInterval();
+                }
 
-            if (prevBtn && nextBtn) {
                 nextBtn.addEventListener('click', () => { nextSlide(); resetInterval(); });
                 prevBtn.addEventListener('click', () => { prevSlide(); resetInterval(); });
-            }
-            
-            if (slides.length > 0 && dots.length > 0) {
-                slides[0].classList.add('active');
-                dots[0].classList.add('active');
+                
+                goToSlide(0);
                 startInterval();
             }
-        }
 
-        function setupChatbot() {
-            const chatbotContainer = document.getElementById('chatbotContainer');
-            const chatbotToggler = document.getElementById('chatbotToggler');
-            const chatbotCloseBtn = document.getElementById('chatbotCloseBtn');
-            const chatbotInput = document.getElementById('chatbotInput');
-            const chatbotSendBtn = document.getElementById('chatbotSendBtn');
-            const chatbotMessages = document.getElementById('chatbotMessages');
+            /**
+             * Remplit le menu de navigation mobile en clonant les éléments du menu de bureau.
+             */
+            function populateMobileNav() {
+                const desktopNav = document.querySelector('.nav-desktop .nav-menu');
+                const mobileNavContainer = document.querySelector('.mobile-menu .mobile-nav-items');
+                if(!desktopNav || !mobileNavContainer) return;
 
-            if (!chatbotContainer || !chatbotToggler || !chatbotCloseBtn || !chatbotInput || !chatbotSendBtn || !chatbotMessages) {
-                console.warn("Éléments du chatbot non trouvés. Initialisation annulée.");
-                return;
-            }
+                mobileNavContainer.innerHTML = ''; 
+                const navItems = desktopNav.querySelectorAll('.nav-item');
 
-            chatbotToggler.addEventListener('click', () => {
-                chatbotContainer.classList.toggle('active');
-                if (chatbotContainer.classList.contains('active')) {
-                    chatbotInput.focus();
-                }
-            });
-
-            chatbotCloseBtn.addEventListener('click', () => {
-                chatbotContainer.classList.remove('active');
-            });
-
-            const handleSendMessage = (messageText) => {
-                const userMessage = (typeof messageText === 'string' ? messageText : chatbotInput.value).trim();
-                if (userMessage === '') return;
-
-                appendMessage(userMessage, 'user');
-                if (typeof messageText !== 'string') {
-                    chatbotInput.value = '';
-                }
-                chatbotInput.focus();
-                removeQuickReplies();
-                appendTypingIndicator();
-
-                setTimeout(() => {
-                    removeTypingIndicator();
-                    const botResponse = getBotResponse(userMessage);
-                    appendMessage(botResponse.text, 'bot', true);
-                    if(botResponse.replies) {
-                        showQuickReplies(botResponse.replies);
-                    }
-                }, 800 + Math.random() * 500);
-            };
-
-            chatbotSendBtn.addEventListener('click', () => handleSendMessage());
-            chatbotInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleSendMessage();
-                }
-            });
-
-            function appendMessage(content, sender, isHTML = false) {
-                const messageElement = document.createElement('div');
-                messageElement.classList.add('message', sender);
-                if (isHTML) {
-                    messageElement.innerHTML = content;
-                } else {
-                    messageElement.textContent = content;
-                }
-                chatbotMessages.appendChild(messageElement);
-                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-            }
-            
-            function appendTypingIndicator() {
-                const indicator = document.createElement('div');
-                indicator.id = 'typingIndicator';
-                indicator.classList.add('message', 'bot');
-                indicator.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
-                chatbotMessages.appendChild(indicator);
-                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-            }
-            
-            function removeTypingIndicator() {
-                const indicator = document.getElementById('typingIndicator');
-                if (indicator) {
-                    indicator.remove();
-                }
-            }
-            
-            function showQuickReplies(replies) {
-                const container = document.createElement('div');
-                container.className = 'quick-replies';
-                replies.forEach(replyText => {
-                    const button = document.createElement('button');
-                    button.className = 'quick-reply-btn';
-                    button.textContent = replyText;
-                    button.onclick = () => handleSendMessage(replyText);
-                    container.appendChild(button);
-                });
-                chatbotMessages.appendChild(container);
-                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-            }
-            
-            function removeQuickReplies() {
-                const container = chatbotMessages.querySelector('.quick-replies');
-                if (container) {
-                    container.remove();
-                }
-            }
-            
-            function getBotResponse(userInput) {
-                const lowerInput = userInput.toLowerCase();
-                
-                const intents = [
-                    { pattern: /recherche|trouve|cherche|article sur|appel d'offre pour/i, action: (input) => {
-                        const query = input.replace(/recherche|trouve|cherche|article sur|appel d'offre pour/i, "").trim();
-                        if (query.length < 3) return { text: "Veuillez préciser votre recherche avec au moins 3 caractères." };
-                        return { text: "La recherche n'est pas disponible sur cette page." };
-                    }},
-                    { pattern: /bonjour|salut|hello|yo/i, action: () => ({ text: "Bonjour ! Comment puis-je vous assister aujourd'hui ?", replies: ["Simulateurs", "Offres d'emploi", "Challenges"] }) },
-                    { pattern: /simulateur|simulation/i, action: () => ({ text: "Nos simulateurs vous permettent de gérer des chantiers virtuels et de tester vos compétences. Vous pouvez y accéder via le menu 'Simulateurs' en haut de la page, ou en cliquant sur la carte correspondante." }) },
-                    { pattern: /emploi|recrute|carrière|challenge/i, action: () => ({ text: "Nous avons des offres d'emploi et des challenges de recrutement. Consultez la section 'Nos offres d'emploi' ou 'Challenges' pour en savoir plus." }) },
-                    { pattern: /test|évaluation/i, action: () => ({ text: "Nous proposons des tests techniques et comportementaux pour évaluer vos compétences. Rendez-vous dans la section 'Tests'." }) },
-                    { pattern: /merci|remercie/i, action: () => ({ text: "De rien ! N'hésitez pas si vous avez d'autres questions." }) },
-                    { pattern: /au revoir|bye|ciao/i, action: () => ({ text: "Au revoir et à bientôt sur LTD Simulator !" }) }
-                ];
-
-                for (const intent of intents) {
-                    if (intent.pattern.test(lowerInput)) {
-                        return intent.action(lowerInput);
-                    }
-                }
-
-                return { text: "Je ne suis pas sûr de comprendre. Pourriez-vous reformuler ? Vous pouvez me demander des informations sur les simulateurs ou les challenges.", replies: ["Simulateurs", "Challenges"] };
-            }
-            
-            function startChat() {
-                appendMessage("Bonjour ! Comment puis-je vous aider aujourd'hui concernant le BTP ?", 'bot');
-                showQuickReplies(["Infos sur les simulateurs", "Challenges", "Offres d'emploi"]);
-            }
-            
-            startChat();
-        }
-
-
-        document.addEventListener('DOMContentLoaded', () => {
-            updateThemeUI();
-            
-            // Animate on scroll
-            const observer = new IntersectionObserver((entries, obs) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                        obs.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.1 });
-
-            document.querySelectorAll('.animate-in').forEach(el => {
-                observer.observe(el);
-            });
-
-            // Populate mobile nav
-            const desktopNav = document.querySelector('.nav-desktop .nav-menu');
-            const mobileNavContainer = document.querySelector('.mobile-menu .mobile-nav-items');
-            if(desktopNav && mobileNavContainer) {
-                mobileNavContainer.innerHTML = ''; // Clear previous
-                desktopNav.querySelectorAll('.nav-item').forEach(item => {
+                navItems.forEach(item => {
                     const link = item.querySelector('a');
                     if (!link) return;
 
@@ -1339,11 +1120,11 @@
                     newNavItem.href = link.href;
                     newNavItem.className = 'mobile-nav-item';
                     
-                    // Re-create the onclick to avoid scope issues
+                    const pageFile = link.getAttribute('href');
                     newNavItem.onclick = (e) => {
                         e.preventDefault();
-                        toggleMobileMenu();
-                        navigateTo(link.getAttribute('href'));
+                        window.toggleMobileMenu();
+                        window.navigateTo(pageFile);
                     };
 
                     const iconElement = link.querySelector('i');
@@ -1355,16 +1136,80 @@
                     }
                     
                     const textNode = document.createElement('h4');
-                    textNode.textContent = link.textContent.trim();
-
+                    // Clone le lien pour en extraire le texte sans l'icône
+                    const linkClone = link.cloneNode(true);
+                    const iconClone = linkClone.querySelector('i');
+                    if (iconClone) {
+                        linkClone.removeChild(iconClone);
+                    }
+                    textNode.textContent = linkClone.textContent.trim();
                     newNavItem.appendChild(textNode);
+
                     mobileNavContainer.appendChild(newNavItem);
                 });
             }
+
+            /**
+             * Initialise les animations au défilement pour les éléments avec la classe 'animate-in'.
+             */
+            function initAnimations() {
+                const observer = new IntersectionObserver((entries, obs) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            obs.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1 });
+
+                document.querySelectorAll('.animate-in').forEach(el => {
+                    observer.observe(el);
+                });
+            }
+
+            // Exposer les fonctions nécessaires globalement pour qu'elles soient accessibles depuis le HTML (onclick)
+            window.navigateTo = function(pageFile) {
+                showProgress();
+                showNotification(`Chargement de la page...`, 'info');
+                if (window.location.href.endsWith(pageFile)) {
+                     setTimeout(() => {
+                        const progressBar = document.getElementById('progressBar');
+                        if(progressBar) progressBar.classList.remove('show');
+                     }, 500);
+                     return;
+                }
+                setTimeout(() => {
+                    window.location.href = pageFile;
+                }, 1000);
+            }
+
+            window.toggleTheme = function() {
+                currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+                localStorage.setItem('theme', currentTheme);
+                updateThemeUI();
+                showNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
+            }
             
-            setupSlider();
-            setupChatbot();
-        });
+            window.toggleMobileMenu = function() {
+                const mobileToggle = document.getElementById('mobileToggle');
+                const mobileMenu = document.getElementById('mobileMenu');
+                if (!mobileToggle || !mobileMenu) return;
+
+                mobileToggle.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+                document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+            }
+
+
+            // Écouteur d'événement principal qui se déclenche lorsque le DOM est prêt
+            document.addEventListener('DOMContentLoaded', () => {
+                updateThemeUI();
+                initAnimations();
+                populateMobileNav();
+                setupSlider();
+            });
+
+        })();
     </script>
 </body>
 </html>
