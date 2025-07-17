@@ -144,6 +144,7 @@
             align-items: center;
             justify-content: space-between;
             height: 4.5rem;
+            gap: var(--spacing-md); /* AJOUTÉ: Espacement entre les éléments de la nav */
         }
 
         .logo {
@@ -347,7 +348,7 @@
         .slide .slide-background {
             width: 100%;
             display: block;
-            aspect-ratio: 4 / 3; 
+            aspect-ratio: 16 / 9; 
             object-fit: cover;
             transition: transform 8s ease-out;
             background-color: var(--surface-elevated);
@@ -457,7 +458,7 @@
         }
         .news-banner-grid {
             display: grid;
-            grid-template-columns: 1fr; /* Mobile-first: une colonne par défaut */
+            grid-template-columns: 1fr;
             gap: var(--spacing-lg);
         }
         .news-banner-item {
@@ -527,7 +528,7 @@
 
         .quick-actions-grid {
             display: grid; 
-            grid-template-columns: 1fr; /* Mobile-first: une colonne par défaut */
+            grid-template-columns: 1fr;
             gap: var(--spacing-md); 
             margin: 4rem 0;
         }
@@ -604,7 +605,7 @@
         
         .btp-wall-street { 
             display: grid; 
-            grid-template-columns: 1fr; /* Mobile-first: une colonne par défaut */
+            grid-template-columns: 1fr;
             gap: var(--spacing-lg); 
             margin-top: var(--spacing-xl); 
         }
@@ -962,6 +963,7 @@
             }
             .header-search {
                 width: 280px;
+                margin-right: var(--spacing-md);
             }
             .nav-menu {
                 gap: var(--spacing-xs); 
