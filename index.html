@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <!-- La balise meta viewport est essentielle pour le design responsive. Elle est correctement configurée. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Simulateur de gestion de chantier, actualités et appels d'offres pour le BTP.">
     <title>LTD Simulator - Accueil</title>
@@ -90,6 +91,7 @@
             background: var(--background);
             color: var(--text-primary);
             line-height: 1.6;
+            /* overflow-x: hidden prévient le défilement horizontal, ce qui est bon pour le mobile. */
             overflow-x: hidden;
             transition: var(--transition-slow);
         }
@@ -120,6 +122,7 @@
             cursor: pointer;
         }
 
+        /* --- Header & Navigation --- */
         .header {
             position: fixed;
             top: 0;
@@ -144,7 +147,6 @@
             align-items: center;
             justify-content: space-between;
             height: 4.5rem;
-            gap: var(--spacing-md);
         }
 
         .logo {
@@ -170,19 +172,59 @@
         }
         
         .logo-text-extended {
-            display: none;
+            display: none; /* Le texte étendu du logo est caché par défaut */
         }
 
-        .nav-desktop { display: none; } 
+        /* --- Stratégie de Navigation "Mobile-First" --- */
+        /* Par défaut (sur mobile), la navigation pour ordinateur est cachée. */
+        .nav-desktop { 
+            display: none; 
+        } 
 
+        /* Par défaut (sur mobile), le bouton du menu (hamburger) est visible. */
+        .mobile-toggle {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+        
+        .hamburger { position: relative; width: 1.25rem; height: 1rem; }
+        .hamburger span { position: absolute; left: 0; width: 100%; height: 2px; background: var(--text-primary); border-radius: 1px; transition: var(--transition); }
+        .hamburger span:nth-child(1) { top: 0; }
+        .hamburger span:nth-child(2) { top: 50%; transform: translateY(-50%); }
+        .hamburger span:nth-child(3) { bottom: 0; }
+        .mobile-toggle.active .hamburger span:nth-child(1) { top: 50%; transform: translateY(-50%) rotate(45deg); }
+        .mobile-toggle.active .hamburger span:nth-child(2) { opacity: 0; }
+        .mobile-toggle.active .hamburger span:nth-child(3) { bottom: 50%; transform: translateY(50%) rotate(-45deg); }
+
+        /* Le menu mobile est une modale qui prend tout l'écran, cachée par défaut */
+        .mobile-menu { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--background); z-index: 999; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: var(--transition-slow); }
+        .mobile-menu.active { opacity: 1; visibility: visible; }
+        .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--spacing-sm); height: 4.5rem; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+        .mobile-menu-close { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-primary); }
+        .mobile-menu-content { flex: 1; padding: var(--spacing-lg) var(--spacing-sm); overflow-y: auto; }
+        .mobile-search-wrapper { padding-bottom: var(--spacing-lg); margin-bottom: var(--spacing-lg); border-bottom: 1px solid var(--glass-border); }
+        .mobile-search-wrapper .header-search { width: 100%; }
+        .mobile-nav-section h3 { color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--spacing-md); }
+        .mobile-nav-items { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+        .mobile-nav-item { display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-md); color: var(--text-secondary); text-decoration: none; border-radius: var(--radius-md); }
+        .mobile-nav-item-icon { font-size: 1.25rem; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border-radius: var(--radius); }
+        .mobile-nav-item:hover { background: var(--glass); color: var(--text-primary); }
+
+        /* Styles pour la navigation de bureau (utilisés sur écrans larges) */
         .nav-menu {
             display: flex;
             align-items: center;
             list-style: none;
         }
-
         .nav-item { position: relative; }
-
         .nav-link {
             display: flex;
             align-items: center;
@@ -193,21 +235,16 @@
             font-weight: 500;
             border-radius: var(--radius);
             transition: var(--transition);
-            position: relative;
-            overflow: hidden;
         }
-
         .nav-link:hover {
             color: var(--text-primary);
             background: var(--glass);
         }
-
         .nav-link.active {
             color: var(--text-primary);
             background: linear-gradient(45deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.2));
             font-weight: 600;
         }
-
         .header-search {
             position: relative;
         }
@@ -236,13 +273,11 @@
             transform: translateY(-50%);
             color: var(--text-muted);
         }
-
         .nav-actions {
             display: flex;
             align-items: center;
             gap: var(--spacing-sm);
         }
-
         .theme-toggle {
             display: flex;
             align-items: center;
@@ -254,51 +289,16 @@
             border-radius: var(--radius);
             color: var(--text-secondary);
             transition: var(--transition);
-            position: relative;
         }
-
         .theme-toggle:hover {
             background: var(--surface-elevated);
             color: var(--text-primary);
             transform: rotate(15deg);
         }
 
-        .mobile-toggle {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 2.5rem;
-            height: 2.5rem;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            transition: var(--transition);
-        }
-        
-        .hamburger { position: relative; width: 1.25rem; height: 1rem; }
-        .hamburger span { position: absolute; left: 0; width: 100%; height: 2px; background: var(--text-primary); border-radius: 1px; transition: var(--transition); }
-        .hamburger span:nth-child(1) { top: 0; }
-        .hamburger span:nth-child(2) { top: 50%; transform: translateY(-50%); }
-        .hamburger span:nth-child(3) { bottom: 0; }
-        .mobile-toggle.active .hamburger span:nth-child(1) { top: 50%; transform: translateY(-50%) rotate(45deg); }
-        .mobile-toggle.active .hamburger span:nth-child(2) { opacity: 0; }
-        .mobile-toggle.active .hamburger span:nth-child(3) { bottom: 50%; transform: translateY(50%) rotate(-45deg); }
-        
-        .mobile-menu { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--background); z-index: 999; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: var(--transition-slow); }
-        .mobile-menu.active { opacity: 1; visibility: visible; }
-        .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--spacing-sm); height: 4.5rem; border-bottom: 1px solid var(--glass-border); }
-        .mobile-menu-close { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-primary); }
-        .mobile-menu-content { flex: 1; padding: var(--spacing-lg) var(--spacing-sm); overflow-y: auto; }
-        .mobile-search-wrapper { padding-bottom: var(--spacing-lg); margin-bottom: var(--spacing-lg); border-bottom: 1px solid var(--glass-border); }
-        .mobile-search-wrapper .header-search { width: 100%; }
-        .mobile-nav-section h3 { color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--spacing-md); }
-        .mobile-nav-items { display: flex; flex-direction: column; gap: var(--spacing-xs); }
-        .mobile-nav-item { display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-md); color: var(--text-secondary); text-decoration: none; border-radius: var(--radius-md); }
-        .mobile-nav-item-icon { font-size: 1.25rem; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border-radius: var(--radius); }
-        .mobile-nav-item:hover { background: var(--glass); color: var(--text-primary); }
-
+        /* --- Contenu Principal --- */
         .main-content { 
+            /* La marge haute compense la hauteur du header fixe */
             margin-top: 4.5rem; 
             padding: var(--spacing-lg) var(--spacing-sm); 
             max-width: 1400px; 
@@ -308,6 +308,7 @@
         
         .hero { text-align: center; padding: var(--spacing-lg) 0; }
         .hero h1 { 
+            /* clamp() est excellent pour des tailles de police fluides et responsives */
             font-size: clamp(2.2rem, 8vw, 4rem); 
             font-weight: 800; 
             margin-bottom: var(--spacing-lg); 
@@ -325,7 +326,7 @@
         }
         .hero p { font-size: 1.1rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.7; }
         
-        /* --- Image Slider --- */
+        /* --- Slider d'images --- */
         .slider-container {
             position: relative;
             width: 100%;
@@ -435,6 +436,15 @@
             box-shadow: 0 0 10px var(--primary-light);
         }
 
+        /* --- Grilles de contenu --- */
+        /* Par défaut, les grilles ont une seule colonne, parfait pour le mobile. */
+        .news-banner-grid,
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-lg);
+        }
+
         .news-banner {
             background: var(--surface);
             border: 1px solid var(--glass-border);
@@ -455,11 +465,6 @@
             color: var(--text-secondary);
             max-width: 500px;
             margin: 0 auto;
-        }
-        .news-banner-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: var(--spacing-lg);
         }
         .news-banner-item {
             background: var(--background);
@@ -484,7 +489,6 @@
         .news-banner-item-content {
             padding: var(--spacing-md);
         }
-
         .new-badge {
             position: absolute;
             top: 12px;
@@ -502,18 +506,10 @@
             z-index: 1;
             border: 1px solid rgba(255,255,255,0.3);
         }
-
         @keyframes pulse-glow {
-            0%, 100% {
-                transform: scale(1);
-                box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
-            }
-            50% {
-                transform: scale(1.05);
-                box-shadow: 0 6px 25px rgba(245, 158, 11, 0.6);
-            }
+            0%, 100% { transform: scale(1); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 6px 25px rgba(245, 158, 11, 0.6); }
         }
-
         .news-banner-item-content h5 {
             font-size: 1.1rem;
             font-weight: 600;
@@ -527,9 +523,6 @@
         }
 
         .quick-actions-grid {
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: var(--spacing-md); 
             margin: 4rem 0;
         }
         
@@ -592,7 +585,7 @@
         .quick-action-card .btn-secondary { background: var(--secondary); }
         .quick-action-card .btn-accent { background: var(--accent); }
 
-
+        /* --- Animations & Utilitaires --- */
         .animate-in {
             opacity: 0;
             transform: translateY(40px);
@@ -618,247 +611,54 @@
         .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.3s ease; box-shadow: 0 0 10px var(--primary), 0 0 5px var(--secondary); }
         
         /* --- Chatbot Styles --- */
-        .chatbot-toggler {
-            position: fixed;
-            bottom: var(--spacing-lg);
-            right: var(--spacing-lg);
-            width: 4rem;
-            height: 4rem;
-            background: linear-gradient(45deg, var(--primary), var(--primary-dark));
-            color: white;
-            border-radius: var(--radius-full);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.75rem;
-            cursor: pointer;
-            box-shadow: var(--shadow-lg), 0 0 20px rgba(99, 102, 241, 0.5);
-            z-index: 1050;
-            transition: var(--transition-slow);
-            animation: pulse-glow-chat 2.5s infinite ease-in-out;
-        }
-
-        .chatbot-toggler:hover {
-            transform: scale(1.1) rotate(-10deg);
-            box-shadow: var(--shadow-xl), 0 0 30px var(--primary);
-        }
-
+        .chatbot-toggler { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); width: 4rem; height: 4rem; background: linear-gradient(45deg, var(--primary), var(--primary-dark)); color: white; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; cursor: pointer; box-shadow: var(--shadow-lg), 0 0 20px rgba(99, 102, 241, 0.5); z-index: 1050; transition: var(--transition-slow); animation: pulse-glow-chat 2.5s infinite ease-in-out; }
+        .chatbot-toggler:hover { transform: scale(1.1) rotate(-10deg); box-shadow: var(--shadow-xl), 0 0 30px var(--primary); }
         @keyframes pulse-glow-chat {
-            0%, 100% {
-                transform: scale(1);
-                box-shadow: var(--shadow-lg), 0 0 20px rgba(99, 102, 241, 0.4);
-            }
-            50% {
-                transform: scale(1.05);
-                box-shadow: var(--shadow-lg), 0 0 30px rgba(99, 102, 241, 0.6);
-            }
+            0%, 100% { transform: scale(1); box-shadow: var(--shadow-lg), 0 0 20px rgba(99, 102, 241, 0.4); }
+            50% { transform: scale(1.05); box-shadow: var(--shadow-lg), 0 0 30px rgba(99, 102, 241, 0.6); }
         }
-
-        .chatbot-container {
-            position: fixed;
-            bottom: calc(var(--spacing-lg) + 5rem);
-            right: var(--spacing-lg);
-            width: 90%;
-            max-width: 400px;
-            background: var(--surface);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-xl);
-            z-index: 1200;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            opacity: 0;
-            transform: translateY(20px) scale(0.95);
-            visibility: hidden;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            max-height: 70vh; 
-        }
-
-        .chatbot-container.active {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            visibility: visible;
-        }
-
-        .chatbot-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: var(--spacing-sm) var(--spacing-md);
-            background: var(--surface-elevated);
-            border-bottom: 1px solid var(--glass-border);
-        }
-
-        .chatbot-header h3 {
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: var(--text-primary);
-        }
-
-        .chatbot-close-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 1.25rem;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .chatbot-close-btn:hover {
-            color: var(--text-primary);
-            transform: rotate(90deg);
-        }
-
-        .chatbot-messages {
-            flex: 1;
-            padding: var(--spacing-md);
-            overflow-y: auto;
-            height: 300px;
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-sm);
-        }
-
+        .chatbot-container { position: fixed; bottom: calc(var(--spacing-lg) + 5rem); right: var(--spacing-lg); width: 90%; max-width: 400px; background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-xl); box-shadow: var(--shadow-xl); z-index: 1200; display: flex; flex-direction: column; overflow: hidden; opacity: 0; transform: translateY(20px) scale(0.95); visibility: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); max-height: 70vh; }
+        .chatbot-container.active { opacity: 1; transform: translateY(0) scale(1); visibility: visible; }
+        .chatbot-header { display: flex; justify-content: space-between; align-items: center; padding: var(--spacing-sm) var(--spacing-md); background: var(--surface-elevated); border-bottom: 1px solid var(--glass-border); }
+        .chatbot-header h3 { font-weight: 600; font-size: 1.1rem; color: var(--text-primary); }
+        .chatbot-close-btn { background: none; border: none; color: var(--text-muted); font-size: 1.25rem; cursor: pointer; transition: var(--transition); }
+        .chatbot-close-btn:hover { color: var(--text-primary); transform: rotate(90deg); }
+        .chatbot-messages { flex: 1; padding: var(--spacing-md); overflow-y: auto; height: 300px; display: flex; flex-direction: column; gap: var(--spacing-sm); }
         .chatbot-messages::-webkit-scrollbar { width: 5px; }
         .chatbot-messages::-webkit-scrollbar-track { background: transparent; }
         .chatbot-messages::-webkit-scrollbar-thumb { background: var(--surface-elevated); border-radius: var(--radius-full); }
-
-        .message {
-            max-width: 85%;
-            padding: var(--spacing-xs) var(--spacing-sm);
-            border-radius: var(--radius-lg);
-            line-height: 1.4;
-            word-wrap: break-word;
-            animation: message-fade-in 0.4s ease;
-        }
-        
-        @keyframes message-fade-in {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .message.user {
-            background: var(--primary);
-            color: white;
-            align-self: flex-end;
-            border-bottom-right-radius: var(--radius-sm);
-        }
-
-        .message.bot {
-            background: var(--surface-elevated);
-            color: var(--text-secondary);
-            align-self: flex-start;
-            border-bottom-left-radius: var(--radius-sm);
-        }
-        
-        .message.bot a {
-            color: var(--primary-light);
-            text-decoration: underline;
-        }
-        
-        .message.bot strong {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
-        .chatbot-input-form {
-            display: flex;
-            padding: var(--spacing-sm);
-            border-top: 1px solid var(--glass-border);
-            background: var(--surface);
-        }
-
-        #chatbotInput {
-            flex: 1;
-            background: var(--background);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            padding: var(--spacing-sm);
-            color: var(--text-primary);
-            font-size: 1rem;
-            transition: var(--transition);
-            margin-right: var(--spacing-sm);
-        }
-
-        #chatbotInput:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
-        }
-
-        #chatbotSendBtn {
-            background: var(--primary);
-            border: none;
-            color: white;
-            width: 3rem;
-            height: 3rem;
-            border-radius: var(--radius);
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #chatbotSendBtn:hover {
-            background: var(--primary-dark);
-            transform: scale(1.1);
-        }
-        
-        .quick-replies {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--spacing-xs);
-            margin-top: var(--spacing-sm);
-            align-self: flex-start;
-        }
-        
-        .quick-reply-btn {
-            background: var(--surface-elevated);
-            border: 1px solid var(--glass-border);
-            color: var(--text-secondary);
-            padding: var(--spacing-xs) var(--spacing-sm);
-            border-radius: var(--radius-full);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        .quick-reply-btn:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary-dark);
-        }
-        
-        .typing-indicator {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .typing-indicator span {
-            width: 8px;
-            height: 8px;
-            background-color: var(--text-muted);
-            border-radius: 50%;
-            animation: typing-bounce 1s infinite;
-        }
+        .message { max-width: 85%; padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-lg); line-height: 1.4; word-wrap: break-word; animation: message-fade-in 0.4s ease; }
+        @keyframes message-fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .message.user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: var(--radius-sm); }
+        .message.bot { background: var(--surface-elevated); color: var(--text-secondary); align-self: flex-start; border-bottom-left-radius: var(--radius-sm); }
+        .message.bot a { color: var(--primary-light); text-decoration: underline; }
+        .message.bot strong { color: var(--text-primary); font-weight: 600; }
+        .chatbot-input-form { display: flex; padding: var(--spacing-sm); border-top: 1px solid var(--glass-border); background: var(--surface); }
+        #chatbotInput { flex: 1; background: var(--background); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: var(--spacing-sm); color: var(--text-primary); font-size: 1rem; transition: var(--transition); margin-right: var(--spacing-sm); }
+        #chatbotInput:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); }
+        #chatbotSendBtn { background: var(--primary); border: none; color: white; width: 3rem; height: 3rem; border-radius: var(--radius); font-size: 1.2rem; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; }
+        #chatbotSendBtn:hover { background: var(--primary-dark); transform: scale(1.1); }
+        .quick-replies { display: flex; flex-wrap: wrap; gap: var(--spacing-xs); margin-top: var(--spacing-sm); align-self: flex-start; }
+        .quick-reply-btn { background: var(--surface-elevated); border: 1px solid var(--glass-border); color: var(--text-secondary); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-full); cursor: pointer; transition: var(--transition); }
+        .quick-reply-btn:hover { background: var(--primary); color: white; border-color: var(--primary-dark); }
+        .typing-indicator { display: flex; align-items: center; gap: 5px; }
+        .typing-indicator span { width: 8px; height: 8px; background-color: var(--text-muted); border-radius: 50%; animation: typing-bounce 1s infinite; }
         .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
         .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-        
-        @keyframes typing-bounce {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-5px); }
-        }
+        @keyframes typing-bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
 
         /* --- Media Queries pour la réactivité --- */
+
+        /* Pour les écrans de 640px et plus (petites tablettes, grands téléphones) */
         @media (min-width: 640px) {
+            /* Les grilles passent à deux colonnes */
             .news-banner-grid,
             .quick-actions-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
 
+        /* Pour les écrans de 768px et plus (tablettes) */
         @media (min-width: 768px) {
             .nav-container {
                 padding: 0 var(--spacing-md);
@@ -893,10 +693,13 @@
             }
         }
 
+        /* Pour les écrans de 1024px et plus (ordinateurs portables) */
         @media (min-width: 1024px) {
+            /* On cache le bouton du menu mobile... */
             .mobile-toggle {
                 display: none;
             }
+            /* ...et on affiche la navigation pour ordinateur. */
             .nav-desktop {
                 display: flex;
                 align-items: center;
@@ -911,13 +714,16 @@
             .nav-menu {
                 gap: var(--spacing-xs); 
             }
+            /* Les grilles passent à trois colonnes */
             .news-banner-grid,
             .quick-actions-grid {
                 grid-template-columns: repeat(3, 1fr);
             }
         }
 
+        /* Pour les écrans très larges de 1280px et plus */
         @media (min-width: 1280px) {
+            /* On affiche le texte complet du logo */
             .logo-text-extended {
                 display: inline;
             }
@@ -940,6 +746,8 @@
                 </svg>
                 <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
             </a>
+            
+            <!-- Cette div contient la navigation pour les grands écrans. Elle est cachée sur mobile par le CSS. -->
             <div class="nav-desktop">
                  <form action="recherche.html" method="GET" class="header-search">
                      <i class="fas fa-search"></i>
@@ -960,20 +768,22 @@
                      </button>
                  </div>
             </div>
+
+            <!-- Ce bouton est visible sur mobile et permet d'ouvrir le menu de navigation. -->
             <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
                 <span class="hamburger"><span></span><span></span><span></span></span>
             </button>
         </nav>
     </header>
 
-    <!-- Mobile Menu -->
+    <!-- Mobile Menu (caché par défaut) -->
     <div class="mobile-menu" id="mobileMenu">
         <div class="mobile-menu-header">
             <a href="index.html" class="logo" onclick="event.preventDefault(); toggleMobileMenu(); navigateTo('index.html');">
                  <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
-                    <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
-                    <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
-                </svg>
+                     <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
+                     <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+                 </svg>
                 <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
             </a>
             <button class="mobile-menu-close" onclick="toggleMobileMenu()"><i class="fas fa-times"></i></button>
@@ -988,7 +798,7 @@
             <div class="mobile-nav-section">
                 <h3>Navigation</h3>
                 <div class="mobile-nav-items">
-                    <!-- Mobile nav items will be populated by JS -->
+                    <!-- Les liens de navigation mobile sont insérés ici par JavaScript. -->
                 </div>
             </div>
         </div>
@@ -1088,16 +898,16 @@
                 </a>
                 <a href="prixtce.html" onclick="event.preventDefault(); navigateTo('prixtce.html')" class="news-banner-item">
                      <div class="card-image-top">
-                        <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <g stroke="var(--accent)" opacity="0.8">
-                                <rect x="60" y="30" width="80" height="70" rx="5" stroke-width="3" fill="var(--accent)" fill-opacity="0.1"/>
-                                <path d="M 70 50 h 60 M 70 65 h 60 M 70 80 h 25 M 105 80 h 25"/>
-                            </g>
-                            <g stroke="var(--primary-light)" opacity="0.9">
-                                <path d="M 40 100 h 120" />
-                                <path d="M 40 100 l -10 -20 h 140 l -10 20" stroke-dasharray="4" />
-                            </g>
-                        </svg>
+                         <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                             <g stroke="var(--accent)" opacity="0.8">
+                                 <rect x="60" y="30" width="80" height="70" rx="5" stroke-width="3" fill="var(--accent)" fill-opacity="0.1"/>
+                                 <path d="M 70 50 h 60 M 70 65 h 60 M 70 80 h 25 M 105 80 h 25"/>
+                             </g>
+                             <g stroke="var(--primary-light)" opacity="0.9">
+                                 <path d="M 40 100 h 120" />
+                                 <path d="M 40 100 l -10 -20 h 140 l -10 20" stroke-dasharray="4" />
+                             </g>
+                         </svg>
                     </div>
                     <span class="new-badge">Nouveau</span>
                     <div class="news-banner-item-content">
@@ -1284,6 +1094,7 @@
             const mobileMenu = document.getElementById('mobileMenu');
             mobileToggle.classList.toggle('active');
             mobileMenu.classList.toggle('active');
+            // Empêche le défilement du body lorsque le menu est ouvert
             document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
         }
 
@@ -1522,6 +1333,8 @@
                 mobileNavContainer.innerHTML = ''; // Clear previous
                 desktopNav.querySelectorAll('.nav-item').forEach(item => {
                     const link = item.querySelector('a');
+                    if (!link) return;
+
                     const newNavItem = document.createElement('a');
                     newNavItem.href = link.href;
                     newNavItem.className = 'mobile-nav-item';
@@ -1533,14 +1346,17 @@
                         navigateTo(link.getAttribute('href'));
                     };
 
-                    const iconDiv = document.createElement('div');
-                    iconDiv.className = 'mobile-nav-item-icon';
-                    iconDiv.innerHTML = link.querySelector('i').outerHTML;
+                    const iconElement = link.querySelector('i');
+                    if (iconElement) {
+                        const iconDiv = document.createElement('div');
+                        iconDiv.className = 'mobile-nav-item-icon';
+                        iconDiv.innerHTML = iconElement.outerHTML;
+                        newNavItem.appendChild(iconDiv);
+                    }
                     
                     const textNode = document.createElement('h4');
                     textNode.textContent = link.textContent.trim();
 
-                    newNavItem.appendChild(iconDiv);
                     newNavItem.appendChild(textNode);
                     mobileNavContainer.appendChild(newNavItem);
                 });
