@@ -83,7 +83,7 @@
             pointer-events: none; z-index: -1;
         }
         
-        [onclick], .nav-link, .mobile-nav-item, .quiz-card-button, .theme-toggle, .mobile-toggle, .search-button, .quiz-answer label { cursor: pointer; }
+        [onclick], .nav-link, .mobile-nav-item, .quiz-card-button, .theme-toggle, .mobile-toggle, .search-button { cursor: pointer; }
 
         .header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; backdrop-filter: blur(20px) saturate(180%); background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid var(--glass-border); transition: var(--transition); }
         body.light-mode .header { background: rgba(255, 255, 255, 0.8); }
@@ -173,42 +173,6 @@
         .meta-item .fas { color: var(--accent); }
         .quiz-card-button { display: inline-block; background: var(--primary); color: white; padding: 0.75rem 2rem; border-radius: var(--radius-full); text-align: center; text-decoration: none; font-weight: 600; transition: var(--transition); margin-top: auto; }
         .quiz-card-button:hover { background: var(--primary-dark); transform: scale(1.05); }
-
-        /* --- QUIZ INTERFACE STYLES --- */
-        .quiz-interface { max-width: 800px; margin: 0 auto; background: var(--surface); border-radius: var(--radius-xl); padding: var(--spacing-xl); border: 1px solid var(--glass-border); box-shadow: var(--shadow-xl); }
-        .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg); }
-        .quiz-header h2 { font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0; }
-        .back-button { background: var(--surface-elevated); color: var(--text-primary); border: none; padding: 0.5rem 1rem; border-radius: var(--radius-full); font-weight: 500; display: flex; align-items: center; gap: 0.5rem; }
-        .back-button:hover { background: var(--surface-hover); }
-
-        .question-block { margin-bottom: var(--spacing-lg); padding-bottom: var(--spacing-lg); border-bottom: 1px solid var(--glass-border); }
-        .question-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .question-text { font-size: 1.2rem; font-weight: 600; margin-bottom: var(--spacing-md); color: var(--text-secondary); }
-        .quiz-answers { display: flex; flex-direction: column; gap: var(--spacing-sm); }
-        .quiz-answer { display: block; }
-        .quiz-answer label { display: block; background: var(--surface-elevated); padding: var(--spacing-sm); border-radius: var(--radius-md); border: 2px solid transparent; transition: var(--transition); }
-        .quiz-answer label:hover { border-color: var(--primary-light); background: var(--surface-hover); }
-        .quiz-answer input[type="radio"] { display: none; }
-        .quiz-answer input[type="radio"]:checked + label { border-color: var(--primary); background-color: rgba(99, 102, 241, 0.2); color: var(--text-primary); font-weight: 600; }
-        
-        .quiz-actions { display: flex; gap: 1rem; margin-top: var(--spacing-xl); }
-        .quiz-submit-button, .quiz-action-button { flex-grow: 1; background: var(--primary); color: white; padding: 1rem 2rem; border: none; border-radius: var(--radius-full); text-align: center; text-decoration: none; font-size: 1.1rem; font-weight: 600; transition: var(--transition); cursor: pointer; }
-        .quiz-submit-button:hover, .quiz-action-button:hover { background: var(--primary-dark); transform: scale(1.02); }
-        .quiz-action-button.secondary { background: var(--surface-elevated); color: var(--text-primary); }
-        .quiz-action-button.secondary:hover { background: var(--surface-hover); }
-
-        #quizResults { margin-top: var(--spacing-xl); }
-        .results-summary { text-align: center; padding: var(--spacing-lg); background: var(--surface-elevated); border-radius: var(--radius-lg); margin-bottom: var(--spacing-xl); }
-        .results-summary h3 { font-size: 1.8rem; margin-bottom: var(--spacing-sm); color: var(--primary-light); }
-        .results-summary p { font-size: 1.2rem; color: var(--text-primary); }
-        .result-question { background: var(--surface-elevated); padding: var(--spacing-md); border-radius: var(--radius-md); margin-bottom: var(--spacing-md); border-left: 4px solid var(--text-muted); }
-        .result-question.correct { border-left-color: var(--success); }
-        .result-question.incorrect { border-left-color: var(--error); }
-        .result-question p { margin-bottom: var(--spacing-xs); }
-        .result-question .user-answer { color: var(--text-secondary); }
-        .result-question .user-answer.correct-text { color: var(--success); }
-        .result-question .user-answer.incorrect-text { color: var(--error); }
-        .result-question .correct-answer-text { color: var(--secondary); font-weight: 500; }
         
         .notification { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-xl); transform: translateX(calc(100% + var(--spacing-lg))); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1100; backdrop-filter: blur(20px); max-width: 350px; }
         .notification.show { transform: translateX(0); }
@@ -226,7 +190,6 @@
             .hero p { font-size: 1.1rem; }
             .nav-desktop { display: none; }
             .mobile-toggle { display: flex; }
-            .quiz-interface { padding: var(--spacing-lg); }
         }
     </style>
 </head>
@@ -293,142 +256,116 @@
     <!-- Main Content -->
     <main class="main-content">
         
-        <!-- Cette section contient la sélection des quiz (visible par défaut) -->
-        <div id="quizSelection">
-            <!-- Image Slider Section -->
-            <section class="slider-container animate-in" id="imageSlider">
-                <div class="slider-wrapper">
-                    <div class="slide">
-                        <div class="slide-background">
-                            <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M 100 150 L 250 150 L 300 100 L 350 200 L 400 120 L 450 180 L 500 100 L 550 150 L 700 150" opacity="0.8" stroke-width="3"/>
-                                <path d="M 150 100 L 200 200 M 600 100 L 650 200" opacity="0.5" stroke-dasharray="4"/>
-                            </svg>
-                        </div>
-                        <div class="slide-content">
-                            <h3>Testez vos Connaissances</h3>
-                            <p>Nos quiz sont conçus pour évaluer et renforcer vos compétences techniques.</p>
-                        </div>
-                    </div>
-                    <div class="slide">
-                        <div class="slide-background">
-                            <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--secondary)" stroke-width="1.5">
-                                <rect x="150" y="50" width="500" height="200" rx="10" opacity="0.3" />
-                                <path d="M 150 100 h 500 M 150 150 h 500 M 150 200 h 500" opacity="0.5" />
-                                <path d="M 250 50 v 200 M 350 50 v 200 M 450 50 v 200 M 550 50 v 200" opacity="0.3" stroke-dasharray="5"/>
-                            </svg>
-                        </div>
-                        <div class="slide-content">
-                            <h3>Des Sujets Variés</h3>
-                            <p>Du BTP aux télécoms, trouvez le quiz qui correspond à votre domaine d'expertise.</p>
-                        </div>
-                    </div>
-                    <div class="slide">
-                        <div class="slide-background">
-                             <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--accent)" stroke-width="2">
-                                <path d="M 200 250 L 400 50 L 600 250 Z" stroke-width="4" opacity="0.8" />
-                                <path d="M 200 250 h 400" stroke-width="4" opacity="0.8"/>
-                                <path d="M 300 150 h 200" stroke-dasharray="5" opacity="0.6"/>
-                             </svg>
-                        </div>
-                        <div class="slide-content">
-                            <h3>Validez vos Acquis</h3>
-                            <p>Obtenez un feedback instantané et identifiez vos points forts et axes d'amélioration.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="slider-nav prev" id="sliderPrev"><i class="fas fa-chevron-left"></i></div>
-                <div class="slider-nav next" id="sliderNext"><i class="fas fa-chevron-right"></i></div>
-                <div class="slider-dots" id="sliderDots"></div>
-            </section>
-            
-            <section class="hero animate-in">
-                <h1>Nos Quiz Interactifs</h1>
-                <p>Testez vos connaissances et apprenez-en plus sur les différents métiers techniques. Choisissez un quiz et mettez vos compétences à l'épreuve !</p>
-            </section>
-
-            <section class="quiz-grid animate-in">
-                <!-- Quiz Card 1 -->
-                <div class="quiz-card">
-                    <div class="quiz-card-image">
-                        <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <g stroke="var(--primary-light)" opacity="0.7">
-                                <path d="M 40 100 C 60 40, 140 40, 160 100" stroke-width="3" />
-                                <path d="M 100 20 V 110" stroke-width="3" />
-                                <path d="M 60 60 H 140" />
-                                <circle cx="100" cy="70" r="30" stroke-dasharray="4" />
-                            </g>
+        <!-- Image Slider Section -->
+        <section class="slider-container animate-in" id="imageSlider">
+            <div class="slider-wrapper">
+                <div class="slide">
+                    <div class="slide-background">
+                        <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M 100 150 L 250 150 L 300 100 L 350 200 L 400 120 L 450 180 L 500 100 L 550 150 L 700 150" opacity="0.8" stroke-width="3"/>
+                            <path d="M 150 100 L 200 200 M 600 100 L 650 200" opacity="0.5" stroke-dasharray="4"/>
                         </svg>
                     </div>
-                    <div class="quiz-card-content">
-                        <div class="quiz-card-header">
-                            <div class="quiz-card-icon"><i class="fas fa-network-wired"></i></div>
-                            <h2 class="quiz-card-title">Quiz Télécom : Fibre Optique</h2>
-                        </div>
-                        <p class="quiz-card-description">
-                            Évaluez vos connaissances sur les fondamentaux de la fibre optique, de la technologie FTTH aux équipements de mesure.
-                        </p>
-                        <div class="quiz-card-meta">
-                            <span class="meta-item"><i class="fas fa-layer-group"></i>Télécom</span>
-                            <span class="meta-item"><i class="fas fa-brain"></i>Intermédiaire</span>
-                        </div>
-                        <a href="#" class="quiz-card-button" onclick="event.preventDefault(); launchQuiz('telecom')">Commencer le Quiz</a>
+                    <div class="slide-content">
+                        <h3>Testez vos Connaissances</h3>
+                        <p>Nos quiz sont conçus pour évaluer et renforcer vos compétences techniques.</p>
                     </div>
                 </div>
-
-                <!-- D'autres cartes de quiz peuvent être ajoutées ici -->
-                <div class="quiz-card" style="opacity: 0.5; pointer-events: none;">
-                    <div class="quiz-card-image">
-                         <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <g stroke="var(--secondary)" opacity="0.7">
-                                <rect x="30" y="30" width="140" height="70" rx="5" />
-                                <path d="M 30 50 h 140" />
-                                <path d="M 70 30 v 70" />
-                                <path d="M 130 30 v 70" />
-                            </g>
+                <div class="slide">
+                    <div class="slide-background">
+                        <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--secondary)" stroke-width="1.5">
+                            <rect x="150" y="50" width="500" height="200" rx="10" opacity="0.3" />
+                            <path d="M 150 100 h 500 M 150 150 h 500 M 150 200 h 500" opacity="0.5" />
+                            <path d="M 250 50 v 200 M 350 50 v 200 M 450 50 v 200 M 550 50 v 200" opacity="0.3" stroke-dasharray="5"/>
+                        </svg>
+                    </div>
+                    <div class="slide-content">
+                        <h3>Des Sujets Variés</h3>
+                        <p>Du BTP aux télécoms, trouvez le quiz qui correspond à votre domaine d'expertise.</p>
+                    </div>
+                </div>
+                <div class="slide">
+                    <div class="slide-background">
+                         <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--accent)" stroke-width="2">
+                            <path d="M 200 250 L 400 50 L 600 250 Z" stroke-width="4" opacity="0.8" />
+                            <path d="M 200 250 h 400" stroke-width="4" opacity="0.8"/>
+                            <path d="M 300 150 h 200" stroke-dasharray="5" opacity="0.6"/>
                          </svg>
                     </div>
-                    <div class="quiz-card-content">
-                        <div class="quiz-card-header">
-                            <div class="quiz-card-icon"><i class="fas fa-hard-hat"></i></div>
-                            <h2 class="quiz-card-title">Quiz BTP : Sécurité Chantier</h2>
-                        </div>
-                        <p class="quiz-card-description">
-                            Les règles de sécurité sur un chantier n'ont aucun secret pour vous ? Prouvez-le !
-                        </p>
-                        <div class="quiz-card-meta">
-                            <span class="meta-item"><i class="fas fa-layer-group"></i>BTP</span>
-                            <span class="meta-item"><i class="fas fa-brain"></i>Facile</span>
-                        </div>
-                        <a href="#" class="quiz-card-button">Bientôt disponible</a>
+                    <div class="slide-content">
+                        <h3>Validez vos Acquis</h3>
+                        <p>Obtenez un feedback instantané et identifiez vos points forts et axes d'amélioration.</p>
                     </div>
                 </div>
+            </div>
+            <div class="slider-nav prev" id="sliderPrev"><i class="fas fa-chevron-left"></i></div>
+            <div class="slider-nav next" id="sliderNext"><i class="fas fa-chevron-right"></i></div>
+            <div class="slider-dots" id="sliderDots"></div>
+        </section>
+        
+        <section class="hero animate-in">
+            <h1>Nos Quiz Interactifs</h1>
+            <p>Testez vos connaissances et apprenez-en plus sur les différents métiers techniques. Choisissez un quiz et mettez vos compétences à l'épreuve !</p>
+        </section>
 
-            </section>
-        </div>
-
-        <!-- Cette section contient l'interface du quiz (cachée par défaut) -->
-        <div id="quizInterface" class="animate-in" style="display: none;">
-            <section class="quiz-interface">
-                <div class="quiz-header">
-                    <h2 id="quizTitle"></h2>
-                    <button class="back-button" onclick="showQuizSelection()"><i class="fas fa-arrow-left"></i> Retour</button>
+        <section class="quiz-grid animate-in">
+            <!-- Quiz Card 1 -->
+            <div class="quiz-card">
+                <div class="quiz-card-image">
+                    <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--primary-light)" opacity="0.7">
+                            <path d="M 40 100 C 60 40, 140 40, 160 100" stroke-width="3" />
+                            <path d="M 100 20 V 110" stroke-width="3" />
+                            <path d="M 60 60 H 140" />
+                            <circle cx="100" cy="70" r="30" stroke-dasharray="4" />
+                        </g>
+                    </svg>
                 </div>
-                
-                <form id="quizForm">
-                    <div id="quizContainer">
-                        <!-- Les questions du quiz seront injectées ici par JavaScript -->
+                <div class="quiz-card-content">
+                    <div class="quiz-card-header">
+                        <div class="quiz-card-icon"><i class="fas fa-network-wired"></i></div>
+                        <h2 class="quiz-card-title">Quiz Télécom : Fibre Optique</h2>
                     </div>
-                    <div class="quiz-actions">
-                        <button type="submit" class="quiz-submit-button">Valider mes réponses</button>
+                    <p class="quiz-card-description">
+                        Évaluez vos connaissances sur les fondamentaux de la fibre optique, de la technologie FTTH aux équipements de mesure.
+                    </p>
+                    <div class="quiz-card-meta">
+                        <span class="meta-item"><i class="fas fa-layer-group"></i>Télécom</span>
+                        <span class="meta-item"><i class="fas fa-brain"></i>Intermédiaire</span>
                     </div>
-                </form>
-
-                <div id="quizResults" style="display: none;">
-                    <!-- Les résultats du quiz seront affichés ici -->
+                    <a href="quiztelecom.html" class="quiz-card-button" onclick="event.preventDefault(); navigateTo('quiztelecom.html')">Commencer le Quiz</a>
                 </div>
-            </section>
-        </div>
+            </div>
+
+            <!-- D'autres cartes de quiz peuvent être ajoutées ici -->
+            <div class="quiz-card" style="opacity: 0.5; pointer-events: none;">
+                <div class="quiz-card-image">
+                     <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--secondary)" opacity="0.7">
+                            <rect x="30" y="30" width="140" height="70" rx="5" />
+                            <path d="M 30 50 h 140" />
+                            <path d="M 70 30 v 70" />
+                            <path d="M 130 30 v 70" />
+                        </g>
+                     </svg>
+                </div>
+                <div class="quiz-card-content">
+                    <div class="quiz-card-header">
+                        <div class="quiz-card-icon"><i class="fas fa-hard-hat"></i></div>
+                        <h2 class="quiz-card-title">Quiz BTP : Sécurité Chantier</h2>
+                    </div>
+                    <p class="quiz-card-description">
+                        Les règles de sécurité sur un chantier n'ont aucun secret pour vous ? Prouvez-le !
+                    </p>
+                    <div class="quiz-card-meta">
+                        <span class="meta-item"><i class="fas fa-layer-group"></i>BTP</span>
+                        <span class="meta-item"><i class="fas fa-brain"></i>Facile</span>
+                    </div>
+                    <a href="#" class="quiz-card-button">Bientôt disponible</a>
+                </div>
+            </div>
+
+        </section>
 
     </main>
 
@@ -576,140 +513,6 @@
             }
         }
 
-        /* --- QUIZ DATA & LOGIC --- */
-        const quizDatabase = {
-            telecom: {
-                title: "Quiz Télécom : La Fibre Optique",
-                data: [
-                    { question: "Que signifie l'acronyme 'FTTH' ?", answers: { a: "Fiber To The Home", b: "Fast Transmission To Home", c: "Fiber To The House", d: "Fiber Top Tier Host" }, correctAnswer: "a" },
-                    { question: "Quelle est la couleur de la gaine d'un câble de raccordement monomode standard ?", answers: { a: "Orange", b: "Bleu", c: "Jaune", d: "Vert" }, correctAnswer: "c" },
-                    { question: "Quel équipement est utilisé pour mesurer la perte de signal (atténuation) dans une fibre optique ?", answers: { a: "Un voltmètre", b: "Un réflectomètre optique (OTDR)", c: "Un soudeur de fibre", d: "Un microscope" }, correctAnswer: "b" },
-                    { question: "Quel est le principal avantage de la fibre optique par rapport au cuivre ?", answers: { a: "Elle est moins chère à produire", b: "Elle est plus facile à installer", c: "Elle est insensible aux interférences électromagnétiques", d: "Elle est plus flexible" }, correctAnswer: "c" },
-                    { question: "Dans une architecture FTTH, où se situe le Point de Mutualisation (PM) ?", answers: { a: "Dans le logement de l'abonné", b: "Au pied de l'immeuble ou dans la rue", c: "Dans le central téléphonique (NRO)", d: "Sur un satellite" }, correctAnswer: "b" }
-                ]
-            }
-            // On pourra ajouter d'autres quiz ici, ex: btp: { title: "...", data: [...] }
-        };
-        let currentQuizId = null;
-
-        function launchQuiz(quizId) {
-            currentQuizId = quizId;
-            const quizData = quizDatabase[quizId];
-            if (!quizData) return;
-
-            document.getElementById('quizSelection').style.display = 'none';
-            document.getElementById('quizInterface').style.display = 'block';
-            document.getElementById('quizTitle').textContent = quizData.title;
-
-            displayQuiz(quizData.data);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function showQuizSelection() {
-            document.getElementById('quizInterface').style.display = 'none';
-            document.getElementById('quizSelection').style.display = 'block';
-            currentQuizId = null;
-        }
-
-        function displayQuiz(questions) {
-            const quizContainer = document.getElementById('quizContainer');
-            const quizForm = document.getElementById('quizForm');
-            const quizResults = document.getElementById('quizResults');
-            
-            quizForm.style.display = 'block';
-            quizResults.style.display = 'none';
-            quizResults.innerHTML = '';
-
-            let quizHTML = '';
-            questions.forEach((item, index) => {
-                quizHTML += `<div class="question-block">`;
-                quizHTML += `<p class="question-text">${index + 1}. ${item.question}</p>`;
-                quizHTML += `<div class="quiz-answers">`;
-                for (const key in item.answers) {
-                    quizHTML += `
-                        <div class="quiz-answer">
-                            <input type="radio" name="question${index}" id="q${index}${key}" value="${key}">
-                            <label for="q${index}${key}">${item.answers[key]}</label>
-                        </div>
-                    `;
-                }
-                quizHTML += `</div></div>`;
-            });
-            quizContainer.innerHTML = quizHTML;
-        }
-
-        function calculateResults() {
-            if (!currentQuizId) return;
-            const quizData = quizDatabase[currentQuizId].data;
-            const form = document.getElementById('quizForm');
-            const resultsContainer = document.getElementById('quizResults');
-            let score = 0;
-            
-            resultsContainer.innerHTML = ''; // Vider les anciens résultats
-
-            const summary = document.createElement('div');
-            summary.className = 'results-summary';
-            
-            quizData.forEach((item, index) => {
-                const resultBlock = document.createElement('div');
-                resultBlock.className = 'result-question';
-                const questionP = document.createElement('p');
-                questionP.className = 'question-text';
-                questionP.textContent = `${index + 1}. ${item.question}`;
-                resultBlock.appendChild(questionP);
-
-                const selectedAnswerInput = form.querySelector(`input[name="question${index}"]:checked`);
-                const userAnswerP = document.createElement('p');
-                userAnswerP.className = 'user-answer';
-
-                if (selectedAnswerInput) {
-                    const selectedValue = selectedAnswerInput.value;
-                    userAnswerP.innerHTML = `Votre réponse : <strong>${item.answers[selectedValue]}</strong>`;
-                    if (selectedValue === item.correctAnswer) {
-                        score++;
-                        resultBlock.classList.add('correct');
-                        userAnswerP.classList.add('correct-text');
-                    } else {
-                        resultBlock.classList.add('incorrect');
-                        userAnswerP.classList.add('incorrect-text');
-                        const correctAnswerP = document.createElement('p');
-                        correctAnswerP.className = 'correct-answer-text';
-                        correctAnswerP.innerHTML = `Réponse correcte : <strong>${item.answers[item.correctAnswer]}</strong>`;
-                        resultBlock.appendChild(correctAnswerP);
-                    }
-                } else {
-                    userAnswerP.innerHTML = "<em>Vous n'avez pas répondu.</em>";
-                    resultBlock.classList.add('incorrect');
-                    const correctAnswerP = document.createElement('p');
-                    correctAnswerP.className = 'correct-answer-text';
-                    correctAnswerP.innerHTML = `Réponse correcte : <strong>${item.answers[item.correctAnswer]}</strong>`;
-                    resultBlock.appendChild(correctAnswerP);
-                }
-                resultBlock.insertBefore(userAnswerP, resultBlock.childNodes[1]);
-                resultsContainer.appendChild(resultBlock);
-            });
-
-            summary.innerHTML = `
-                <h3>Quiz Terminé !</h3>
-                <p>Votre score est de <strong>${score} / ${quizData.length}</strong></p>
-            `;
-            resultsContainer.insertBefore(summary, resultsContainer.firstChild);
-
-            // Ajout des boutons d'action post-quiz
-            const resultsActions = document.createElement('div');
-            resultsActions.className = 'quiz-actions';
-            resultsActions.innerHTML = `
-                <button class="quiz-action-button secondary" onclick="launchQuiz('${currentQuizId}')">Recommencer</button>
-                <button class="quiz-action-button" onclick="showQuizSelection()">Choisir un autre quiz</button>
-            `;
-            resultsContainer.appendChild(resultsActions);
-
-            form.style.display = 'none';
-            resultsContainer.style.display = 'block';
-            resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            showNotification(`Vous avez obtenu ${score} sur ${quizData.length} !`, 'success');
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
             updateThemeUI();
             
@@ -735,14 +538,6 @@
             }
             
             setupSlider();
-
-            const quizForm = document.getElementById('quizForm');
-            if (quizForm) {
-                quizForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    calculateResults();
-                });
-            }
         });
     </script>
 </body>
