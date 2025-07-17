@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Quiz et mini-jeu pour découvrir le métier de technicien télécom.">
+    <title>LTD Simulator - Quiz Télécom</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            /* Colors */
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --secondary: #10b981;
+            --secondary-dark: #059669;
+            --accent: #f59e0b;
+            --accent-dark: #d97706;
+            --correct: #10b981;
+            --incorrect: #ef4444;
+            
+            /* Surfaces */
+            --background: #0f172a;
+            --surface: #1e293b;
+            --surface-elevated: #334155;
+            --surface-hover: #475569;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            
+            /* Text */
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            
+            /* Shadows */
+            --shadow-glow: 0 0 15px 0px rgba(99, 102, 241, 0.3);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+            /* Animation */
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Spacing */
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            
+            /* Borders */
+            --radius-sm: 0.375rem;
+            --radius: 0.5rem;
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.5rem;
+            --radius-full: 9999px;
+        }
+
+        body.light-mode {
+            --background: #f1f5f9;
+            --surface: #ffffff;
+            --surface-elevated: #e2e8f0;
+            --surface-hover: #cbd5e1;
+            --glass: rgba(0, 0, 0, 0.05);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --shadow-glow: 0 0 15px 0px rgba(99, 102, 241, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: var(--transition-slow);
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 50% 85%, rgba(245, 158, 11, 0.1) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+            animation: background-pan 30s linear infinite;
+        }
+        
+        @keyframes background-pan {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        [onclick], .nav-link, .mobile-nav-item, .login-btn, .theme-toggle, .mobile-toggle {
+            cursor: pointer;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px) saturate(180%);
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid var(--glass-border);
+            transition: var(--transition);
+        }
+
+        body.light-mode .header {
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 4.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 800;
+            font-size: 1.25rem;
+            transition: var(--transition);
+        }
+        .logo:hover {
+            transform: scale(1.05);
+            text-shadow: 0 0 10px var(--primary-light);
+        }
+        .logo-icon {
+            font-size: 1.75rem;
+        }
+
+        .nav-desktop { display: none; }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            list-style: none;
+        }
+        .nav-item { position: relative; }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+        .nav-link:hover {
+            color: var(--text-primary);
+            background: var(--glass);
+        }
+        .nav-link.active {
+            color: var(--text-primary);
+            background: linear-gradient(45deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.2));
+            font-weight: 600;
+        }
+
+        .header-search { position: relative; }
+        .header-search input {
+            width: 100%;
+            background-color: var(--surface);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            border-radius: var(--radius);
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        .header-search input::placeholder { color: var(--text-muted); }
+        .header-search input:focus {
+            background-color: var(--surface-elevated);
+            border-color: var(--primary);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 2px var(--primary-dark);
+            outline: none;
+        }
+        .header-search .fa-search {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+        .theme-toggle:hover {
+            background: var(--surface-elevated);
+            color: var(--text-primary);
+            transform: rotate(15deg);
+        }
+
+        .mobile-toggle {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+        .hamburger { position: relative; width: 1.25rem; height: 1rem; }
+        .hamburger span { position: absolute; left: 0; width: 100%; height: 2px; background: var(--text-primary); border-radius: 1px; transition: var(--transition); }
+        .hamburger span:nth-child(1) { top: 0; }
+        .hamburger span:nth-child(2) { top: 50%; transform: translateY(-50%); }
+        .hamburger span:nth-child(3) { bottom: 0; }
+        .mobile-toggle.active .hamburger span:nth-child(1) { top: 50%; transform: translateY(-50%) rotate(45deg); }
+        .mobile-toggle.active .hamburger span:nth-child(2) { opacity: 0; }
+        .mobile-toggle.active .hamburger span:nth-child(3) { bottom: 50%; transform: translateY(50%) rotate(-45deg); }
+        
+        .mobile-menu { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--background); z-index: 999; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: var(--transition-slow); }
+        .mobile-menu.active { opacity: 1; visibility: visible; }
+        .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--spacing-sm); height: 4.5rem; border-bottom: 1px solid var(--glass-border); }
+        .mobile-menu-close { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-primary); }
+        .mobile-menu-content { flex: 1; padding: var(--spacing-lg) var(--spacing-sm); overflow-y: auto; }
+        .mobile-search-wrapper { padding-bottom: var(--spacing-lg); margin-bottom: var(--spacing-lg); border-bottom: 1px solid var(--glass-border); }
+        .mobile-search-wrapper .header-search { width: 100%; }
+        .mobile-nav-section h3 { color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--spacing-md); }
+        .mobile-nav-items { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+        .mobile-nav-item { display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-md); color: var(--text-secondary); text-decoration: none; border-radius: var(--radius-md); }
+        .mobile-nav-item-icon { font-size: 1.25rem; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border-radius: var(--radius); }
+        .mobile-nav-item:hover { background: var(--glass); color: var(--text-primary); }
+
+        .main-content { margin-top: 4.5rem; padding: var(--spacing-lg) var(--spacing-sm); max-width: 1400px; margin-left: auto; margin-right: auto; }
+
+        @media (min-width: 768px) {
+            .nav-container { padding: 0 var(--spacing-md); }
+            .logo { font-size: 1.5rem; }
+            .logo-icon { font-size: 2rem; }
+            .main-content { padding: var(--spacing-xl) var(--spacing-md); }
+        }
+
+        @media (min-width: 1024px) {
+            .mobile-toggle { display: none; }
+            .nav-desktop {
+                display: flex;
+                align-items: center;
+                flex-grow: 1;
+                justify-content: flex-end;
+                gap: var(--spacing-md);
+            }
+            .header-search { width: 280px; }
+            .nav-menu { gap: var(--spacing-md); }
+        }
+
+        /* Styles for the Quiz Game */
+        #game-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .game-card {
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            animation: fade-in 0.5s ease-out;
+        }
+        
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .game-card h1 {
+            font-size: 2rem;
+            color: var(--primary-light);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .game-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: var(--spacing-md);
+            line-height: 1.4;
+        }
+
+        .game-card p {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: var(--text-primary);
+            padding: 0.8rem 1.8rem;
+            border: none;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+        }
+        
+        @media (min-width: 640px) {
+            .options-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .option-btn {
+            width: 100%;
+            background: var(--surface-elevated);
+            color: var(--text-secondary);
+            padding: 1rem;
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .option-btn:hover:not([disabled]) {
+            background: var(--surface-hover);
+            border-color: var(--primary);
+            color: var(--text-primary);
+        }
+        
+        .option-btn.correct {
+            background-color: var(--correct);
+            border-color: var(--correct);
+            color: var(--text-primary);
+            font-weight: bold;
+        }
+        
+        .option-btn.incorrect {
+            background-color: var(--incorrect);
+            border-color: var(--incorrect);
+            color: var(--text-primary);
+            font-weight: bold;
+        }
+
+        .feedback {
+            margin-top: var(--spacing-md);
+            padding: var(--spacing-sm);
+            border-radius: var(--radius);
+            font-weight: 500;
+            display: none;
+        }
+        
+        .feedback.correct {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--correct);
+            border: 1px solid var(--correct);
+        }
+        
+        .feedback.incorrect {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--incorrect);
+            border: 1px solid var(--incorrect);
+        }
+        
+        .feedback-explanation {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: var(--surface-elevated);
+            border-radius: var(--radius-full);
+            margin-top: var(--spacing-md);
+            overflow: hidden;
+        }
+
+        .progress-bar-inner {
+            height: 100%;
+            width: 0%;
+            background-color: var(--primary);
+            border-radius: var(--radius-full);
+            transition: width 0.5s ease-in-out;
+        }
+
+        .score-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            color: var(--accent);
+            margin-top: var(--spacing-md);
+        }
+        
+        .drag-and-drop-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-md);
+        }
+        
+        .ports-container, .cables-container {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .cable {
+            padding: 1rem 1.5rem;
+            background: var(--surface-elevated);
+            border: 2px dashed var(--glass-border);
+            border-radius: var(--radius);
+            cursor: grab;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .cable:active {
+            cursor: grabbing;
+            opacity: 0.7;
+            transform: scale(1.05);
+        }
+        
+        .port {
+            width: 100px;
+            height: 100px;
+            background: var(--surface-elevated);
+            border: 2px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: var(--transition);
+        }
+        
+        .port.over {
+            border-color: var(--accent);
+            background: rgba(245, 158, 11, 0.1);
+        }
+        
+        .port .fa-plug {
+            font-size: 2rem;
+            color: var(--text-muted);
+        }
+        
+        .port p {
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0;
+            color: var(--text-muted);
+        }
+        
+        .port.filled {
+            border-color: var(--secondary);
+            background: rgba(16, 185, 129, 0.2);
+        }
+        
+        .port.filled .fa-plug {
+            color: var(--secondary);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav-container">
+            <a href="index.html" class="logo" onclick="event.preventDefault(); navigateTo('index.html');">
+                <span class="logo-icon">🏗️</span>
+                <span class="logo-text">LTD Simulator</span>
+            </a>
+            <div class="nav-desktop">
+                 <form action="recherche.html" method="GET" class="header-search">
+                     <i class="fas fa-search"></i>
+                     <input type="search" name="query" placeholder="Rechercher..." aria-label="Rechercher">
+                 </form>
+                 <ul class="nav-menu">
+                     <li class="nav-item"><a href="index.html" class="nav-link" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
+                     <li class="nav-item"><a href="simulateur.html" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
+                     <li class="nav-item"><a href="test.html" class="nav-link" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
+                     <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
+                     <li class="nav-item"><a href="emploi.html" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
+                     <li class="nav-item"><a href="histoire.html" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
+                     <li class="nav-item"><a href="#" class="nav-link active" onclick="event.preventDefault();"><i class="fas fa-wifi"></i>&nbsp;Quiz Télécom</a></li>
+                 </ul>
+                 <div class="nav-actions">
+                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
+                         <i class="fas fa-moon" id="themeIcon"></i>
+                     </button>
+                 </div>
+            </div>
+            <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
+                <span class="hamburger"><span></span><span></span><span></span></span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <a href="index.html" class="logo" onclick="event.preventDefault(); toggleMobileMenu(); navigateTo('index.html');">
+                <span class="logo-icon">🏗️</span>
+                <span class="logo-text">LTD Simulator</span>
+            </a>
+            <button class="mobile-menu-close" onclick="toggleMobileMenu()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="mobile-menu-content">
+            <div class="mobile-search-wrapper">
+                <form action="recherche.html" method="GET" class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="search" name="query" placeholder="Rechercher..." aria-label="Rechercher">
+                </form>
+            </div>
+            <div class="mobile-nav-section">
+                <h3>Navigation</h3>
+                <div class="mobile-nav-items">
+                    <!-- Mobile nav items will be populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Game Container -->
+        <div id="game-container">
+            <!-- This content will be generated by JavaScript -->
+        </div>
+    </main>
+
+    <script>
+        // --- HEADER & NAVIGATION SCRIPT ---
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+
+        function navigateTo(pageFile) {
+            // In a real scenario, this would load a new page.
+            // Here, we just log it and prevent default action.
+            console.log(`Navigating to ${pageFile}`);
+            // You can add a loading animation here if you want.
+        }
+
+        function updateThemeUI() {
+            const themeIcon = document.getElementById('themeIcon');
+            if (!themeIcon) return;
+            document.body.classList.toggle('light-mode', currentTheme === 'light');
+            themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            updateThemeUI();
+        }
+        
+        function toggleMobileMenu() {
+            const mobileToggle = document.getElementById('mobileToggle');
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileToggle.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        }
+
+        // --- QUIZ GAME SCRIPT ---
+        const gameContainer = document.getElementById('game-container');
+        const quizData = [
+            {
+                type: 'qcm',
+                question: "Que signifie l'acronyme 'PTO' dans le contexte de la fibre optique ?",
+                options: ["Point de Terminaison Optique", "Prise Technique Obligatoire", "Port de Transfert Ouvert", "Protocole Télécom Opérateur"],
+                correctAnswer: 0,
+                explanation: "Le PTO (Point de Terminaison Optique) est le boîtier mural chez l'abonné où se termine le câble de fibre optique."
+            },
+            {
+                type: 'qcm',
+                question: "Quelle couleur est typiquement associée à un connecteur de fibre optique de type SC/APC ?",
+                options: ["Bleu", "Beige", "Vert", "Noir"],
+                correctAnswer: 2,
+                explanation: "Les connecteurs SC/APC (Angled Physical Contact) sont verts pour minimiser les réflexions de signal, essentiels pour la vidéo."
+            },
+            {
+                type: 'minigame',
+                title: "Mini-Jeu : Raccordement",
+                instruction: "Faites glisser le bon câble (Fibre Optique) vers le port correspondant sur le boîtier PTO.",
+                draggable: { id: 'fibre-cable', text: 'Câble Fibre', icon: 'fa-wave-square' },
+                droppable: { id: 'pto-port', text: 'Port PTO', icon: 'fa-plug' },
+                distractors: [
+                    { id: 'rj45-cable', text: 'Câble RJ45', icon: 'fa-ethernet' }
+                ]
+            },
+            {
+                type: 'qcm',
+                question: "Quel outil est indispensable pour préparer et couper proprement une fibre optique avant de la souder ?",
+                options: ["Un cutter", "Une pince à dénuder", "Un cliveur", "Des ciseaux"],
+                correctAnswer: 2,
+                explanation: "Le cliveur (ou cleaver en anglais) est un outil de haute précision qui permet de réaliser une coupe parfaitement droite de la fibre."
+            },
+            {
+                type: 'qcm',
+                question: "Qu'est-ce qu'une 'soudure par fusion' ?",
+                options: ["Coller deux fibres avec de la résine", "Aligner et fondre deux fibres optiques pour les joindre", " Agrafer deux câbles ensemble", "Utiliser un connecteur mécanique"],
+                correctAnswer: 1,
+                explanation: "La soudure par fusion utilise un arc électrique pour fondre et joindre deux extrémités de fibre, créant une connexion quasi parfaite."
+            },
+             {
+                type: 'qcm',
+                question: "Dans un réseau FTTH (Fiber to the Home), où se situe le NRO ?",
+                options: ["Dans la rue, devant la maison", "Chez l'abonné", "Au central de l'opérateur", "Sur un poteau téléphonique"],
+                correctAnswer: 2,
+                explanation: "Le NRO (Nœud de Raccordement Optique) est le 'central téléphonique' de la fibre, où les signaux de milliers d'abonnés convergent."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function startGame() {
+            currentQuestionIndex = 0;
+            score = 0;
+            showQuestion(currentQuestionIndex);
+        }
+
+        function showQuestion(index) {
+            const questionData = quizData[index];
+            if (!questionData) {
+                showFinalScore();
+                return;
+            }
+            gameContainer.innerHTML = '';
+            const card = document.createElement('div');
+            card.className = 'game-card';
+            
+            let content = '';
+            if (questionData.type === 'qcm') {
+                content = getQCMContent(questionData, index);
+            } else if (questionData.type === 'minigame') {
+                content = getMiniGameContent(questionData, index);
+            }
+            
+            card.innerHTML = content;
+            gameContainer.appendChild(card);
+            
+            if (questionData.type === 'minigame') {
+                setupDragAndDrop();
+            }
+            updateProgressBar();
+        }
+        
+        function getQCMContent(data, index) {
+             return `
+                <p class="score-display">Question ${index + 1} / ${quizData.length} | Score: ${score}</p>
+                <h2>${data.question}</h2>
+                <div class="options-grid" id="options-container">
+                    ${data.options.map((option, i) => `<button class="option-btn" onclick="selectAnswer(${i}, ${data.correctAnswer})">${option}</button>`).join('')}
+                </div>
+                <div class="feedback" id="feedback-container"></div>
+                <div class="progress-bar"><div class="progress-bar-inner" id="progress-bar-inner"></div></div>
+                <button class="btn hidden" id="next-btn" onclick="nextQuestion()">Question Suivante</button>
+            `;
+        }
+
+        function getMiniGameContent(data, index) {
+            const items = [data.draggable, ...data.distractors].sort(() => Math.random() - 0.5);
+            return `
+                <p class="score-display">Mini-Jeu ${index + 1} / ${quizData.length} | Score: ${score}</p>
+                <h2>${data.title}</h2>
+                <p>${data.instruction}</p>
+                <div class="drag-and-drop-container">
+                    <div class="ports-container"><div class="port" id="${data.droppable.id}"><i class="fas ${data.droppable.icon}"></i><p>${data.droppable.text}</p></div></div>
+                    <p>Glissez un de ces câbles :</p>
+                    <div class="cables-container">
+                        ${items.map(item => `<div class="cable" draggable="true" id="${item.id}"><i class="fas ${item.icon}"></i> <span>${item.text}</span></div>`).join('')}
+                    </div>
+                </div>
+                <div class="feedback" id="feedback-container"></div>
+                <div class="progress-bar"><div class="progress-bar-inner" id="progress-bar-inner"></div></div>
+                <button class="btn hidden" id="next-btn" onclick="nextQuestion()">Question Suivante</button>
+            `;
+        }
+
+        function selectAnswer(selectedIndex, correctIndex) {
+            const optionsContainer = document.getElementById('options-container');
+            const feedbackContainer = document.getElementById('feedback-container');
+            const nextBtn = document.getElementById('next-btn');
+            const buttons = optionsContainer.getElementsByTagName('button');
+            const questionData = quizData[currentQuestionIndex];
+
+            for (let btn of buttons) { btn.disabled = true; }
+
+            if (selectedIndex === correctIndex) {
+                score += 10;
+                buttons[selectedIndex].classList.add('correct');
+                feedbackContainer.innerHTML = `<strong>Correct !</strong><p class="feedback-explanation">${questionData.explanation}</p>`;
+                feedbackContainer.className = 'feedback correct';
+            } else {
+                buttons[selectedIndex].classList.add('incorrect');
+                buttons[correctIndex].classList.add('correct');
+                feedbackContainer.innerHTML = `<strong>Incorrect.</strong><p class="feedback-explanation">${questionData.explanation}</p>`;
+                feedbackContainer.className = 'feedback incorrect';
+            }
+            
+            feedbackContainer.style.display = 'block';
+            nextBtn.classList.remove('hidden');
+        }
+        
+        function nextQuestion() {
+            currentQuestionIndex++;
+            showQuestion(currentQuestionIndex);
+        }
+
+        function updateProgressBar() {
+            const progressBar = document.getElementById('progress-bar-inner');
+            if (progressBar) {
+                progressBar.style.width = `${(currentQuestionIndex / quizData.length) * 100}%`;
+            }
+        }
+        
+        function showFinalScore() {
+            const percentage = (score / (quizData.length * 10)) * 100;
+            let finalMessage = "C'est un bon début ! Continuez à explorer ce métier passionnant.";
+            if (percentage >= 80) finalMessage = "Excellent ! Vous avez l'étoffe d'un expert des réseaux !";
+            else if (percentage >= 50) finalMessage = "Bon score ! Vous avez de bonnes bases dans le domaine des télécoms.";
+
+            gameContainer.innerHTML = `
+                <div class="game-card">
+                    <h1>Quiz Terminé !</h1>
+                    <p>Vous avez découvert quelques facettes du métier de technicien télécom.</p>
+                    <h2>Votre score final : ${score} / ${quizData.length * 10}</h2>
+                    <p>${finalMessage}</p>
+                    <button class="btn" onclick="startGame()">Recommencer le quiz</button>
+                </div>
+            `;
+        }
+        
+        function setupDragAndDrop() {
+            const port = document.getElementById('pto-port');
+            const allCables = document.querySelectorAll('.cable');
+
+            allCables.forEach(cable => {
+                cable.addEventListener('dragstart', e => {
+                    e.dataTransfer.setData('text/plain', cable.id);
+                    setTimeout(() => cable.classList.add('hidden'), 0);
+                });
+                cable.addEventListener('dragend', () => cable.classList.remove('hidden'));
+            });
+
+            port.addEventListener('dragover', e => { e.preventDefault(); port.classList.add('over'); });
+            port.addEventListener('dragleave', () => port.classList.remove('over'));
+            port.addEventListener('drop', e => {
+                e.preventDefault();
+                port.classList.remove('over');
+                const droppedId = e.dataTransfer.getData('text/plain');
+                handleDrop(droppedId);
+            });
+        }
+        
+        function handleDrop(droppedId) {
+            const feedbackContainer = document.getElementById('feedback-container');
+            const nextBtn = document.getElementById('next-btn');
+            const port = document.getElementById('pto-port');
+            const droppedCable = document.getElementById(droppedId);
+
+            document.querySelectorAll('.cable').forEach(c => c.setAttribute('draggable', 'false'));
+            
+            if (droppedId === 'fibre-cable') {
+                score += 10;
+                port.classList.add('filled');
+                port.innerHTML = droppedCable.innerHTML;
+                feedbackContainer.innerHTML = `<strong>Parfait !</strong> <p class="feedback-explanation">Vous avez raccordé la fibre optique au bon port. C'est une manipulation essentielle !</p>`;
+                feedbackContainer.className = 'feedback correct';
+            } else {
+                feedbackContainer.innerHTML = `<strong>Oups !</strong> <p class="feedback-explanation">Ce n'est pas le bon câble. Le port PTO est spécifiquement conçu pour la fibre optique.</p>`;
+                feedbackContainer.className = 'feedback incorrect';
+            }
+            
+            feedbackContainer.style.display = 'block';
+            nextBtn.classList.remove('hidden');
+        }
+
+        function showStartScreen() {
+             gameContainer.innerHTML = `
+                <div class="game-card">
+                    <h1>Bienvenue au Quiz Télécom</h1>
+                    <p>Testez vos connaissances et découvrez les bases du métier de technicien télécom à travers des questions et des mini-jeux interactifs. Prêt à relever le défi ?</p>
+                    <button class="btn" onclick="startGame()">Commencer le Quiz</button>
+                </div>
+            `;
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            updateThemeUI();
+            
+            // Populate mobile nav
+            const desktopNav = document.querySelector('.nav-desktop .nav-menu');
+            const mobileNavContainer = document.querySelector('.mobile-menu .mobile-nav-items');
+            if(desktopNav && mobileNavContainer) {
+                mobileNavContainer.innerHTML = '';
+                desktopNav.querySelectorAll('.nav-item').forEach(item => {
+                    const link = item.querySelector('a');
+                    const newNavItem = document.createElement('a');
+                    newNavItem.href = link.href;
+                    newNavItem.className = 'mobile-nav-item';
+                    
+                    newNavItem.onclick = (e) => {
+                        e.preventDefault();
+                        toggleMobileMenu();
+                        if (link.href && !link.href.endsWith('#')) {
+                           navigateTo(link.getAttribute('href'));
+                        }
+                    };
+
+                    const iconDiv = document.createElement('div');
+                    iconDiv.className = 'mobile-nav-item-icon';
+                    iconDiv.innerHTML = link.querySelector('i').outerHTML;
+                    
+                    const textNode = document.createElement('h4');
+                    textNode.textContent = link.textContent.trim();
+
+                    newNavItem.appendChild(iconDiv);
+                    newNavItem.appendChild(textNode);
+                    mobileNavContainer.appendChild(newNavItem);
+                });
+            }
+
+            // Start the quiz game
+            showStartScreen();
+        });
+
+    </script>
+</body>
+</html>
