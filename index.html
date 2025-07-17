@@ -137,13 +137,14 @@
         }
 
         .nav-container {
-            max-width: 1600px; /* MODIFIÉ: Augmentation de la largeur pour le nouveau menu */
+            max-width: 1400px;
             margin: 0 auto;
             padding: 0 var(--spacing-sm); 
             display: flex;
             align-items: center;
             justify-content: space-between;
             height: 4.5rem;
+            gap: var(--spacing-md); /* AJOUTÉ: Espacement entre les éléments de la nav */
         }
 
         .logo {
@@ -153,7 +154,7 @@
             text-decoration: none;
             color: var(--text-primary);
             font-weight: 800;
-            font-size: 1.25rem; 
+            font-size: 1.2rem; 
             transition: var(--transition);
         }
         .logo:hover {
@@ -162,10 +163,16 @@
         }
 
         .logo-icon {
-            font-size: 1.75rem;
+            height: 1.8rem;
+            width: auto;
+            vertical-align: -0.4rem;
+        }
+        
+        .logo-text-extended {
+            display: none;
         }
 
-        .nav-desktop { display: none; } /* Caché par défaut (Mobile First) */
+        .nav-desktop { display: none; } 
 
         .nav-menu {
             display: flex;
@@ -294,7 +301,7 @@
         .main-content { 
             margin-top: 4.5rem; 
             padding: var(--spacing-lg) var(--spacing-sm); 
-            max-width: 1600px; /* MODIFIÉ: Augmentation de la largeur pour correspondre au menu */
+            max-width: 1400px; 
             margin-left: auto; 
             margin-right: auto; 
         }
@@ -907,7 +914,6 @@
                 font-size: 1.5rem;
             }
             .btp-wall-street {
-                /* Sur les écrans très étroits, forcer une seule colonne */
                 grid-template-columns: 1fr;
             }
         }
@@ -918,10 +924,10 @@
                 padding: 0 var(--spacing-md);
             }
             .logo {
-                font-size: 1.5rem;
+                font-size: 1.2rem;
             }
             .logo-icon {
-                font-size: 2rem;
+                height: 2rem;
             }
             .main-content {
                 padding: var(--spacing-xl) var(--spacing-md);
@@ -957,13 +963,19 @@
                 align-items: center;
                 flex-grow: 1;
                 justify-content: flex-end;
-                gap: var(--spacing-md);
+                gap: var(--spacing-sm); 
             }
             .header-search {
                 width: 280px;
             }
             .nav-menu {
-                gap: var(--spacing-md);
+                gap: var(--spacing-xs); 
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .logo-text-extended {
+                display: inline;
             }
         }
 
@@ -978,8 +990,11 @@
     <header class="header" id="header">
         <nav class="nav-container">
             <a href="index.html" class="logo" onclick="event.preventDefault(); navigateTo('index.html');">
-                <span class="logo-icon">🏗️</span>
-                <span class="logo-text">LTD Simulator</span>
+                <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
+                    <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
+                    <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+                </svg>
+                <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
             </a>
             <div class="nav-desktop">
                  <form action="recherche.html" method="GET" class="header-search">
@@ -993,7 +1008,7 @@
                      <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
                      <li class="nav-item"><a href="emploi.html" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
                      <li class="nav-item"><a href="histoire.html" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
-                     <li class="nav-item"><a href="quiz.html" class="nav-link" onclick="event.preventDefault(); navigateTo('quiz.html')"><i class="fas fa-question-circle"></i>&nbsp;Quiz</a></li>
+                     <li class="nav-item"><a href="quizz.html" class="nav-link" onclick="event.preventDefault(); navigateTo('quizz.html')"><i class="fas fa-question-circle"></i>&nbsp;Quiz</a></li>
                  </ul>
                  <div class="nav-actions">
                      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
@@ -1011,8 +1026,11 @@
     <div class="mobile-menu" id="mobileMenu">
         <div class="mobile-menu-header">
             <a href="index.html" class="logo" onclick="event.preventDefault(); toggleMobileMenu(); navigateTo('index.html');">
-                <span class="logo-icon">🏗️</span>
-                <span class="logo-text">LTD Simulator</span>
+                 <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
+                    <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
+                    <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+                </svg>
+                <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
             </a>
             <button class="mobile-menu-close" onclick="toggleMobileMenu()"><i class="fas fa-times"></i></button>
         </div>
@@ -1083,7 +1101,7 @@
                 <p>Restez à jour avec nos derniers tests, challenges et actualités du secteur.</p>
             </div>
             <div class="news-banner-grid">
-                <a href="quiztelecom.html" onclick="event.preventDefault(); navigateTo('quiztelecom.html')" class="news-banner-item">
+                <a href="quizz.html" onclick="event.preventDefault(); navigateTo('quizz.html')" class="news-banner-item">
                     <div class="card-image-top">
                         <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <g stroke="var(--primary)" opacity="0.8">
