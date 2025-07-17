@@ -458,7 +458,7 @@
         }
         .news-banner-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: 1fr;
             gap: var(--spacing-lg);
         }
         .news-banner-item {
@@ -528,7 +528,7 @@
 
         .quick-actions-grid {
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: 1fr;
             gap: var(--spacing-md); 
             margin: 4rem 0;
         }
@@ -910,6 +910,7 @@
             }
             .header-search {
                 width: 280px;
+                margin-right: var(--spacing-md);
             }
             .nav-menu {
                 gap: var(--spacing-xs); 
@@ -1290,119 +1291,6 @@
             document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
         }
 
-        const allTenders = [
-            { type: 'tenders', title: "Travaux de rénovation et d'extension de l'école maternelle", location: "Toulouse (31)", date: "2025-08-22", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638319" },
-            { type: 'tenders', title: "Construction d'un centre aquatique intercommunal", location: "Agglomération de La Rochelle (17)", date: "2025-09-16", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638247" },
-            { type: 'tenders', title: "Aménagement de la ZAC du Parc des Calanques", location: "Marseille (13)", date: "2025-08-05", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638165" },
-            { type: 'tenders', title: "Marché de maîtrise d'oeuvre pour la restructuration d'un EHPAD", location: "Belfort (90)", date: "2025-09-02", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638053" },
-            { type: 'tenders', title: "Travaux d'entretien des voiries communales", location: "Strasbourg (67)", date: "2025-08-12", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2637992" }
-        ];
-
-        const allNews = [
-            { type: 'news', title: "L'intelligence artificielle va-t-elle transformer le BTP ?", source: "Batiactu", date: "2025-07-15", link: "https://www.batiactu.com/edito/l-intelligence-artificielle-va-t-elle-transformer-btp-69887.php" },
-            { type: 'news', title: "BTP : la décarbonation est en marche, mais le chemin est encore long", source: "Le Moniteur", date: "2025-07-14", link: "https://www.lemoniteur.fr/article/btp-la-decarbonation-est-en-marche-mais-le-chemin-est-encore-long.2317628" },
-            { type: 'news', title: "Comment le réemploi des matériaux s'organise dans le BTP", source: "Batiweb", date: "2025-07-11", link: "https://www.batiweb.com/actualites/developpement-durable/comment-le-reemploi-des-materiaux-sorganise-dans-le-btp-20240711" },
-            { type: 'news', title: "Lafarge et Bouygues Construction s'allient pour un béton bas carbone", source: "Batiactu", date: "2025-07-09", link: "https://www.batiactu.com/edito/lafarge-et-bouygues-construction-s-allient-pour-un-beton-bas-carbone-69815.php" },
-            { type: 'news', title: "JO 2024 : le BTP a relevé le défi des délais", source: "Le Moniteur", date: "2025-07-05", link: "https://www.lemoniteur.fr/article/jo-2024-le-btp-a-releve-le-defi-des-delais.2316401" }
-        ];
-        
-        function populateTenders(isRefresh = false) {
-            const feed = document.getElementById('tenders-feed');
-            if (!feed) return;
-            
-            feed.innerHTML = ''; 
-            allTenders.forEach(item => {
-                const itemEl = document.createElement('div');
-                itemEl.className = 'feed-item';
-                itemEl.innerHTML = `
-                    <a href="${item.link}" target="_blank" rel="noopener noreferrer" onclick="event.preventDefault(); openLink('${item.link}')">
-                        <div class="feed-item-title">${item.title}</div>
-                        <div class="feed-item-meta">
-                            <span><i class="fas fa-map-marker-alt"></i> ${item.location}</span>
-                            <span><i class="fas fa-calendar-alt"></i> Clôture le ${item.date}</span>
-                        </div>
-                        <div class="feed-item-action">Consulter l'offre <i class="fas fa-arrow-right"></i></div>
-                    </a>`;
-                feed.appendChild(itemEl);
-            });
-            if(isRefresh) showNotification("Appels d'offre actualisés.", 'success');
-        }
-
-        function populateNews(isRefresh = false) {
-            const feed = document.getElementById('news-feed');
-            if (!feed) return;
-            
-            feed.innerHTML = '';
-            allNews.forEach(item => {
-                const itemEl = document.createElement('div');
-                itemEl.className = 'feed-item';
-                itemEl.innerHTML = `
-                    <a href="${item.link}" target="_blank" rel="noopener noreferrer" onclick="event.preventDefault(); openLink('${item.link}')">
-                        <div class="feed-item-title">${item.title}</div>
-                        <div class="feed-item-meta">
-                            <span><i class="fas fa-newspaper"></i> ${item.source}</span>
-                            <span><i class="fas fa-clock"></i> ${item.date}</span>
-                        </div>
-                        <div class="feed-item-action">Lire la suite <i class="fas fa-arrow-right"></i></div>
-                    </a>`;
-                feed.appendChild(itemEl);
-            });
-            if(isRefresh) showNotification("Actualités actualisées.", 'success');
-        }
-        
-        function updateNotifButtonUI() {
-            const buttons = document.querySelectorAll('.feed-action-btn[title^="Activer les notifications"]');
-            if (notificationPermission === 'granted') {
-                buttons.forEach(btn => {
-                    btn.classList.add('active');
-                    btn.title = 'Notifications activées';
-                });
-            } else {
-                 buttons.forEach(btn => {
-                    btn.classList.remove('active');
-                    btn.title = 'Activer les notifications';
-                });
-            }
-        }
-
-        function enableNotifications() {
-            if (!("Notification" in window)) {
-                showNotification("Ce navigateur ne supporte pas les notifications.", 'error');
-                return;
-            }
-
-            if (notificationPermission === 'granted') {
-                showNotification("Les notifications sont déjà activées.", 'info');
-                return;
-            }
-            
-            if (notificationPermission === 'denied') {
-                showNotification("Les notifications ont été bloquées. Veuillez les autoriser dans les paramètres de votre navigateur.", 'warning', 5000);
-                return;
-            }
-
-            Notification.requestPermission().then(permission => {
-                notificationPermission = permission;
-                if (permission === "granted") {
-                    showNotification("Notifications activées avec succès !", 'success');
-                    sendSystemNotification("LTD Simulator", "Vous recevrez maintenant les dernières nouvelles ici.");
-                } else {
-                    showNotification("Notifications non autorisées.", 'warning');
-                }
-                updateNotifButtonUI();
-            });
-        }
-
-        function sendSystemNotification(title, body) {
-            if (notificationPermission !== 'granted') return;
-            const options = {
-                body: body,
-                icon: 'https://placehold.co/64x64/6366f1/FFFFFF?text=LTD',
-                badge: 'https://placehold.co/64x64/6366f1/FFFFFF?text=LTD'
-            };
-            new Notification(title, options);
-        }
-
         function setupSlider() {
             const slider = document.getElementById('imageSlider');
             if (!slider) return;
@@ -1579,33 +1467,6 @@
                 }
             }
             
-            function searchSite(query) {
-                const lowerQuery = query.toLowerCase();
-                const newsResults = allNews.filter(item => item.title.toLowerCase().includes(lowerQuery));
-                const tendersResults = allTenders.filter(item => item.title.toLowerCase().includes(lowerQuery) || item.location.toLowerCase().includes(lowerQuery));
-
-                if (newsResults.length === 0 && tendersResults.length === 0) {
-                    return "Je n'ai trouvé aucun résultat pour votre recherche. Essayez avec d'autres mots-clés.";
-                }
-
-                let response = "Voici ce que j'ai trouvé :<br>";
-                if (tendersResults.length > 0) {
-                    response += "<br><strong>Appels d'offre :</strong><ul>";
-                    tendersResults.forEach(item => {
-                        response += `<li><a href="${item.link}" onclick="event.preventDefault(); openLink('${item.link}')">${item.title} (${item.location})</a></li>`;
-                    });
-                    response += "</ul>";
-                }
-                if (newsResults.length > 0) {
-                    response += "<br><strong>Actualités :</strong><ul>";
-                    newsResults.forEach(item => {
-                        response += `<li><a href="${item.link}" onclick="event.preventDefault(); openLink('${item.link}')">${item.title}</a> (Source: ${item.source})</li>`;
-                    });
-                    response += "</ul>";
-                }
-                return response;
-            }
-
             function getBotResponse(userInput) {
                 const lowerInput = userInput.toLowerCase();
                 
@@ -1613,9 +1474,9 @@
                     { pattern: /recherche|trouve|cherche|article sur|appel d'offre pour/i, action: (input) => {
                         const query = input.replace(/recherche|trouve|cherche|article sur|appel d'offre pour/i, "").trim();
                         if (query.length < 3) return { text: "Veuillez préciser votre recherche avec au moins 3 caractères." };
-                        return { text: searchSite(query) };
+                        return { text: "La recherche n'est pas disponible sur cette page." };
                     }},
-                    { pattern: /bonjour|salut|hello|yo/i, action: () => ({ text: "Bonjour ! Comment puis-je vous assister aujourd'hui ?", replies: ["Simulateurs", "Offres d'emploi", "Rechercher"] }) },
+                    { pattern: /bonjour|salut|hello|yo/i, action: () => ({ text: "Bonjour ! Comment puis-je vous assister aujourd'hui ?", replies: ["Simulateurs", "Offres d'emploi", "Challenges"] }) },
                     { pattern: /simulateur|simulation/i, action: () => ({ text: "Nos simulateurs vous permettent de gérer des chantiers virtuels et de tester vos compétences. Vous pouvez y accéder via le menu 'Simulateurs' en haut de la page, ou en cliquant sur la carte correspondante." }) },
                     { pattern: /emploi|recrute|carrière|challenge/i, action: () => ({ text: "Nous avons des offres d'emploi et des challenges de recrutement. Consultez la section 'Nos offres d'emploi' ou 'Challenges' pour en savoir plus." }) },
                     { pattern: /test|évaluation/i, action: () => ({ text: "Nous proposons des tests techniques et comportementaux pour évaluer vos compétences. Rendez-vous dans la section 'Tests'." }) },
@@ -1629,12 +1490,12 @@
                     }
                 }
 
-                return { text: "Je ne suis pas sûr de comprendre. Pourriez-vous reformuler ? Vous pouvez me demander de rechercher des articles ou des appels d'offres.", replies: ["Rechercher", "Simulateurs"] };
+                return { text: "Je ne suis pas sûr de comprendre. Pourriez-vous reformuler ? Vous pouvez me demander des informations sur les simulateurs ou les challenges.", replies: ["Simulateurs", "Challenges"] };
             }
             
             function startChat() {
                 appendMessage("Bonjour ! Comment puis-je vous aider aujourd'hui concernant le BTP ?", 'bot');
-                showQuickReplies(["Infos sur les simulateurs", "Chercher un appel d'offre", "Actualités du BTP"]);
+                showQuickReplies(["Infos sur les simulateurs", "Challenges", "Offres d'emploi"]);
             }
             
             startChat();
@@ -1688,13 +1549,6 @@
                     mobileNavContainer.appendChild(newNavItem);
                 });
             }
-
-            // Populate feeds after a short delay
-            setTimeout(() => {
-                populateTenders();
-                populateNews();
-                updateNotifButtonUI();
-            }, 1000);
             
             setupSlider();
             setupChatbot();
