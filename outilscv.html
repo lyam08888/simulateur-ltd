@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Outil de génération de CV par IA intégré à la plateforme LTD Simulator.">
     <title>LTD Simulator - Outil CV IA</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <!-- Fonts & Icons from your template -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,10 +73,10 @@
         
         /* --- CV Generator Specific Styles --- */
         .control-panel { background: var(--surface); padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); box-shadow: var(--shadow-md); }
-        .control-panel label { color: var(--text-secondary); font-weight: 500; }
-        .control-panel textarea, .control-panel input[type=range], .control-panel input[type=color] { background: var(--background); border: 1px solid var(--glass-border); color: var(--text-primary); border-radius: var(--radius); padding: 0.75rem; transition: var(--transition); width: 100%; }
+        .control-panel label { color: var(--text-secondary); font-weight: 500; font-size: 0.875rem; }
+        .control-panel textarea, .control-panel input[type=range], .control-panel input[type=color] { background: var(--background); border: 1px solid var(--glass-border); color: var(--text-primary); border-radius: var(--radius); padding: 0.5rem; transition: var(--transition); width: 100%; }
         .control-panel textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-dark); outline: none; }
-        .control-panel button { border: none; padding: 0.75rem 1rem; border-radius: var(--radius); font-weight: 600; transition: var(--transition); cursor: pointer; width: 100%; }
+        .control-panel button { border: none; padding: 0.6rem 1rem; border-radius: var(--radius); font-weight: 600; font-size: 0.875rem; transition: var(--transition); cursor: pointer; width: 100%; }
         .control-panel button:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-primary { background-color: var(--primary); color: white; }
         .btn-primary:hover:not(:disabled) { background-color: var(--primary-dark); }
@@ -86,6 +88,10 @@
         .btn-purple:hover:not(:disabled) { background-color: #7c3aed; }
         .error-message { background-color: #ef4444; color: white; padding: 1rem; border-radius: var(--radius); margin-top: 1rem; }
         .cv-preview-container { width: 21cm; height: 29.7cm; overflow: hidden; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: auto; transition: all 0.2s ease-in-out; }
+        .control-panel fieldset { border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 1rem; }
+        .control-panel legend { padding: 0 0.5rem; color: var(--text-muted); font-weight: 500; font-size: 0.75rem; text-transform: uppercase; }
+        .control-panel input[type=color] { height: 2rem; padding: 0.25rem; }
+        .control-panel .checkbox-label { display: flex; align-items: center; gap: 0.5rem; user-select: none; }
     </style>
 </head>
 <body>
@@ -97,75 +103,118 @@
 
         // --- Schéma JSON et logique API (inchangés) ---
         const CV_SCHEMA = {
-            type: "OBJECT", properties: { name: { type: "STRING" }, title: { type: "STRING" }, contact: { type: "OBJECT", properties: { phone: { type: "STRING" }, email: { type: "STRING" }, address: { type: "STRING" } } }, sections: { type: "OBJECT", properties: { "Profil": { type: "ARRAY", items: { type: "STRING" } }, "Expérience": { type: "ARRAY", items: { type: "OBJECT", properties: { title: { type: "STRING" }, company: { type: "STRING" }, dates: { type: "STRING" }, description: { type: "ARRAY", items: { type: "STRING" } } } } }, "Formation": { type: "ARRAY", items: { type: "OBJECT", properties: { title: { type: "STRING" }, school: { type: "STRING" }, dates: { type: "STRING" }, description: { type: "ARRAY", items: { type: "STRING" } } } } }, "Compétences": { type: "ARRAY", items: { type: "STRING" } }, "Savoir-faire": { type: "ARRAY", items: { type: "STRING" } }, "Savoir-être": { type: "ARRAY", items: { type: "STRING" } }, "Langues": { type: "ARRAY", items: { type: "STRING" } }, "Centres d'intérêt": { type: "ARRAY", items: { type: "STRING" } } } } }
+            type: "OBJECT",
+            properties: {
+                name: { type: "STRING" },
+                title: { type: "STRING" },
+                contact: { type: "OBJECT", properties: { phone: { type: "STRING" }, email: { type: "STRING" }, address: { type: "STRING" }, other: { type: "STRING" } } },
+                sections: {
+                    type: "OBJECT",
+                    properties: {
+                        "Profil": { type: "ARRAY", items: { type: "STRING" } },
+                        "Expérience": { type: "ARRAY", items: { type: "OBJECT", properties: { title: { type: "STRING" }, company: { type: "STRING" }, dates: { type: "STRING" }, description: { type: "ARRAY", items: { type: "STRING" } } } } },
+                        "Formation": { type: "ARRAY", items: { type: "OBJECT", properties: { title: { type: "STRING" }, school: { type: "STRING" }, dates: { type: "STRING" }, description: { type: "ARRAY", items: { type: "STRING" } } } } },
+                        "Atouts": { type: "ARRAY", items: { type: "STRING" } },
+                        "Qualifications": { type: "ARRAY", items: { type: "STRING" } },
+                        "Langues": { type: "ARRAY", items: { type: "STRING" } },
+                        "Centres d'intérêt": { type: "ARRAY", items: { type: "STRING" } }
+                    }
+                }
+            }
         };
         const getGeminiPayload = (text, instruction) => ({ contents: [{ role: "user", parts: [{ text: instruction.replace('${text}', text) }] }], generationConfig: { responseMimeType: "application/json", responseSchema: CV_SCHEMA } });
 
-        const SidebarSection = ({ title, children, accentColor }) => (
-            <div><h2 className="text-xl font-bold border-b-2 pb-2 mb-4 mt-6" style={{borderColor: accentColor}}>{title}</h2>{children}</div>
-        );
-        const MainSection = ({ title, children, isCompact, accentColor }) => (
-            <section className={isCompact ? "mt-4" : "mt-6"}><h2 className="text-2xl font-bold border-b-2 border-gray-200 pb-2 mb-4" style={{color: accentColor}}>{title}</h2>{children}</section>
-        );
-        
+        // --- NOUVEAU : Composant de rendu CV amélioré ---
         const CvPreview = React.forwardRef(({ cvData, options }, ref) => {
             if (!cvData) {
                 return <div className="cv-preview-container flex items-center justify-center p-8 text-center" style={{backgroundColor: 'var(--surface)', color: 'var(--text-muted)'}}><div><p className="text-xl">L'aperçu de votre CV apparaîtra ici.</p></div></div>;
             }
             const { name, title, contact, sections } = cvData;
-            const { compact, fontSize, accentColor, sidebarColor } = options;
-            const mainPaddings = compact ? "p-6" : "p-8";
-            const renderableSections = { "Profil": sections?.Profil, "Expérience": sections?.Expérience, "Formation": sections?.Formation, "Compétences": sections?.Compétences, "Savoir-faire": sections?.["Savoir-faire"], "Savoir-être": sections?.["Savoir-être"], "Langues": sections?.Langues, "Centres d'intérêt": sections?.["Centres d'intérêt"] };
+            const { accentColor, sidebarColor } = options;
+            const renderableSections = { "Profil": sections?.Profil, "Expérience": sections?.Expérience, "Formation": sections?.Formation, "Atouts": sections?.Atouts, "Qualifications": sections?.Qualifications, "Langues": sections?.Langues, "Centres d'intérêt": sections?.["Centres d'intérêt"] };
+
             return (
-                <div ref={ref} className="cv-preview-container grid grid-cols-12" style={{ fontSize: `${fontSize}px` }}>
-                    <aside className={`col-span-4 text-white flex flex-col ${mainPaddings}`} style={{ backgroundColor: sidebarColor }}>
+                <div ref={ref} className="cv-preview-container grid grid-cols-12 font-sans" style={{color: '#374151'}}>
+                    {/* Colonne de Gauche */}
+                    <aside className="col-span-4 text-white p-8 flex flex-col" style={{ backgroundColor: sidebarColor }}>
                         <div className="flex-grow">
                             {options.showContact && contact && (
-                                <SidebarSection title="CONTACT" accentColor={accentColor}>
+                                <div className="mb-8">
+                                    <h2 className="text-xl font-bold border-b-2 pb-2 mb-4" style={{borderColor: accentColor}}>CONTACT</h2>
                                     <div className="space-y-3 text-sm">
-                                        {contact.phone && <p className="flex items-start"><i className="fas fa-phone-alt fa-fw mr-2 mt-1"></i><span>{contact.phone}</span></p>}
-                                        {contact.email && <p className="flex items-start"><i className="fas fa-envelope fa-fw mr-2 mt-1"></i><span>{contact.email}</span></p>}
-                                        {contact.address && <p className="flex items-start"><i className="fas fa-map-marker-alt fa-fw mr-2 mt-1"></i><span>{contact.address}</span></p>}
+                                        {contact.phone && <p className="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-3 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg><span>{contact.phone}</span></p>}
+                                        {contact.email && <p className="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-3 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg><span>{contact.email}</span></p>}
+                                        {contact.address && <p className="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-3 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span>{contact.address}</span></p>}
+                                        {contact.other && <p className="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-3 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg><span>{contact.other}</span></p>}
                                     </div>
-                                </SidebarSection>
+                                </div>
                             )}
-                             {options.showSavoirEtre && renderableSections["Savoir-être"] && <SidebarSection title="SAVOIR-ÊTRE" accentColor={accentColor}><ul className="list-disc list-inside space-y-2 text-sm">{renderableSections["Savoir-être"].map((item, i) => <li key={i}>{item}</li>)}</ul></SidebarSection>}
-                             {options.showLangues && renderableSections.Langues && <SidebarSection title="LANGUES" accentColor={accentColor}><div className="text-sm space-y-1">{renderableSections.Langues.map((item, i) => <p key={i}>{item}</p>)}</div></SidebarSection>}
-                        </div>
-                        <div className="mt-auto pt-6 border-t text-xs" style={{borderColor: accentColor}}>
-                            <p className="font-bold">Lyes AMARA</p><p>Responsable d’activité recrutement – BTP – France</p><p className="mt-2">Fixe : 01 56 02 12 25 / Mobile : 06 34 25 32 96</p><p>Mail : l.amara@ltd-international.com</p>
+                            {options.showAtouts && renderableSections.Atouts && (
+                                <div className="mb-8">
+                                    <h2 className="text-xl font-bold border-b-2 pb-2 mb-4" style={{borderColor: accentColor}}>ATOUTS</h2>
+                                    <ul className="list-disc list-inside space-y-2 text-sm">{renderableSections.Atouts.map((item, i) => <li key={i}>{item}</li>)}</ul>
+                                </div>
+                            )}
+                            {options.showQualifications && renderableSections.Qualifications && (
+                                <div className="mb-8">
+                                    <h2 className="text-xl font-bold border-b-2 pb-2 mb-4" style={{borderColor: accentColor}}>QUALIFICATIONS</h2>
+                                    <ul className="list-disc list-inside space-y-2 text-sm">{renderableSections.Qualifications.map((item, i) => <li key={i}>{item}</li>)}</ul>
+                                </div>
+                            )}
+                            {options.showLangues && renderableSections.Langues && (
+                                <div className="mb-8">
+                                    <h2 className="text-xl font-bold border-b-2 pb-2 mb-4" style={{borderColor: accentColor}}>LANGUES</h2>
+                                    <div className="text-sm space-y-2">{renderableSections.Langues.map((item, i) => <p key={i}>{item}</p>)}</div>
+                                </div>
+                            )}
                         </div>
                     </aside>
-                    <main className={`col-span-8 ${mainPaddings}`} style={{color: '#1e293b'}}>
-                        <header className="text-center md:text-left mb-8"><h1 className="text-4xl font-extrabold" style={{color: accentColor}}>{name}</h1><h2 className="text-xl font-semibold text-gray-600">{title}</h2></header>
-                        {options.showProfil && renderableSections.Profil && <MainSection title="PROFIL" isCompact={compact} accentColor={accentColor}><p className="text-gray-700 text-sm">{renderableSections.Profil.join(' ')}</p></MainSection>}
-                        {options.showSavoirFaire && renderableSections["Savoir-faire"] && <MainSection title="SAVOIR-FAIRE" isCompact={compact} accentColor={accentColor}><ul className="list-disc list-inside text-sm text-gray-700 mt-2 space-y-1">{renderableSections["Savoir-faire"].map((item, i) => <li key={i}>{item}</li>)}</ul></MainSection>}
-                        {options.showCompetences && renderableSections.Compétences && <MainSection title="COMPÉTENCES" isCompact={compact} accentColor={accentColor}><ul className="list-disc list-inside text-sm text-gray-700 mt-2 space-y-1">{renderableSections.Compétences.map((item, i) => <li key={i}>{item}</li>)}</ul></MainSection>}
+                    {/* Colonne de Droite */}
+                    <main className="col-span-8 p-8">
+                        <header className="mb-8">
+                            <h1 className="text-4xl md:text-5xl font-extrabold" style={{color: sidebarColor}}>{name}</h1>
+                            <h2 className="text-xl md:text-2xl font-semibold text-gray-600">{title}</h2>
+                        </header>
+                        
+                        {options.showProfil && renderableSections.Profil && (
+                            <section className="mb-8">
+                                <h2 className="text-2xl font-bold border-b-2 border-gray-200 pb-2 mb-4" style={{color: sidebarColor}}>PROFIL</h2>
+                                <p className="text-gray-700 text-sm">{renderableSections.Profil.join(' ')}</p>
+                            </section>
+                        )}
                         {options.showExperience && renderableSections.Expérience && (
-                            <MainSection title="EXPÉRIENCES" isCompact={compact} accentColor={accentColor}>
-                                <div className={compact ? "space-y-3" : "space-y-5"}>
+                            <section className="mb-8">
+                                <h2 className="text-2xl font-bold border-b-2 border-gray-200 pb-2 mb-4" style={{color: sidebarColor}}>EXPÉRIENCES PROFESSIONNELLES</h2>
+                                <div className="space-y-6">
                                     {renderableSections.Expérience.map((exp, i) => (
                                         <div key={i}>
-                                            <div className="flex justify-between items-baseline"><h3 className="font-bold text-md text-gray-800">{exp.title}</h3>{!options.hideDates && <p className="text-xs font-medium shrink-0 ml-2" style={{color: accentColor}}>{exp.dates}</p>}</div>
+                                            <div className="flex justify-between items-baseline">
+                                                <h3 className="font-bold text-md text-gray-800">{exp.title}</h3>
+                                                {!options.hideDates && <p className="text-xs font-medium" style={{color: accentColor}}>{exp.dates}</p>}
+                                            </div>
                                             <p className="text-sm font-semibold text-gray-600 italic">{exp.company}</p>
                                             {!options.hideExpDesc && <ul className="list-disc list-inside text-sm text-gray-700 mt-2 space-y-1">{exp.description?.map((desc, j) => <li key={j}>{desc}</li>)}</ul>}
                                         </div>
                                     ))}
                                 </div>
-                            </MainSection>
+                            </section>
                         )}
                          {options.showFormation && renderableSections.Formation && (
-                             <MainSection title="FORMATION" isCompact={compact} accentColor={accentColor}>
+                             <section>
+                                <h2 className="text-2xl font-bold border-b-2 border-gray-200 pb-2 mb-4" style={{color: sidebarColor}}>FORMATION</h2>
                                 <div className="space-y-4">
                                     {renderableSections.Formation.map((form, i) => (
                                         <div key={i}>
-                                            <div className="flex justify-between items-baseline"><h3 className="font-bold text-md text-gray-800">{form.title}</h3>{!options.hideDates && <p className="text-xs font-medium shrink-0 ml-2" style={{color: accentColor}}>{form.dates}</p>}</div>
+                                            <div className="flex justify-between items-baseline">
+                                                <h3 className="font-bold text-md text-gray-800">{form.title}</h3>
+                                                {!options.hideDates && <p className="text-xs font-medium" style={{color: accentColor}}>{form.dates}</p>}
+                                            </div>
                                             <p className="text-sm font-semibold text-gray-600 italic">{form.school}</p>
                                             {!options.hideFormDesc && form.description && <p className="text-sm text-gray-700 mt-1">{form.description.join(', ')}</p>}
                                         </div>
                                     ))}
                                 </div>
-                            </MainSection>
+                            </section>
                         )}
                     </main>
                 </div>
@@ -178,10 +227,10 @@
             const [isGenerating, setIsGenerating] = useState(false);
             const [error, setError] = useState(null);
             const [postGenOptions, setPostGenOptions] = useState({
-                compact: false, hideExpDesc: false, hideFormDesc: false, hideDates: false, fontSize: 14,
-                sidebarColor: '#1e293b', accentColor: '#6366f1',
-                showProfil: true, showExperience: true, showFormation: true, showCompetences: true,
-                showSavoirFaire: true, showSavoirEtre: true, showLangues: true, showContact: true,
+                hideExpDesc: false, hideFormDesc: false, hideDates: false,
+                sidebarColor: '#312e81', accentColor: '#6366f1', // Indigo-900 and Indigo-500
+                showProfil: true, showExperience: true, showFormation: true, 
+                showAtouts: true, showQualifications: true, showLangues: true, showContact: true,
             });
             const cvPreviewRef = useRef(null);
 
@@ -224,9 +273,9 @@
                 setPostGenOptions(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
             };
 
-            const initialGenInstruction = "Analyse ce CV : ${text}. Synthétise-le pour une page A4. Extrais nom, titre, contact, et les sections : Profil, Expérience, Formation, Compétences, Langues. Sois concis.";
+            const initialGenInstruction = "Analyse ce CV : ${text}. Synthétise-le pour une page A4. Extrais nom, titre, contact (phone, email, address, other), et les sections : Profil, Expérience, Formation, Atouts, Qualifications, Langues. Sois concis.";
             const summarizeInstruction = "Analyse ce CV : ${text}. **Synthétise-le de manière agressive** pour qu'il tienne sur une seule page. Garde uniquement l'essentiel.";
-            const developInstruction = "Voici un CV en JSON : ${text}. Enrichis-le. Crée un 'Profil' engageant. Génère des listes pour 'Savoir-faire' (compétences techniques) et 'Savoir-être' (qualités humaines) à partir des données. Ajoute une section 'Compétences' si absente. Retourne le JSON complet.";
+            const developInstruction = "Voici un CV en JSON : ${text}. Enrichis-le. Crée un 'Profil' engageant. Génère des listes pour 'Atouts' et 'Qualifications' à partir des données. Retourne le JSON complet.";
 
             return (
                 <>
@@ -237,39 +286,48 @@
                     <div className="flex flex-col xl:flex-row gap-8">
                         <div className="xl:w-[450px] shrink-0">
                             <div className="control-panel flex flex-col gap-4 xl:sticky top-28 h-fit max-h-[calc(100vh-8rem)] overflow-y-auto">
-                                <div><h2 className="text-2xl font-bold">Panneau de Contrôle</h2></div>
-                                <div className="flex-grow flex flex-col">
-                                    <label className="font-semibold mb-2">1. Collez le CV du candidat</label>
-                                    <textarea value={inputText} onChange={(e) => setInputText(e.target.value)} placeholder="L'IA se chargera de synthétiser..." className="w-full h-32"></textarea>
-                                </div>
+                                <fieldset>
+                                    <legend>1. Données</legend>
+                                    <textarea value={inputText} onChange={(e) => setInputText(e.target.value)} placeholder="Collez le CV brut ici..." className="w-full h-36"></textarea>
+                                </fieldset>
                                 {error && <div className="error-message">{error}</div>}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <button onClick={() => handleApiCall(initialGenInstruction)} disabled={isGenerating} className="btn-primary">Générer</button>
-                                    <button onClick={() => handleApiCall(summarizeInstruction)} disabled={isGenerating || !cvData} className="btn-accent">Synthétiser</button>
-                                </div>
-                                <button onClick={() => handleApiCall(developInstruction)} disabled={isGenerating || !cvData} className="btn-purple">Analyser & Développer</button>
-                                {cvData && (
-                                    <div className="border-t pt-4 space-y-4 border-[var(--glass-border)]">
-                                        <h3 className="font-semibold">Personnalisation du rendu</h3>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div><label className="text-sm">Couleur sidebar</label><input type="color" name="sidebarColor" value={postGenOptions.sidebarColor} onChange={handleOptionChange}/></div>
-                                            <div><label className="text-sm">Couleur accent</label><input type="color" name="accentColor" value={postGenOptions.accentColor} onChange={handleOptionChange}/></div>
+                                <fieldset>
+                                    <legend>2. Actions IA</legend>
+                                    <div className="space-y-3">
+                                        <button onClick={() => handleApiCall(initialGenInstruction)} disabled={isGenerating} className="btn-primary">Générer / Mettre à jour</button>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <button onClick={() => handleApiCall(summarizeInstruction)} disabled={isGenerating || !cvData} className="btn-accent">Synthétiser</button>
+                                            <button onClick={() => handleApiCall(developInstruction)} disabled={isGenerating || !cvData} className="btn-purple">Développer</button>
                                         </div>
-                                        <div><label className="text-sm">Taille police: {postGenOptions.fontSize}px</label><input type="range" name="fontSize" min="10" max="16" value={postGenOptions.fontSize} onChange={handleOptionChange}/></div>
-                                        <h4 className="font-semibold text-sm pt-2 border-t border-[var(--glass-border)]">Afficher les sections</h4>
-                                        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                                            {Object.keys(postGenOptions).filter(k => k.startsWith('show')).map(key => (
-                                                <div key={key} className="flex items-center"><input type="checkbox" name={key} checked={postGenOptions[key]} onChange={handleOptionChange} className="h-4 w-4 rounded bg-[var(--background)] border-[var(--glass-border)]"/><label className="ml-2">{key.replace('show', '')}</label></div>
-                                            ))}
-                                        </div>
-                                        <h4 className="font-semibold text-sm pt-2 border-t border-[var(--glass-border)]">Options de contenu</h4>
-                                        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                                            <div className="flex items-center"><input type="checkbox" name="hideExpDesc" checked={postGenOptions.hideExpDesc} onChange={handleOptionChange} className="h-4 w-4 rounded"/><label className="ml-2">Masquer détails exp.</label></div>
-                                            <div className="flex items-center"><input type="checkbox" name="hideFormDesc" checked={postGenOptions.hideFormDesc} onChange={handleOptionChange} className="h-4 w-4 rounded"/><label className="ml-2">Masquer détails form.</label></div>
-                                            <div className="flex items-center"><input type="checkbox" name="hideDates" checked={postGenOptions.hideDates} onChange={handleOptionChange} className="h-4 w-4 rounded"/><label className="ml-2">Masquer les dates</label></div>
-                                        </div>
-                                        <button onClick={handleDownloadPdf} className="w-full btn-secondary">Télécharger en PDF</button>
                                     </div>
+                                </fieldset>
+                                {cvData && (
+                                    <fieldset>
+                                        <legend>3. Personnalisation</legend>
+                                        <div className="space-y-4">
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div><label>Couleur sidebar</label><input type="color" name="sidebarColor" value={postGenOptions.sidebarColor} onChange={handleOptionChange}/></div>
+                                                <div><label>Couleur accent</label><input type="color" name="accentColor" value={postGenOptions.accentColor} onChange={handleOptionChange}/></div>
+                                            </div>
+                                            <div className="border-t border-[var(--glass-border)] pt-3">
+                                                <h4 className="font-semibold text-sm mb-2">Afficher les sections</h4>
+                                                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                                                    {Object.keys(postGenOptions).filter(k => k.startsWith('show')).map(key => (
+                                                        <label key={key} className="checkbox-label"><input type="checkbox" name={key} checked={postGenOptions[key]} onChange={handleOptionChange} className="h-4 w-4 rounded bg-[var(--background)] border-[var(--glass-border)]"/><span>{key.substring(4)}</span></label>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div className="border-t border-[var(--glass-border)] pt-3">
+                                                <h4 className="font-semibold text-sm mb-2">Options de contenu</h4>
+                                                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                                                    <label className="checkbox-label"><input type="checkbox" name="hideExpDesc" checked={postGenOptions.hideExpDesc} onChange={handleOptionChange} className="h-4 w-4 rounded"/><span>Masquer détails exp.</span></label>
+                                                    <label className="checkbox-label"><input type="checkbox" name="hideFormDesc" checked={postGenOptions.hideFormDesc} onChange={handleOptionChange} className="h-4 w-4 rounded"/><span>Masquer détails form.</span></label>
+                                                    <label className="checkbox-label"><input type="checkbox" name="hideDates" checked={postGenOptions.hideDates} onChange={handleOptionChange} className="h-4 w-4 rounded"/><span>Masquer les dates</span></label>
+                                                </div>
+                                            </div>
+                                            <button onClick={handleDownloadPdf} className="w-full btn-secondary">Télécharger en PDF</button>
+                                        </div>
+                                    </fieldset>
                                 )}
                             </div>
                         </div>
