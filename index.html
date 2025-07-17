@@ -144,7 +144,7 @@
             align-items: center;
             justify-content: space-between;
             height: 4.5rem;
-            gap: var(--spacing-md); /* AJOUTÉ: Espacement entre les éléments de la nav */
+            gap: var(--spacing-md);
         }
 
         .logo {
@@ -458,7 +458,7 @@
         }
         .news-banner-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: var(--spacing-lg);
         }
         .news-banner-item {
@@ -528,7 +528,7 @@
 
         .quick-actions-grid {
             display: grid; 
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: var(--spacing-md); 
             margin: 4rem 0;
         }
@@ -603,56 +603,6 @@
             transform: translateY(0);
         }
         
-        .btp-wall-street { 
-            display: grid; 
-            grid-template-columns: 1fr;
-            gap: var(--spacing-lg); 
-            margin-top: var(--spacing-xl); 
-        }
-        
-        .feed-column { 
-            background: var(--surface); 
-            border-radius: var(--radius-lg); 
-            border: 1px solid var(--glass-border); 
-            overflow: hidden; 
-            transition: var(--transition-slow);
-            display: flex;
-            flex-direction: column;
-        }
-        .feed-column:hover .card-image-top svg {
-            transform: scale(1.05);
-        }
-        .feed-content {
-            padding: var(--spacing-lg);
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-        .feed-header { display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-lg); padding-bottom: var(--spacing-md); border-bottom: 1px solid var(--glass-border); }
-        .feed-header-title { display: flex; align-items: center; gap: var(--spacing-sm); flex-grow: 1; }
-        .feed-header i { font-size: 1.5rem; color: var(--primary); }
-        .feed-header h2 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
-        .feed-header-actions { display: flex; gap: var(--spacing-sm); }
-        .feed-action-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-muted); width: 2.2rem; height: 2.2rem; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; transition: var(--transition); }
-        .feed-action-btn:hover { background: var(--surface-hover); color: var(--text-primary); transform: scale(1.1); }
-        .feed-action-btn.active { color: var(--primary); }
-        .feed-list { flex-grow: 1; min-height: 400px; overflow-y: auto; padding-right: var(--spacing-sm); }
-        .feed-list::-webkit-scrollbar { width: 6px; }
-        .feed-list::-webkit-scrollbar-track { background: transparent; }
-        .feed-list::-webkit-scrollbar-thumb { background: var(--surface-elevated); border-radius: var(--radius-full); }
-        .feed-list::-webkit-scrollbar-thumb:hover { background: var(--surface-hover); }
-        .feed-item { padding: var(--spacing-md) 0; border-bottom: 1px solid var(--glass-border); transition: var(--transition); }
-        .feed-item:last-child { border-bottom: none; }
-        .feed-item a { text-decoration: none; color: var(--text-primary); display: block; padding: var(--spacing-xs); margin: calc(-1 * var(--spacing-xs)); border-radius: var(--radius); transition: background-color 0.3s; }
-        .feed-item a:hover { background-color: var(--glass); }
-        .feed-item-title { font-weight: 600; margin-bottom: var(--spacing-xs); }
-        .feed-item-meta { display: flex; align-items: center; gap: var(--spacing-sm); font-size: 0.875rem; color: var(--text-muted); flex-wrap: wrap; }
-        .feed-item-meta span { display: flex; align-items: center; gap: var(--spacing-xs); }
-        .feed-item-action { margin-top: var(--spacing-sm); display: inline-block; color: var(--primary); font-weight: 600; font-size: 0.875rem; }
-        .feed-item-action:hover { text-decoration: underline; }
-        .placeholder { text-align: center; padding: var(--spacing-xl) 0; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: var(--spacing-sm); }
-        .placeholder i { font-size: 1.5rem; }
-
         .notification { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-xl); transform: translateX(calc(100% + var(--spacing-lg))); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1100; backdrop-filter: blur(20px); max-width: 350px; }
         .notification.show { transform: translateX(0); }
         .notification-content { display: flex; align-items: flex-start; gap: var(--spacing-sm); }
@@ -944,9 +894,6 @@
             .news-banner-header h2 {
                 font-size: 2rem;
             }
-            .btp-wall-street {
-                grid-template-columns: repeat(2, 1fr);
-            }
         }
 
         /* Styles pour ordinateurs (1024px et plus) */
@@ -963,7 +910,6 @@
             }
             .header-search {
                 width: 280px;
-                margin-right: var(--spacing-md);
             }
             .nav-menu {
                 gap: var(--spacing-xs); 
@@ -1231,79 +1177,6 @@
                 </div>
             </a>
         </section>
-        
-        <!-- BTP Wall Street Section -->
-        <section class="btp-wall-street">
-            <!-- Tenders Column -->
-            <div class="feed-column" id="tenders-feed-container">
-                <div class="card-image-top">
-                     <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                         <g stroke="var(--primary-light)" opacity="0.8">
-                            <path d="M 60 100 l 80 -80" />
-                            <path d="M 140 100 l -80 -80" />
-                            <rect x="50" y="95" width="100" height="15" rx="5" />
-                         </g>
-                     </svg>
-                </div>
-                <div class="feed-content">
-                    <div class="feed-header">
-                        <div class="feed-header-title">
-                            <i class="fas fa-gavel"></i>
-                            <h2>Appels d'offre</h2>
-                        </div>
-                        <div class="feed-header-actions">
-                            <button class="feed-action-btn" onclick="enableNotifications('tenders')" title="Activer les notifications pour les appels d'offre">
-                                <i class="fas fa-bell"></i>
-                            </button>
-                            <button class="feed-action-btn" onclick="populateTenders(true)" title="Rafraîchir les appels d'offre">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="feed-list" id="tenders-feed">
-                        <div class="placeholder">
-                            <i class="fas fa-circle-notch fa-spin"></i>
-                            <span>Chargement...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- News Column -->
-            <div class="feed-column" id="news-feed-container">
-                <div class="card-image-top">
-                    <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <g stroke="var(--secondary)" opacity="0.8">
-                            <path d="M 40 20 h 120 v 90 h -120 z" stroke-width="3" fill="var(--secondary)" fill-opacity="0.1"/>
-                            <path d="M 40 45 h 120" />
-                            <path d="M 60 20 v 25" />
-                            <path d="M 50 60 h 100 M 50 75 h 100 M 50 90 h 60" />
-                        </g>
-                    </svg>
-                </div>
-                <div class="feed-content">
-                    <div class="feed-header">
-                         <div class="feed-header-title">
-                             <i class="fas fa-newspaper" style="color: var(--secondary);"></i>
-                             <h2>Actualités BTP</h2>
-                         </div>
-                         <div class="feed-header-actions">
-                             <button class="feed-action-btn" onclick="enableNotifications('news')" title="Activer les notifications pour les actualités">
-                                 <i class="fas fa-bell"></i>
-                             </button>
-                             <button class="feed-action-btn" onclick="populateNews(true)" title="Rafraîchir les actualités">
-                                 <i class="fas fa-sync-alt"></i>
-                             </button>
-                         </div>
-                    </div>
-                    <div class="feed-list" id="news-feed">
-                        <div class="placeholder">
-                            <i class="fas fa-circle-notch fa-spin"></i>
-                            <span>Chargement...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
 
     </main>
     
@@ -1563,28 +1436,24 @@
             const dots = dotsContainer.querySelectorAll('.slider-dot');
 
             function goToSlide(index) {
-                if (index === currentIndex && slides[index].classList.contains('active')) return;
+                if (slides.length === 0) return;
+                if (index === currentIndex && slides[currentIndex].classList.contains('active')) return;
                 
                 slides[currentIndex].classList.remove('active');
-                currentIndex = index;
+                currentIndex = (index + slides.length) % slides.length;
                 slides[currentIndex].classList.add('active');
                 
                 wrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
                 
-                dots.forEach((dot, i) => {
-                    dot.classList.toggle('active', i === currentIndex);
-                });
+                if (dots.length > 0) {
+                    dots.forEach((dot, i) => {
+                        dot.classList.toggle('active', i === currentIndex);
+                    });
+                }
             }
 
-            function nextSlide() {
-                const newIndex = (currentIndex + 1) % slides.length;
-                goToSlide(newIndex);
-            }
-
-            function prevSlide() {
-                const newIndex = (currentIndex - 1 + slides.length) % slides.length;
-                goToSlide(newIndex);
-            }
+            function nextSlide() { goToSlide(currentIndex + 1); }
+            function prevSlide() { goToSlide(currentIndex - 1); }
             
             function startInterval() {
                 slideInterval = setInterval(nextSlide, 7000); 
@@ -1595,17 +1464,12 @@
                 startInterval();
             }
 
-            nextBtn.addEventListener('click', () => {
-                nextSlide();
-                resetInterval();
-            });
-            prevBtn.addEventListener('click', () => {
-                prevSlide();
-                resetInterval();
-            });
+            if (prevBtn && nextBtn) {
+                nextBtn.addEventListener('click', () => { nextSlide(); resetInterval(); });
+                prevBtn.addEventListener('click', () => { prevSlide(); resetInterval(); });
+            }
             
-            // Initial state
-            if (slides.length > 0) {
+            if (slides.length > 0 && dots.length > 0) {
                 slides[0].classList.add('active');
                 dots[0].classList.add('active');
                 startInterval();
