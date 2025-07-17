@@ -7,7 +7,7 @@
     <title>LTD Simulator - Tests & Évaluations</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -116,7 +116,7 @@
             100% { background-position: 0% 50%; }
         }
         
-        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn, .notification-bell {
+        [onclick], .nav-link, .launch-button, .theme-toggle, .mobile-toggle, .search-button {
             cursor: pointer;
         }
 
@@ -139,11 +139,12 @@
         .nav-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 0 var(--spacing-md);
+            padding: 0 var(--spacing-sm); 
             display: flex;
             align-items: center;
             justify-content: space-between;
             height: 4.5rem;
+            gap: var(--spacing-md);
         }
 
         .logo {
@@ -153,7 +154,7 @@
             text-decoration: none;
             color: var(--text-primary);
             font-weight: 800;
-            font-size: 1.5rem;
+            font-size: 1.2rem; 
             transition: var(--transition);
         }
         .logo:hover {
@@ -162,18 +163,21 @@
         }
 
         .logo-icon {
-            font-size: 2rem;
+            height: 1.8rem;
+            width: auto;
+            vertical-align: -0.4rem;
+        }
+        
+        .logo-text-extended {
+            display: none;
         }
 
-        .nav-desktop { display: none; }
-        @media (min-width: 1024px) {
-            .nav-desktop { display: flex; align-items: center; gap: var(--spacing-lg); }
-        }
+        .nav-desktop { display: none; } 
 
         .nav-menu {
             display: flex;
             align-items: center;
-            gap: var(--spacing-md);
+            gap: var(--spacing-sm);
             list-style: none;
         }
 
@@ -202,6 +206,35 @@
             color: var(--text-primary);
             background: linear-gradient(45deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.2));
             font-weight: 600;
+        }
+
+        .header-search {
+            position: relative;
+        }
+        .header-search input {
+            width: 100%;
+            background-color: var(--surface);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            border-radius: var(--radius);
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        .header-search input::placeholder { color: var(--text-muted); }
+        .header-search input:focus {
+            background-color: var(--surface-elevated);
+            border-color: var(--primary);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 2px var(--primary-dark);
+            outline: none;
+        }
+        .header-search .fa-search {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
         }
 
         .nav-actions {
@@ -242,10 +275,7 @@
             border-radius: var(--radius);
             transition: var(--transition);
         }
-        @media (min-width: 1024px) {
-            .mobile-toggle { display: none; }
-        }
-
+        
         .hamburger { position: relative; width: 1.25rem; height: 1rem; }
         .hamburger span { position: absolute; left: 0; width: 100%; height: 2px; background: var(--text-primary); border-radius: 1px; transition: var(--transition); }
         .hamburger span:nth-child(1) { top: 0; }
@@ -257,19 +287,28 @@
         
         .mobile-menu { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--background); z-index: 999; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: var(--transition-slow); }
         .mobile-menu.active { opacity: 1; visibility: visible; }
-        .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-md); border-bottom: 1px solid var(--glass-border); }
+        .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--spacing-sm); height: 4.5rem; border-bottom: 1px solid var(--glass-border); }
         .mobile-menu-close { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-primary); }
-        .mobile-menu-content { flex: 1; padding: var(--spacing-lg); overflow-y: auto; }
+        .mobile-menu-content { flex: 1; padding: var(--spacing-lg) var(--spacing-sm); overflow-y: auto; }
+        .mobile-search-wrapper { padding-bottom: var(--spacing-lg); margin-bottom: var(--spacing-lg); border-bottom: 1px solid var(--glass-border); }
+        .mobile-search-wrapper .header-search { width: 100%; }
         .mobile-nav-section h3 { color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--spacing-md); }
         .mobile-nav-items { display: flex; flex-direction: column; gap: var(--spacing-xs); }
         .mobile-nav-item { display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-md); color: var(--text-secondary); text-decoration: none; border-radius: var(--radius-md); }
         .mobile-nav-item-icon { font-size: 1.25rem; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border-radius: var(--radius); }
         .mobile-nav-item:hover { background: var(--glass); color: var(--text-primary); }
 
-        .main-content { margin-top: 4.5rem; padding: var(--spacing-xl) var(--spacing-md); max-width: 1400px; margin-left: auto; margin-right: auto; }
-        .hero { text-align: center; padding: var(--spacing-xl) 0; transition: var(--transition-slow); }
+        .main-content { 
+            margin-top: 4.5rem; 
+            padding: var(--spacing-lg) var(--spacing-sm); 
+            max-width: 1400px; 
+            margin-left: auto; 
+            margin-right: auto; 
+        }
+        
+        .hero { text-align: center; padding: var(--spacing-lg) 0; }
         .hero h1 { 
-            font-size: clamp(2.8rem, 5vw, 4rem); 
+            font-size: clamp(2.2rem, 8vw, 4rem); 
             font-weight: 800; 
             margin-bottom: var(--spacing-lg); 
             background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%); 
@@ -284,125 +323,26 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-        .hero p { font-size: 1.25rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto; line-height: 1.7; }
+        .hero p { font-size: 1.1rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto; line-height: 1.7; }
         
-        .slider-container {
-            position: relative;
-            width: 100%;
-            border-radius: var(--radius-xl);
-            overflow: hidden;
-            margin-bottom: var(--spacing-xl);
-            background-color: var(--surface);
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--glass-border);
-        }
-        .slider-wrapper {
-            display: flex;
-            transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-        }
-        .slide {
-            min-width: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-        .slide .slide-background {
-            width: 100%;
-            display: block;
-            aspect-ratio: 16 / 6;
-            transition: transform 8s ease-out;
-            background-color: var(--surface-elevated);
-        }
-        .slide.active .slide-background {
-            transform: scale(1.1);
-        }
-        .slide-content {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: var(--spacing-lg);
-            background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 10%, transparent);
-            color: var(--text-primary);
-            transform: translateY(100%);
-            transition: transform 0.6s ease-out;
-        }
-        .slide.active .slide-content {
-            transform: translateY(0);
-        }
-        body.light-mode .slide-content {
-             background: linear-gradient(to top, rgba(241, 245, 249, 0.9) 10%, transparent);
-        }
-        .slide-content h3 {
-            font-size: clamp(1.5rem, 3vw, 2.25rem);
-            font-weight: 700;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            margin-bottom: var(--spacing-xs);
-        }
-        .slide-content p {
-            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
-            color: var(--text-secondary);
-            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-        }
-        .slider-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 3rem;
-            height: 3rem;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-full);
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition-slow);
-            opacity: 0.7;
-        }
-        .slider-nav:hover {
-            background-color: var(--secondary);
-            transform: translateY(-50%) scale(1.1);
-            opacity: 1;
-        }
-        .slider-nav.prev {
-            left: var(--spacing-md);
-        }
-        .slider-nav.next {
-            right: var(--spacing-md);
-        }
-        .slider-dots {
-            position: absolute;
-            bottom: var(--spacing-md);
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: var(--spacing-sm);
-        }
-        .slider-dot {
-            width: 0.75rem;
-            height: 0.75rem;
-            border-radius: var(--radius-full);
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            cursor: pointer;
-            transition: var(--transition-slow);
-        }
-        .slider-dot.active {
-            background: var(--secondary);
-            transform: scale(1.3);
-            box-shadow: 0 0 10px var(--secondary);
-        }
-
-        .animate-in {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-        .animate-in.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        /* --- SLIDER STYLES --- */
+        .slider-container { position: relative; width: 100%; border-radius: var(--radius-xl); overflow: hidden; margin-bottom: var(--spacing-xl); background-color: var(--surface); box-shadow: var(--shadow-lg); border: 1px solid var(--glass-border); }
+        .slider-wrapper { display: flex; transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+        .slide { min-width: 100%; position: relative; overflow: hidden; }
+        .slide .slide-background { width: 100%; display: block; aspect-ratio: 16 / 6; transition: transform 8s ease-out; background-color: var(--surface-elevated); }
+        .slide.active .slide-background { transform: scale(1.1); }
+        .slide-content { position: absolute; bottom: 0; left: 0; right: 0; padding: var(--spacing-lg); background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 10%, transparent); color: var(--text-primary); transform: translateY(100%); transition: transform 0.6s ease-out; }
+        .slide.active .slide-content { transform: translateY(0); }
+        body.light-mode .slide-content { background: linear-gradient(to top, rgba(241, 245, 249, 0.9) 10%, transparent); }
+        .slide-content h3 { font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 700; text-shadow: 0 2px 5px rgba(0,0,0,0.5); margin-bottom: 0.5rem; }
+        .slide-content p { font-size: clamp(0.9rem, 1.5vw, 1.1rem); color: var(--text-secondary); text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+        .slider-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 3rem; height: 3rem; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius-full); color: var(--text-primary); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition-slow); opacity: 0.7; }
+        .slider-nav:hover { background-color: var(--secondary); transform: translateY(-50%) scale(1.1); opacity: 1; }
+        .slider-nav.prev { left: var(--spacing-md); }
+        .slider-nav.next { right: var(--spacing-md); }
+        .slider-dots { position: absolute; bottom: var(--spacing-md); left: 50%; transform: translateX(-50%); display: flex; gap: 1rem; }
+        .slider-dot { width: 0.75rem; height: 0.75rem; border-radius: var(--radius-full); background: var(--glass); border: 1px solid var(--glass-border); cursor: pointer; transition: var(--transition-slow); }
+        .slider-dot.active { background: var(--secondary); transform: scale(1.3); box-shadow: 0 0 10px var(--secondary); }
 
         .search-section { margin-bottom: var(--spacing-xl); }
         .search-container { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); display: flex; flex-direction: column; gap: var(--spacing-md); }
@@ -429,7 +369,7 @@
         }
 
         .tests-grid { margin: 4rem 0; }
-        .tests-grid .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 370px)); justify-content: center; gap: 2.5rem; }
+        .tests-grid .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; }
         .test-card { 
             background: var(--surface); 
             border: 1px solid var(--glass-border); 
@@ -523,6 +463,33 @@
         .progress-bar { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: transparent; z-index: 1001; opacity: 0; transition: opacity 0.3s ease; }
         .progress-bar.show { opacity: 1; }
         .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.3s ease; box-shadow: 0 0 10px var(--primary), 0 0 5px var(--secondary); }
+        
+        .animate-in {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .animate-in.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .hero p { font-size: 1.1rem; }
+            .nav-desktop { display: none; }
+            .mobile-toggle { display: flex; }
+        }
+        @media (min-width: 1024px) {
+            .mobile-toggle { display: none; }
+            .nav-desktop { display: flex; align-items: center; flex-grow: 1; justify-content: flex-end; gap: var(--spacing-sm); }
+            .header-search { width: 280px; }
+            .nav-menu { gap: var(--spacing-xs); }
+        }
+        @media (min-width: 1280px) {
+            .logo-text-extended { display: inline; }
+        }
     </style>
 </head>
 <body>
@@ -534,20 +501,28 @@
     <header class="header" id="header">
         <nav class="nav-container">
             <a href="index.html" class="logo" onclick="event.preventDefault(); navigateTo('index.html');">
-                <span class="logo-icon">🏗️</span>
-                <span class="logo-text">LTD Simulator</span>
+                <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
+                    <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
+                    <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+                </svg>
+                <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
             </a>
             <div class="nav-desktop">
+                <form action="recherche.html" method="GET" class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="search" name="query" placeholder="Rechercher..." aria-label="Rechercher">
+                </form>
                  <ul class="nav-menu">
                      <li class="nav-item"><a href="index.html" class="nav-link" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
                      <li class="nav-item"><a href="simulateur.html" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
                      <li class="nav-item"><a href="test.html" class="nav-link active" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
                      <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
                      <li class="nav-item"><a href="emploi.html" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
-                    <li class="nav-item"><a href="histoire.html" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
+                     <li class="nav-item"><a href="histoire.html" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
+                     <li class="nav-item"><a href="quiz.html" class="nav-link" onclick="event.preventDefault(); navigateTo('quiz.html')"><i class="fas fa-question-circle"></i>&nbsp;Quiz</a></li>
                  </ul>
                  <div class="nav-actions">
-                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
                          <i class="fas fa-moon" id="themeIcon"></i>
                      </button>
                  </div>
@@ -562,12 +537,21 @@
     <div class="mobile-menu" id="mobileMenu">
         <div class="mobile-menu-header">
             <a href="index.html" class="logo" onclick="event.preventDefault(); toggleMobileMenu(); navigateTo('index.html');">
-                <span class="logo-icon">🏗️</span>
-                <span class="logo-text">LTD Simulator</span>
+                <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
+                    <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
+                    <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+                </svg>
+                <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
             </a>
             <button class="mobile-menu-close" onclick="toggleMobileMenu()"><i class="fas fa-times"></i></button>
         </div>
         <div class="mobile-menu-content">
+            <div class="mobile-search-wrapper">
+                <form action="recherche.html" method="GET" class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="search" name="query" placeholder="Rechercher..." aria-label="Rechercher">
+                </form>
+            </div>
             <div class="mobile-nav-section">
                 <h3>Navigation</h3>
                 <div class="mobile-nav-items">
@@ -634,7 +618,7 @@
         <!-- Tests Grid Section -->
         <section class="tests-grid animate-in">
             <div class="grid-container">
-                 <!-- Card 1: Test d'Orientation -->
+                <!-- Card 1: Test d'Orientation -->
                 <div class="test-card">
                     <div class="test-card-image">
                         <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g stroke="var(--secondary)" opacity="0.7"><path d="M 100 62.5 L 150 93.75 L 100 125 L 50 93.75 Z"/><path d="M 100 0 L 150 31.25 L 100 62.5 L 50 31.25 Z"/><path d="M 50 31.25 L 0 62.5 L 50 93.75 L 100 62.5 Z"/><path d="M 150 31.25 L 200 62.5 L 150 93.75 L 100 62.5 Z"/></g></svg>
@@ -800,28 +784,24 @@
             const dots = dotsContainer.querySelectorAll('.slider-dot');
 
             function goToSlide(index) {
-                if (index === currentIndex && slides[index].classList.contains('active')) return;
+                if (slides.length === 0) return;
+                if (index === currentIndex && slides[currentIndex].classList.contains('active')) return;
                 
                 slides[currentIndex].classList.remove('active');
-                currentIndex = index;
+                currentIndex = (index + slides.length) % slides.length;
                 slides[currentIndex].classList.add('active');
                 
                 wrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
                 
-                dots.forEach((dot, i) => {
-                    dot.classList.toggle('active', i === currentIndex);
-                });
+                if (dots.length > 0) {
+                    dots.forEach((dot, i) => {
+                        dot.classList.toggle('active', i === currentIndex);
+                    });
+                }
             }
 
-            function nextSlide() {
-                const newIndex = (currentIndex + 1) % slides.length;
-                goToSlide(newIndex);
-            }
-
-            function prevSlide() {
-                const newIndex = (currentIndex - 1 + slides.length) % slides.length;
-                goToSlide(newIndex);
-            }
+            function nextSlide() { goToSlide(currentIndex + 1); }
+            function prevSlide() { goToSlide(currentIndex - 1); }
             
             function startInterval() {
                 slideInterval = setInterval(nextSlide, 7000); 
@@ -832,17 +812,12 @@
                 startInterval();
             }
 
-            nextBtn.addEventListener('click', () => {
-                nextSlide();
-                resetInterval();
-            });
-            prevBtn.addEventListener('click', () => {
-                prevSlide();
-                resetInterval();
-            });
+            if (prevBtn && nextBtn) {
+                nextBtn.addEventListener('click', () => { nextSlide(); resetInterval(); });
+                prevBtn.addEventListener('click', () => { prevSlide(); resetInterval(); });
+            }
             
-            // Initial state
-            if (slides.length > 0) {
+            if (slides.length > 0 && dots.length > 0) {
                 slides[0].classList.add('active');
                 dots[0].classList.add('active');
                 startInterval();
@@ -874,7 +849,12 @@
                     const newNavItem = document.createElement('a');
                     newNavItem.href = link.href;
                     newNavItem.className = 'mobile-nav-item';
-                    newNavItem.onclick = link.onclick;
+                    
+                    newNavItem.onclick = (e) => {
+                        e.preventDefault();
+                        toggleMobileMenu();
+                        navigateTo(link.getAttribute('href'));
+                    };
 
                     const iconDiv = document.createElement('div');
                     iconDiv.className = 'mobile-nav-item-icon';
