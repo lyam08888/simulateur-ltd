@@ -3,431 +3,430 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LTD Simulateur - Projeteur VRD</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <meta name="description" content="Simulateur pour découvrir le métier de projeteur VRD.">
+    <title>LTD Simulator - Projeteur VRD</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&amp;family=Poppins:wght@700;800&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <style>
-        /* Définition des variables de couleur pour une maintenance facile */
+        /* --- THÈME GLOBAL (issu du site principal) --- */
         :root {
-            --bg-color: #f8fafc; /* Gris clair */
-            --container-bg: #ffffff;
-            --primary-color: #0ea5e9; /* Bleu ciel */
-            --secondary-color: #10b981; /* Vert émeraude */
-            --text-dark: #1e293b; /* Ardoise foncé */
-            --text-light: #64748b; /* Ardoise clair */
-            --border-color: #e2e8f0; /* Ardoise 200 */
-            --correct-color: #22c55e; /* Vert */
-            --incorrect-color: #ef4444; /* Rouge */
+            /* Colors */
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --secondary: #10b981;
+            --secondary-dark: #059669;
+            --accent: #f59e0b;
+            --accent-dark: #d97706;
+            --correct: #22c55e;
+            --incorrect: #ef4444;
+            
+            /* Surfaces */
+            --background: #0f172a;
+            --surface: #1e293b;
+            --surface-elevated: #334155;
+            --surface-hover: #475569;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            
+            /* Text */
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            
+            /* Shadows */
+            --shadow-glow: 0 0 15px 0px rgba(99, 102, 241, 0.3);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+            /* Animation */
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Spacing */
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            
+            /* Borders */
+            --radius-sm: 0.375rem;
+            --radius: 0.5rem;
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.5rem;
+            --radius-full: 9999px;
         }
 
-        /* Reset et Box-sizing global */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        body.light-mode {
+            --background: #f1f5f9;
+            --surface: #ffffff;
+            --surface-elevated: #e2e8f0;
+            --surface-hover: #cbd5e1;
+            --glass: rgba(0, 0, 0, 0.05);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --shadow-glow: 0 0 15px 0px rgba(99, 102, 241, 0.2);
         }
-        
-        html {
-            font-size: 16px;
-        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 1rem;
-            color: var(--text-dark);
-        }
-        
-        .game-container {
-            width: 100%;
-            max-width: 1400px;
-            height: 95vh;
-            background: var(--container-bg);
-            border-radius: 2rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.5s ease-in-out;
-            border: 1px solid var(--border-color);
-        }
-        
-        .game-header {
-            background: white;
-            color: var(--text-dark);
-            padding: 1rem 2.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 10;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            font-size: 1.25rem;
-            font-weight: 700;
-        }
-        
-        .logo-icon {
-            width: 3rem;
-            height: 3rem;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            border-radius: 0.75rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
-        }
-        .logo-icon svg { width: 60%; height: 60%; }
-        
-        .header-stats { display: flex; gap: 1rem; align-items: center; }
-        
-        .header-item {
-            display: flex; align-items: center; gap: 0.5rem;
-            font-size: 1.25rem; font-weight: 700;
-            background: var(--bg-color);
-            padding: 0.5rem 1.25rem; border-radius: 50px;
-        }
-        
-        .timer-display.warning { animation: pulse 1s infinite; color: var(--incorrect-color); }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        
-        .screen {
-            display: none; flex: 1;
-            padding: 7rem 2rem 5rem 2rem;
-            overflow-y: auto;
-            animation: fadeIn 0.5s ease-out;
-        }
-        
-        .screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-        
-        h1 {
-            font-family: 'Poppins', sans-serif;
-            font-size: clamp(2.5rem, 5vw, 3.5rem);
-            font-weight: 800;
-            color: var(--text-dark);
-            margin-bottom: 1.5rem; text-align: center;
-        }
-        
-        h2 {
-            font-family: 'Poppins', sans-serif;
-            font-size: clamp(1.5rem, 4vw, 2rem);
-            font-weight: 700; color: var(--text-dark);
-            margin-bottom: 2rem; text-align: center; line-height: 1.4;
-            max-width: 800px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: var(--transition-slow);
         }
 
-        p { font-size: 1.1rem; color: var(--text-light); }
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 40%), radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 40%), radial-gradient(circle at 50% 85%, rgba(245, 158, 11, 0.1) 0%, transparent 40%);
+            pointer-events: none; z-index: -1; animation: background-pan 30s linear infinite;
+        }
+        
+        @keyframes background-pan { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        
+        [onclick], .nav-link, .mobile-nav-item, .theme-toggle, .mobile-toggle { cursor: pointer; }
+
+        .header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; backdrop-filter: blur(20px) saturate(180%); background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid var(--glass-border); transition: var(--transition); }
+        body.light-mode .header { background: rgba(255, 255, 255, 0.8); }
+        .nav-container { max-width: 1400px; margin: 0 auto; padding: 0 var(--spacing-sm); display: flex; align-items: center; justify-content: space-between; height: 4.5rem; gap: var(--spacing-md); }
+        .logo { display: flex; align-items: center; gap: var(--spacing-sm); text-decoration: none; color: var(--text-primary); font-weight: 800; font-size: 1.2rem; transition: var(--transition); }
+        .logo:hover { transform: scale(1.05); text-shadow: 0 0 10px var(--primary-light); }
+        .logo-icon { height: 1.8rem; width: auto; vertical-align: -0.4rem; }
+        .logo-text-extended { display: none; }
+        .nav-desktop { display: none; }
+        .nav-menu { display: flex; align-items: center; gap: var(--spacing-xs); list-style: none; }
+        .nav-item { position: relative; }
+        .nav-link { display: flex; align-items: center; gap: var(--spacing-xs); padding: var(--spacing-xs) var(--spacing-sm); color: var(--text-secondary); text-decoration: none; font-weight: 500; border-radius: var(--radius); transition: var(--transition); }
+        .nav-link:hover { color: var(--text-primary); background: var(--glass); }
+        .nav-link.active { color: var(--text-primary); background: linear-gradient(45deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.2)); font-weight: 600; }
+        .header-search { position: relative; }
+        .header-search input { width: 100%; background-color: var(--surface); border: 1px solid var(--glass-border); color: var(--text-secondary); border-radius: var(--radius); padding: 0.5rem 1rem 0.5rem 2.5rem; font-size: 0.9rem; transition: var(--transition); }
+        .header-search input::placeholder { color: var(--text-muted); }
+        .header-search input:focus { background-color: var(--surface-elevated); border-color: var(--primary); color: var(--text-primary); box-shadow: 0 0 0 2px var(--primary-dark); outline: none; }
+        .header-search .fa-search { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .nav-actions { display: flex; align-items: center; gap: var(--spacing-sm); }
+        .theme-toggle { display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-secondary); transition: var(--transition); }
+        .theme-toggle:hover { background: var(--surface-elevated); color: var(--text-primary); transform: rotate(15deg); }
+        .mobile-toggle { display: flex; flex-direction: column; justify-content: center; align-items: center; width: 2.5rem; height: 2.5rem; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); transition: var(--transition); }
+        .hamburger { position: relative; width: 1.25rem; height: 1rem; }
+        .hamburger span { position: absolute; left: 0; width: 100%; height: 2px; background: var(--text-primary); border-radius: 1px; transition: var(--transition); }
+        .hamburger span:nth-child(1) { top: 0; }
+        .hamburger span:nth-child(2) { top: 50%; transform: translateY(-50%); }
+        .hamburger span:nth-child(3) { bottom: 0; }
+        .mobile-toggle.active .hamburger span:nth-child(1) { top: 50%; transform: translateY(-50%) rotate(45deg); }
+        .mobile-toggle.active .hamburger span:nth-child(2) { opacity: 0; }
+        .mobile-toggle.active .hamburger span:nth-child(3) { bottom: 50%; transform: translateY(50%) rotate(-45deg); }
+        .mobile-menu { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--background); z-index: 999; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: var(--transition-slow); }
+        .mobile-menu.active { opacity: 1; visibility: visible; }
+        .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--spacing-sm); height: 4.5rem; border-bottom: 1px solid var(--glass-border); }
+        .mobile-menu-close { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-primary); }
+        .mobile-menu-content { flex: 1; padding: var(--spacing-lg) var(--spacing-sm); overflow-y: auto; }
+        .mobile-search-wrapper { padding-bottom: var(--spacing-lg); margin-bottom: var(--spacing-lg); border-bottom: 1px solid var(--glass-border); }
+        .mobile-search-wrapper .header-search { width: 100%; }
+        .mobile-nav-section h3 { color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--spacing-md); }
+        .mobile-nav-items { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+        .mobile-nav-item { display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-md); color: var(--text-secondary); text-decoration: none; border-radius: var(--radius-md); }
+        .mobile-nav-item-icon { font-size: 1.25rem; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border-radius: var(--radius); }
+        .mobile-nav-item:hover { background: var(--glass); color: var(--text-primary); }
+        .main-content { margin-top: 4.5rem; padding: var(--spacing-lg) var(--spacing-sm); max-width: 1400px; margin-left: auto; margin-right: auto; }
+        @media (min-width: 768px) { .nav-container { padding: 0 var(--spacing-md); } .main-content { padding: var(--spacing-xl) var(--spacing-md); } }
+        @media (min-width: 1024px) { .mobile-toggle { display: none; } .nav-desktop { display: flex; align-items: center; flex-grow: 1; justify-content: flex-end; gap: var(--spacing-sm); } .header-search { width: 280px; } .nav-menu { gap: var(--spacing-xs); } }
+        @media (min-width: 1280px) { .logo-text-extended { display: inline; } }
+
+        /* --- STYLES SPÉCIFIQUES AU JEU VRD (adaptés au thème) --- */
+        .game-card {
+            background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg);
+            padding: var(--spacing-lg); width: 100%; box-shadow: var(--shadow-xl);
+            backdrop-filter: blur(10px); text-align: center; animation: fadeIn 0.5s ease-out;
+            max-width: 1000px; margin: 0 auto;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        
+        .screen { display: none; flex: 1; }
+        .screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+        .game-card h1 {
+            font-family: 'Poppins', sans-serif; font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800; color: var(--primary-light); margin-bottom: var(--spacing-sm);
+        }
+        .game-card h2 {
+            font-family: 'Poppins', sans-serif; font-size: clamp(1.2rem, 4vw, 1.8rem);
+            font-weight: 700; color: var(--text-primary); margin-bottom: var(--spacing-md);
+            line-height: 1.4; max-width: 800px;
+        }
+        .game-card p { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: var(--spacing-md); max-width: 600px; }
         
         .btn {
-            background: var(--primary-color);
-            color: white; border: none; padding: 1rem 3rem;
-            border-radius: 0.75rem; font-size: 1.1rem; font-weight: 700;
-            cursor: pointer; transition: all 0.2s ease-out;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+            background: var(--primary); color: white; border: none; padding: 0.8rem 1.8rem;
+            border-radius: var(--radius-full); font-size: 1rem; font-weight: 600;
+            cursor: pointer; transition: var(--transition); box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
         }
-        
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1); }
+        .btn:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: var(--shadow-glow); }
         .btn:active { transform: translateY(0); }
-        .btn:disabled { opacity: 0.7; cursor: not-allowed; background: #94a3b8; box-shadow: none; }
+        .btn:disabled { opacity: 0.7; cursor: not-allowed; background: var(--surface-hover); box-shadow: none; }
+
+        .game-header-stats { display: flex; gap: var(--spacing-md); align-items: center; justify-content: center; margin-bottom: var(--spacing-md); }
+        .game-header-item { display: flex; align-items: center; gap: var(--spacing-xs); font-size: 1.25rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; background: var(--surface-elevated); padding: 0.5rem 1.25rem; border-radius: var(--radius-full); }
+        .timer-display.warning { animation: pulse 1s infinite; color: var(--incorrect); }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         
-        .answer-grid {
-            display: grid; grid-template-columns: 1fr;
-            gap: 1rem; width: 100%; max-width: 1000px; margin-top: 2rem;
-        }
-        
+        .answer-grid { display: grid; grid-template-columns: 1fr; gap: var(--spacing-sm); width: 100%; max-width: 1000px; margin-top: var(--spacing-md); }
+        @media (min-width: 640px) { .answer-grid { grid-template-columns: 1fr 1fr; } }
+
         .answer-btn {
-            background: white;
-            border: 1px solid var(--border-color);
-            color: var(--text-dark);
-            padding: 1.25rem; border-radius: 0.75rem;
-            font-size: 1rem; font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease-out; text-align: center;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            width: 100%; background: var(--surface-elevated); color: var(--text-secondary);
+            padding: 1rem; border: 1px solid var(--glass-border); border-radius: var(--radius-md);
+            text-align: center; font-size: 1rem; cursor: pointer; transition: var(--transition);
         }
-        
-        .answer-btn:not(:disabled):hover { transform: translateY(-2px); border-color: var(--primary-color); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); }
-        .answer-btn.correct { background: var(--correct-color) !important; color: white !important; border-color: var(--correct-color) !important; animation: bounce 0.5s ease; }
-        .answer-btn.incorrect { background: var(--incorrect-color) !important; color: white !important; border-color: var(--incorrect-color) !important; animation: shake 0.5s ease; }
+        .answer-btn:not(:disabled):hover { background: var(--surface-hover); border-color: var(--primary); color: var(--text-primary); }
+        .answer-btn.correct { background: var(--correct) !important; color: var(--text-primary) !important; border-color: var(--correct) !important; animation: bounce 0.5s ease; }
+        .answer-btn.incorrect { background: var(--incorrect) !important; color: var(--text-primary) !important; border-color: var(--incorrect) !important; animation: shake 0.5s ease; }
         .answer-btn:disabled { cursor: not-allowed; }
 
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-        
-        .controls {
-            position: fixed; right: 1.5rem; top: 50%;
-            transform: translateY(-50%); display: flex;
-            flex-direction: column; gap: 1rem;
-            z-index: 20;
-        }
-        
-        .control-btn {
-            width: 3.5rem; height: 3.5rem; border-radius: 50%;
-            border: 1px solid var(--border-color);
-            background: white;
-            color: var(--text-dark);
-            cursor: pointer;
-            transition: all 0.2s ease-out; display: flex;
-            align-items: center; justify-content: center;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-            font-size: 1.5rem; /* Ajustement pour la taille des émojis */
-        }
-        .control-btn:hover:not(:disabled) { transform: translateY(-2px) scale(1.05); color: var(--primary-color); }
-        .control-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal.active { display: flex; }
-        .modal-content { background: #fff; color: var(--text-dark); padding: 2rem; border-radius: 1.5rem; max-width: 90vw; width: 700px; max-height: 85vh; overflow-y: auto; position: relative; animation: modalIn 0.3s ease; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
-        @keyframes modalIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .modal-close { position: absolute; top: 1rem; right: 1rem; width: 2.5rem; height: 2.5rem; border: none; background: #f1f5f9; color: var(--text-light); border-radius: 50%; font-size: 1.5rem; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; }
-        .modal-close:hover { background: var(--border-color); color: var(--text-dark); transform: rotate(90deg); }
-        
+
+        .feedback-text { margin-top: var(--spacing-md); font-size: 1.2rem; font-weight: bold; }
+        .feedback-solution { font-size: 1rem; font-weight: normal; color: var(--text-secondary); margin-top: var(--spacing-xs); }
+
         .material-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; width: 100%; max-width: 1000px; margin-top: 2rem; }
-        .material-card { background: white; border: 2px solid var(--border-color); color: var(--text-dark); border-radius: 1rem; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+        .material-card { background: var(--surface-elevated); border: 2px solid var(--glass-border); color: var(--text-secondary); border-radius: 1rem; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
         .material-icon { font-size: 3rem; line-height: 1; }
-        .material-card:not(.disabled):hover { transform: translateY(-4px); border-color: var(--primary-color); }
-        .material-card.selected { border-color: var(--secondary-color); box-shadow: 0 0 0 2px var(--secondary-color); }
-        .material-card.correct { background: var(--correct-color) !important; color: white !important; border-color: var(--correct-color) !important; }
-        .material-card.incorrect { background: var(--incorrect-color) !important; color: white !important; border-color: var(--incorrect-color) !important; }
+        .material-card:not(.disabled):hover { transform: translateY(-4px); border-color: var(--primary); color: var(--text-primary); }
+        .material-card.selected { border-color: var(--secondary); box-shadow: 0 0 0 2px var(--secondary); }
+        .material-card.correct { background: var(--correct) !important; color: white !important; border-color: var(--correct) !important; }
+        .material-card.incorrect { background: var(--incorrect) !important; color: white !important; border-color: var(--incorrect) !important; }
         .material-card.disabled { cursor: not-allowed; opacity: 0.7; }
 
-        .elevation-input, .text-input { font-size: 1.5rem; padding: 1rem 2rem; border: 1px solid var(--border-color); border-radius: 0.75rem; text-align: center; width: 100%; max-width: 400px; transition: all 0.3s ease; margin: 1rem 0; }
-        .elevation-input:focus, .text-input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2); }
+        .elevation-input, .text-input { font-size: 1.5rem; padding: 1rem 2rem; border: 1px solid var(--glass-border); border-radius: var(--radius-md); text-align: center; width: 100%; max-width: 400px; transition: all 0.3s ease; margin: 1rem 0; background-color: var(--surface-elevated); color: var(--text-primary); }
+        .elevation-input:focus, .text-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); }
         
-        .tips-bar { display: block; position: absolute; bottom: 0; left: 0; width: 100%; background: var(--bg-color); color: var(--text-light); padding: 0.5rem 0; font-size: 0.9rem; font-weight: 500; overflow: hidden; white-space: nowrap; z-index: 10; height: 2.5rem; border-top: 1px solid var(--border-color); }
-        .tips-bar-content { display: inline-block; padding-left: 100%; animation: marquee 30s linear infinite; }
-        @keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-100%); } }
-
-        #homeScreen { justify-content: center; align-items: center; background: transparent; }
-        #homeScreen h1 { color: var(--text-dark); }
-        #homeScreen p { color: var(--text-light); max-width: 600px; text-align: center; font-size: 1.25rem; }
-        #homeScreen .logo-icon { width: 10rem; height: 10rem; margin-bottom: 2rem; border-radius: 2rem;}
-        #homeScreen .btn { padding: 1.25rem 4rem; font-size: 1.5rem; }
-        
-        .button-center-align { width: 100%; display: flex; justify-content: center; }
-
-        /* Styles pour l'écran final */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; width: 100%; max-width: 800px; margin: 2rem 0; }
-        .stat-card { background: var(--bg-color); padding: 1.5rem; border-radius: 1rem; text-align: center; border: 1px solid var(--border-color); }
-        .stat-label { font-weight: 500; color: var(--text-light); margin-bottom: 0.5rem; }
-        .stat-number { font-weight: 800; font-size: 2.5rem; color: var(--primary-color); }
+        .stat-card { background: var(--surface-elevated); padding: 1.5rem; border-radius: 1rem; text-align: center; border: 1px solid var(--glass-border); }
+        .stat-label { font-weight: 500; color: var(--text-secondary); margin-bottom: 0.5rem; }
+        .stat-number { font-weight: 800; font-size: 2.5rem; color: var(--primary); }
 
-        /* Styles pour le jeu de connexion de tuyaux */
         .pipe-game-container { display: flex; flex-direction: column; align-items: center; gap: 1rem; width: 100%; }
-        .pipe-tray { display: flex; gap: 1rem; background: var(--bg-color); padding: 1rem; border-radius: 1rem; flex-wrap: wrap; justify-content: center; }
+        .pipe-tray { display: flex; gap: 1rem; background: var(--surface-elevated); padding: 1rem; border-radius: 1rem; flex-wrap: wrap; justify-content: center; }
         .pipe-piece-draggable { width: 50px; height: 50px; cursor: grab; position: relative; }
         .pipe-piece-draggable.dragging { opacity: 0.5; }
-        .pipe-count { position: absolute; bottom: -5px; right: -5px; background: var(--primary-color); color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; }
-        .pipe-grid-container { display: grid; grid-template-columns: repeat(var(--grid-cols, 5), 1fr); border: 2px solid var(--border-color); border-radius: 1rem; overflow: hidden; background: #f1f5f9; width: 100%; max-width: 90vw; }
-        .grid-cell { border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; position: relative; background-color: white; aspect-ratio: 1 / 1; }
-        .grid-cell.start-node { background-color: var(--correct-color); color: white; font-weight: bold; font-size: 1.5rem; }
-        .grid-cell.end-node { background-color: var(--incorrect-color); color: white; font-weight: bold; font-size: 1.5rem; }
+        .pipe-count { position: absolute; bottom: -5px; right: -5px; background: var(--primary); color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; }
+        .pipe-grid-container { display: grid; grid-template-columns: repeat(var(--grid-cols, 5), 1fr); border: 2px solid var(--glass-border); border-radius: 1rem; overflow: hidden; background: var(--background); width: 100%; max-width: 90vw; }
+        .grid-cell { border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; position: relative; background-color: var(--surface); aspect-ratio: 1 / 1; }
+        .grid-cell.start-node { background-color: var(--correct); color: white; font-weight: bold; font-size: 1.5rem; }
+        .grid-cell.end-node { background-color: var(--incorrect); color: white; font-weight: bold; font-size: 1.5rem; }
         .pipe-piece-placed { width: 100%; height: 100%; transition: transform 0.2s ease; cursor: pointer; }
-        .grid-cell.obstacle-node { background-color: #e2e8f0; }
+        .grid-cell.obstacle-node { background-color: var(--surface-hover); }
 
-        /* Styles pour le jeu d'ordre chronologique */
-        .draggable { padding: 0.75rem; background: white; border: 1px solid var(--border-color); border-radius: 0.5rem; cursor: grab; transition: all 0.2s ease; user-select: none; }
-        .draggable:active { cursor: grabbing; background: #f1f5f9; }
-        .drop-zone { border: 2px dashed var(--border-color); border-radius: 0.75rem; background: #f8fafc; transition: all 0.2s ease; }
-        .drop-zone.hover { border-color: var(--primary-color); background: #eff6ff; }
+        .draggable { padding: 0.75rem; background: var(--surface-elevated); border: 1px solid var(--glass-border); border-radius: 0.5rem; cursor: grab; transition: all 0.2s ease; user-select: none; }
+        .draggable:active { cursor: grabbing; background: var(--surface-hover); }
+        .drop-zone { border: 2px dashed var(--glass-border); border-radius: 0.75rem; background: var(--surface); transition: all 0.2s ease; min-height: 100px; padding: 1rem; display: flex; flex-wrap: gap: 0.5rem; justify-content: center; align-items: center; }
+        .drop-zone.hover { border-color: var(--primary); background: var(--surface-hover); }
         .drop-zone.filled { border-style: solid; }
 
-        /* Styles pour le sélecteur de vue */
-        .view-mode-switcher { position: fixed; bottom: 1rem; left: 1rem; z-index: 1001; display: flex; gap: 0.5rem; background: white; padding: 0.5rem; border-radius: 0.75rem; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); }
-        .view-mode-btn { background-color: transparent; border: 1px solid transparent; color: var(--text-light); padding: 0.5rem; border-radius: 0.5rem; cursor: pointer; font-weight: 500; transition: all 0.3s ease; font-size: 0.8rem; }
-        .view-mode-btn:hover { background-color: var(--bg-color); color: var(--text-dark); }
-        .view-mode-btn.active { background-color: var(--primary-color); color: white; pointer-events: none; }
-
-        /* Styles pour les confettis */
         .confetti { position: fixed; width: 10px; height: 10px; top: -20px; animation: fall 3s linear forwards; }
         @keyframes fall { to { transform: translateY(100vh) rotate(360deg); } }
-
-        @media (min-width: 768px) {
-            .answer-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
-            .screen { padding: 8rem 5rem 6rem 5rem; }
-        }
-
-        /* --- OPTIMISATIONS MOBILES --- */
-        @media (max-width: 767px) {
-            .game-header { padding: 0.5rem 1rem; height: auto; flex-wrap: wrap; justify-content: center; gap: 0.5rem;}
-            .logo { font-size: 1rem; }
-            .logo-icon { width: 2.5rem; height: 2.5rem; }
-            .header-item { font-size: 1rem; padding: 0.4rem 0.8rem; gap: 0.4rem; }
-            
-            /* FIX: Augmentation du padding supérieur pour éviter que l'en-tête (qui peut s'étendre sur deux lignes) ne soit masqué par le contenu. */
-            .screen { padding: 6rem 1rem 7rem 1rem; }
-            
-            h1 { font-size: clamp(2rem, 8vw, 2.5rem); }
-            h2 { font-size: clamp(1.2rem, 5vw, 1.5rem); margin-bottom: 1.5rem; }
-            
-            .controls { flex-direction: row; bottom: 1rem; top: auto; left: 50%; transform: translateX(-50%); width: auto; padding: 0.5rem; border-radius: 50px; background: rgba(255,255,255,0.8); backdrop-filter: blur(5px); }
-            .control-btn { width: 3rem; height: 3rem; font-size: 1.2rem; }
-            
-            .view-mode-switcher { bottom: 5rem; left: 50%; transform: translateX(-50%); }
-            
-            #homeScreen .logo-icon { width: 8rem; height: 8rem; }
-            #homeScreen .btn { font-size: 1.2rem; }
-            #homeScreen p { font-size: 1rem; }
-
-            /* Optimisation des grilles de réponse */
-            .material-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.5rem; }
-            .material-card { padding: 1rem; }
-            .answer-btn { padding: 1rem; font-size: 0.9rem; }
-        }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <!-- En-tête du jeu avec logo, score et minuteur -->
-        <div class="game-header">
-            <div class="logo">
-                <div id="logoIconContainer" class="logo-icon"></div>
-                <span>LTD SIMULATEUR</span>
-            </div>
-            <div class="header-stats">
-                <div id="scoreDisplay" class="header-item">
-                    <span class="score-icon">⭐</span>
-                    <span id="score">0</span>
-                </div>
-                <div id="timerDisplay" class="header-item timer-display">
-                    <span class="timer-icon">⏰</span>
-                    <span id="timer">--:--</span>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Écran d'accueil -->
-        <div id="homeScreen" class="screen active">
-            <div id="homeLogoIconContainer" class="logo-icon"></div>
-            <h1>Simulateur Projeteur VRD</h1>
-            <p>Testez vos connaissances et devenez un expert en Voirie et Réseaux Divers.</p>
-            <button id="startBtn" class="btn mt-8">Démarrer la simulation</button>
-        </div>
 
-        <!-- Écran de question -->
-        <div id="questionScreen" class="screen">
-            <h2 id="questionText"></h2>
-            <div id="answerContainer" class="w-full flex flex-col items-center"></div>
-            <div id="feedbackText" class="mt-4 text-xl text-center font-bold"></div>
-            <div class="button-center-align">
-                <button id="nextBtn" class="btn mt-8" style="display: none;">Question Suivante</button>
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav-container">
+            <a href="index.html" class="logo" onclick="event.preventDefault(); navigateTo('index.html');">
+                <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
+                    <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
+                    <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+                </svg>
+                <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
+            </a>
+            <div class="nav-desktop">
+                 <form action="recherche.html" method="GET" class="header-search">
+                     <i class="fas fa-search"></i>
+                     <input type="search" name="query" placeholder="Rechercher..." aria-label="Rechercher">
+                 </form>
+                 <ul class="nav-menu">
+                     <li class="nav-item"><a href="index.html" class="nav-link" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
+                     <li class="nav-item"><a href="simulateur.html" class="nav-link active" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
+                     <li class="nav-item"><a href="test.html" class="nav-link" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
+                     <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
+                     <li class="nav-item"><a href="emploi.html" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
+                     <li class="nav-item"><a href="histoire.html" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
+                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('quiz.html')"><i class="fas fa-question-circle"></i>&nbsp;Quiz</a></li>
+                 </ul>
+                 <div class="nav-actions">
+                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
+                         <i class="fas fa-moon" id="themeIcon"></i>
+                     </button>
+                 </div>
             </div>
-        </div>
+            <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
+                <span class="hamburger"><span></span><span></span><span></span></span>
+            </button>
+        </nav>
+    </header>
 
-        <!-- Écran final -->
-        <div id="finalScreen" class="screen">
-            <h1>Simulation Terminée !</h1>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Score Final</div>
-                    <div id="finalScore" class="stat-number">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Bonnes Réponses</div>
-                    <div id="correctAnswers" class="stat-number">0 / 0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Temps Total</div>
-                    <div id="totalTime" class="stat-number">00:00</div>
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <a href="index.html" class="logo" onclick="event.preventDefault(); toggleMobileMenu(); navigateTo('index.html');">
+                <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
+                    <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
+                    <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+                </svg>
+                <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
+            </a>
+            <button class="mobile-menu-close" onclick="toggleMobileMenu()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="mobile-menu-content">
+            <div class="mobile-search-wrapper">
+                <form action="recherche.html" method="GET" class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="search" name="query" placeholder="Rechercher..." aria-label="Rechercher">
+                </form>
+            </div>
+            <div class="mobile-nav-section">
+                <h3>Navigation</h3>
+                <div class="mobile-nav-items">
+                    <!-- Mobile nav items will be populated by JS -->
                 </div>
             </div>
-            <p id="finalMessage" class="text-2xl mt-4 mb-8 text-center"></p>
-            <button id="restartBtnFinal" class="btn">Recommencer</button>
-        </div>
-
-        <!-- Barre de conseils défilants -->
-        <div class="tips-bar">
-            <div id="tipsBarContent" class="tips-bar-content"></div>
         </div>
     </div>
 
-    <!-- Contrôles de navigation du jeu -->
-    <div class="controls">
-        <button id="prevBtn" class="control-btn" aria-label="Question précédente"></button>
-        <button id="restartBtn" class="control-btn" aria-label="Recommencer"></button>
-        <button id="musicBtn" class="control-btn" aria-label="Activer/Désactiver la musique"></button>
-        <button id="helpBtn" class="control-btn" aria-label="Aide"></button>
-        <button id="solutionBtn" class="control-btn" aria-label="Voir la solution" style="display: none;"></button>
-        <button id="skipBtn" class="control-btn" aria-label="Passer la question" style="display: none;"></button>
-        <button id="finishBtn" class="control-btn" aria-label="Terminer la simulation" style="display: none;"></button>
-    </div>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div id="game-container">
+            <!-- Écran d'accueil -->
+            <div id="homeScreen" class="screen active game-card">
+                <h1>Simulateur Projeteur VRD</h1>
+                <p>Testez vos connaissances et devenez un expert en Voirie et Réseaux Divers. Prêt à relever le défi ?</p>
+                <button id="startBtn" class="btn">Démarrer la simulation</button>
+            </div>
 
-    <!-- Sélecteur de mode de vue (Desktop/Mobile) -->
-    <div class="view-mode-switcher">
-        <button id="view-auto" class="view-mode-btn active" data-mode="auto">Auto</button>
-        <button id="view-mobile" class="view-mode-btn" data-mode="mobile">Mobile</button>
-        <button id="view-desktop" class="view-mode-btn" data-mode="desktop">Desktop</button>
-    </div>
-    
-    <!-- Fenêtre modale d'aide -->
-    <div id="helpModal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close">&times;</button>
-            <h2>Aide & Instructions</h2>
-            <p class="text-lg">Bienvenue dans le simulateur de Projeteur VRD !</p>
-            <ul class="list-disc list-inside mt-4 space-y-2 text-lg">
-                <li>Répondez aux questions pour gagner des points.</li>
-                <li>Utilisez les boutons de contrôle pour naviguer, recommencer, ou couper la musique.</li>
-                <li>Certaines questions sont des mini-jeux interactifs. Suivez les instructions à l'écran.</li>
-                <li>Votre temps est limité pour chaque question, alors soyez rapide !</li>
-                <li>Le bouton "Solution" vous montrera la bonne réponse mais vous coûtera des points.</li>
-            </ul>
+            <!-- Écran de question -->
+            <div id="questionScreen" class="screen game-card">
+                <div class="game-header-stats">
+                    <div id="scoreDisplay" class="game-header-item">
+                        <span>⭐</span>
+                        <span id="score">0</span>
+                    </div>
+                    <div id="timerDisplay" class="game-header-item timer-display">
+                        <span>⏰</span>
+                        <span id="timer">--:--</span>
+                    </div>
+                </div>
+                <h2 id="questionText"></h2>
+                <div id="answerContainer"></div>
+                <div id="feedbackText" class="feedback-text"></div>
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <button id="nextBtn" class="btn" style="display: none;">Question Suivante</button>
+                </div>
+            </div>
+
+            <!-- Écran final -->
+            <div id="finalScreen" class="screen game-card">
+                <h1>Simulation Terminée !</h1>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Score Final</div>
+                        <div id="finalScore" class="stat-number">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Bonnes Réponses</div>
+                        <div id="correctAnswers" class="stat-number">0 / 0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Temps Total</div>
+                        <div id="totalTime" class="stat-number">00:00</div>
+                    </div>
+                </div>
+                <p id="finalMessage" style="font-size: 1.5rem; margin-top: 1rem; margin-bottom: 2rem;"></p>
+                <button id="restartBtnFinal" class="btn">Recommencer</button>
+            </div>
         </div>
-    </div>
+    </main>
 
     <script>
+        // --- HEADER & NAVIGATION SCRIPT ---
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+        function navigateTo(pageFile) { window.location.href = pageFile; }
+        function updateThemeUI() {
+            const themeIcon = document.getElementById('themeIcon');
+            if (!themeIcon) return;
+            document.body.classList.toggle('light-mode', currentTheme === 'light');
+            themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            updateThemeUI();
+        }
+        function toggleMobileMenu() {
+            const mobileToggle = document.getElementById('mobileToggle');
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileToggle.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        }
+
+        // --- VRD SIMULATOR SCRIPT ---
         document.addEventListener('DOMContentLoaded', () => {
+            // --- Initialisation du Header ---
+            updateThemeUI();
+            const desktopNav = document.querySelector('.nav-desktop .nav-menu');
+            const mobileNavContainer = document.querySelector('.mobile-menu .mobile-nav-items');
+            if(desktopNav && mobileNavContainer) {
+                mobileNavContainer.innerHTML = '';
+                desktopNav.querySelectorAll('.nav-item').forEach(item => {
+                    const link = item.querySelector('a');
+                    const newNavItem = document.createElement('a');
+                    newNavItem.href = link.href;
+                    newNavItem.className = 'mobile-nav-item';
+                    newNavItem.onclick = (e) => {
+                        e.preventDefault();
+                        toggleMobileMenu();
+                        if (link.href && !link.href.endsWith('#')) {
+                           navigateTo(link.getAttribute('href'));
+                        }
+                    };
+                    const iconDiv = document.createElement('div');
+                    iconDiv.className = 'mobile-nav-item-icon';
+                    iconDiv.innerHTML = link.querySelector('i').outerHTML;
+                    const textNode = document.createElement('h4');
+                    textNode.textContent = link.textContent.trim();
+                    newNavItem.appendChild(iconDiv);
+                    newNavItem.appendChild(textNode);
+                    mobileNavContainer.appendChild(newNavItem);
+                });
+            }
+
             // --- SÉLECTION DES ÉLÉMENTS DU DOM ---
             const dom = {
                 screens: { home: document.getElementById('homeScreen'), question: document.getElementById('questionScreen'), final: document.getElementById('finalScreen'), },
-                buttons: { start: document.getElementById('startBtn'), next: document.getElementById('nextBtn'), restartFinal: document.getElementById('restartBtnFinal'), prev: document.getElementById('prevBtn'), restart: document.getElementById('restartBtn'), music: document.getElementById('musicBtn'), help: document.getElementById('helpBtn'), solution: document.getElementById('solutionBtn'), skip: document.getElementById('skipBtn'), finish: document.getElementById('finishBtn'), },
-                displays: { score: document.getElementById('score'), timer: document.getElementById('timer'), timerContainer: document.getElementById('timerDisplay'), questionText: document.getElementById('questionText'), answerContainer: document.getElementById('answerContainer'), feedback: document.getElementById('feedbackText'), finalScore: document.getElementById('finalScore'), correctAnswers: document.getElementById('correctAnswers'), totalTime: document.getElementById('totalTime'), finalMessage: document.getElementById('finalMessage'), tipsBarContent: document.getElementById('tipsBarContent'), },
-                modals: { help: document.getElementById('helpModal'), },
-                gameContainer: document.querySelector('.game-container'),
-                viewModeButtons: document.querySelectorAll('.view-mode-btn'),
-                logoIconContainer: document.getElementById('logoIconContainer'),
-                homeLogoIconContainer: document.getElementById('homeLogoIconContainer'),
-            };
-
-            // --- ICÔNES ---
-            const svgIcons = {
-                crane: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2L12 4H10V2H8V4H6L4 2L2 4V14H4V22H6V14H8V22H10V14H12V22H14V14H16V22H18V14H20V4L18 2L16 4H14V2ZM4 12V6H6V12H4ZM8 12V6H10V12H8ZM12 12V6H14V12H12ZM16 12V6H18V12H16Z"/></svg>`,
-                valve: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18M12 12a4 4 0 1 0 0-0.001 4 4 0 0 0 0 0.001z"/><path d="m16 8-4-4-4 4"/></svg>`,
-            };
-            const emojiIcons = {
-                prev: '◀️', restart: '🔄', music_on: '🎵', music_off: '🔇', help: '❓', solution: '💡', skip: '⏭️', finish: '🏁',
+                buttons: { start: document.getElementById('startBtn'), next: document.getElementById('nextBtn'), restartFinal: document.getElementById('restartBtnFinal'), },
+                displays: { score: document.getElementById('score'), timer: document.getElementById('timer'), timerContainer: document.getElementById('timerDisplay'), questionText: document.getElementById('questionText'), answerContainer: document.getElementById('answerContainer'), feedback: document.getElementById('feedbackText'), finalScore: document.getElementById('finalScore'), correctAnswers: document.getElementById('correctAnswers'), totalTime: document.getElementById('totalTime'), finalMessage: document.getElementById('finalMessage'), },
             };
 
             // --- DONNÉES DU JEU ---
-            const questions = [ { type: 'qcm', text: "Quel est le rôle principal d'un Projeteur VRD ?", answers: [{ text: "Concevoir les bâtiments", correct: false }, { text: "Aménager les espaces extérieurs et réseaux", correct: true }, { text: "Gérer la comptabilité du chantier", correct: false }, { text: "Peindre les murs", correct: false }], solution: "Le Projeteur VRD (Voirie et Réseaux Divers) conçoit les routes, les systèmes d'assainissement, les réseaux d'eau, de gaz, d'électricité et de télécommunications.", points: 100, time: 30, }, { type: 'multiple-choice', text: "Identifiez les matériaux adaptés pour une couche de fondation de chaussée. (Plusieurs réponses possibles)", answers: [{ text: "Terre végétale", correct: false, icon: "🌱" }, { text: "Grave non traitée (GNT)", correct: true, icon: "🪨" }, { text: "Sable", correct: false, icon: "🏖️" }, { text: "Grave-ciment", correct: true, icon: "🧱" }], solution: "La couche de fondation assure la portance de la chaussée. Les graves non traitées (GNT) et les graves traitées (comme le grave-ciment) sont des matériaux couramment utilisés.", points: 150, time: 45, }, { type: 'calculation', text: "Un regard A est à une altitude de 125.50m. Un regard B, distant de 50m, est à 124.75m. Quelle est la pente du réseau en % ?", solution: "Calcul : ((125.50 - 124.75) / 50) * 100 = 1.5%.", correctAnswer: 1.5, tolerance: 0.01, points: 200, time: 60, }, { type: 'pipe-connect', text: "Connectez le réseau d'eaux usées du point A au point B.", gridSize: { rows: 5, cols: 7 }, start: { row: 2, col: 0 }, end: { row: 2, col: 6 }, pieces: { straight: 5, corner: 4 }, solution: "Il faut créer un chemin continu de A à B en utilisant les pièces disponibles.", points: 350, time: 180, pipeColor: '#3b82f6' }, { type: 'chronological-order', text: "Mettez dans l'ordre les étapes de la construction d'une voirie simple.", items: ["Terrassement", "Mise en place de la couche de fondation", "Pose des bordures et caniveaux", "Application du revêtement (enrobé)", "Signalisation et finitions"], solution: "L'ordre logique est : Terrassement > Couche de fondation > Bordures/Caniveaux > Revêtement > Signalisation.", points: 250, time: 90, }, { type: 'scenario', text: "Scénario : Erreur de conception", scenario: "Vous recevez un plan où un réseau d'eaux pluviales (EP) est connecté directement en amont d'une station d'épuration conçue uniquement pour les eaux usées (EU). Quelle est l'erreur majeure et que proposez-vous ?", answers: [{ text: "Aucune erreur, c'est une pratique standard.", correct: false }, { text: "L'erreur est le mélange des réseaux. Il faut créer un exutoire séparé pour les EP.", correct: true }, { text: "Il faut juste une plus grosse canalisation.", correct: false }, { text: "Il faut inverser le sens de la pente.", correct: false }], solution: "Les réseaux d'eaux pluviales et d'eaux usées doivent être séparatifs. Les EP n'ont pas besoin d'être traitées en station d'épuration et risqueraient de la saturer.", points: 300, time: 75, }, { type: 'qcm', text: "De quelle couleur est le grillage avertisseur pour un réseau électrique enterré ?", answers: [{ text: "Bleu", correct: false }, { text: "Jaune", correct: false }, { text: "Rouge", correct: true }, { text: "Vert", correct: false }], solution: "Le grillage avertisseur rouge signale la présence d'un câble ou d'une canalisation électrique.", points: 100, time: 25 }, { type: 'text-input', text: "Quel logiciel de CAO/DAO est le plus utilisé par les projeteurs VRD ?", correctAnswer: "AutoCAD", solution: "AutoCAD est le standard de l'industrie pour le dessin technique en 2D et 3D.", points: 120, time: 30 }, { type: 'calculation', text: "Une route de 6m de large a une pente en travers de 2.5% depuis l'axe. Quelle est la différence de niveau (en cm) entre l'axe et le bord ?", correctAnswer: 7.5, tolerance: 0.1, solution: "Calcul : (6m / 2) * 0.025 = 0.075m, soit 7.5 cm.", points: 200, time: 60 }, { type: 'multiple-choice', text: "Quels éléments font partie des 'réseaux secs' ?", answers: [{ text: "Adduction d'Eau Potable", correct: false, icon: "💧" }, { text: "Électricité (Basse Tension)", correct: true, icon: "⚡" }, { text: "Télécommunications (Fibre)", correct: true, icon: "📡" }, { text: "Assainissement EU", correct: false, icon: "🚽" }], solution: "Les réseaux secs transportent de l'énergie ou de l'information (électricité, télécom), par opposition aux réseaux humides (eau, assainissement).", points: 150, time: 40 }, { type: 'chronological-order', text: "Ordonnez les couches d'une structure de chaussée, de la plus profonde à la surface.", items: ["Couche de forme", "Couche de fondation", "Couche de base", "Couche de roulement"], solution: "La structure est bâtie depuis le terrain naturel (couche de forme) jusqu'à la surface (couche de roulement).", points: 250, time: 70 }, { type: 'qcm', text: "Que signifie 'DT-DICT' ?", answers: [{ text: "Document Technique - Dessin Industriel et Commercial", correct: false }, { text: "Déclaration de Travaux - Demande d'Intervention sur la Chaussée", correct: false }, { text: "Déclaration de projet de Travaux - Déclaration d'Intention de Commencement de Travaux", correct: true }, { text: "Dossier Technique - Directive Interne de Chantier", correct: false }], solution: "La DT-DICT est une procédure obligatoire pour s'informer sur la présence de réseaux enterrés avant de commencer des travaux.", points: 180, time: 45 }, { type: 'calculation', text: "Un bassin de rétention a une surface de 200m². Il pleut 30 litres/m². Quel volume d'eau (en m³) le bassin doit-il stocker ?", correctAnswer: 6, tolerance: 0.1, solution: "Calcul : 200 m² * 30 L/m² = 6000 Litres. Comme 1000L = 1m³, le volume est de 6 m³.", points: 220, time: 75 }, { type: 'text-input', text: "Comment nomme-t-on le plan représentant les altitudes du terrain le long d'un axe ?", correctAnswer: "Profil en long", solution: "Le profil en long est une coupe verticale qui montre le relief du terrain et le projet le long d'un axe.", points: 150, time: 40 }, { type: 'scenario', text: "Scénario : Réseau inconnu", scenario: "En creusant une tranchée, vous découvrez une canalisation non répertoriée. Quelle est la première action à entreprendre ?", answers: [{ text: "Continuer en faisant attention.", correct: false }, { text: "Arrêter les travaux dans la zone et alerter le conducteur de travaux.", correct: true }, { text: "Essayer d'identifier le réseau en le perçant légèrement.", correct: false }, { text: "Recouvrir et ne rien dire.", correct: false }], solution: "La sécurité prime. Il faut immédiatement arrêter les travaux, sécuriser la zone et informer la hiérarchie.", points: 300, time: 60 }, { type: 'pipe-connect', text: "Connectez le réseau de gaz. Le chemin doit passer par la vanne de coupure.", gridSize: { rows: 6, cols: 8 }, start: { row: 5, col: 3 }, end: { row: 0, col: 7 }, obstacles: [{row: 2, col: 4, type: 'valve'}], pieces: { straight: 8, corner: 6 }, solution: "Le chemin doit être continu de A à B et obligatoirement passer par la case 'valve'.", points: 400, time: 200, bonus: true, pipeColor: '#FBBF24' } ];
-            const tips = [ "Astuce : La pente minimale pour un réseau EU est de 1%.", "Le saviez-vous ? Le logiciel AutoCAD est l'un des outils les plus utilisés par les projeteurs VRD.", "Conseil : Vérifiez toujours les plans de concessionnaires avant de terrasser.", "Astuce : Un 'fil d'eau' (FE) désigne le point le plus bas à l'intérieur d'une canalisation.", "Le saviez-vous ? La loi sur l'eau impose souvent de gérer les eaux pluviales à la parcelle.", "Conseil : Utilisez des couleurs et des calques distincts pour chaque réseau sur vos plans.", "Astuce : La largeur d'un trottoir accessible PMR doit être d'au moins 1.40m.", "Le saviez-vous ? Le module 'Covadis' est une surcouche à AutoCAD spécialisée pour les projets d'infrastructure.", "Conseil : Pensez au foisonnement des terres lors du calcul des cubatures de déblais/remblais." ];
+            const questions = [ { type: 'qcm', text: "Quel est le rôle principal d'un Projeteur VRD ?", answers: [{ text: "Concevoir les bâtiments", correct: false }, { text: "Aménager les espaces extérieurs et réseaux", correct: true }, { text: "Gérer la comptabilité du chantier", correct: false }, { text: "Peindre les murs", correct: false }], solution: "Le Projeteur VRD (Voirie et Réseaux Divers) conçoit les routes, les systèmes d'assainissement, les réseaux d'eau, de gaz, d'électricité et de télécommunications.", points: 100, time: 30, }, { type: 'multiple-choice', text: "Identifiez les matériaux adaptés pour une couche de fondation de chaussée. (Plusieurs réponses possibles)", answers: [{ text: "Terre végétale", correct: false, icon: "🌱" }, { text: "Grave non traitée (GNT)", correct: true, icon: "🪨" }, { text: "Sable", correct: false, icon: "🏖️" }, { text: "Grave-ciment", correct: true, icon: "🧱" }], solution: "La couche de fondation assure la portance de la chaussée. Les graves non traitées (GNT) et les graves traitées (comme le grave-ciment) sont des matériaux couramment utilisés.", points: 150, time: 45, }, { type: 'calculation', text: "Un regard A est à une altitude de 125.50m. Un regard B, distant de 50m, est à 124.75m. Quelle est la pente du réseau en % ?", solution: "Calcul : ((125.50 - 124.75) / 50) * 100 = 1.5%.", correctAnswer: 1.5, tolerance: 0.01, points: 200, time: 60, }, { type: 'pipe-connect', text: "Connectez le réseau d'eaux usées du point A au point B.", gridSize: { rows: 5, cols: 7 }, start: { row: 2, col: 0 }, end: { row: 2, col: 6 }, pieces: { straight: 5, corner: 4 }, solution: "Il faut créer un chemin continu de A à B en utilisant les pièces disponibles.", points: 350, time: 180, pipeColor: '#8B5CF6' }, { type: 'chronological-order', text: "Mettez dans l'ordre les étapes de la construction d'une voirie simple.", items: ["Terrassement", "Mise en place de la couche de fondation", "Pose des bordures et caniveaux", "Application du revêtement (enrobé)", "Signalisation et finitions"], solution: "L'ordre logique est : Terrassement > Couche de fondation > Bordures/Caniveaux > Revêtement > Signalisation.", points: 250, time: 90, }, { type: 'scenario', text: "Scénario : Erreur de conception", scenario: "Vous recevez un plan où un réseau d'eaux pluviales (EP) est connecté directement en amont d'une station d'épuration conçue uniquement pour les eaux usées (EU). Quelle est l'erreur majeure et que proposez-vous ?", answers: [{ text: "Aucune erreur, c'est une pratique standard.", correct: false }, { text: "L'erreur est le mélange des réseaux. Il faut créer un exutoire séparé pour les EP.", correct: true }, { text: "Il faut juste une plus grosse canalisation.", correct: false }, { text: "Il faut inverser le sens de la pente.", correct: false }], solution: "Les réseaux d'eaux pluviales et d'eaux usées doivent être séparatifs. Les EP n'ont pas besoin d'être traitées en station d'épuration et risqueraient de la saturer.", points: 300, time: 75, }, { type: 'qcm', text: "De quelle couleur est le grillage avertisseur pour un réseau électrique enterré ?", answers: [{ text: "Bleu", correct: false }, { text: "Jaune", correct: false }, { text: "Rouge", correct: true }, { text: "Vert", correct: false }], solution: "Le grillage avertisseur rouge signale la présence d'un câble ou d'une canalisation électrique.", points: 100, time: 25 }, { type: 'text-input', text: "Quel logiciel de CAO/DAO est le plus utilisé par les projeteurs VRD ?", correctAnswer: "AutoCAD", solution: "AutoCAD est le standard de l'industrie pour le dessin technique en 2D et 3D.", points: 120, time: 30 }, { type: 'calculation', text: "Une route de 6m de large a une pente en travers de 2.5% depuis l'axe. Quelle est la différence de niveau (en cm) entre l'axe et le bord ?", correctAnswer: 7.5, tolerance: 0.1, solution: "Calcul : (6m / 2) * 0.025 = 0.075m, soit 7.5 cm.", points: 200, time: 60 }, { type: 'multiple-choice', text: "Quels éléments font partie des 'réseaux secs' ?", answers: [{ text: "Adduction d'Eau Potable", correct: false, icon: "💧" }, { text: "Électricité (Basse Tension)", correct: true, icon: "⚡" }, { text: "Télécommunications (Fibre)", correct: true, icon: "📡" }, { text: "Assainissement EU", correct: false, icon: "🚽" }], solution: "Les réseaux secs transportent de l'énergie ou de l'information (électricité, télécom), par opposition aux réseaux humides (eau, assainissement).", points: 150, time: 40 }, { type: 'chronological-order', text: "Ordonnez les couches d'une structure de chaussée, de la plus profonde à la surface.", items: ["Couche de forme", "Couche de fondation", "Couche de base", "Couche de roulement"], solution: "La structure est bâtie depuis le terrain naturel (couche de forme) jusqu'à la surface (couche de roulement).", points: 250, time: 70 }, { type: 'qcm', text: "Que signifie 'DT-DICT' ?", answers: [{ text: "Document Technique - Dessin Industriel et Commercial", correct: false }, { text: "Déclaration de Travaux - Demande d'Intervention sur la Chaussée", correct: false }, { text: "Déclaration de projet de Travaux - Déclaration d'Intention de Commencement de Travaux", correct: true }, { text: "Dossier Technique - Directive Interne de Chantier", correct: false }], solution: "La DT-DICT est une procédure obligatoire pour s'informer sur la présence de réseaux enterrés avant de commencer des travaux.", points: 180, time: 45 }, { type: 'calculation', text: "Un bassin de rétention a une surface de 200m². Il pleut 30 litres/m². Quel volume d'eau (en m³) le bassin doit-il stocker ?", correctAnswer: 6, tolerance: 0.1, solution: "Calcul : 200 m² * 30 L/m² = 6000 Litres. Comme 1000L = 1m³, le volume est de 6 m³.", points: 220, time: 75 }, { type: 'text-input', text: "Comment nomme-t-on le plan représentant les altitudes du terrain le long d'un axe ?", correctAnswer: "Profil en long", solution: "Le profil en long est une coupe verticale qui montre le relief du terrain et le projet le long d'un axe.", points: 150, time: 40 }, { type: 'scenario', text: "Scénario : Réseau inconnu", scenario: "En creusant une tranchée, vous découvrez une canalisation non répertoriée. Quelle est la première action à entreprendre ?", answers: [{ text: "Continuer en faisant attention.", correct: false }, { text: "Arrêter les travaux dans la zone et alerter le conducteur de travaux.", correct: true }, { text: "Essayer d'identifier le réseau en le perçant légèrement.", correct: false }, { text: "Recouvrir et ne rien dire.", correct: false }], solution: "La sécurité prime. Il faut immédiatement arrêter les travaux, sécuriser la zone et informer la hiérarchie.", points: 300, time: 60 }, { type: 'pipe-connect', text: "Connectez le réseau de gaz. Le chemin doit passer par la vanne de coupure.", gridSize: { rows: 6, cols: 8 }, start: { row: 5, col: 3 }, end: { row: 0, col: 7 }, obstacles: [{row: 2, col: 4, type: 'valve'}], pieces: { straight: 8, corner: 6 }, solution: "Le chemin doit être continu de A à B et obligatoirement passer par la case 'valve'.", points: 400, time: 200, bonus: true, pipeColor: '#FBBF24' } ];
             
             let gameState = {};
             
             // --- GESTION AUDIO ---
-            dom.buttons.music.disabled = true;
-            dom.buttons.music.style.opacity = 0.5;
-            let isSoundOn = false;
-
+            let isSoundOn = false; // Le son est désactivé par défaut
             const sounds = {
                 start: new Tone.Synth({ oscillator: { type: "fatsawtooth" }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.3 } }).toDestination(),
                 correct: new Tone.Synth({ oscillator: { type: "triangle" }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.2 } }).toDestination(),
@@ -437,18 +436,8 @@
                 timer_tick: new Tone.Synth({ oscillator: { type: 'sine' }, volume: -10, envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 } }).toDestination(),
                 drag: new Tone.NoiseSynth({ noise: { type: 'pink' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0 } }).toDestination(),
                 drop: new Tone.MembraneSynth({ pitchDecay: 0.008, octaves: 4, envelope: { attack: 0.001, decay: 0.3, sustain: 0 } }).toDestination(),
-                swoosh: new Tone.NoiseSynth({ noise: { type: 'white', playbackRate: 4 }, envelope: { attack: 0.005, decay: 0.2, sustain: 0 } }).toDestination(),
                 confetti: new Tone.PluckSynth({ attackNoise: 1, dampening: 4000, resonance: 0.7 }).toDestination()
             };
-            const backgroundMusic = new Tone.Player({ 
-                url: "https://cdn.jsdelivr.net/gh/Tonejs/Tone.js/examples/audio/loop.mp3", 
-                loop: true, 
-                volume: -12,
-                onload: () => {
-                    dom.buttons.music.disabled = false;
-                    dom.buttons.music.style.opacity = 1;
-                }
-            }).toDestination();
             
             function playSound(sound, ...args) {
                 if (isSoundOn && sound && typeof sound.triggerAttackRelease === 'function') {
@@ -457,24 +446,18 @@
             }
 
             // --- FONCTIONS PRINCIPALES DU JEU ---
-
             function initGame() {
                 gameState = { score: 0, currentQuestionIndex: -1, timeLeft: 0, timerInterval: null, totalTime: 0, totalTimeInterval: null, questions: shuffleArray([...questions]), answeredQuestions: [], isQuestionAnswered: false, };
                 updateScore(0);
                 switchScreen('home');
-                dom.buttons.prev.disabled = true;
-                Object.values(dom.buttons).forEach(btn => {
-                    if (btn.id !== 'musicBtn' || backgroundMusic.loaded) {
-                        btn.disabled = false;
-                    }
-                });
-                ['solution', 'skip', 'finish'].forEach(key => dom.buttons[key].style.display = 'none');
                 dom.displays.timer.textContent = '--:--';
                 dom.displays.timerContainer.classList.remove('warning');
-                startTipsMarquee();
             }
 
             function startGame() {
+                // Demande à l'utilisateur d'interagir pour activer l'audio
+                Tone.start();
+                isSoundOn = true; // Activer le son au démarrage du jeu
                 playSound(sounds.start, "C4", "8n");
                 gameState.answeredQuestions = new Array(gameState.questions.length).fill(null);
                 startTotalTimer();
@@ -485,25 +468,19 @@
                 if (gameState.currentQuestionIndex >= gameState.questions.length - 1) { endGame(); return; }
                 gameState.currentQuestionIndex++;
                 displayQuestion();
-                updateNavigationButtons();
             }
 
-            function prevQuestion() {
-                if (gameState.currentQuestionIndex > 0) { gameState.currentQuestionIndex--; displayQuestion(true); updateNavigationButtons(); }
-            }
-
-            function displayQuestion(isNavigatingBack = false) {
+            function displayQuestion() {
                 clearTimeout(gameState.timerInterval);
-                dom.displays.feedback.textContent = '';
+                dom.displays.feedback.innerHTML = '';
                 dom.buttons.next.style.display = 'none';
                 const question = gameState.questions[gameState.currentQuestionIndex];
-                gameState.isQuestionAnswered = gameState.answeredQuestions[gameState.currentQuestionIndex] !== null;
+                gameState.isQuestionAnswered = false;
                 dom.displays.questionText.innerHTML = `Question ${gameState.currentQuestionIndex + 1}/${gameState.questions.length}: ${question.text}`;
                 dom.displays.answerContainer.innerHTML = '';
-                ['solution', 'skip', 'finish'].forEach(key => dom.buttons[key].style.display = 'block');
                 const interfaceBuilder = { 'qcm': createQCMInterface, 'scenario': createQCMInterface, 'multiple-choice': createMultipleChoiceInterface, 'calculation': createCalculationInterface, 'text-input': createTextInputInterface, 'chronological-order': createChronologicalOrderInterface, 'pipe-connect': createPipeConnectInterface, }[question.type];
                 if (interfaceBuilder) interfaceBuilder(question);
-                if (gameState.isQuestionAnswered) restoreAnswerState(); else startTimer(question.time);
+                startTimer(question.time);
                 switchScreen('question');
             }
 
@@ -517,12 +494,11 @@
                 dom.displays.finalScore.textContent = gameState.score;
                 dom.displays.correctAnswers.textContent = `${correctCount} / ${totalQuestions}`;
                 dom.displays.totalTime.textContent = formatTime(gameState.totalTime);
-                let message = "Excellent travail ! Vous êtes un expert !";
-                if (correctCount / totalQuestions < 0.5) message = "Continuez à vous entraîner !";
-                else if (correctCount / totalQuestions < 0.8) message = "Bon score, vous progressez !";
+                let message = "Excellent travail ! Vous avez l'étoffe d'un expert !";
+                if (correctCount / totalQuestions < 0.5) message = "C'est un bon début, continuez à vous entraîner !";
+                else if (correctCount / totalQuestions < 0.8) message = "Très bon score, vous progressez bien !";
                 dom.displays.finalMessage.textContent = message;
                 switchScreen('final');
-                ['solution', 'skip', 'finish'].forEach(key => dom.buttons[key].style.display = 'none');
             }
 
             function createQCMInterface(question) {
@@ -545,7 +521,7 @@
                     const card = document.createElement('div');
                     card.className = 'material-card';
                     card.dataset.index = index;
-                    card.innerHTML = `<div class="material-icon">${answer.icon || '❔'}</div><p class="font-semibold text-lg">${answer.text}</p>`;
+                    card.innerHTML = `<div class="material-icon">${answer.icon || '❔'}</div><p>${answer.text}</p>`;
                     card.onclick = () => { if (!gameState.isQuestionAnswered) card.classList.toggle('selected'); };
                     materialGrid.appendChild(card);
                 });
@@ -578,20 +554,21 @@
 
             function createChronologicalOrderInterface(question) {
                 const container = document.createElement('div');
-                container.className = 'w-full max-w-2xl flex flex-col items-center';
+                container.style.width = '100%';
+                container.style.maxWidth = '800px';
                 const dropZone = document.createElement('div');
-                dropZone.className = 'drop-zone min-h-[100px] p-4 flex flex-wrap gap-2 justify-center w-full';
+                dropZone.className = 'drop-zone';
                 dropZone.textContent = 'Déposez les étapes ici';
                 const draggableContainer = document.createElement('div');
-                draggableContainer.className = 'mt-6 p-4 flex flex-wrap gap-2 justify-center bg-gray-100 rounded-xl w-full';
+                draggableContainer.className = 'mt-6 p-4 flex flex-wrap gap-2 justify-center';
                 shuffleArray([...question.items]).forEach((item) => {
                     const el = document.createElement('div');
                     el.className = 'draggable';
                     el.textContent = item;
                     el.draggable = true;
                     el.dataset.id = item;
-                    el.addEventListener('dragstart', e => { playSound(sounds.drag, "8n"); e.dataTransfer.setData('text/plain', item); setTimeout(() => el.classList.add('opacity-50'), 0); });
-                    el.addEventListener('dragend', () => el.classList.remove('opacity-50'));
+                    el.addEventListener('dragstart', e => { playSound(sounds.drag, "8n"); e.dataTransfer.setData('text/plain', item); setTimeout(() => el.style.opacity = '0.5', 0); });
+                    el.addEventListener('dragend', () => el.style.opacity = '1');
                     draggableContainer.appendChild(el);
                 });
                 container.appendChild(dropZone);
@@ -644,7 +621,7 @@
                         else if (r === question.end.row && c === question.end.col) cell.classList.add('end-node');
                         else if (question.obstacles?.some(o => o.row === r && o.col === c)) {
                             cell.classList.add('obstacle-node');
-                            cell.innerHTML = `<div class="w-2/3 h-2/3 text-slate-500">${svgIcons.valve}</div>`;
+                            cell.innerHTML = `<div style="width: 66%; height: 66%; color: var(--text-primary);"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18M12 12a4 4 0 1 0 0-0.001 4 4 0 0 0 0 0.001z"/><path d="m16 8-4-4-4 4"/></svg></div>`;
                             cell.dataset.obstacle = true;
                         }
                         cell.addEventListener('dragover', e => e.preventDefault());
@@ -700,12 +677,10 @@
             function addSubmitButton(callback, text = 'Valider') {
                 const submitBtn = document.createElement('button');
                 submitBtn.textContent = text;
-                submitBtn.className = 'btn mt-8';
+                submitBtn.className = 'btn';
+                submitBtn.style.marginTop = '2rem';
                 submitBtn.onclick = callback;
-                const buttonContainer = document.createElement('div');
-                buttonContainer.className = 'button-center-align';
-                buttonContainer.appendChild(submitBtn);
-                dom.displays.answerContainer.appendChild(buttonContainer);
+                dom.displays.answerContainer.appendChild(submitBtn);
             }
 
             function handleAnswer(userAnswer, answerForStorage) {
@@ -728,28 +703,24 @@
                 gameState.answeredQuestions[gameState.currentQuestionIndex] = { answer: answerForStorage, isCorrect: isCorrect };
                 if (isCorrect) {
                     playSound(sounds.correct, "C5", "8n", Tone.now() + 0.1);
-                    dom.displays.feedback.textContent = "Bonne réponse !";
-                    dom.displays.feedback.className = 'mt-4 text-xl text-green-500 font-bold text-center';
+                    dom.displays.feedback.innerHTML = "Bonne réponse !";
+                    dom.displays.feedback.style.color = 'var(--correct)';
                     let pointsGained = question.points;
                     if (question.bonus) pointsGained *= 2;
                     updateScore(gameState.score + pointsGained);
                 } else {
                     playSound(sounds.incorrect, "C3", "8n", Tone.now() + 0.1);
-                    dom.displays.feedback.textContent = "Réponse incorrecte.";
-                    dom.displays.feedback.className = 'mt-4 text-xl text-red-500 font-bold text-center';
+                    dom.displays.feedback.innerHTML = `Réponse incorrecte. <br><span class="feedback-solution">${question.solution}</span>`;
+                    dom.displays.feedback.style.color = 'var(--incorrect)';
                 }
-                showSolution(isCorrect);
-                dom.buttons.next.style.display = 'inline-block';
-                dom.buttons.solution.disabled = true;
-                dom.buttons.skip.disabled = true;
+                showSolutionVisuals(question, isCorrect);
+                dom.buttons.next.style.display = 'inline-flex';
             }
 
-            function showSolution(isCorrect) {
-                const question = gameState.questions[gameState.currentQuestionIndex];
-                if (!isCorrect) dom.displays.feedback.innerHTML += `<br><div class="mt-2 text-lg font-normal text-slate-600"><strong>Solution :</strong> ${question.solution}</div>`;
-                const answerElements = dom.displays.answerContainer.querySelectorAll('.answer-btn, .material-card, .draggable, .pipe-piece-placed, input, button');
-                answerElements.forEach(el => { el.style.pointerEvents = 'none'; el.disabled = true; if(el.classList.contains('material-card')) el.classList.add('disabled'); });
-                switch (question.type) {
+            function showSolutionVisuals(question, isCorrect) {
+                 const answerElements = dom.displays.answerContainer.querySelectorAll('.answer-btn, .material-card, .draggable, .pipe-piece-placed, input, button');
+                 answerElements.forEach(el => { el.style.pointerEvents = 'none'; el.disabled = true; if(el.classList.contains('material-card')) el.classList.add('disabled'); });
+                 switch (question.type) {
                     case 'qcm': case 'scenario': dom.displays.answerContainer.querySelectorAll('.answer-btn').forEach((btn, index) => { if (question.answers[index].correct) btn.classList.add('correct'); }); break;
                     case 'multiple-choice':
                         dom.displays.answerContainer.querySelectorAll('.material-card').forEach((card, index) => {
@@ -759,42 +730,7 @@
                             else if (isSelected && !isCorrectAnswer) card.classList.add('incorrect');
                         });
                         break;
-                }
-            }
-
-            function restoreAnswerState() {
-                const { answer, isCorrect } = gameState.answeredQuestions[gameState.currentQuestionIndex];
-                const question = gameState.questions[gameState.currentQuestionIndex];
-                if(answer === null) { showSolution(isCorrect); return; }
-                switch (question.type) {
-                    case 'qcm': case 'scenario': dom.displays.answerContainer.querySelectorAll('.answer-btn')[answer].classList.add(isCorrect ? 'correct' : 'incorrect'); break;
-                    case 'multiple-choice': answer.forEach(index => { dom.displays.answerContainer.querySelector(`[data-index="${index}"]`).classList.add('selected'); }); break;
-                    case 'calculation': case 'text-input': dom.displays.answerContainer.querySelector('input').value = answer; break;
-                    case 'chronological-order':
-                        const dropZone = dom.displays.answerContainer.querySelector('.drop-zone');
-                        const draggableContainer = dom.displays.answerContainer.querySelector('.mt-6');
-                        if (answer.length > 0) { dropZone.textContent = ''; dropZone.classList.add('filled'); }
-                        answer.forEach(itemText => { const el = draggableContainer.querySelector(`[data-id="${itemText}"]`) || dropZone.querySelector(`[data-id="${itemText}"]`); if (el) dropZone.appendChild(el); });
-                        break;
-                    case 'pipe-connect':
-                        const grid = document.getElementById('pipe-grid');
-                        let initialPieces = {...question.pieces};
-                        answer.forEach(p => {
-                            const cell = grid.querySelector(`[data-row="${p.row}"][data-col="${p.col}"]`);
-                            const placedPiece = document.createElement('div');
-                            placedPiece.className = 'pipe-piece-placed';
-                            placedPiece.dataset.pipeType = p.type;
-                            placedPiece.dataset.rotation = p.rotation;
-                            placedPiece.style.transform = `rotate(${p.rotation}deg)`;
-                            placedPiece.innerHTML = getPipeSVG(p.type, 0, question.pipeColor);
-                            cell.appendChild(placedPiece);
-                            initialPieces[p.type]--;
-                        });
-                        Object.keys(initialPieces).forEach(type => { document.getElementById(`pipe-count-${type}`).textContent = initialPieces[type]; });
-                        break;
-                }
-                showSolution(isCorrect);
-                dom.buttons.next.style.display = 'inline-block';
+                 }
             }
             
             function getPipeSVG(type, rotation, color) {
@@ -836,17 +772,17 @@
                     const currentPipe = grid[current.row][current.col];
                     const currentExits = getPipeExits(currentPipe);
                     for (const dirName in directions) {
-                         const { r, c } = directions[dirName];
-                         if (currentExits.includes(dirName)) {
-                             const neighborR = current.row + r;
-                             const neighborC = current.col + c;
-                             if (neighborR === end.row && neighborC === end.col) {
-                                 const finalPath = [...current.path, `${end.row},${end.col}`];
-                                 const pathSet = new Set(finalPath);
-                                 const allObstaclesOnPath = obstacles?.every(o => pathSet.has(`${o.row},${o.col}`)) ?? true;
-                                 if (allObstaclesOnPath) return true;
-                             }
-                         }
+                        const { r, c } = directions[dirName];
+                        if (currentExits.includes(dirName)) {
+                            const neighborR = current.row + r;
+                            const neighborC = current.col + c;
+                            if (neighborR === end.row && neighborC === end.col) {
+                                const finalPath = [...current.path, `${end.row},${end.col}`];
+                                const pathSet = new Set(finalPath);
+                                const allObstaclesOnPath = obstacles?.every(o => pathSet.has(`${o.row},${o.col}`)) ?? true;
+                                if (allObstaclesOnPath) return true;
+                            }
+                        }
                     }
                     for (const dirName in directions) {
                         const { r, c, opp } = directions[dirName];
@@ -884,63 +820,16 @@
             function startTotalTimer() { gameState.totalTime = 0; if(gameState.totalTimeInterval) clearInterval(gameState.totalTimeInterval); gameState.totalTimeInterval = setInterval(() => { gameState.totalTime++; }, 1000); }
             function formatTime(seconds) { const mins = Math.floor(seconds / 60); const secs = seconds % 60; return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`; }
             function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } return array; }
-            function updateNavigationButtons() { dom.buttons.prev.disabled = gameState.currentQuestionIndex <= 0; }
-            function startTipsMarquee() { if (dom.displays.tipsBarContent) { const shuffledTips = shuffleArray([...tips]); dom.displays.tipsBarContent.innerHTML = shuffledTips.join(' &nbsp;&nbsp;&nbsp; // &nbsp;&nbsp;&nbsp; '); } }
             function launchConfetti() {
                 playSound(sounds.confetti, "C4", "8n", Tone.now());
                 playSound(sounds.confetti, "G4", "8n", Tone.now() + 0.1);
                 playSound(sounds.confetti, "E5", "8n", Tone.now() + 0.2);
                 for (let i = 0; i < 100; i++) { const c = document.createElement('div'); c.className = 'confetti'; c.style.left = `${Math.random()*100}vw`; c.style.animationDelay = `${Math.random()*2}s`; c.style.backgroundColor=`hsl(${Math.random()*360},100%,50%)`; c.style.transform=`scale(${Math.random()*.5+.5})`; document.body.appendChild(c); setTimeout(()=>c.remove(),3000);}
             }
-            function setViewMode(mode) {
-                dom.gameContainer.style.transition = 'width 0.5s ease, height 0.5s ease';
-                if (mode === 'mobile') { dom.gameContainer.style.width = '420px'; dom.gameContainer.style.height = '85vh'; } 
-                else if (mode === 'desktop') { dom.gameContainer.style.width = '1400px'; dom.gameContainer.style.height = '95vh'; } 
-                else { dom.gameContainer.style.width = '100%'; dom.gameContainer.style.height = '95vh'; }
-                dom.viewModeButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
-            }
-
-            dom.logoIconContainer.innerHTML = svgIcons.crane;
-            dom.homeLogoIconContainer.innerHTML = svgIcons.crane;
-            dom.buttons.prev.innerHTML = emojiIcons.prev;
-            dom.buttons.restart.innerHTML = emojiIcons.restart;
-            dom.buttons.help.innerHTML = emojiIcons.help;
-            dom.buttons.solution.innerHTML = emojiIcons.solution;
-            dom.buttons.skip.innerHTML = emojiIcons.skip;
-            dom.buttons.finish.innerHTML = emojiIcons.finish;
-            dom.buttons.music.innerHTML = emojiIcons.music_off;
 
             dom.buttons.start.addEventListener('click', () => { startGame(); playSound(sounds.click, "C2", "8n"); });
             dom.buttons.next.addEventListener('click', () => { nextQuestion(); playSound(sounds.click, "C2", "8n"); });
-            dom.buttons.prev.addEventListener('click', () => { prevQuestion(); playSound(sounds.click, "C2", "8n"); });
-            [dom.buttons.restart, dom.buttons.restartFinal].forEach(btn => btn.addEventListener('click', () => { initGame(); playSound(sounds.click, "C2", "8n"); }));
-
-            dom.buttons.music.addEventListener('click', () => {
-                if (dom.buttons.music.disabled) return;
-                isSoundOn = !isSoundOn;
-                
-                Tone.start().then(() => {
-                    if (isSoundOn) {
-                        Tone.Destination.mute = false;
-                        if (backgroundMusic.loaded) {
-                            backgroundMusic.start();
-                        }
-                        dom.buttons.music.innerHTML = emojiIcons.music_on;
-                    } else {
-                        Tone.Destination.mute = true;
-                        backgroundMusic.stop();
-                        dom.buttons.music.innerHTML = emojiIcons.music_off;
-                    }
-                });
-            });
-            dom.buttons.help.addEventListener('click', () => { playSound(sounds.swoosh, 0.2); dom.modals.help.classList.add('active'); });
-            dom.buttons.solution.addEventListener('click', () => { if (gameState.isQuestionAnswered) return; const question = gameState.questions[gameState.currentQuestionIndex]; updateScore(gameState.score - Math.floor(question.points / 2)); handleAnswer(null, 'solution'); });
-            dom.buttons.skip.addEventListener('click', () => { if (!gameState.isQuestionAnswered) handleAnswer(null, 'skipped'); });
-            dom.buttons.finish.addEventListener('click', () => endGame());
-
-            document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', () => { playSound(sounds.swoosh, 0.2); btn.closest('.modal').classList.remove('active'); }));
-            document.querySelectorAll('.modal').forEach(modal => modal.addEventListener('click', (e) => { if (e.target === modal) { playSound(sounds.swoosh, 0.2); modal.classList.remove('active'); } }));
-            dom.viewModeButtons.forEach(button => button.addEventListener('click', () => setViewMode(button.dataset.mode)));
+            dom.buttons.restartFinal.addEventListener('click', () => { initGame(); playSound(sounds.click, "C2", "8n"); });
 
             initGame();
         });
