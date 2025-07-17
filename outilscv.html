@@ -1,32 +1,52 @@
-<!--
-Pour utiliser le modèle nakamoto-yama/t5-resume-generation de Hugging Face en pur front,
-on ne fait QU'UN fetch POST vers l'API Space Gradio /run/predict, sans instruction spéciale.
--->
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Générateur de CV IA - LTD Simulator</title>
+    <meta name="description" content="Outil de génération de CV par IA intégré à la plateforme LTD Simulator.">
+    <title>LTD Simulator - Outil CV IA</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #f8fafc; }
-        .cv-preview-container { width: 21cm; min-height: 29.7cm; background: white; color: #22223b; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: auto; }
-        .error-message { background: #ef4444; color: white; padding: 0.8rem; border-radius: 0.5rem; margin-top: 1rem;}
+        :root {
+            --primary: #6366f1; --primary-dark: #4f46e5; --primary-light: #a5b4fc;
+            --secondary: #10b981; --secondary-dark: #059669; --accent: #f59e0b; --accent-dark: #d97706;
+            --background: #0f172a; --surface: #1e293b; --surface-elevated: #334155;
+            --glass: rgba(255,255,255,0.05); --glass-border: rgba(255,255,255,0.15);
+            --text-primary: #f8fafc; --text-secondary: #cbd5e1; --text-muted: #94a3b8;
+            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius: 0.5rem; --radius-lg: 1rem; --radius-full: 9999px;
+            --spacing-sm: 1rem; --spacing-md: 1.5rem; --spacing-lg: 2rem;
+        }
+        body.light-mode {
+            --background: #f1f5f9; --surface: #ffffff; --surface-elevated: #e2e8f0;
+            --glass: rgba(0,0,0,0.05); --glass-border: rgba(0,0,0,0.1);
+            --text-primary: #1e293b; --text-secondary: #475569; --text-muted: #64748b;
+        }
+        html,body{height:100%;margin:0;padding:0;box-sizing:border-box;}
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background); color: var(--text-primary);
+            line-height: 1.6; overflow-x: hidden; transition: var(--transition-slow);
+        }
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 40%), radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 40%);
+            pointer-events: none; z-index: -1; animation: background-pan 30s linear infinite;
+        }
+        @keyframes background-pan {0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+        .cv-preview-container {width: 21cm; height: 29.7cm; overflow: hidden; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: auto; transition: all 0.2s;}
     </style>
 </head>
 <body>
-<div id="root"></div>
-
-<script type="text/babel">
-
+    <div id="root"></div>
+    <script type="text/babel">
 const { useState, useRef } = React;
 const { jsPDF } = window.jspdf;
 
@@ -34,25 +54,23 @@ function CvTool() {
     const [inputText, setInputText] = useState('');
     const [cvText, setCvText] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState('');
     const cvPreviewRef = useRef(null);
 
-    // Handler: Appel API Hugging Face
     const handleApiCall = async () => {
         if (!inputText.trim()) {
-            setError("Veuillez coller un texte de profil ou de parcours.");
+            setError("Veuillez coller un texte à résumer (profil, parcours, description…).");
             return;
         }
         setIsGenerating(true);
-        setError(null);
-        setCvText("");
+        setError('');
         try {
             const response = await fetch(
                 "https://nakamoto-yama-t5-resume-generation.hf.space/run/predict",
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ data: [inputText] })
+                    body: JSON.stringify({ "data": [inputText] })
                 }
             );
             const resultText = await response.text();
@@ -62,16 +80,14 @@ function CvTool() {
                 result = JSON.parse(resultText);
             } catch (e) {
                 setError(
-                    resultText.startsWith('<')
-                        ? "L'IA Hugging Face est en veille ou saturée. Réessayez dans 1-2 minutes."
-                        : "Erreur API Hugging Face : " + e.message
+                  resultText.startsWith('<')
+                    ? "L'IA Hugging Face est en veille ou saturée. Réessayez dans 1-2 minutes."
+                    : "Erreur API Hugging Face : " + e.message
                 );
                 setIsGenerating(false);
                 return;
             }
-
-            // result.data[0] = résumé généré (souvent au format texte)
-            setCvText(result.data?.[0] || "Aucune donnée générée.");
+            setCvText(result.data[0]);
         } catch (err) {
             setError("Erreur API Hugging Face : " + err.message);
         } finally {
@@ -79,7 +95,6 @@ function CvTool() {
         }
     };
 
-    // Génération PDF
     const handleDownloadPdf = () => {
         const input = cvPreviewRef.current;
         if (!input) return;
@@ -92,50 +107,104 @@ function CvTool() {
     };
 
     return (
-        <div className="flex flex-col items-center min-h-screen py-10 px-2">
-            <h1 className="text-3xl font-bold mb-3 text-center">Générateur de CV IA</h1>
-            <div className="w-full max-w-xl bg-[#1e293b] p-6 rounded-xl shadow mb-8">
-                <textarea
-                    value={inputText}
-                    onChange={e => setInputText(e.target.value)}
-                    placeholder="Collez ici un texte de parcours, profil, expériences..."
-                    className="w-full h-32 p-3 mb-3 rounded bg-[#0f172a] border border-[#334155] text-white resize-none"
-                />
-                <button
-                    onClick={handleApiCall}
-                    disabled={isGenerating}
-                    className="w-full py-2 rounded bg-[#6366f1] hover:bg-[#4f46e5] font-semibold text-lg text-white transition"
-                >
-                    {isGenerating ? "Génération en cours..." : "Générer le CV"}
-                </button>
-                {error && <div className="error-message mt-3">{error}</div>}
-            </div>
-            <div className="w-full max-w-3xl">
-                <div ref={cvPreviewRef} className="cv-preview-container p-10 mb-6 min-h-[400px]">
-                    {cvText ? (
-                        <pre className="whitespace-pre-line text-lg">{cvText}</pre>
-                    ) : (
-                        <div className="text-gray-400 text-center py-8">
-                            L'aperçu du CV généré s'affichera ici.
-                        </div>
-                    )}
+        <>
+            <section className="hero">
+                <h1 className="text-3xl font-bold mb-2" style={{background: 'linear-gradient(135deg,#a5b4fc 0%,#10b981 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>Outil de Génération de CV par IA</h1>
+                <p className="text-gray-400 mb-8">Transformez un texte brut en un CV synthétique et pro en un clic, via Hugging Face.</p>
+            </section>
+            <div className="flex flex-col xl:flex-row gap-8">
+                <div className="xl:w-[420px] shrink-0">
+                    <div className="control-panel flex flex-col gap-4 xl:sticky top-28 h-fit max-h-[calc(100vh-8rem)] overflow-y-auto p-4">
+                        <fieldset>
+                            <legend className="text-xs text-gray-400 font-semibold mb-2">1. Données</legend>
+                            <textarea value={inputText} onChange={e => setInputText(e.target.value)} placeholder="Collez ici votre parcours, profil, expériences…" className="w-full h-36 bg-[var(--background)] border border-[var(--glass-border)] text-[var(--text-primary)] rounded p-2"></textarea>
+                        </fieldset>
+                        {error && <div className="error-message text-xs bg-red-600 text-white p-2 rounded">{error}</div>}
+                        <fieldset>
+                            <legend className="text-xs text-gray-400 font-semibold mb-2">2. Générer le résumé</legend>
+                            <button onClick={handleApiCall} disabled={isGenerating} className="btn-primary font-bold py-2 rounded transition mb-2" style={{background:'#6366f1',color:'#fff'}}>
+                                {isGenerating ? 'Génération en cours...' : 'Générer le CV'}
+                            </button>
+                        </fieldset>
+                        {cvText && <button onClick={handleDownloadPdf} className="w-full btn-secondary mt-2" style={{background:'#10b981',color:'#fff'}}>Télécharger en PDF</button>}
+                    </div>
                 </div>
-                <button
-                    onClick={handleDownloadPdf}
-                    disabled={!cvText}
-                    className="w-full py-2 rounded bg-[#10b981] hover:bg-[#059669] font-semibold text-white transition"
-                >
-                    Télécharger en PDF
-                </button>
+                <div className="flex-grow flex justify-center items-start">
+                    <div ref={cvPreviewRef} className="cv-preview-container rounded-2xl shadow-xl p-12 mt-6 mb-8 flex flex-col" style={{background:'#fff', color:'#222'}}>
+                        {!cvText ?
+                            <div className="text-center text-gray-400 text-xl flex flex-col items-center justify-center h-full">
+                                <i className="fa-regular fa-file-lines text-5xl mb-4"></i>
+                                <p>L'aperçu de votre CV apparaîtra ici.</p>
+                            </div>
+                        :
+                            <div style={{whiteSpace:"pre-line",fontSize:"1.1rem",lineHeight:"1.7"}}>
+                                {cvText}
+                            </div>
+                        }
+                    </div>
+                </div>
             </div>
-            <div className="mt-8 opacity-70 text-xs text-center">
-                Propulsé par <a className="underline" href="https://huggingface.co/spaces/nakamoto-yama/t5-resume-generation" target="_blank" rel="noopener noreferrer">nakamoto-yama/t5-resume-generation</a> (Hugging Face Spaces)
-            </div>
-        </div>
+        </>
     );
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<CvTool />);
-</script>
+function SiteLayout() {
+    React.useEffect(() => {
+        const theme = localStorage.getItem('theme') || 'dark';
+        document.body.classList.toggle('light-mode', theme === 'light');
+        const themeIcon = document.getElementById('themeIcon');
+        if(themeIcon) themeIcon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+    }, []);
+
+    const toggleTheme = () => {
+        const isLight = document.body.classList.toggle('light-mode');
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        const themeIcon = document.getElementById('themeIcon');
+        if(themeIcon) themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+    };
+
+    return (
+        <>
+            <header className="header">
+                <nav className="nav-container">
+                    <a href="#" className="logo">
+                        <svg className="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
+                            <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fillOpacity="0.7"></path>
+                            <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+                        </svg>
+                        <span>LTD Simulator</span>
+                    </a>
+                    <div className="nav-desktop">
+                        <ul className="nav-menu">
+                            <li className="nav-item"><a href="#" className="nav-link"><i className="fas fa-home"></i>&nbsp;Accueil</a></li>
+                            <li className="nav-item"><a href="#" className="nav-link"><i className="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
+                            <li className="nav-item"><a href="#" className="nav-link"><i className="fas fa-brain"></i>&nbsp;Tests</a></li>
+                            <li className="nav-item"><a href="#" className="nav-link"><i className="fas fa-trophy"></i>&nbsp;Challenges</a></li>
+                            <li className="nav-item"><a href="#" className="nav-link"><i className="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
+                            <li className="nav-item"><a href="#" className="nav-link"><i className="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
+                            <li className="nav-item"><a href="#" className="nav-link"><i className="fas fa-question-circle"></i>&nbsp;Quiz</a></li>
+                            <li className="nav-item"><a href="#" className="nav-link active"><i className="fas fa-tools"></i>&nbsp;Outils CV</a></li>
+                        </ul>
+                        <div className="nav-actions">
+                            <button className="theme-toggle" id="themeToggle" onClick={toggleTheme} title="Changer de thème">
+                                <i className="fas fa-sun" id="themeIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button className="mobile-toggle" id="mobileToggle">
+                        <span className="hamburger"><span></span><span></span><span></span></span>
+                    </button>
+                </nav>
+            </header>
+            <main className="main-content">
+                <CvTool />
+            </main>
+        </>
+    );
+}
+const container = document.getElementById('root');
+const root = ReactDOM.createRoot(container);
+root.render(<SiteLayout />);
+    </script>
 </body>
 </html>
