@@ -252,22 +252,40 @@
         body: JSON.stringify({ "data": [inputText] })
       }
     );
-    const result = await response.json();
-    // Résultat = CV généré sous forme de texte (format JSON, Markdown ou TXT, selon le modèle)
-    // Ici, essaye de parser en JSON, sinon affiche le texte brut
+    const resultText = await response.text();
+
+    let result;
+    try {
+      result = JSON.parse(resultText);
+    } catch (e) {
+      // Erreur HTML reçue à la place du JSON attendu
+      setError(
+        resultText.startsWith('<')
+          ? "L'IA Hugging Face est en veille ou saturée. Réessayez dans 1-2 minutes."
+          : "Erreur API Hugging Face : " + e.message
+      );
+      setIsGenerating(false);
+      return;
+    }
+
+    // Ici, résultat correct
+    // Résultat généralement dans result.data[0]
     let cvObject;
     try {
       cvObject = JSON.parse(result.data[0]);
     } catch (e) {
+      // Peut être du markdown ou du texte simple
       cvObject = { Profil: [result.data[0]] };
     }
     setCvData(cvObject);
+
   } catch (err) {
     setError("Erreur API Hugging Face : " + err.message);
   } finally {
     setIsGenerating(false);
   }
 };
+
             
             const handleDownloadPdf = () => {
                 const input = cvPreviewRef.current;
