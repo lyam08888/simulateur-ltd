@@ -7,7 +7,7 @@
     <title>LTD Simulator - Accueil</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -139,7 +139,7 @@
         .nav-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 0 var(--spacing-md);
+            padding: 0 var(--spacing-sm); /* MODIFIÉ: Moins de padding sur mobile */
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -153,7 +153,7 @@
             text-decoration: none;
             color: var(--text-primary);
             font-weight: 800;
-            font-size: 1.5rem;
+            font-size: 1.25rem; /* MODIFIÉ: Légèrement plus petit sur mobile */
             transition: var(--transition);
         }
         .logo:hover {
@@ -162,16 +162,15 @@
         }
 
         .logo-icon {
-            font-size: 2rem;
+            font-size: 1.75rem; /* MODIFIÉ: Légèrement plus petit sur mobile */
         }
 
-        .nav-desktop { display: none; }
-        @media (min-width: 1024px) { .nav-desktop { display: flex; align-items: center; flex-grow: 1; justify-content: flex-end; gap: var(--spacing-md); } }
+        .nav-desktop { display: none; } /* Caché par défaut (Mobile First) */
 
         .nav-menu {
             display: flex;
             align-items: center;
-            gap: var(--spacing-md);
+            gap: var(--spacing-sm);
             list-style: none;
         }
 
@@ -204,7 +203,6 @@
 
         .header-search {
             position: relative;
-            width: 280px;
         }
         .header-search input {
             width: 100%;
@@ -270,10 +268,7 @@
             border-radius: var(--radius);
             transition: var(--transition);
         }
-        @media (min-width: 1024px) {
-            .mobile-toggle { display: none; }
-        }
-
+        
         .hamburger { position: relative; width: 1.25rem; height: 1rem; }
         .hamburger span { position: absolute; left: 0; width: 100%; height: 2px; background: var(--text-primary); border-radius: 1px; transition: var(--transition); }
         .hamburger span:nth-child(1) { top: 0; }
@@ -285,21 +280,23 @@
         
         .mobile-menu { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--background); z-index: 999; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: var(--transition-slow); }
         .mobile-menu.active { opacity: 1; visibility: visible; }
-        .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-md); border-bottom: 1px solid var(--glass-border); }
+        .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--spacing-sm); height: 4.5rem; border-bottom: 1px solid var(--glass-border); }
         .mobile-menu-close { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-primary); }
-        .mobile-menu-content { flex: 1; padding: var(--spacing-lg); overflow-y: auto; }
+        .mobile-menu-content { flex: 1; padding: var(--spacing-lg) var(--spacing-sm); overflow-y: auto; }
         .mobile-search-wrapper { padding-bottom: var(--spacing-lg); margin-bottom: var(--spacing-lg); border-bottom: 1px solid var(--glass-border); }
+        /* CORRIGÉ: S'assure que la barre de recherche prend toute la largeur dans le menu mobile */
+        .mobile-search-wrapper .header-search { width: 100%; }
         .mobile-nav-section h3 { color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--spacing-md); }
         .mobile-nav-items { display: flex; flex-direction: column; gap: var(--spacing-xs); }
         .mobile-nav-item { display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-md); color: var(--text-secondary); text-decoration: none; border-radius: var(--radius-md); }
         .mobile-nav-item-icon { font-size: 1.25rem; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border-radius: var(--radius); }
         .mobile-nav-item:hover { background: var(--glass); color: var(--text-primary); }
 
-        .main-content { margin-top: 4.5rem; padding: var(--spacing-xl) var(--spacing-md); max-width: 1400px; margin-left: auto; margin-right: auto; }
+        .main-content { margin-top: 4.5rem; padding: var(--spacing-lg) var(--spacing-sm); max-width: 1400px; margin-left: auto; margin-right: auto; }
         
-        .hero { text-align: center; padding: var(--spacing-xl) 0; }
+        .hero { text-align: center; padding: var(--spacing-lg) 0; }
         .hero h1 { 
-            font-size: clamp(2.8rem, 5vw, 4rem); 
+            font-size: clamp(2.2rem, 8vw, 4rem); /* MODIFIÉ: Mieux adapté au mobile */
             font-weight: 800; 
             margin-bottom: var(--spacing-lg); 
             background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary) 50%, var(--accent) 100%); 
@@ -314,7 +311,7 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-        .hero p { font-size: 1.25rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.7; }
+        .hero p { font-size: 1.1rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.7; }
         
         /* --- Image Slider --- */
         .slider-container {
@@ -339,7 +336,7 @@
         .slide .slide-background {
             width: 100%;
             display: block;
-            aspect-ratio: 16 / 6;
+            aspect-ratio: 4 / 3; /* MODIFIÉ: Meilleur ratio pour mobile */
             object-fit: cover;
             transition: transform 8s ease-out;
             background-color: var(--surface-elevated);
@@ -352,7 +349,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            padding: var(--spacing-lg);
+            padding: var(--spacing-md); /* MODIFIÉ */
             background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 10%, transparent);
             color: var(--text-primary);
             transform: translateY(100%);
@@ -365,13 +362,13 @@
              background: linear-gradient(to top, rgba(241, 245, 249, 0.9) 10%, transparent);
         }
         .slide-content h3 {
-            font-size: clamp(1.5rem, 3vw, 2.25rem);
+            font-size: clamp(1.2rem, 4vw, 2rem); /* MODIFIÉ */
             font-weight: 700;
             text-shadow: 0 2px 5px rgba(0,0,0,0.5);
             margin-bottom: var(--spacing-xs);
         }
         .slide-content p {
-            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            font-size: clamp(0.8rem, 2.5vw, 1rem); /* MODIFIÉ */
             color: var(--text-secondary);
             text-shadow: 0 1px 3px rgba(0,0,0,0.5);
         }
@@ -379,8 +376,8 @@
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            width: 3rem;
-            height: 3rem;
+            width: 2.5rem; /* MODIFIÉ */
+            height: 2.5rem; /* MODIFIÉ */
             background: var(--glass);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-full);
@@ -398,10 +395,10 @@
             opacity: 1;
         }
         .slider-nav.prev {
-            left: var(--spacing-md);
+            left: var(--spacing-sm); /* MODIFIÉ */
         }
         .slider-nav.next {
-            right: var(--spacing-md);
+            right: var(--spacing-sm); /* MODIFIÉ */
         }
         .slider-dots {
             position: absolute;
@@ -430,7 +427,7 @@
             background: var(--surface);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-xl);
-            padding: var(--spacing-xl);
+            padding: var(--spacing-lg); /* MODIFIÉ */
             margin: var(--spacing-xl) 0;
         }
         .news-banner-header {
@@ -438,7 +435,7 @@
             margin-bottom: var(--spacing-lg);
         }
         .news-banner-header h2 {
-            font-size: 2rem;
+            font-size: 1.75rem; /* MODIFIÉ */
             font-weight: 700;
             margin-bottom: var(--spacing-xs);
         }
@@ -520,7 +517,7 @@
         .quick-actions-grid {
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-            gap: 2rem;
+            gap: var(--spacing-md); /* MODIFIÉ */
             margin: 4rem 0;
         }
         
@@ -594,7 +591,9 @@
             transform: translateY(0);
         }
         
-        .btp-wall-street { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: var(--spacing-xl); margin-top: var(--spacing-xl); }
+        /* CORRIGÉ: La principale cause du problème de débordement sur mobile */
+        .btp-wall-street { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-lg); margin-top: var(--spacing-xl); }
+        
         .feed-column { 
             background: var(--surface); 
             border-radius: var(--radius-lg); 
@@ -707,27 +706,13 @@
             transform: translateY(20px) scale(0.95);
             visibility: hidden;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 70vh; /* AJOUTÉ: Empêche le chatbot d'être trop grand */
         }
 
         .chatbot-container.active {
             opacity: 1;
             transform: translateY(0) scale(1);
             visibility: visible;
-        }
-
-        @media (max-width: 480px) {
-            .chatbot-container {
-                right: var(--spacing-md);
-                bottom: calc(var(--spacing-md) + 4.5rem);
-                width: calc(100% - (2 * var(--spacing-md)));
-            }
-            .chatbot-toggler {
-                right: var(--spacing-md);
-                bottom: var(--spacing-md);
-                width: 3.5rem;
-                height: 3.5rem;
-                font-size: 1.5rem;
-            }
         }
 
         .chatbot-header {
@@ -900,6 +885,84 @@
             30% { transform: translateY(-5px); }
         }
 
+        /* --- Media Queries pour la réactivité --- */
+
+        /* Styles pour très petits écrans (moins de 480px) */
+        @media (max-width: 480px) {
+            .chatbot-container {
+                right: var(--spacing-sm);
+                bottom: calc(var(--spacing-sm) + 4.5rem);
+                width: calc(100% - (2 * var(--spacing-sm)));
+                max-height: calc(100vh - 7rem);
+            }
+            .chatbot-toggler {
+                right: var(--spacing-sm);
+                bottom: var(--spacing-sm);
+                width: 3.5rem;
+                height: 3.5rem;
+                font-size: 1.5rem;
+            }
+            .btp-wall-street {
+                /* Sur les écrans très étroits, forcer une seule colonne */
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Styles pour tablettes (768px et plus) */
+        @media (min-width: 768px) {
+            .nav-container {
+                padding: 0 var(--spacing-md);
+            }
+            .logo {
+                font-size: 1.5rem;
+            }
+            .logo-icon {
+                font-size: 2rem;
+            }
+            .main-content {
+                padding: var(--spacing-xl) var(--spacing-md);
+            }
+            .hero p {
+                font-size: 1.25rem;
+            }
+            .slide .slide-background {
+                aspect-ratio: 16 / 7;
+            }
+             .slider-nav {
+                width: 3rem;
+                height: 3rem;
+            }
+            .quick-actions-grid {
+                gap: 2rem;
+            }
+            .news-banner {
+                padding: var(--spacing-xl);
+            }
+            .news-banner-header h2 {
+                font-size: 2rem;
+            }
+        }
+
+        /* Styles pour ordinateurs (1024px et plus) */
+        @media (min-width: 1024px) {
+            .mobile-toggle {
+                display: none;
+            }
+            .nav-desktop {
+                display: flex;
+                align-items: center;
+                flex-grow: 1;
+                justify-content: flex-end;
+                gap: var(--spacing-md);
+            }
+            .header-search {
+                width: 280px;
+            }
+            .nav-menu {
+                gap: var(--spacing-md);
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -916,16 +979,16 @@
             </a>
             <div class="nav-desktop">
                  <form action="recherche.html" method="GET" class="header-search">
-                    <i class="fas fa-search"></i>
-                    <input type="search" name="query" placeholder="Rechercher..." aria-label="Rechercher">
-                </form>
+                     <i class="fas fa-search"></i>
+                     <input type="search" name="query" placeholder="Rechercher..." aria-label="Rechercher">
+                 </form>
                  <ul class="nav-menu">
                      <li class="nav-item"><a href="index.html" class="nav-link active" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
                      <li class="nav-item"><a href="simulateur.html" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
                      <li class="nav-item"><a href="test.html" class="nav-link" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
                      <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
                      <li class="nav-item"><a href="emploi.html" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
-                    <li class="nav-item"><a href="histoire.html" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
+                     <li class="nav-item"><a href="histoire.html" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
                  </ul>
                  <div class="nav-actions">
                      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
@@ -1148,11 +1211,11 @@
             <div class="feed-column" id="tenders-feed-container">
                 <div class="card-image-top">
                      <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                        <g stroke="var(--primary-light)" opacity="0.8">
-                           <path d="M 60 100 l 80 -80" />
-                           <path d="M 140 100 l -80 -80" />
-                           <rect x="50" y="95" width="100" height="15" rx="5" />
-                        </g>
+                         <g stroke="var(--primary-light)" opacity="0.8">
+                            <path d="M 60 100 l 80 -80" />
+                            <path d="M 140 100 l -80 -80" />
+                            <rect x="50" y="95" width="100" height="15" rx="5" />
+                         </g>
                      </svg>
                 </div>
                 <div class="feed-content">
@@ -1714,7 +1777,13 @@
                     const newNavItem = document.createElement('a');
                     newNavItem.href = link.href;
                     newNavItem.className = 'mobile-nav-item';
-                    newNavItem.onclick = link.onclick;
+                    
+                    // Re-create the onclick to avoid scope issues
+                    newNavItem.onclick = (e) => {
+                        e.preventDefault();
+                        toggleMobileMenu();
+                        navigateTo(link.getAttribute('href'));
+                    };
 
                     const iconDiv = document.createElement('div');
                     iconDiv.className = 'mobile-nav-item-icon';
