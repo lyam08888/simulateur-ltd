@@ -241,7 +241,7 @@
                 setIsGenerating(true);
                 setError(null);
                 const payload = getGeminiPayload(textToProcess, instruction);
-                const apiKey = "";
+                const apiKey = "AIzaSyChSltrySgUv_iHkGhkpvFS11Wo952wUXc";
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
                 try {
                     const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
