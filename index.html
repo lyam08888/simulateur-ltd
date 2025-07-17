@@ -144,7 +144,6 @@
             align-items: center;
             justify-content: space-between;
             height: 4.5rem;
-            gap: var(--spacing-md); /* AJOUTÉ: Espacement entre les éléments de la nav */
         }
 
         .logo {
@@ -156,6 +155,7 @@
             font-weight: 800;
             font-size: 1.2rem; 
             transition: var(--transition);
+            flex-shrink: 0;
         }
         .logo:hover {
             transform: scale(1.05);
@@ -177,7 +177,6 @@
         .nav-menu {
             display: flex;
             align-items: center;
-            gap: var(--spacing-sm);
             list-style: none;
         }
 
@@ -348,7 +347,7 @@
         .slide .slide-background {
             width: 100%;
             display: block;
-            aspect-ratio: 4 / 3; 
+            aspect-ratio: 16 / 9; 
             object-fit: cover;
             transition: transform 8s ease-out;
             background-color: var(--surface-elevated);
@@ -458,7 +457,7 @@
         }
         .news-banner-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* MODIFIÉ: minmax réduit pour une meilleure flexibilité */
             gap: var(--spacing-lg);
         }
         .news-banner-item {
@@ -528,7 +527,7 @@
 
         .quick-actions-grid {
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); 
             gap: var(--spacing-md); 
             margin: 4rem 0;
         }
@@ -1008,7 +1007,7 @@
                      <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
                      <li class="nav-item"><a href="emploi.html" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
                      <li class="nav-item"><a href="histoire.html" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
-                     <li class="nav-item"><a href="quiz.html" class="nav-link" onclick="event.preventDefault(); navigateTo('quiz.html')"><i class="fas fa-question-circle"></i>&nbsp;Quiz</a></li>
+                     <li class="nav-item"><a href="quizz.html" class="nav-link" onclick="event.preventDefault(); navigateTo('quizz.html')"><i class="fas fa-question-circle"></i>&nbsp;Quiz</a></li>
                  </ul>
                  <div class="nav-actions">
                      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
@@ -1101,7 +1100,7 @@
                 <p>Restez à jour avec nos derniers tests, challenges et actualités du secteur.</p>
             </div>
             <div class="news-banner-grid">
-                <a href="quiztelecom.html" onclick="event.preventDefault(); navigateTo('quiztelecom.html')" class="news-banner-item">
+                <a href="quizz.html" onclick="event.preventDefault(); navigateTo('quizz.html')" class="news-banner-item">
                     <div class="card-image-top">
                         <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <g stroke="var(--primary)" opacity="0.8">
