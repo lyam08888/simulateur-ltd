@@ -719,10 +719,14 @@
         // --- HEADER & NAVIGATION SCRIPT ---
         let currentTheme = localStorage.getItem('theme') || 'dark';
 
+        /**
+         * Navigates to a new page.
+         * This function changes the window location to the specified file.
+         * @param {string} pageFile - The HTML file to navigate to (e.g., 'index.html').
+         */
         function navigateTo(pageFile) {
-            // This is a placeholder for navigation logic.
-            // In a real multi-page app, you'd use window.location.href = pageFile;
-            console.log(`Navigating to ${pageFile}`);
+            // This is the corrected navigation logic.
+            window.location.href = pageFile;
         }
 
         function updateThemeUI() {
