@@ -3,1158 +3,1044 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeu de Recrutement - Chargé d'Études de Prix (Expert)</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>LTD Challenge - Chargé d'Études de Prix</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
     <style>
+        /* --- THÈME GLOBAL (issu du site principal) --- */
         :root {
+            /* Colors */
             --primary: #6366f1;
             --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
             --secondary: #10b981;
+            --secondary-dark: #059669;
             --warning: #f59e0b;
             --danger: #ef4444;
             --info: #3b82f6;
+            --accent: #f59e0b;
+            --accent-dark: #d97706;
+            --correct: #22c55e;
+            --incorrect: #ef4444;
+            
+            /* Surfaces */
             --background: #0f172a;
             --surface: #1e293b;
             --surface-elevated: #334155;
+            --surface-hover: #475569;
             --glass: rgba(30, 41, 59, 0.5);
             --glass-border: rgba(255, 255, 255, 0.1);
+            
+            /* Text */
             --text-primary: #f8fafc;
             --text-secondary: #cbd5e1;
             --text-muted: #94a3b8;
-            --radius: 0.75rem;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Shadows */
+            --shadow-glow: 0 0 15px 0px rgba(99, 102, 241, 0.3);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+            /* Animation */
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Spacing */
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            
+            /* Borders */
+            --radius-sm: 0.375rem;
+            --radius: 0.5rem;
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.5rem;
+            --radius-full: 9999px;
         }
 
         body.light-mode {
             --background: #f1f5f9;
             --surface: #ffffff;
             --surface-elevated: #e2e8f0;
+            --surface-hover: #f8fafc;
             --glass: rgba(255, 255, 255, 0.5);
             --glass-border: rgba(0, 0, 0, 0.1);
             --text-primary: #1e293b;
             --text-secondary: #475569;
             --text-muted: #64748b;
+            --shadow-glow: 0 0 15px 0px rgba(99, 102, 241, 0.2);
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--background);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background);
             color: var(--text-primary);
+            line-height: 1.6;
             overflow-x: hidden;
-            transition: background-color var(--transition), color var(--transition);
+            transition: var(--transition-slow);
         }
 
         body::before {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 40%), 
-                        radial-gradient(circle at 80% 30%, rgba(16, 185, 129, 0.1) 0%, transparent 40%);
-            pointer-events: none;
-            z-index: -1;
+            content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 40%), radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 40%), radial-gradient(circle at 50% 85%, rgba(245, 158, 11, 0.1) 0%, transparent 40%);
+            pointer-events: none; z-index: -1; animation: background-pan 30s linear infinite;
         }
+        
+        @keyframes background-pan { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        
+        [onclick], .nav-link, .mobile-nav-item, .theme-toggle, .mobile-toggle { cursor: pointer; }
 
+        .header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; backdrop-filter: blur(20px) saturate(180%); background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid var(--glass-border); transition: var(--transition); }
+        body.light-mode .header { background: rgba(255, 255, 255, 0.8); }
+        .nav-container { max-width: 1400px; margin: 0 auto; padding: 0 var(--spacing-sm); display: flex; align-items: center; justify-content: space-between; height: 4.5rem; gap: var(--spacing-md); }
+        .logo { display: flex; align-items: center; gap: var(--spacing-sm); text-decoration: none; color: var(--text-primary); font-weight: 800; font-size: 1.2rem; transition: var(--transition); }
+        .logo:hover { transform: scale(1.05); text-shadow: 0 0 10px var(--primary-light); }
+        .logo-icon { height: 1.8rem; width: auto; vertical-align: -0.4rem; }
+        .logo-text-extended { display: none; }
+        .nav-desktop { display: none; }
+        .nav-menu { display: flex; align-items: center; gap: var(--spacing-xs); list-style: none; }
+        .nav-item { position: relative; }
+        .nav-link { display: flex; align-items: center; gap: var(--spacing-xs); padding: var(--spacing-xs) var(--spacing-sm); color: var(--text-secondary); text-decoration: none; font-weight: 500; border-radius: var(--radius); transition: var(--transition); }
+        .nav-link:hover { color: var(--text-primary); background: var(--glass); }
+        .nav-link.active { color: var(--text-primary); background: linear-gradient(45deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.2)); font-weight: 600; }
+        .header-search { position: relative; }
+        .header-search input { width: 100%; background-color: var(--surface); border: 1px solid var(--glass-border); color: var(--text-secondary); border-radius: var(--radius); padding: 0.5rem 1rem 0.5rem 2.5rem; font-size: 0.9rem; transition: var(--transition); }
+        .header-search input::placeholder { color: var(--text-muted); }
+        .header-search input:focus { background-color: var(--surface-elevated); border-color: var(--primary); color: var(--text-primary); box-shadow: 0 0 0 2px var(--primary-dark); outline: none; }
+        .header-search .fa-search { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .nav-actions { display: flex; align-items: center; gap: var(--spacing-sm); }
+        .theme-toggle { display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-secondary); transition: var(--transition); }
+        .theme-toggle:hover { background: var(--surface-elevated); color: var(--text-primary); transform: rotate(15deg); }
+        .mobile-toggle { display: flex; flex-direction: column; justify-content: center; align-items: center; width: 2.5rem; height: 2.5rem; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); transition: var(--transition); }
+        .hamburger { position: relative; width: 1.25rem; height: 1rem; }
+        .hamburger span { position: absolute; left: 0; width: 100%; height: 2px; background: var(--text-primary); border-radius: 1px; transition: var(--transition); }
+        .hamburger span:nth-child(1) { top: 0; }
+        .hamburger span:nth-child(2) { top: 50%; transform: translateY(-50%); }
+        .hamburger span:nth-child(3) { bottom: 0; }
+        .mobile-toggle.active .hamburger span:nth-child(1) { top: 50%; transform: translateY(-50%) rotate(45deg); }
+        .mobile-toggle.active .hamburger span:nth-child(2) { opacity: 0; }
+        .mobile-toggle.active .hamburger span:nth-child(3) { bottom: 50%; transform: translateY(50%) rotate(-45deg); }
+        .mobile-menu { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--background); z-index: 999; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: var(--transition-slow); }
+        .mobile-menu.active { opacity: 1; visibility: visible; }
+        .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--spacing-sm); height: 4.5rem; border-bottom: 1px solid var(--glass-border); }
+        .mobile-menu-close { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-primary); }
+        .mobile-menu-content { flex: 1; padding: var(--spacing-lg) var(--spacing-sm); overflow-y: auto; }
+        .mobile-search-wrapper { padding-bottom: var(--spacing-lg); margin-bottom: var(--spacing-lg); border-bottom: 1px solid var(--glass-border); }
+        .mobile-search-wrapper .header-search { width: 100%; }
+        .mobile-nav-section h3 { color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--spacing-md); }
+        .mobile-nav-items { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+        .mobile-nav-item { display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-md); color: var(--text-secondary); text-decoration: none; border-radius: var(--radius-md); }
+        .mobile-nav-item-icon { font-size: 1.25rem; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border-radius: var(--radius); }
+        .mobile-nav-item:hover { background: var(--glass); color: var(--text-primary); }
+        .main-content { margin-top: 4.5rem; padding: var(--spacing-lg) var(--spacing-sm); max-width: 1400px; margin-left: auto; margin-right: auto; }
+        @media (min-width: 768px) { .nav-container { padding: 0 var(--spacing-md); } .main-content { padding: var(--spacing-xl) var(--spacing-md); } }
+        @media (min-width: 1024px) { .mobile-toggle { display: none; } .nav-desktop { display: flex; align-items: center; flex-grow: 1; justify-content: flex-end; gap: var(--spacing-sm); } .header-search { width: 280px; } .nav-menu { gap: var(--spacing-xs); } }
+        @media (min-width: 1280px) { .logo-text-extended { display: inline; } }
+
+        /* --- STYLES SPÉCIFIQUES AU JEU PRIX (adaptés au thème) --- */
+        .hidden { display: none !important; }
         .card {
             background-color: var(--glass);
             backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
             border: 1px solid var(--glass-border);
             padding: 1.5rem 2rem;
-            border-radius: var(--radius);
-            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
             transition: var(--transition);
         }
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+        .font-extrabold { font-weight: 800; }
+        .font-semibold { font-weight: 600; }
+        .font-bold { font-weight: 700; }
+        .text-5xl { font-size: 3rem; }
+        .text-4xl { font-size: 2.25rem; }
+        .text-3xl { font-size: 1.875rem; }
+        .text-2xl { font-size: 1.5rem; }
+        .text-xl { font-size: 1.25rem; }
+        .text-lg { font-size: 1.125rem; }
+        .text-sm { font-size: 0.875rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .my-6 { margin-top: 1.5rem; margin-bottom: 1.5rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .p-4 { padding: 1rem; }
+        .p-6 { padding: 1.5rem; }
+        .px-8 { padding-left: 2rem; padding-right: 2rem; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .rounded-lg { border-radius: var(--radius-lg); }
+        .w-5 { width: 1.25rem; }
+        .space-y-2 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.5rem; }
+        .list-none { list-style-type: none; }
+        .bg-black\/10 { background-color: rgba(0,0,0,0.1); }
+        body.light-mode .bg-black\/10 { background-color: rgba(0,0,0,0.05); }
 
         .btn {
-            padding: 0.6rem 1.25rem;
-            border-radius: var(--radius);
-            font-weight: 600;
-            color: white;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            border: 1px solid transparent;
-            transform: translateY(0);
+            padding: 0.6rem 1.25rem; border-radius: var(--radius-md); font-weight: 600;
+            color: white; transition: var(--transition); display: inline-flex;
+            align-items: center; justify-content: center; gap: 0.5rem;
+            border: 1px solid transparent; transform: translateY(0); cursor: pointer;
         }
-        .btn:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.1);
-        }
-        .btn:active {
-            transform: translateY(0);
-            filter: brightness(0.9);
-        }
-
+        .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .btn:active { transform: translateY(0); filter: brightness(0.9); }
         .btn-primary { background-color: var(--primary); border-color: var(--primary-dark); }
         .btn-secondary { background-color: var(--surface-elevated); border-color: var(--text-muted); color: var(--text-secondary); }
-        .btn-warning { background-color: var(--warning); border-color: #d97706; }
-        .btn-danger { background-color: var(--danger); border-color: #c02626; }
-        .btn-info { background-color: var(--info); border-color: #2563eb; }
+        .btn-warning { background-color: var(--warning); border-color: var(--accent-dark); }
+        .btn-danger { background-color: var(--danger); border-color: #b91c1c; }
+        .btn-info { background-color: var(--info); border-color: #1d4ed8; }
         
         .answer-btn {
-            width: 100%;
-            text-align: left;
-            padding: 1rem;
-            border: 2px solid var(--surface-elevated);
-            border-radius: var(--radius);
-            background-color: var(--surface);
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
+            width: 100%; text-align: left; padding: 1rem; border: 2px solid var(--surface-elevated);
+            border-radius: var(--radius-md); background-color: var(--surface); transition: var(--transition);
+            display: flex; align-items: center; gap: 0.75rem; cursor: pointer;
         }
-        .answer-btn:hover {
-            border-color: var(--primary);
-            background-color: var(--surface-elevated);
-        }
-        .answer-btn.selected {
-            border-color: var(--primary);
-            background-color: rgba(99, 102, 241, 0.2);
-        }
+        .answer-btn:hover { border-color: var(--primary); background-color: var(--surface-elevated); }
+        .answer-btn.selected { border-color: var(--primary); background-color: rgba(99, 102, 241, 0.2); }
+        .answer-btn.selected i { color: var(--primary); }
         .answer-btn.flash-green { animation: flash-green 0.5s ease; }
         .answer-btn.flash-red { animation: flash-red 0.5s ease; }
         @keyframes flash-green { 50% { background-color: rgba(16, 185, 129, 0.5); border-color: var(--secondary); } }
         @keyframes flash-red { 50% { background-color: rgba(239, 68, 68, 0.5); border-color: var(--danger); } }
 
-        #timer-bar-container {
-             width: 100%;
-             background-color: var(--surface);
-             border-radius: 9999px;
-             height: 0.75rem;
-             overflow: hidden;
-             border: 1px solid var(--glass-border);
-        }
-        #timer-bar {
-            transition: width 1s linear, background-color 0.5s ease;
-        }
+        #timer-bar-container { width: 100%; background-color: var(--surface); border-radius: 9999px; height: 0.75rem; overflow: hidden; border: 1px solid var(--glass-border); }
+        #timer-bar { transition: width 1s linear, background-color 0.5s ease; height: 100%; }
         
         .fade-in { animation: fadeIn 0.7s ease-in-out forwards; }
         .pop-in { animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes popIn { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
         
-        @keyframes pulse-red {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-        }
-        .urgent-alert {
-            animation: pulse-red 1.5s infinite;
-            border-color: var(--danger) !important;
-        }
+        .urgent-alert { animation: pulse-red 1.5s infinite; border-color: var(--danger) !important; }
+        @keyframes pulse-red { 0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } }
         
-        @keyframes shake-horizontal {
-          10%, 90% { transform: translate3d(-1px, 0, 0); }
-          20%, 80% { transform: translate3d(2px, 0, 0); }
-          30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-          40%, 60% { transform: translate3d(4px, 0, 0); }
-        }
-        .shake {
-            animation: shake-horizontal 0.8s cubic-bezier(.455,.03,.515,.955) both;
-        }
+        .question-animation { animation: question-fade-in 0.4s ease-out forwards; }
+        .answer-animation { opacity: 0; animation: question-fade-in 0.4s ease-out forwards; }
+        @keyframes question-fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes question-fade-in {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .question-animation {
-            animation: question-fade-in 0.4s ease-out forwards;
-        }
-
-        .answer-animation {
-            opacity: 0;
-            animation: question-fade-in 0.4s ease-out forwards;
-        }
-
-
-        #score-container {
-            transition: transform 0.2s ease;
-            background-color: var(--surface);
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius);
-            border: 1px solid var(--glass-border);
-        }
+        #score-container { transition: transform 0.2s ease; background-color: var(--surface); padding: 0.5rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--glass-border); }
         #score-container.pop { transform: scale(1.3); }
         .draggable { cursor: move; }
-        .drag-over { background-color: var(--surface-elevated); }
-
+        
         /* Progress Bar */
-        #progress-bar-container {
-            position: relative;
-            width: 100%;
-            padding: 0;
-            margin-top: auto;
-            padding-top: 1.5rem;
-            overflow-x: auto;
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        #progress-bar-container { position: relative; width: 100%; padding: 1.5rem 0; margin-top: auto; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; }
         #progress-bar-container::-webkit-scrollbar { display: none; }
-        #progress-bar {
-            display: inline-flex;
-            align-items: center;
-            position: relative;
-            padding: 0 1rem;
-            min-width: 100%;
-            gap: 0.5rem;
-        }
-        #progress-line-bg { 
-            position: absolute;
-            top: 50%;
-            left: 1rem;
-            transform: translateY(-50%);
-            height: 4px;
-            width: calc(100% - 2rem);
-            background-color: var(--surface-elevated);
-            z-index: 1;
-        }
-        #progress-line { 
-            position: absolute;
-            top: 50%;
-            left: 1rem;
-            transform: translateY(-50%);
-            height: 4px;
-            background-color: var(--primary);
-            width: 0%;
-            z-index: 2;
-            transition: width 0.4s ease;
-        }
-        .progress-step {
-            position: relative;
-            z-index: 3;
-            width: 1.5rem;
-            height: 1.5rem;
-            font-size: 0.7rem;
-            background-color: var(--surface);
-            border: 3px solid var(--surface-elevated);
-            border-radius: 50%;
-            transition: all 0.4s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: var(--text-muted);
-            font-weight: bold;
-            flex-shrink: 0;
-        }
-        .progress-step.current {
-            border-color: var(--primary);
-            background-color: var(--primary);
-            color: white;
-            transform: scale(1.2);
-        }
-        .progress-step.completed {
-            border-color: var(--primary);
-            background-color: var(--primary);
-            color: white;
-        }
+        #progress-bar { display: inline-flex; align-items: center; position: relative; padding: 0 1rem; min-width: 100%; gap: 0.5rem; }
+        #progress-line-bg, #progress-line { position: absolute; top: 50%; left: 1rem; transform: translateY(-50%); height: 4px; }
+        #progress-line-bg { width: calc(100% - 2rem); background-color: var(--surface-elevated); z-index: 1; }
+        #progress-line { background-color: var(--primary); width: 0%; z-index: 2; transition: width 0.4s ease; }
+        .progress-step { position: relative; z-index: 3; width: 1.5rem; height: 1.5rem; font-size: 0.7rem; background-color: var(--surface); border: 3px solid var(--surface-elevated); border-radius: 50%; transition: all 0.4s ease; display: flex; justify-content: center; align-items: center; color: var(--text-muted); font-weight: bold; flex-shrink: 0; }
+        .progress-step.current { border-color: var(--primary); background-color: var(--primary); color: white; transform: scale(1.2); }
+        .progress-step.completed { border-color: var(--primary); background-color: var(--primary); color: white; }
         .progress-step .step-icon { display: none; font-size: 0.6rem; }
         .progress-step.completed .step-icon { display: block; }
         .progress-step.completed .step-number { display: none; }
 
-
-        /* Floating Action Button (FAB) */
-        .fab-container {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            z-index: 50;
-        }
-        .fab-main {
-            width: 4rem;
-            height: 4rem;
-            border-radius: 50%;
-            background-color: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-        .fab-container.open .fab-main {
-            transform: rotate(45deg);
-        }
-        .fab-options {
-            position: absolute;
-            bottom: 5rem;
-            right: 0.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            list-style: none;
-            transition: var(--transition);
-        }
-        .fab-options li {
-            transform: scale(0);
-            opacity: 0;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            transform-origin: bottom right;
-        }
-        .fab-container.open .fab-options li {
-            transform: scale(1);
-            opacity: 1;
-        }
-        .fab-container.open .fab-options li:nth-child(1) { transition-delay: 0.1s; }
-        .fab-container.open .fab-options li:nth-child(2) { transition-delay: 0.2s; }
-        .fab-container.open .fab-options li:nth-child(3) { transition-delay: 0.3s; }
-        .fab-container.open .fab-options li:nth-child(4) { transition-delay: 0.4s; }
-
-        .fab-btn {
-            width: 3rem;
-            height: 3rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            cursor: pointer;
-        }
-        .fab-btn .fa-sun { display: none; }
-        body.light-mode .fab-btn .fa-sun { display: block; }
-        body.light-mode .fab-btn .fa-moon { display: none; }
-
-        /* Tools Modal */
-        #tools-modal .calc-display {
-            background-color: var(--background);
-            color: var(--text-primary);
-            border-color: var(--glass-border);
-        }
-        #tools-modal .calc-btn {
-            background-color: var(--surface-elevated);
-            color: var(--text-primary);
-        }
-        #tools-modal .calc-btn.operator {
-            background-color: var(--primary);
-        }
-        #tools-modal #notepad {
-            background-color: var(--surface);
-            color: var(--text-secondary);
-            border-color: var(--glass-border);
-        }
+        /* Modals */
+        .modal { position: fixed; inset: 0; background-color: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 50; padding: 1rem; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+        .modal:not(.hidden) { opacity: 1; visibility: visible; }
     </style>
 </head>
-<body class="dark-mode">
+<body>
 
-    <div id="app-container" class="max-w-4xl mx-auto p-4 md:p-8 transition-all duration-300">
-
-        <!-- Écran d'accueil -->
-        <div id="welcome-screen" class="text-center card fade-in">
-            <i class="fas fa-hard-hat text-5xl text-primary mb-4"></i>
-            <h1 class="text-3xl md:text-4xl font-extrabold text-text-primary mb-4">Challenge de Recrutement</h1>
-            <p class="text-xl mb-2 font-semibold text-text-secondary">Chargé(e) Études de Prix Confirmé</p>
-            <div class="bg-black/10 p-4 rounded-lg text-left my-6 text-sm md:text-base">
-                <p class="mb-4">Prouvez votre expertise avec notre challenge technique de 30 questions. Analysez, chiffrez et innovez pour nous montrer ce que vous valez !</p>
-                <ul class="list-none space-y-2">
-                    <li><i class="fas fa-bolt text-warning w-5"></i> <strong>Gérez des urgences</strong> avec un temps de réponse limité.</li>
-                    <li><i class="fas fa-envelope text-secondary w-5"></i> <strong>Scénarios réalistes</strong> (emails, appels) pour tester votre jugement.</li>
-                    <li><i class="fas fa-random text-primary w-5"></i> <strong>Questions et réponses aléatoires</strong> à chaque partie.</li>
-                </ul>
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav-container">
+            <a href="#" class="logo" onclick="event.preventDefault(); navigateTo('index.html');">
+                <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
+                    <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
+                    <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+                </svg>
+                <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
+            </a>
+            <div class="nav-desktop">
+                 <form action="#" method="GET" class="header-search">
+                     <i class="fas fa-search"></i>
+                     <input type="search" name="query" placeholder="Rechercher..." aria-label="Rechercher">
+                 </form>
+                 <ul class="nav-menu">
+                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault();"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
+                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault();"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
+                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault();"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
+                     <li class="nav-item"><a href="#" class="nav-link active" onclick="event.preventDefault();"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
+                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault();"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
+                 </ul>
+                 <div class="nav-actions">
+                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
+                         <i class="fas fa-moon" id="themeIcon"></i>
+                     </button>
+                 </div>
             </div>
-            <button id="start-game-btn" class="btn btn-primary text-lg px-8 py-3">
-                <i class="fas fa-play"></i>
-                <span>Relever le Défi</span>
+            <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
+                <span class="hamburger"><span></span><span></span><span></span></span>
             </button>
+        </nav>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <a href="#" class="logo" onclick="event.preventDefault(); toggleMobileMenu();">
+                <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
+                    <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
+                    <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+                </svg>
+                <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
+            </a>
+            <button class="mobile-menu-close" onclick="toggleMobileMenu()"><i class="fas fa-times"></i></button>
         </div>
-
-        <!-- Écran de jeu -->
-        <div id="game-screen" class="hidden flex flex-col" style="min-height: calc(100vh - 4rem);">
-            <div> <!-- Main content wrapper -->
-                <div class="flex justify-between items-center mb-4">
-                    <div id="score-container" class="text-2xl font-bold">
-                        Score: <span id="score" class="text-primary">0</span>
-                    </div>
-                    <div class="flex space-x-2">
-                        <button id="tools-btn" class="btn btn-info"><i class="fas fa-calculator"></i><span class="hidden md:inline">Outils</span></button>
-                        <button id="hint-btn" class="btn btn-warning"><i class="fas fa-lightbulb"></i><span class="hidden md:inline">Astuce</span></button>
-                        <button id="skip-btn" class="btn btn-danger"><i class="fas fa-forward"></i><span class="hidden md:inline">Passer</span></button>
-                    </div>
-                </div>
-
-                <div id="timer-bar-container" class="mb-6">
-                    <div id="timer-bar" class="h-full rounded-full" style="width: 100%; background-color: var(--secondary);"></div>
-                </div>
-
-                <div id="question-container" class="card">
-                    <div id="scenario-box" class="hidden"></div>
-                    <h3 id="question-text" class="text-xl md:text-2xl font-semibold mb-6 text-center min-h-[56px] text-text-primary"></h3>
-                    <div id="answers-container" class="flex flex-col items-center"></div>
-                </div>
+        <div class="mobile-menu-content">
+            <div class="mobile-search-wrapper">
+                <form action="#" method="GET" class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="search" name="query" placeholder="Rechercher..." aria-label="Rechercher">
+                </form>
             </div>
-
-            <!-- Progress Bar at the bottom -->
-            <div id="progress-bar-container">
-                <div id="progress-bar">
-                    <!-- Steps will be injected here -->
+            <div class="mobile-nav-section">
+                <h3>Navigation</h3>
+                <div class="mobile-nav-items">
+                    <!-- Mobile nav items will be populated by JS -->
                 </div>
-            </div>
-        </div>
-
-        <!-- Écran de fin -->
-        <div id="end-screen" class="hidden text-center card">
-            <i class="fas fa-trophy text-5xl text-warning mb-4"></i>
-            <h1 class="text-3xl md:text-4xl font-extrabold text-text-primary mb-4">Challenge Terminé !</h1>
-            <div class="bg-black/10 p-6 rounded-lg mb-8">
-                <h2 class="text-2xl font-semibold mb-4">Votre Performance</h2>
-                <p class="text-lg mb-2">Score Final: <strong id="final-score" class="text-primary text-3xl"></strong> / <span id="final-max-score" class="text-text-muted text-2xl"></span></p>
-                <div id="final-feedback" class="text-left">
-                    <h3 id="profile-title" class="text-xl font-bold text-primary text-center mb-2"></h3>
-                    <p id="profile-description" class="text-text-secondary text-center mb-4"></p>
-                    <div id="profile-details"></div>
-                </div>
-                <h3 class="text-xl font-semibold mb-3 mt-6">Téléchargez votre bilan personnalisé</h3>
-                <p class="mb-4 text-sm text-text-muted">Ce document PDF contient le détail de vos réponses, notre analyse et les prochaines étapes.</p>
-                <button id="download-pdf-btn" class="btn btn-primary"><i class="fas fa-file-pdf"></i><span>Télécharger le PDF</span></button>
-            </div>
-            <div class="bg-black/10 p-6 rounded-lg">
-                 <h2 class="text-2xl font-semibold mb-4">Prêt(e) pour la suite ?</h2>
-                 <p class="mb-4 text-text-secondary">Votre profil nous intéresse ! Envoyez votre candidature complète à :</p>
-                 <a href="mailto:l.amara@ltd-international.com" class="text-xl font-bold text-primary hover:underline">l.amara@ltd-international.com</a>
             </div>
         </div>
     </div>
 
-    <!-- FAB Menu -->
-    <div id="fab-container" class="fab-container hidden">
-        <ul class="fab-options">
-             <li>
-                <button id="theme-toggle-btn" class="fab-btn bg-gray-600" title="Changer le thème">
-                    <i class="fas fa-sun"></i>
-                    <i class="fas fa-moon"></i>
-                </button>
-            </li>
-            <li>
-                <button id="force-end-btn" class="fab-btn bg-danger" title="Terminer le jeu (-500 pts)">
-                    <i class="fas fa-flag-checkered"></i>
-                </button>
-            </li>
-            <li>
-                <button id="compact-mode-btn" class="fab-btn bg-surface-elevated" title="Mode Compact">
-                    <i class="fas fa-compress-alt"></i>
-                </button>
-            </li>
-            <li>
-                <button id="home-btn" class="fab-btn bg-secondary" title="Retour à l'accueil">
-                    <i class="fas fa-home"></i>
-                </button>
-            </li>
-        </ul>
-        <div id="fab-main-btn" class="fab-main">
-            <i class="fas fa-plus"></i>
-        </div>
-    </div>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div id="app-container" style="max-width: 1024px; margin: auto;">
 
-    <!-- Modals -->
-    <div id="feedback-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-        <div class="card pop-in text-center max-w-md w-full">
-            <h2 id="feedback-title" class="text-3xl font-bold mb-4"></h2>
-            <p id="feedback-explanation" class="mb-6 text-text-secondary"></p>
-            <button id="next-question-btn" class="btn btn-primary">Question Suivante</button>
-        </div>
-    </div>
-    <div id="confirm-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-        <div class="card pop-in text-center max-w-md w-full">
-            <h2 id="confirm-title" class="text-2xl font-bold mb-4 text-text-primary"></h2>
-            <p id="confirm-text" class="mb-6 text-text-secondary"></p>
-            <div class="flex justify-center space-x-4">
-                <button id="confirm-yes-btn" class="btn btn-danger">Oui</button>
-                <button id="confirm-no-btn" class="btn btn-secondary">Non</button>
+            <!-- Écran d'accueil -->
+            <div id="welcome-screen" class="text-center card fade-in">
+                <i class="fas fa-hard-hat text-5xl text-primary mb-4"></i>
+                <h1 class="text-3xl md:text-4xl font-extrabold text-text-primary mb-4">Challenge de Recrutement</h1>
+                <p class="text-xl mb-2 font-semibold text-text-secondary">Chargé(e) Études de Prix Confirmé</p>
+                <div class="bg-black\/10 p-4 rounded-lg text-left my-6 text-sm md:text-base">
+                    <p class="mb-4">Prouvez votre expertise avec notre challenge technique. Analysez, chiffrez et innovez pour nous montrer ce que vous valez !</p>
+                    <ul class="list-none space-y-2">
+                        <li><i class="fas fa-bolt text-warning w-5"></i> <strong>Gérez des urgences</strong> avec un temps de réponse limité.</li>
+                        <li><i class="fas fa-envelope text-secondary w-5"></i> <strong>Scénarios réalistes</strong> (emails, appels) pour tester votre jugement.</li>
+                        <li><i class="fas fa-random text-primary w-5"></i> <strong>Questions et réponses aléatoires</strong> à chaque partie.</li>
+                    </ul>
+                </div>
+                <button id="start-game-btn" class="btn btn-primary text-lg px-8 py-3">
+                    <i class="fas fa-play"></i>
+                    <span>Relever le Défi</span>
+                </button>
             </div>
-        </div>
-    </div>
-    
-    <!-- Tools Modal -->
-    <div id="tools-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-40 p-4">
-        <div class="card pop-in w-full max-w-lg">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-text-primary">Outils</h2>
-                <button id="close-tools-btn" class="text-2xl text-text-muted hover:text-text-primary">&times;</button>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <h3 class="font-semibold mb-2">Calculette</h3>
-                    <div id="calculator" class="p-2 rounded-lg bg-surface">
-                        <div id="calc-display" class="w-full text-right bg-background text-2xl p-2 rounded mb-2 border border-glass-border">0</div>
-                        <div class="grid grid-cols-4 gap-2">
-                            <button class="calc-btn operator">C</button>
-                            <button class="calc-btn operator">/</button>
-                            <button class="calc-btn operator">*</button>
-                            <button class="calc-btn operator">-</button>
-                            <button class="calc-btn">7</button>
-                            <button class="calc-btn">8</button>
-                            <button class="calc-btn">9</button>
-                            <button class="calc-btn operator" rowspan="2">+</button>
-                            <button class="calc-btn">4</button>
-                            <button class="calc-btn">5</button>
-                            <button class="calc-btn">6</button>
-                            <button class="calc-btn">1</button>
-                            <button class="calc-btn">2</button>
-                            <button class="calc-btn">3</button>
-                            <button class="calc-btn operator" rowspan="2">=</button>
-                            <button class="calc-btn col-span-2">0</button>
-                            <button class="calc-btn">.</button>
+
+            <!-- Écran de jeu -->
+            <div id="game-screen" class="hidden" style="min-height: 75vh; display: flex; flex-direction: column;">
+                <div> <!-- Main content wrapper -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <div id="score-container" class="text-2xl font-bold">
+                            Score: <span id="score" style="color: var(--primary);">0</span>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button id="hint-btn" class="btn btn-warning"><i class="fas fa-lightbulb"></i><span class="hidden md:inline">&nbsp;Astuce</span></button>
+                            <button id="skip-btn" class="btn btn-danger"><i class="fas fa-forward"></i><span class="hidden md:inline">&nbsp;Passer</span></button>
                         </div>
                     </div>
+
+                    <div id="timer-bar-container" class="mb-6">
+                        <div id="timer-bar" style="width: 100%; background-color: var(--secondary);"></div>
+                    </div>
+
+                    <div id="question-container" class="card">
+                        <div id="scenario-box" class="hidden"></div>
+                        <h3 id="question-text" style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; text-align: center; min-height: 56px; color: var(--text-primary);"></h3>
+                        <div id="answers-container" style="display: flex; flex-direction: column; align-items: center;"></div>
+                    </div>
                 </div>
-                <div>
-                    <h3 class="font-semibold mb-2">Bloc-notes</h3>
-                    <textarea id="notepad" class="w-full h-64 p-2 rounded-lg bg-surface border border-glass-border text-text-secondary" placeholder="Vos notes ici..."></textarea>
+
+                <!-- Progress Bar at the bottom -->
+                <div id="progress-bar-container">
+                    <div id="progress-bar">
+                        <!-- Steps will be injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Écran de fin -->
+            <div id="end-screen" class="hidden text-center card">
+                <i class="fas fa-trophy text-5xl text-warning mb-4"></i>
+                <h1 class="text-3xl md:text-4xl font-extrabold text-text-primary mb-4">Challenge Terminé !</h1>
+                <div class="bg-black/10 p-6 rounded-lg mb-8">
+                    <h2 class="text-2xl font-semibold mb-4">Votre Performance</h2>
+                    <p class="text-lg mb-2">Score Final: <strong id="final-score" style="color: var(--primary); font-size: 1.875rem;"></strong> / <span id="final-max-score" style="color: var(--text-muted); font-size: 1.5rem;"></span></p>
+                    <div id="final-feedback" class="text-left">
+                        <h3 id="profile-title" class="text-xl font-bold text-primary text-center mb-2"></h3>
+                        <p id="profile-description" class="text-text-secondary text-center mb-4"></p>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3 mt-6">Téléchargez votre bilan personnalisé</h3>
+                    <p class="mb-4 text-sm text-text-muted">Ce document PDF contient le détail de vos réponses, notre analyse et les prochaines étapes.</p>
+                    <button id="download-pdf-btn" class="btn btn-primary"><i class="fas fa-file-pdf"></i><span>Télécharger le PDF</span></button>
+                </div>
+                <div class="bg-black/10 p-6 rounded-lg">
+                     <h2 class="text-2xl font-semibold mb-4">Prêt(e) pour la suite ?</h2>
+                     <p class="mb-4 text-text-secondary">Votre profil nous intéresse ! Envoyez votre candidature complète à :</p>
+                     <a href="mailto:l.amara@ltd-international.com" style="font-size: 1.25rem; font-weight: 700; color: var(--primary); text-decoration: underline;">l.amara@ltd-international.com</a>
                 </div>
             </div>
         </div>
-    </div>
 
+        <!-- Modals -->
+        <div id="feedback-modal" class="modal hidden">
+            <div class="card pop-in text-center" style="max-width: 28rem; width: 100%;">
+                <h2 id="feedback-title" class="text-3xl font-bold mb-4"></h2>
+                <p id="feedback-explanation" class="mb-6 text-text-secondary"></p>
+                <button id="next-question-btn" class="btn btn-primary">Question Suivante</button>
+            </div>
+        </div>
+        <div id="confirm-modal" class="modal hidden">
+            <div class="card pop-in text-center" style="max-width: 28rem; width: 100%;">
+                <h2 id="confirm-title" class="text-2xl font-bold mb-4 text-text-primary"></h2>
+                <p id="confirm-text" class="mb-6 text-text-secondary"></p>
+                <div style="display: flex; justify-content: center; gap: 1rem;">
+                    <button id="confirm-yes-btn" class="btn btn-danger">Oui</button>
+                    <button id="confirm-no-btn" class="btn btn-secondary">Non</button>
+                </div>
+            </div>
+        </div>
+    </main>
 
     <script>
-        // --- DOM Elements ---
-        const appContainer = document.getElementById('app-container');
-        const welcomeScreen = document.getElementById('welcome-screen');
-        const gameScreen = document.getElementById('game-screen');
-        const endScreen = document.getElementById('end-screen');
-        const startGameBtn = document.getElementById('start-game-btn');
-        
-        const fabContainer = document.getElementById('fab-container');
-        const fabMainBtn = document.getElementById('fab-main-btn');
-        const homeBtn = document.getElementById('home-btn');
-        const forceEndBtn = document.getElementById('force-end-btn');
-        const compactModeBtn = document.getElementById('compact-mode-btn');
-        const themeToggleBtn = document.getElementById('theme-toggle-btn');
-
-        const scoreEl = document.getElementById('score');
-        const scoreContainer = document.getElementById('score-container');
-        const progressBarContainer = document.getElementById('progress-bar-container');
-        const progressBar = document.getElementById('progress-bar');
-        const questionContainer = document.getElementById('question-container');
-        const scenarioBox = document.getElementById('scenario-box');
-        const questionTextEl = document.getElementById('question-text');
-        const answersContainer = document.getElementById('answers-container');
-        const timerBarEl = document.getElementById('timer-bar');
-
-        const hintBtn = document.getElementById('hint-btn');
-        const skipBtn = document.getElementById('skip-btn');
-        const toolsBtn = document.getElementById('tools-btn');
-        const toolsModal = document.getElementById('tools-modal');
-        const closeToolsBtn = document.getElementById('close-tools-btn');
-
-        const feedbackModal = document.getElementById('feedback-modal');
-        const feedbackTitleEl = document.getElementById('feedback-title');
-        const feedbackExplanationEl = document.getElementById('feedback-explanation');
-        const nextQuestionBtn = document.getElementById('next-question-btn');
-        
-        const confirmModal = document.getElementById('confirm-modal');
-        const confirmTitleEl = document.getElementById('confirm-title');
-        const confirmTextEl = document.getElementById('confirm-text');
-        let confirmYesBtn = document.getElementById('confirm-yes-btn');
-        let confirmNoBtn = document.getElementById('confirm-no-btn');
-
-        const finalScoreEl = document.getElementById('final-score');
-        const finalMaxScoreEl = document.getElementById('final-max-score');
-        const finalFeedbackEl = document.getElementById('final-feedback');
-        const profileTitleEl = document.getElementById('profile-title');
-        const profileDescriptionEl = document.getElementById('profile-description');
-        const profileDetailsEl = document.getElementById('profile-details');
-        const downloadPdfBtn = document.getElementById('download-pdf-btn');
-
-        // --- Game Data ---
-        let questions = [
-            { type: "scenario-urgent", category: 'management', difficulty: 3, question: "Que faites-vous IMMÉDIATEMENT ?", context: { from: '"Direction" <direction@groupe.com>', subject: "TR: URGENT - Demande de chiffrage variante", body: "Bonjour,\n\nLe client vient de nous appeler. Il veut remplacer la façade en briques par du bardage métallique. Il me faut une estimation du surcoût/économie pour 14h. Nous sommes en négociation.\n\nMerci." }, options: ["Répondre que le délai est trop court et que c'est impossible.", "Donner une estimation à la louche basée sur votre expérience pour répondre rapidement.", "Lancer un appel à un fournisseur de bardage pour obtenir un prix rapide et calculer une macro-estimation (surface x prix/m²).", "Ignorer l'email et attendre d'avoir plus d'informations."], answer: 2, hint: "Il faut une réponse rapide mais basée sur un minimum de données concrètes.", explanation: "La meilleure option est la 3. Elle permet de donner une estimation rapide mais fondée sur un prix réel, même s'il n'est pas contractuel. C'est le meilleur compromis entre vitesse et fiabilité dans une situation d'urgence." },
-            { type: "scenario-email", category: 'commercial', difficulty: 2, question: "Comment répondez-vous à cet email ?", context: { from: '"Alain Martin" <a.martin@peinture-express.fr>', subject: "URGENT - Facture 2024-034 non payée", body: "Bonjour,\n\nSauf erreur de ma part, notre facture pour le chantier 'Réhab Arcueil' est échue depuis 15 jours et nous n'avons toujours pas reçu le paiement. C'est inacceptable.\n\nSi nous n'avons pas le virement sous 48h, nous arrêtons nos interventions sur tous vos chantiers.\n\nCordialement,\nAlain Martin" }, options: ["Bonjour, Je transmets au service comptabilité. Ils sont débordés en ce moment. Cordialement.", "Bonjour M. Martin, Je comprends votre position. Je vérifie immédiatement l'état de votre facture auprès de notre comptabilité et je reviens vers vous avec une date de paiement précise avant la fin de journée. Cordialement.", "Le ton de votre email est inacceptable. Sachez que les menaces ne feront pas avancer les choses. La facture sera payée quand elle sera payée.", "Ignorer l'email et appeler directement la comptabilité."], answer: 1, hint: "La diplomatie et la proactivité sont essentielles pour maintenir de bonnes relations avec les sous-traitants.", explanation: "La réponse 2 est la plus professionnelle. Elle montre de l'empathie, ne rejette pas la faute, et propose une action concrète avec un engagement de suivi. Cela permet de désamorcer le conflit tout en traitant le problème de fond." },
-            { type: "scenario-email", category: 'commercial', difficulty: 3, question: "Il est 17h, la veille du rendu à midi. Que faites-vous en priorité ?", context: { from: '"Sophie Dubois" <s.dubois@promoteur-immo.com>', subject: "Petite modif sur l'offre Arcueil", body: "Bonjour,\n\nJ'espère que vous allez bien. Nous devons rendre l'offre demain à 12h. Serait-il possible de remplacer toutes les menuiseries extérieures en Alu par du Bois-Alu ? C'est mieux pour l'image 'écolo' du projet.\n\nMerci !\nSophie" }, options: ["Répondre \"Pas de problème !\" et modifier rapidement le chiffrage avec une estimation.", "Appeler immédiatement Mme Dubois pour lui expliquer que ce changement majeur est impossible dans le délai imparti et qu'il faut maintenir l'offre en l'état.", "Lancer une consultation express auprès de vos fournisseurs, tout en prévenant Mme Dubois que ce changement aura un impact significatif sur le prix et le délai, et qu'une offre précise ne sera peut-être pas possible pour demain 12h.", "Modifier le chiffrage en ajoutant une grosse plus-value pour se couvrir, sans consulter."], answer: 2, hint: "Comment concilier la demande du client et la réalité technique et économique dans un délai très court ?", explanation: "La réponse 3 est la meilleure approche. Elle montre votre réactivité et votre volonté de satisfaire le client, tout en étant transparent sur les risques (coût, délai). Elle ouvre la porte à une négociation." },
-            { type: "scenario-phone", category: 'technical', difficulty: 2, question: "Cette proposition orale vous semble intéressante. Quelle est votre action la plus importante juste après avoir raccroché ?", context: { situation: "Vous êtes au téléphone avec un fournisseur de cloisons pour le projet d'Arcueil.", dialogue: "Pour tes 500m² de BA13 sur ossature métallique, compte environ 25€ du mètre carré, fourni posé. On peut commencer dans 3 semaines." }, options: ["Intégrer directement ce prix dans votre étude pour gagner du temps.", "Envoyer un email au fournisseur résumant sa proposition (prix, délai, périmètre) et lui demandant une confirmation écrite sous forme de devis officiel.", "Appeler un autre fournisseur pour voir s'il peut faire moins cher.", "Considérer l'offre comme valide et passer à une autre tâche."], answer: 1, hint: "Les paroles s'envolent, les écrits restent. Surtout dans le BTP.", explanation: "La réponse 2 est cruciale. Une offre orale n'a aucune valeur contractuelle. Il est impératif d'obtenir une trace écrite (devis) qui fige le prix, le périmètre exact des prestations (ex: inclus/exclus sujétions, nettoyage...), et le délai." },
-            { type: "multi-select", category: 'management', difficulty: 2, question: "Lors du transfert d'un dossier étude aux équipes travaux, quels documents sont INDISPENSABLES ? (Plusieurs réponses possibles)", options: ["Feuille de vente détaillée", "Planning général des travaux", "CV du directeur d'études", "Devis des sous-traitants retenus", "Rapport de la visite de site"], answer: [0, 1, 3, 4], hint: "Pensez à tout ce qui est nécessaire pour que l'équipe travaux comprenne le projet, son coût et ses contraintes.", explanation: "La feuille de vente (pour le budget), le planning (pour les délais), les devis (pour les contrats) et le rapport de visite (pour le contexte) sont tous essentiels pour un transfert réussi." },
-            { type: "multi-select", category: 'technical', difficulty: 1, question: "Quels éléments font partie des 'frais de chantier' ?", options: ["Location de la grue", "Salaire du directeur d'agence", "Installation des bungalows de chantier", "Consommation d'eau et d'électricité du chantier"], answer: [0, 2, 3], hint: "Ce sont les coûts indirects mais directement liés à un chantier spécifique.", explanation: "Les frais de chantier sont les dépenses nécessaires à l'organisation du site. Le salaire du directeur d'agence fait partie des frais généraux de l'entreprise." },
-            { type: "multi-select", category: 'technical', difficulty: 2, question: "Quels sont les risques majeurs à analyser lors d'une étude en réhabilitation ?", options: ["Présence d'amiante ou de plomb", "Stabilité des structures existantes", "Couleur de la peinture des murs", "Difficultés d'accès et de stockage"], answer: [0, 1, 3], hint: "Pensez aux 'mauvaises surprises' que l'on peut trouver en rénovation.", explanation: "L'amiante/plomb, la stabilité des structures et les contraintes logistiques sont des risques majeurs qui peuvent fortement impacter le coût et le planning d'un projet de réhabilitation." },
-            { type: "mcq", category: 'technical', difficulty: 3, question: "Le CCTP impose un béton C30/37 XF1. Votre fournisseur propose un C30/37 XC4 en promotion. Que faites-vous ?", options: ["Accepter, car XC4 est une classe d'exposition plus sévère que XF1", "Refuser catégoriquement, car la classe d'exposition ne correspond pas au besoin (gel/dégel)", "Demander une validation écrite de l'architecte et du BET structure avant toute chose", "Négocier une remise supplémentaire avant d'accepter"], answer: 1, hint: "Chaque classe d'exposition répond à un risque spécifique. Sont-ils interchangeables ?", explanation: "XF1 concerne le risque de gel/dégel, tandis que XC4 concerne la corrosion par carbonatation. Ce ne sont pas les mêmes protections. Le refus technique est le premier réflexe à avoir." },
-            { type: "mcq", category: 'juridique', difficulty: 2, question: "Qu'est-ce que la 'garantie de parfait achèvement' (GPA) implique pour l'entreprise ?", options: ["Une assurance décennale couvrant les gros ouvrages", "L'obligation de réparer tous les désordres signalés pendant un an après la réception", "Le paiement final du marché après un an", "Une simple formalité administrative sans conséquence"], answer: 1, hint: "Cette garantie dure un an à compter de la réception des travaux.", explanation: "La GPA oblige l'entreprise à réparer tous les défauts (quelle que soit leur nature) signalés par le client durant l'année suivant la réception. Elle est distincte des garanties biennale et décennale." },
-            { type: "mcq", category: 'commercial', difficulty: 2, question: "Lors du bouclage d'une étude, vous constatez que votre marge est de 2% en dessous de l'objectif. Quelle est votre PREMIÈRE action ?", options: ["Augmenter le prix de vente de 2% sans autre vérification", "Annoncer au directeur que l'affaire n'est pas prenable", "Relancer une consultation agressive auprès de tous les sous-traitants", "Revoir en détail les déboursés, les ratios et les frais de chantier pour trouver des optimisations"], answer: 3, hint: "Avant de prendre une décision radicale, il faut chercher à comprendre et optimiser.", explanation: "La première étape est une analyse critique interne. Il faut challenger ses propres hypothèses (ratios de main d'œuvre, choix techniques, frais de chantier) avant de se tourner vers l'extérieur ou d'abandonner." },
-            { type: "mcq", category: 'management', difficulty: 1, question: "Que signifie un transfert de l'opération aux équipes travaux 'réussi' ?", options: ["L'équipe travaux ne pose aucune question", "L'équipe travaux signe un document déchargeant l'équipe études", "L'équipe travaux dispose de toutes les informations pour respecter le budget et le planning", "L'équipe études a envoyé tous les documents par email"], answer: 2, hint: "Le but du transfert est l'autonomie et la performance de l'équipe suivante.", explanation: "Un transfert réussi signifie que l'équipe travaux a une compréhension claire et complète du projet, des coûts, des risques et des opportunités, lui permettant de démarrer le chantier sur des bases saines." },
-            { type: "mcq", category: 'juridique', difficulty: 1, question: "À quoi sert principalement le CCTP (Cahier des Clauses Techniques Particulières) ?", options: ["À définir les prix du projet", "À décrire précisément les ouvrages à réaliser et leurs spécifications techniques", "À lister les coordonnées des intervenants", "À fixer les pénalités de retard"], answer: 1, hint: "C'est le 'mode d'emploi' technique du projet.", explanation: "Le CCTP est le document contractuel qui décrit en détail toutes les spécifications techniques des travaux à effectuer, les matériaux à utiliser et les normes à respecter." },
-            { type: "mcq", category: 'juridique', difficulty: 2, question: "Qu'est-ce qu'un DGD (Décompte Général Définitif) ?", options: ["Un devis détaillé pour des travaux supplémentaires", "Le planning final des travaux", "Le document qui clôture financièrement le marché entre le client et l'entreprise", "Le rapport initial de la visite de site"], answer: 2, hint: "C'est l'étape finale qui solde les comptes.", explanation: "Le DGD est le document qui établit le montant final dû à l'entreprise après la fin des travaux. Son acceptation par les deux parties clôture le marché sur le plan financier." },
-            { type: "mcq", category: 'management', difficulty: 2, question: "Quelle est la principale fonction d'un OPC (Ordonnancement, Pilotage et Coordination) ?", options: ["Valider la qualité technique des ouvrages", "Gérer la paie des ouvriers", "Assurer la sécurité sur le chantier", "Harmoniser dans le temps et dans l'espace les actions des différents intervenants"], answer: 3, hint: "C'est le chef d'orchestre du planning et de la co-activité.", explanation: "La mission de l'OPC est d'organiser et de piloter le chantier pour que les différentes entreprises puissent travailler de manière fluide et coordonnée, en respectant le planning global." },
-            { type: "mcq", category: 'juridique', difficulty: 3, question: "Dans un appel d'offres public, que signifie une offre 'anormalement basse' ?", options: ["Une offre très compétitive qui va sûrement gagner", "Une offre dont le prix semble si bas qu'il compromet la bonne exécution du marché", "Une offre qui n'a pas respecté le formalisme de la réponse", "Une offre avec une marge bénéficiaire de 0%"], answer: 1, hint: "La loi protège contre les offres qui pourraient mettre en péril le chantier.", explanation: "Une offre est jugée anormalement basse si son prix ne permet pas de couvrir les coûts réels du chantier, ce qui fait peser un risque sur la qualité et la pérennité des travaux. L'acheteur public a l'obligation de la rejeter après avoir demandé des justifications." },
-            { type: "mcq", category: 'technical', difficulty: 1, question: "Quelle est la différence fondamentale entre le 'déboursé sec' et le 'coût de revient' ?", options: ["Aucune, ce sont des synonymes", "Le coût de revient inclut les frais de chantier en plus du déboursé sec", "Le déboursé sec inclut la marge, pas le coût de revient", "Le coût de revient ne concerne que les matériaux"], answer: 1, hint: "Le coût de revient est une étape de calcul après le déboursé sec.", explanation: "Le déboursé sec est le coût direct (matériaux + main d'œuvre). Le coût de revient = Déboursé sec + Frais de chantier. C'est le coût total pour l'entreprise avant d'ajouter les frais généraux et la marge." },
-            { type: "calculation", difficulty: 2, question: "Mini-jeu de calcul : Dalle de 150m² sur 20cm d'épaisseur. Ratio de perte béton = 5%. Prix du m³ = 130€. Forfait pompe = 450€. Quel est le coût total (béton + pompe) ?", options: ["4350 €", "4545 €", "4095 €", "5000 €"], answer: 1, hint: "Calculez le volume théorique, appliquez le ratio de perte, puis ajoutez le forfait.", explanation: "Volume = 150m² * 0.20m = 30 m³. Volume à commander = 30 * 1.05 = 31.5 m³. Coût béton = 31.5 * 130€ = 4095€. Coût total = 4095€ + 450€ = 4545€." },
-            { type: "calculation", difficulty: 3, question: "Un mur de 30m de long sur 2.5m de haut doit être enduit sur ses 2 faces. Le rendement de l'enduit est de 4h/m². Le coût horaire est de 42€. Quel est le coût total de la main d'œuvre ?", options: ["6300 €", "25200 €", "12600 €", "3150 €"], answer: 2, hint: "N'oubliez pas de compter les deux faces du mur !", explanation: "Surface totale = 30m * 2.5m * 2 faces = 150 m². Heures totales = 150 m² * 4 h/m² = 600 heures. Coût total = 600h * 42€/h = 25200 €." },
-            { type: "calculation", difficulty: 1, question: "Vous devez poser 1200m de plinthes. Un ouvrier pose 15m par heure. Le coût horaire est de 38€. Quel est le coût de la main d'œuvre pour cette tâche ?", options: ["4560 €", "3040 €", "2280 €", "5700 €"], answer: 1, hint: "Calculez d'abord le nombre total d'heures nécessaires.", explanation: "Nombre d'heures = 1200m / 15m/h = 80 heures. Coût total = 80h * 38€/h = 3040 €." },
-            { type: "order", category: 'commercial', difficulty: 2, question: "Mini-jeu : Triez les étapes de réponse à une demande de variante client.", options: ["Proposer la solution chiffrée au client", "Analyser l'impact technique et financier", "Consulter les spécialistes (BET, travaux...)", "Valider la faisabilité et optimiser le chiffrage"], answer: [1, 2, 3, 0], hint: "L'analyse précède toujours l'action.", explanation: "L'ordre logique est : 1. Analyser la demande. 2. Consulter les experts. 3. Valider la solution interne. 4. Proposer au client." },
-            { type: "order", category: 'juridique', difficulty: 2, question: "Mettez dans l'ordre les phases d'un projet de construction (loi MOP).", options: ["PRO (Projet)", "ESQ (Esquisse)", "ACT (Assistance pour la passation des Contrats de Travaux)", "APD (Avant-Projet Détaillé)"], answer: [1, 3, 0, 2], hint: "Tout commence par une esquisse...", explanation: "L'ordre des missions de maîtrise d'œuvre est : ESQ (Esquisse), APS (Avant-Projet Sommaire), APD (Avant-Projet Détaillé), PRO (Projet), ACT (Assistance Contrats), VISA, DET (Direction de l'Exécution), AOR (Assistance aux Opérations de Réception)." },
-            { type: "order", category: 'technical', difficulty: 1, question: "Classez ces types de fondations de la moins profonde à la plus profonde.", options: ["Pieux forés", "Semelles filantes", "Radier général", "Micropieux"], answer: [1, 2, 0, 3], hint: "Les semelles sont juste sous les murs...", explanation: "Les semelles filantes sont des fondations superficielles. Le radier est une dalle sur toute la surface. Les pieux et micropieux sont des fondations profondes, les micropieux étant souvent utilisés pour des reprises en sous-œuvre ou des conditions difficiles, pouvant atteindre de grandes profondeurs." },
-            { type: "scenario-urgent-phone", category: 'management', difficulty: 3, question: "Le conducteur de travaux vous appelle : il y a une erreur sur les plans de ferraillage, la livraison de l'acier est pour demain. Que faites-vous en priorité ?", context: { situation: "Appel URGENT du conducteur de travaux", dialogue: "On a un gros problème ! Les plans de ferraillage du BET sont faux, et on reçoit l'acier demain matin. La grue est déjà commandée !" }, options: ["Lui dire de se débrouiller avec le BET structure.", "Appeler le BET structure pour obtenir un plan corrigé en urgence et prévenir le fournisseur d'acier d'un possible décalage.", "Annuler la livraison d'acier immédiatement.", "Demander aux maçons de poser les aciers comme ils pensent que c'est bon."], answer: 1, hint: "La communication et la coordination sont la clé pour résoudre une crise.", explanation: "La priorité est de corriger l'erreur à la source (BET) tout en informant les parties impactées (fournisseur) pour limiter les conséquences. La communication est essentielle pour gérer la crise." },
-            { type: "mcq", category: 'commercial', difficulty: 2, question: "Qu'est-ce qu'une 'variante à l'initiative de l'entreprise' ?", options: ["Une erreur dans le chiffrage de l'entreprise.", "Une proposition d'optimisation technique ou financière faite par l'entreprise, non demandée dans le dossier de consultation.", "Une modification demandée par le client après la signature du contrat.", "Une obligation de proposer une autre solution technique."], answer: 1, hint: "C'est une opportunité pour l'entreprise de montrer sa valeur ajoutée.", explanation: "Une variante est une proposition de l'entreprise qui modifie les spécifications de la solution de base, souvent pour optimiser le coût, le délai ou la qualité. C'est un outil commercial puissant." },
-            { type: "mcq", category: 'technical', difficulty: 2, question: "Quel est l'objectif principal de la phase 'bouclage' d'une étude de prix ?", options: ["Envoyer l'offre au client.", "Finaliser et valider tous les coûts, les risques et la marge avant de fixer le prix de vente final.", "Commander les matériaux.", "Faire une dernière visite de site."], answer: 1, hint: "C'est le moment de vérité avant de s'engager sur un prix.", explanation: "Le bouclage est la phase critique où l'on consolide toutes les données (déboursés, frais, consultations...), on analyse les risques, on définit la stratégie commerciale et on valide la marge pour arrêter le prix de vente définitif." },
-            { type: "multi-select", category: 'technical', difficulty: 2, question: "Quels sont les avantages de l'utilisation du BIM (Building Information Modeling) en phase étude ? (Plusieurs réponses possibles)", options: ["Détection des conflits (clash detection) avant le chantier.", "Estimation plus précise des quantités.", "Réduction du besoin de communiquer avec les architectes.", "Meilleure visualisation du projet pour tous les intervenants."], answer: [0, 1, 3], hint: "Le BIM est un outil de collaboration et de visualisation.", explanation: "Le BIM permet de détecter les conflits entre les différents lots (ex: une poutre qui croise une gaine), d'extraire des quantités précises de la maquette 3D et d'offrir une compréhension partagée du projet. Il ne réduit pas le besoin de communication, au contraire, il la structure." },
-            { type: "mcq", category: 'technical', difficulty: 3, question: "En réhabilitation, vous découvrez un mur porteur non indiqué sur les anciens plans. Quel est l'impact le plus probable sur votre étude ?", options: ["Aucun, on le démolit comme prévu.", "Une économie, car il y a moins de cloisons à monter.", "Un surcoût important lié à la nécessité de recalculer la structure et de prévoir des renforcements.", "Un simple retard de quelques jours."], answer: 2, hint: "Un élément structurel imprévu est rarement une bonne nouvelle pour le budget.", explanation: "La découverte d'un porteur non identifié est un risque majeur en réhabilitation. Cela impose une nouvelle étude de structure, des travaux de renforcement coûteux et impacte fortement le planning et le budget." },
-            { type: "scenario-phone", category: 'commercial', difficulty: 3, question: "Votre directeur vous appelle : 'Le client trouve notre offre 10% plus chère que le concurrent le moins-disant. Que peut-on faire ?'. Quelle est votre réponse la plus pertinente ?", context: { situation: "Appel de votre directeur", dialogue: "Le client trouve notre offre 10% plus chère que le concurrent le moins-disant. Que peut-on faire ?" }, options: ["'On ne peut rien faire, nos coûts sont ce qu'ils sont.'", "'Je peux baisser la marge de 10% pour m'aligner.'", "'Je vais immédiatement analyser l'offre du concurrent si on peut l'obtenir, et re-challenger nos points clés (ratios, consultations stratégiques) pour identifier des pistes d'optimisation.'", "'Le concurrent a sûrement oublié quelque chose, le client s'en rendra compte plus tard.'"], answer: 2, hint: "Il ne faut ni baisser les bras, ni céder sans analyse.", explanation: "La réponse 3 est la plus constructive. Elle propose une démarche d'analyse comparative et d'optimisation interne pour défendre l'offre de manière argumentée, plutôt que de simplement baisser la marge ou d'être défaitiste." },
-            { type: "calculation", difficulty: 2, question: "Un chantier nécessite 2500 heures de main d'œuvre qualifiée à 45€/h et 1500 heures d'aide à 35€/h. Le coût total des matériaux est de 180 000€. Quel est le déboursé sec total ?", options: ["345 000 €", "292 500 €", "165 000 €", "340 000 €"], answer: 0, hint: "Le déboursé sec est la somme des coûts de main d'œuvre et de matériaux.", explanation: "Coût MO qualifiée = 2500h * 45€/h = 112 500€. Coût MO aide = 1500h * 35€/h = 52 500€. Coût total MO = 165 000€. Déboursé sec = 165 000€ + 180 000€ = 345 000€." },
-            { type: "mcq", category: 'commercial', difficulty: 2, question: "Dans le cadre d'une négociation, le client vous demande une 'remise commerciale'. Sur quel poste de votre feuille de vente allez-vous imputer cette baisse ?", options: ["Sur le coût des matériaux", "Sur le salaire des ouvriers", "Sur la marge bénéficiaire de l'entreprise", "Sur les frais de chantier"], answer: 2, hint: "Une remise est un effort sur le gain de l'entreprise, pas sur ses coûts de production.", explanation: "Une remise commerciale est un geste sur la marge de l'entreprise. Toucher aux coûts des matériaux ou de la main d'œuvre reviendrait à fausser l'analyse de rentabilité du chantier." }
-        ];
-
-        // --- Game State ---
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let timeLeft = 30;
-        let timerInterval;
-        let userAnswers = [];
-        let soundSynth, correctSynth, wrongSynth, sirenSynth;
-        let soundsEnabled = false;
-
-        // --- Functions ---
-        
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
-        function initSounds() {
-            try {
-                soundSynth = new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0.3, release: 1 } }).toDestination();
-                correctSynth = new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.5 } }).toDestination();
-                wrongSynth = new Tone.Synth({ oscillator: { type: 'square' }, envelope: { attack: 0.01, decay: 0.4, sustain: 0, release: 0.4 } }).toDestination();
-                sirenSynth = new Tone.Oscillator(440, "sine").toDestination();
-                sirenSynth.volume.value = -10;
-                const lfo = new Tone.LFO("8n", 400, 1200).start();
-                lfo.connect(sirenSynth.frequency);
-                soundsEnabled = true;
-            } catch (e) { console.warn("Could not initialize audio context."); }
-        }
-        
-        function playSound(type) {
-            if (!soundsEnabled || !Tone.context.state || Tone.context.state !== 'running') return;
-            try {
-                if (type === 'correct') correctSynth.triggerAttackRelease("C5", "8n");
-                else if (type === 'wrong') wrongSynth.triggerAttackRelease("C3", "8n");
-                else if (type === 'click') soundSynth.triggerAttackRelease("C4", "8n");
-                else if (type === 'siren') {
-                    sirenSynth.start();
-                    setTimeout(() => sirenSynth.stop(), 1000);
-                }
-            } catch (e) { console.error("Error playing sound:", e); }
-        }
-
-        async function startGame() {
-            if (Tone.context.state !== 'running') await Tone.start();
-            initSounds();
-            playSound('click');
-            shuffleArray(questions);
-            welcomeScreen.classList.add('hidden');
-            gameScreen.classList.remove('hidden');
-            gameScreen.classList.add('fade-in');
-            fabContainer.classList.remove('hidden');
-            fabContainer.classList.add('fade-in');
-            currentQuestionIndex = 0;
-            score = 0;
-            userAnswers = [];
-            updateScore(0);
-            setupProgressBar();
-            displayQuestion();
-        }
-        
-        function displayScenario(question) {
-            scenarioBox.classList.remove('hidden');
-            scenarioBox.classList.add('bg-black/20', 'p-4', 'rounded-lg', 'mb-6', 'border', 'border-glass-border', 'text-left');
+        // --- HEADER & NAVIGATION SCRIPT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            let currentTheme = localStorage.getItem('theme') || 'dark';
             
-            let content = '';
-            if (question.type.includes('urgent')) {
-                 content += `<div class="text-center font-bold text-lg text-red-400 animate-pulse"><i class="fas fa-exclamation-triangle mr-2"></i>URGENCE</div>`;
+            window.navigateTo = function(pageFile) { 
+                // In a real scenario, this would navigate. Here we just log it.
+                console.log(`Navigating to ${pageFile}`); 
             }
 
-            if (question.type.includes('email')) {
-                content += `
-                    <div class="text-sm text-text-muted mt-2">
-                        <p><strong>De :</strong> ${question.context.from}</p>
-                        <p><strong>Objet :</strong> ${question.context.subject}</p>
-                    </div>
-                    <hr class="border-glass-border my-2">
-                    <p class="whitespace-pre-wrap text-text-secondary">${question.context.body}</p>
-                `;
-            } else if (question.type.includes('phone')) {
-                content += `
-                    <div class="flex items-center gap-4 mt-2">
-                        <i class="fas fa-phone-alt text-2xl text-secondary"></i>
-                        <div>
-                            <p class="font-bold">${question.context.situation}</p>
-                            <p class="text-text-secondary italic">"${question.context.dialogue}"</p>
+            window.updateThemeUI = function() {
+                const themeIcon = document.getElementById('themeIcon');
+                if (!themeIcon) return;
+                document.body.classList.toggle('light-mode', currentTheme === 'light');
+                themeIcon.className = currentTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+            }
+
+            window.toggleTheme = function() {
+                currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+                localStorage.setItem('theme', currentTheme);
+                updateThemeUI();
+            }
+
+            window.toggleMobileMenu = function() {
+                const mobileToggle = document.getElementById('mobileToggle');
+                const mobileMenu = document.getElementById('mobileMenu');
+                mobileToggle.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+                document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+            }
+
+            // --- HEADER & NAV INIT ---
+            updateThemeUI();
+            const desktopNav = document.querySelector('.nav-desktop .nav-menu');
+            const mobileNavContainer = document.querySelector('.mobile-menu .mobile-nav-items');
+            if(desktopNav && mobileNavContainer) {
+                mobileNavContainer.innerHTML = '';
+                desktopNav.querySelectorAll('.nav-item').forEach(item => {
+                    const link = item.querySelector('a');
+                    const newNavItem = document.createElement('a');
+                    newNavItem.href = '#';
+                    newNavItem.className = 'mobile-nav-item';
+                    newNavItem.onclick = (e) => {
+                        e.preventDefault();
+                        toggleMobileMenu();
+                    };
+                    const iconDiv = document.createElement('div');
+                    iconDiv.className = 'mobile-nav-item-icon';
+                    iconDiv.innerHTML = link.querySelector('i').outerHTML;
+                    const textNode = document.createElement('h4');
+                    textNode.textContent = link.textContent.trim();
+                    newNavItem.appendChild(iconDiv);
+                    newNavItem.appendChild(textNode);
+                    mobileNavContainer.appendChild(newNavItem);
+                });
+            }
+            
+            // --- GAME SCRIPT ---
+
+            // --- DOM Elements ---
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const gameScreen = document.getElementById('game-screen');
+            const endScreen = document.getElementById('end-screen');
+            const startGameBtn = document.getElementById('start-game-btn');
+            
+            const scoreEl = document.getElementById('score');
+            const scoreContainer = document.getElementById('score-container');
+            const progressBar = document.getElementById('progress-bar');
+            const questionContainer = document.getElementById('question-container');
+            const scenarioBox = document.getElementById('scenario-box');
+            const questionTextEl = document.getElementById('question-text');
+            const answersContainer = document.getElementById('answers-container');
+            const timerBarEl = document.getElementById('timer-bar');
+
+            const hintBtn = document.getElementById('hint-btn');
+            const skipBtn = document.getElementById('skip-btn');
+
+            const feedbackModal = document.getElementById('feedback-modal');
+            const feedbackTitleEl = document.getElementById('feedback-title');
+            const feedbackExplanationEl = document.getElementById('feedback-explanation');
+            const nextQuestionBtn = document.getElementById('next-question-btn');
+            
+            const confirmModal = document.getElementById('confirm-modal');
+            const confirmTitleEl = document.getElementById('confirm-title');
+            const confirmTextEl = document.getElementById('confirm-text');
+            const confirmYesBtn = document.getElementById('confirm-yes-btn');
+            const confirmNoBtn = document.getElementById('confirm-no-btn');
+
+            const finalScoreEl = document.getElementById('final-score');
+            const finalMaxScoreEl = document.getElementById('final-max-score');
+            const profileTitleEl = document.getElementById('profile-title');
+            const profileDescriptionEl = document.getElementById('profile-description');
+            const downloadPdfBtn = document.getElementById('download-pdf-btn');
+
+            // --- Game Data ---
+            const questions = [
+                { type: "scenario-urgent", category: 'management', difficulty: 3, question: "Que faites-vous IMMÉDIATEMENT ?", context: { from: '"Direction" <direction@groupe.com>', subject: "TR: URGENT - Demande de chiffrage variante", body: "Bonjour,\n\nLe client vient de nous appeler. Il veut remplacer la façade en briques par du bardage métallique. Il me faut une estimation du surcoût/économie pour 14h. Nous sommes en négociation.\n\nMerci." }, options: ["Répondre que le délai est trop court et que c'est impossible.", "Donner une estimation à la louche basée sur votre expérience pour répondre rapidement.", "Lancer un appel à un fournisseur de bardage pour obtenir un prix rapide et calculer une macro-estimation (surface x prix/m²).", "Ignorer l'email et attendre d'avoir plus d'informations."], answer: 2, hint: "Il faut une réponse rapide mais basée sur un minimum de données concrètes.", explanation: "La meilleure option est la 3. Elle permet de donner une estimation rapide mais fondée sur un prix réel, même s'il n'est pas contractuel. C'est le meilleur compromis entre vitesse et fiabilité dans une situation d'urgence." },
+                { type: "scenario-email", category: 'commercial', difficulty: 2, question: "Comment répondez-vous à cet email ?", context: { from: '"Alain Martin" <a.martin@peinture-express.fr>', subject: "URGENT - Facture 2024-034 non payée", body: "Bonjour,\n\nSauf erreur de ma part, notre facture pour le chantier 'Réhab Arcueil' est échue depuis 15 jours et nous n'avons toujours pas reçu le paiement. C'est inacceptable.\n\nSi nous n'avons pas le virement sous 48h, nous arrêtons nos interventions sur tous vos chantiers.\n\nCordialement,\nAlain Martin" }, options: ["Bonjour, Je transmets au service comptabilité. Ils sont débordés en ce moment. Cordialement.", "Bonjour M. Martin, Je comprends votre position. Je vérifie immédiatement l'état de votre facture auprès de notre comptabilité et je reviens vers vous avec une date de paiement précise avant la fin de journée. Cordialement.", "Le ton de votre email est inacceptable. Sachez que les menaces ne feront pas avancer les choses. La facture sera payée quand elle sera payée.", "Ignorer l'email et appeler directement la comptabilité."], answer: 1, hint: "La diplomatie et la proactivité sont essentielles pour maintenir de bonnes relations avec les sous-traitants.", explanation: "La réponse 2 est la plus professionnelle. Elle montre de l'empathie, ne rejette pas la faute, et propose une action concrète avec un engagement de suivi. Cela permet de désamorcer le conflit tout en traitant le problème de fond." },
+                { type: "multi-select", category: 'management', difficulty: 2, question: "Lors du transfert d'un dossier étude aux équipes travaux, quels documents sont INDISPENSABLES ? (Plusieurs réponses possibles)", options: ["Feuille de vente détaillée", "Planning général des travaux", "CV du directeur d'études", "Devis des sous-traitants retenus", "Rapport de la visite de site"], answer: [0, 1, 3, 4], hint: "Pensez à tout ce qui est nécessaire pour que l'équipe travaux comprenne le projet, son coût et ses contraintes.", explanation: "La feuille de vente (pour le budget), le planning (pour les délais), les devis (pour les contrats) et le rapport de visite (pour le contexte) sont tous essentiels pour un transfert réussi." },
+                { type: "mcq", category: 'technical', difficulty: 3, question: "Le CCTP impose un béton C30/37 XF1. Votre fournisseur propose un C30/37 XC4 en promotion. Que faites-vous ?", options: ["Accepter, car XC4 est une classe d'exposition plus sévère que XF1", "Refuser catégoriquement, car la classe d'exposition ne correspond pas au besoin (gel/dégel)", "Demander une validation écrite de l'architecte et du BET structure avant toute chose", "Négocier une remise supplémentaire avant d'accepter"], answer: 1, hint: "Chaque classe d'exposition répond à un risque spécifique. Sont-ils interchangeables ?", explanation: "XF1 concerne le risque de gel/dégel, tandis que XC4 concerne la corrosion par carbonatation. Ce ne sont pas les mêmes protections. Le refus technique est le premier réflexe à avoir." },
+                { type: "calculation", difficulty: 2, question: "Mini-jeu de calcul : Dalle de 150m² sur 20cm d'épaisseur. Ratio de perte béton = 5%. Prix du m³ = 130€. Forfait pompe = 450€. Quel est le coût total (béton + pompe) ?", options: ["4350 €", "4545 €", "4095 €", "5000 €"], answer: 1, hint: "Calculez le volume théorique, appliquez le ratio de perte, puis ajoutez le forfait.", explanation: "Volume = 150m² * 0.20m = 30 m³. Volume à commander = 30 * 1.05 = 31.5 m³. Coût béton = 31.5 * 130€ = 4095€. Coût total = 4095€ + 450€ = 4545€." },
+                { type: "order", category: 'commercial', difficulty: 2, question: "Mini-jeu : Triez les étapes de réponse à une demande de variante client.", options: ["Proposer la solution chiffrée au client", "Analyser l'impact technique et financier", "Consulter les spécialistes (BET, travaux...)", "Valider la faisabilité et optimiser le chiffrage"], answer: [1, 2, 3, 0], hint: "L'analyse précède toujours l'action.", explanation: "L'ordre logique est : 1. Analyser la demande. 2. Consulter les experts. 3. Valider la solution interne. 4. Proposer au client." },
+            ];
+
+            // --- Game State ---
+            let currentQuestionIndex = 0;
+            let score = 0;
+            let timeLeft = 30;
+            let timerInterval;
+            let userAnswers = [];
+            let soundSynth, correctSynth, wrongSynth, sirenSynth;
+            let soundsEnabled = false;
+            let confirmCallback = null;
+
+            // --- Functions ---
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            function initSounds() {
+                try {
+                    soundSynth = new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0.3, release: 1 } }).toDestination();
+                    correctSynth = new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.5 } }).toDestination();
+                    wrongSynth = new Tone.Synth({ oscillator: { type: 'square' }, envelope: { attack: 0.01, decay: 0.4, sustain: 0, release: 0.4 } }).toDestination();
+                    sirenSynth = new Tone.Oscillator(440, "sine").toDestination();
+                    sirenSynth.volume.value = -10;
+                    const lfo = new Tone.LFO("8n", 400, 1200).start();
+                    lfo.connect(sirenSynth.frequency);
+                    soundsEnabled = true;
+                } catch (e) { console.warn("Could not initialize audio context."); }
+            }
+            
+            function playSound(type) {
+                if (!soundsEnabled || !Tone.context.state || Tone.context.state !== 'running') return;
+                try {
+                    if (type === 'correct') correctSynth.triggerAttackRelease("C5", "8n");
+                    else if (type === 'wrong') wrongSynth.triggerAttackRelease("C3", "8n");
+                    else if (type === 'click') soundSynth.triggerAttackRelease("C4", "8n");
+                    else if (type === 'siren') {
+                        sirenSynth.start();
+                        setTimeout(() => sirenSynth.stop(), 1000);
+                    }
+                } catch (e) { console.error("Error playing sound:", e); }
+            }
+
+            async function startGame() {
+                if (Tone.context.state !== 'running') await Tone.start();
+                initSounds();
+                playSound('click');
+                shuffleArray(questions);
+                welcomeScreen.classList.add('hidden');
+                gameScreen.classList.remove('hidden');
+                gameScreen.classList.add('fade-in');
+                currentQuestionIndex = 0;
+                score = 0;
+                userAnswers = [];
+                updateScore(0);
+                setupProgressBar();
+                displayQuestion();
+            }
+            
+            function displayScenario(question) {
+                scenarioBox.classList.remove('hidden');
+                scenarioBox.style.cssText = 'background-color: rgba(0,0,0,0.2); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; border: 1px solid var(--glass-border); text-align: left;';
+                
+                let content = '';
+                if (question.type.includes('urgent')) {
+                    content += `<div style="text-align: center; font-weight: 700; font-size: 1.125rem; color: var(--danger); animation: pulse-red 1.5s infinite;"><i class="fas fa-exclamation-triangle" style="margin-right: 0.5rem;"></i>URGENCE</div>`;
+                }
+
+                if (question.context && question.context.from) { // Email type
+                    content += `
+                        <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">
+                            <p><strong>De :</strong> ${question.context.from}</p>
+                            <p><strong>Objet :</strong> ${question.context.subject}</p>
                         </div>
-                    </div>
-                `;
-            }
-            scenarioBox.innerHTML = content;
-        }
-
-        function setupProgressBar() {
-            progressBar.innerHTML = '';
-            const lineBg = document.createElement('div');
-            lineBg.id = 'progress-line-bg';
-            progressBar.appendChild(lineBg);
-            const line = document.createElement('div');
-            line.id = 'progress-line';
-            progressBar.appendChild(line);
-
-            questions.forEach((q, index) => {
-                const step = document.createElement('div');
-                step.classList.add('progress-step');
-                step.innerHTML = `<span class="step-number">${index + 1}</span><i class="fas fa-check step-icon"></i>`;
-                progressBar.appendChild(step);
-            });
-        }
-
-        function updateProgressBar() {
-            const steps = document.querySelectorAll('.progress-step');
-            const line = document.getElementById('progress-line');
-            let currentStepEl = null;
-
-            steps.forEach((step, i) => {
-                step.classList.remove('current', 'completed');
-                if (i < currentQuestionIndex) {
-                    step.classList.add('completed');
-                } else if (i === currentQuestionIndex) {
-                    step.classList.add('current');
-                    currentStepEl = step;
+                        <hr style="border-color: var(--glass-border); margin: 0.5rem 0;">
+                        <p style="white-space: pre-wrap; color: var(--text-secondary);">${question.context.body}</p>
+                    `;
                 }
-            });
+                scenarioBox.innerHTML = content;
+            }
 
-            if (currentStepEl) {
-                progressBarContainer.scroll({
-                    left: currentStepEl.offsetLeft - progressBarContainer.offsetWidth / 2 + currentStepEl.offsetWidth / 2,
-                    behavior: 'smooth'
+            function setupProgressBar() {
+                progressBar.innerHTML = '';
+                const lineBg = document.createElement('div');
+                lineBg.id = 'progress-line-bg';
+                progressBar.appendChild(lineBg);
+                const line = document.createElement('div');
+                line.id = 'progress-line';
+                progressBar.appendChild(line);
+
+                questions.forEach((q, index) => {
+                    const step = document.createElement('div');
+                    step.classList.add('progress-step');
+                    step.innerHTML = `<span class="step-number">${index + 1}</span><i class="fas fa-check step-icon"></i>`;
+                    progressBar.appendChild(step);
                 });
             }
 
-            const progressPercentage = questions.length > 1 ? (currentQuestionIndex / (questions.length - 1)) * 100 : 0;
-            if(line) line.style.width = `${progressPercentage}%`;
-        }
+            function updateProgressBar() {
+                const steps = document.querySelectorAll('.progress-step');
+                const line = document.getElementById('progress-line');
+                let currentStepEl = null;
 
-        function displayQuestion() {
-            if (currentQuestionIndex >= questions.length) {
-                endGame();
-                return;
-            }
-            updateProgressBar();
-            hintBtn.disabled = false;
-            hintBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            answersContainer.innerHTML = '';
-            scenarioBox.innerHTML = '';
-            scenarioBox.classList.add('hidden');
-            questionContainer.classList.remove('urgent-alert');
-
-            const currentQuestion = questions[currentQuestionIndex];
-            let duration = 30;
-
-            questionTextEl.classList.remove('question-animation');
-            void questionTextEl.offsetWidth; // Trigger reflow
-            questionTextEl.classList.add('question-animation');
-            questionTextEl.textContent = currentQuestion.question;
-
-            if (currentQuestion.type && currentQuestion.type.startsWith('scenario')) {
-                displayScenario(currentQuestion);
-                if(currentQuestion.type.includes('urgent')) {
-                    playSound('siren');
-                    questionContainer.classList.add('urgent-alert');
-                    duration = 15;
-                }
-            }
-            
-            if (currentQuestion.type === 'order') displayOrderQuestion(currentQuestion);
-            else if (currentQuestion.type === 'multi-select') displayMultiSelectQuestion(currentQuestion);
-            else displayMCQQuestion(currentQuestion);
-            
-            startTimer(duration);
-        }
-        
-        function createAnswerGrid() {
-            const grid = document.createElement('div');
-            grid.className = 'w-full grid grid-cols-1 md:grid-cols-2 gap-4';
-            return grid;
-        }
-
-        function displayMCQQuestion(question) {
-            const grid = createAnswerGrid();
-            const shuffledOptions = shuffleArray(
-                question.options.map((option, index) => ({ text: option, originalIndex: index }))
-            );
-
-            shuffledOptions.forEach((optionObj, i) => {
-                const button = document.createElement('button');
-                button.innerHTML = `<span>${optionObj.text}</span>`;
-                button.classList.add('answer-btn', 'answer-animation');
-                button.style.animationDelay = `${i * 100}ms`;
-                button.dataset.index = optionObj.originalIndex;
-                button.addEventListener('click', () => selectAnswer(optionObj.originalIndex));
-                grid.appendChild(button);
-            });
-            answersContainer.appendChild(grid);
-        }
-        
-        function displayMultiSelectQuestion(question) {
-            const grid = createAnswerGrid();
-            const shuffledOptions = shuffleArray(
-                question.options.map((option, index) => ({ text: option, originalIndex: index }))
-            );
-
-            shuffledOptions.forEach((optionObj, i) => {
-                const button = document.createElement('button');
-                button.innerHTML = `<i class="far fa-square"></i><span>${optionObj.text}</span>`;
-                button.classList.add('answer-btn', 'answer-animation');
-                button.style.animationDelay = `${i * 100}ms`;
-                button.dataset.index = optionObj.originalIndex;
-                button.addEventListener('click', () => {
-                    button.classList.toggle('selected');
-                    const icon = button.querySelector('i');
-                    icon.className = button.classList.contains('selected') ? 'fas fa-check-square text-primary' : 'far fa-square';
+                steps.forEach((step, i) => {
+                    step.classList.remove('current', 'completed');
+                    if (i < currentQuestionIndex) {
+                        step.classList.add('completed');
+                    } else if (i === currentQuestionIndex) {
+                        step.classList.add('current');
+                        currentStepEl = step;
+                    }
                 });
-                grid.appendChild(button);
-            });
-            answersContainer.appendChild(grid);
 
-            const submitBtn = document.createElement('button');
-            submitBtn.textContent = 'Valider la sélection';
-            submitBtn.className = 'btn btn-primary mt-6 answer-animation';
-            submitBtn.style.animationDelay = `${shuffledOptions.length * 100}ms`;
-            submitBtn.addEventListener('click', () => {
-                const selectedIndexes = [];
-                answersContainer.querySelectorAll('.answer-btn.selected').forEach(btn => {
-                    selectedIndexes.push(parseInt(btn.dataset.index));
-                });
-                selectAnswer(selectedIndexes);
-            });
-            answersContainer.appendChild(submitBtn);
-        }
-
-        function displayOrderQuestion(question) {
-            const list = document.createElement('div');
-            list.id = 'sortable-list';
-            list.className = 'space-y-3 w-full';
-            const shuffledOptions = shuffleArray([...question.options]);
-            shuffledOptions.forEach((option, i) => {
-                const item = document.createElement('div');
-                item.textContent = option;
-                item.className = 'p-4 bg-surface rounded-lg border border-glass-border draggable w-full answer-animation';
-                item.style.animationDelay = `${i * 100}ms`;
-                item.draggable = true;
-                item.dataset.originalText = option;
-                list.appendChild(item);
-            });
-            addDragAndDropHandlers(list);
-            answersContainer.appendChild(list);
-            
-            const submitBtn = document.createElement('button');
-            submitBtn.textContent = 'Valider l\'ordre';
-            submitBtn.className = 'btn btn-primary mt-6 answer-animation';
-            submitBtn.style.animationDelay = `${shuffledOptions.length * 100}ms`;
-            submitBtn.addEventListener('click', () => {
-                const orderedOptions = [...list.children].map(child => child.dataset.originalText);
-                const originalIndexes = orderedOptions.map(opt => question.options.indexOf(opt));
-                selectAnswer(originalIndexes);
-            });
-            answersContainer.appendChild(submitBtn);
-        }
-        
-        let draggedItem = null;
-        function addDragAndDropHandlers(list) {
-            list.addEventListener('dragstart', e => { draggedItem = e.target; setTimeout(() => e.target.style.opacity = '0.5', 0); });
-            list.addEventListener('dragend', e => { setTimeout(() => e.target.style.opacity = '1', 0); draggedItem = null; });
-            list.addEventListener('dragover', e => {
-                e.preventDefault();
-                const afterElement = getDragAfterElement(list, e.clientY);
-                if (afterElement == null) list.appendChild(draggedItem);
-                else list.insertBefore(draggedItem, afterElement);
-            });
-        }
-        
-        function getDragAfterElement(container, y) {
-            const draggableElements = [...container.querySelectorAll('.draggable:not(.dragging)')];
-            return draggableElements.reduce((closest, child) => {
-                const box = child.getBoundingClientRect();
-                const offset = y - box.top - box.height / 2;
-                if (offset < 0 && offset > closest.offset) return { offset: offset, element: child };
-                else return closest;
-            }, { offset: Number.NEGATIVE_INFINITY }).element;
-        }
-
-        function startTimer(duration = 30) {
-            timeLeft = duration;
-            timerBarEl.style.width = '100%';
-            timerBarEl.style.backgroundColor = 'var(--secondary)';
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                const percentage = (timeLeft / duration) * 100;
-                timerBarEl.style.width = `${percentage}%`;
-                if (percentage < 50 && percentage >= 20) timerBarEl.style.backgroundColor = 'var(--warning)';
-                else if (percentage < 20) timerBarEl.style.backgroundColor = 'var(--danger)';
-                if (timeLeft <= 0) { clearInterval(timerInterval); selectAnswer(-1); }
-            }, 1000);
-        }
-
-        function selectAnswer(selectedIndex) {
-            clearInterval(timerInterval);
-            const q = questions[currentQuestionIndex];
-            let isCorrect = false;
-            let userAnswerText = "Temps écoulé";
-            let correctAnswerText = "";
-
-            if (q.type === 'order') {
-                correctAnswerText = q.answer.map(i => q.options[i]).join(' -> ');
-                if (selectedIndex !== -1) {
-                    isCorrect = JSON.stringify(selectedIndex) === JSON.stringify(q.answer);
-                    const orderedOptions = selectedIndex.map(index => q.options[index]);
-                    userAnswerText = orderedOptions.join(' -> ');
+                if (currentStepEl) {
+                    progressBar.parentElement.scroll({
+                        left: currentStepEl.offsetLeft - progressBar.parentElement.offsetWidth / 2 + currentStepEl.offsetWidth / 2,
+                        behavior: 'smooth'
+                    });
                 }
-            } else if (q.type === 'multi-select') {
-                const correctAnswers = q.answer.slice().sort().toString();
-                correctAnswerText = q.answer.map(i => q.options[i]).join(', ');
-                if (selectedIndex !== -1) {
-                    const selectedAnswers = selectedIndex.slice().sort().toString();
-                    isCorrect = selectedAnswers === correctAnswers;
-                    userAnswerText = selectedIndex.length > 0 ? selectedIndex.map(i => q.options[i]).join(', ') : "Aucune sélection";
-                }
-            } else {
-                correctAnswerText = q.options[q.answer];
-                if (selectedIndex !== -1) {
-                    isCorrect = selectedIndex === q.answer;
-                    userAnswerText = q.options[selectedIndex];
-                }
+
+                const progressPercentage = questions.length > 1 ? (currentQuestionIndex / (questions.length - 1)) * 100 : 0;
+                if(line) line.style.width = `${progressPercentage}%`;
             }
 
-            userAnswers.push({ question: q.question, answer: userAnswerText, correctAnswer: correctAnswerText, isCorrect: isCorrect });
-            if (isCorrect) { playSound('correct'); updateScore(100); showFeedback(true, q.explanation); } 
-            else { playSound('wrong'); showFeedback(false, q.explanation, selectedIndex === -1 ? "Temps écoulé !" : "Réponse incorrecte."); }
-        }
-        
-        function updateScore(points) {
-            score += points;
-            scoreEl.textContent = score;
-            if (points > 0) { scoreContainer.classList.add('pop'); setTimeout(() => scoreContainer.classList.remove('pop'), 200); }
-        }
+            function displayQuestion() {
+                if (currentQuestionIndex >= questions.length) {
+                    endGame();
+                    return;
+                }
+                updateProgressBar();
+                hintBtn.disabled = false;
+                answersContainer.innerHTML = '';
+                scenarioBox.innerHTML = '';
+                scenarioBox.classList.add('hidden');
+                questionContainer.classList.remove('urgent-alert');
 
-        function showFeedback(isCorrect, explanation, title) {
-            feedbackModal.classList.remove('hidden');
-            feedbackTitleEl.textContent = isCorrect ? "Excellente réponse !" : (title || "Réponse incorrecte");
-            feedbackTitleEl.className = `text-3xl font-bold mb-4 ${isCorrect ? 'text-green-400' : 'text-red-400'}`;
-            feedbackExplanationEl.textContent = explanation;
-        }
+                const currentQuestion = questions[currentQuestionIndex];
+                let duration = 30;
 
-        function nextQuestion() { playSound('click'); feedbackModal.classList.add('hidden'); currentQuestionIndex++; displayQuestion(); }
-        
-        function showConfirmModal(title, text, onConfirm) {
-            playSound('click');
-            confirmTitleEl.textContent = title;
-            confirmTextEl.textContent = text;
-            confirmModal.classList.remove('hidden');
-            const newYesBtn = confirmYesBtn.cloneNode(true);
-            confirmYesBtn.parentNode.replaceChild(newYesBtn, confirmYesBtn);
-            confirmYesBtn = newYesBtn;
-            confirmYesBtn.addEventListener('click', () => { playSound('click'); onConfirm(); confirmModal.classList.add('hidden'); });
+                questionTextEl.classList.remove('question-animation');
+                void questionTextEl.offsetWidth; // Trigger reflow
+                questionTextEl.classList.add('question-animation');
+                questionTextEl.textContent = currentQuestion.question;
+
+                if (currentQuestion.type && currentQuestion.type.startsWith('scenario')) {
+                    displayScenario(currentQuestion);
+                    if(currentQuestion.type.includes('urgent')) {
+                        playSound('siren');
+                        questionContainer.classList.add('urgent-alert');
+                        duration = 15;
+                    }
+                }
+                
+                if (currentQuestion.type === 'order') displayOrderQuestion(currentQuestion);
+                else if (currentQuestion.type === 'multi-select') displayMultiSelectQuestion(currentQuestion);
+                else displayMCQQuestion(currentQuestion);
+                
+                startTimer(duration);
+            }
             
-            const newNoBtn = confirmNoBtn.cloneNode(true);
-            confirmNoBtn.parentNode.replaceChild(newNoBtn, confirmNoBtn);
-            confirmNoBtn = newNoBtn;
-            confirmNoBtn.addEventListener('click', () => { playSound('click'); confirmModal.classList.add('hidden'); });
-        }
+            function createAnswerGrid() {
+                const grid = document.createElement('div');
+                grid.style.width = '100%';
+                grid.style.display = 'grid';
+                grid.style.gap = '1rem';
+                grid.style.gridTemplateColumns = window.innerWidth < 768 ? '1fr' : '1fr 1fr';
+                return grid;
+            }
 
-        function useHint() {
-            if (score >= 50) showConfirmModal("Utiliser une astuce ?", "Ceci vous coûtera 50 points.", () => {
-                updateScore(-50);
-                showConfirmModal("Astuce", questions[currentQuestionIndex].hint, () => {});
-                hintBtn.disabled = true;
-                hintBtn.classList.add('opacity-50', 'cursor-not-allowed');
-            });
-            else showConfirmModal("Points insuffisants", "Il vous faut 50 points pour une astuce.", () => {});
-        }
+            function displayMCQQuestion(question) {
+                const grid = createAnswerGrid();
+                const shuffledOptions = shuffleArray(
+                    question.options.map((option, index) => ({ text: option, originalIndex: index }))
+                );
 
-        function skipQuestion() {
-            if (score >= 150) showConfirmModal("Passer la question ?", "Ceci vous coûtera 150 points.", () => {
-                updateScore(-150);
+                shuffledOptions.forEach((optionObj, i) => {
+                    const button = document.createElement('button');
+                    button.innerHTML = `<span>${optionObj.text}</span>`;
+                    button.classList.add('answer-btn', 'answer-animation');
+                    button.style.animationDelay = `${i * 100}ms`;
+                    button.dataset.index = optionObj.originalIndex;
+                    button.addEventListener('click', () => selectAnswer(optionObj.originalIndex));
+                    grid.appendChild(button);
+                });
+                answersContainer.appendChild(grid);
+            }
+            
+            function displayMultiSelectQuestion(question) {
+                const grid = createAnswerGrid();
+                const shuffledOptions = shuffleArray(
+                    question.options.map((option, index) => ({ text: option, originalIndex: index }))
+                );
+
+                shuffledOptions.forEach((optionObj, i) => {
+                    const button = document.createElement('button');
+                    button.innerHTML = `<i class="far fa-square"></i><span>${optionObj.text}</span>`;
+                    button.classList.add('answer-btn', 'answer-animation');
+                    button.style.animationDelay = `${i * 100}ms`;
+                    button.dataset.index = optionObj.originalIndex;
+                    button.addEventListener('click', () => {
+                        button.classList.toggle('selected');
+                        const icon = button.querySelector('i');
+                        icon.className = button.classList.contains('selected') ? 'fas fa-check-square' : 'far fa-square';
+                    });
+                    grid.appendChild(button);
+                });
+                answersContainer.appendChild(grid);
+
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Valider la sélection';
+                submitBtn.className = 'btn btn-primary answer-animation';
+                submitBtn.style.marginTop = '1.5rem';
+                submitBtn.style.animationDelay = `${shuffledOptions.length * 100}ms`;
+                submitBtn.addEventListener('click', () => {
+                    const selectedIndexes = [];
+                    answersContainer.querySelectorAll('.answer-btn.selected').forEach(btn => {
+                        selectedIndexes.push(parseInt(btn.dataset.index));
+                    });
+                    selectAnswer(selectedIndexes);
+                });
+                answersContainer.appendChild(submitBtn);
+            }
+
+            function displayOrderQuestion(question) {
+                const list = document.createElement('div');
+                list.id = 'sortable-list';
+                list.style.cssText = 'display: flex; flex-direction: column; gap: 0.75rem; width: 100%;';
+                const shuffledOptions = shuffleArray([...question.options]);
+                shuffledOptions.forEach((option, i) => {
+                    const item = document.createElement('div');
+                    item.textContent = option;
+                    item.className = 'p-4 bg-surface rounded-lg border border-glass-border draggable w-full answer-animation';
+                    item.style.padding = '1rem';
+                    item.style.backgroundColor = 'var(--surface)';
+                    item.style.borderRadius = 'var(--radius-md)';
+                    item.style.border = '1px solid var(--glass-border)';
+                    item.style.cursor = 'move';
+                    item.style.animationDelay = `${i * 100}ms`;
+                    item.draggable = true;
+                    item.dataset.originalText = option;
+                    list.appendChild(item);
+                });
+                addDragAndDropHandlers(list);
+                answersContainer.appendChild(list);
+                
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Valider l\'ordre';
+                submitBtn.className = 'btn btn-primary answer-animation';
+                submitBtn.style.marginTop = '1.5rem';
+                submitBtn.style.animationDelay = `${shuffledOptions.length * 100}ms`;
+                submitBtn.addEventListener('click', () => {
+                    const orderedOptions = [...list.children].map(child => child.dataset.originalText);
+                    const originalIndexes = orderedOptions.map(opt => question.options.indexOf(opt));
+                    selectAnswer(originalIndexes);
+                });
+                answersContainer.appendChild(submitBtn);
+            }
+            
+            let draggedItem = null;
+            function addDragAndDropHandlers(list) {
+                list.addEventListener('dragstart', e => { draggedItem = e.target; setTimeout(() => e.target.style.opacity = '0.5', 0); });
+                list.addEventListener('dragend', e => { setTimeout(() => e.target.style.opacity = '1', 0); draggedItem = null; });
+                list.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    const afterElement = getDragAfterElement(list, e.clientY);
+                    if (afterElement == null) list.appendChild(draggedItem);
+                    else list.insertBefore(draggedItem, afterElement);
+                });
+            }
+            
+            function getDragAfterElement(container, y) {
+                const draggableElements = [...container.querySelectorAll('.draggable:not(.dragging)')];
+                return draggableElements.reduce((closest, child) => {
+                    const box = child.getBoundingClientRect();
+                    const offset = y - box.top - box.height / 2;
+                    if (offset < 0 && offset > closest.offset) return { offset: offset, element: child };
+                    else return closest;
+                }, { offset: Number.NEGATIVE_INFINITY }).element;
+            }
+
+            function startTimer(duration = 30) {
+                timeLeft = duration;
+                timerBarEl.style.width = '100%';
+                timerBarEl.style.backgroundColor = 'var(--secondary)';
+                clearInterval(timerInterval);
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    const percentage = (timeLeft / duration) * 100;
+                    timerBarEl.style.width = `${percentage}%`;
+                    if (percentage < 50 && percentage >= 20) timerBarEl.style.backgroundColor = 'var(--warning)';
+                    else if (percentage < 20) timerBarEl.style.backgroundColor = 'var(--danger)';
+                    if (timeLeft <= 0) { clearInterval(timerInterval); selectAnswer(-1); }
+                }, 1000);
+            }
+
+            function selectAnswer(selectedIndex) {
                 clearInterval(timerInterval);
                 const q = questions[currentQuestionIndex];
-                let correctAnswerText = Array.isArray(q.answer) ? q.answer.map(i => q.options[i]).join(', ') : q.options[q.answer];
-                userAnswers.push({ question: q.question, answer: "Question passée", isCorrect: false, correctAnswer: correctAnswerText });
-                nextQuestion();
-            });
-            else showConfirmModal("Points insuffisants", "Il vous faut 150 points pour passer.", () => {});
-        }
-        
-        function attemptForceEndGame() {
-            if (score >= 500) showConfirmModal("Terminer le jeu ?", "Ceci vous coûtera 500 points.", () => { updateScore(-500); endGame(); });
-            else showConfirmModal("Points insuffisants", "Il vous faut 500 points pour terminer maintenant.", () => {});
-        }
+                let isCorrect = false;
+                let userAnswerText = "Temps écoulé";
+                let correctAnswerText = "";
 
-        function endGame() {
-            clearInterval(timerInterval);
-            gameScreen.classList.add('hidden');
-            fabContainer.classList.add('hidden');
-            endScreen.classList.remove('hidden');
-            endScreen.classList.add('fade-in');
+                if (q.type === 'order') {
+                    correctAnswerText = q.answer.map(i => q.options[i]).join(' -> ');
+                    if (selectedIndex !== -1) {
+                        isCorrect = JSON.stringify(selectedIndex) === JSON.stringify(q.answer);
+                        userAnswerText = selectedIndex.map(index => q.options[index]).join(' -> ');
+                    }
+                } else if (q.type === 'multi-select') {
+                    correctAnswerText = q.answer.map(i => q.options[i]).join(', ');
+                    if (selectedIndex !== -1) {
+                        isCorrect = selectedIndex.sort().toString() === q.answer.sort().toString();
+                        userAnswerText = selectedIndex.length > 0 ? selectedIndex.map(i => q.options[i]).join(', ') : "Aucune sélection";
+                    }
+                } else { // MCQ, calculation, scenarios
+                    correctAnswerText = q.options[q.answer];
+                    if (selectedIndex !== -1) {
+                        isCorrect = selectedIndex === q.answer;
+                        userAnswerText = q.options[selectedIndex];
+                    }
+                }
+
+                userAnswers.push({ question: q.question, answer: userAnswerText, correctAnswer: correctAnswerText, isCorrect: isCorrect });
+                if (isCorrect) { playSound('correct'); updateScore(100); showFeedback(true, q.explanation); } 
+                else { playSound('wrong'); showFeedback(false, q.explanation, selectedIndex === -1 ? "Temps écoulé !" : "Réponse incorrecte."); }
+            }
             
-            const maxScore = questions.length * 100;
-            finalScoreEl.textContent = score;
-            finalMaxScoreEl.textContent = maxScore;
+            function updateScore(points) {
+                score += points;
+                scoreEl.textContent = score;
+                if (points !== 0) { scoreContainer.classList.add('pop'); setTimeout(() => scoreContainer.classList.remove('pop'), 200); }
+            }
 
-            const correctAnswers = userAnswers.filter(a => a.isCorrect).length;
-            const percentage = questions.length > 0 ? (correctAnswers / questions.length) * 100 : 0;
-            let feedbackText = "";
-            if (percentage >= 80) feedbackText = "Excellent ! Votre performance démontre une solide expertise. Votre profil nous intéresse vivement.";
-            else if (percentage >= 50) feedbackText = "Bonne performance ! Vous avez de bonnes connaissances. Nous serions ravis d'en discuter davantage.";
-            else feedbackText = "Merci d'avoir participé. Ce challenge était exigeant. Votre motivation est un atout précieux !";
-            profileDescriptionEl.textContent = feedbackText;
-        }
+            function showFeedback(isCorrect, explanation, title) {
+                feedbackModal.classList.remove('hidden');
+                feedbackTitleEl.textContent = isCorrect ? "Excellente réponse !" : (title || "Réponse incorrecte");
+                feedbackTitleEl.style.color = isCorrect ? 'var(--correct)' : 'var(--danger)';
+                feedbackExplanationEl.textContent = explanation;
+            }
 
-        function generatePDF() {
-            playSound('click');
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(20);
-            doc.text("Bilan - Challenge de Recrutement", 105, 20, { align: "center" });
-            doc.setFontSize(16);
-            doc.text("Chargé(e) Études de Prix Confirmé", 105, 30, { align: "center" });
-            doc.setLineWidth(0.5);
-            doc.line(20, 35, 190, 35);
-            doc.setFontSize(14);
-            const maxScore = questions.length * 100;
-            doc.text(`Score Final : ${score} / ${maxScore} points`, 20, 45);
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(12);
-            doc.text(`Analyse : ${profileDescriptionEl.textContent}`, 20, 55, { maxWidth: 170 });
-            let y = 80;
-            doc.setFont("helvetica", "bold");
-            doc.text("Détail de vos réponses :", 20, y);
-            y += 10;
-            userAnswers.forEach((ans, index) => {
-                if (y > 250) { doc.addPage(); y = 20; }
-                doc.setDrawColor(220, 220, 220);
-                doc.line(20, y - 5, 190, y - 5);
+            function nextQuestion() { playSound('click'); feedbackModal.classList.add('hidden'); currentQuestionIndex++; displayQuestion(); }
+            
+            function showConfirmModal(title, text, onConfirm) {
+                playSound('click');
+                confirmTitleEl.textContent = title;
+                confirmTextEl.textContent = text;
+                confirmModal.classList.remove('hidden');
+
+                confirmYesBtn.textContent = 'Oui';
+                confirmYesBtn.classList.remove('btn-primary');
+                confirmYesBtn.classList.add('btn-danger');
+                confirmNoBtn.classList.remove('hidden');
+
+                confirmCallback = onConfirm;
+            }
+
+            function showInfoModal(title, text) {
+                playSound('click');
+                confirmTitleEl.textContent = title;
+                confirmTextEl.textContent = text;
+                confirmModal.classList.remove('hidden');
+
+                confirmYesBtn.textContent = 'OK';
+                confirmYesBtn.classList.remove('btn-danger');
+                confirmYesBtn.classList.add('btn-primary');
+                confirmNoBtn.classList.add('hidden');
+
+                confirmCallback = null;
+            }
+
+            function useHint() {
+                if (score >= 50) {
+                    showConfirmModal("Utiliser une astuce ?", "Ceci vous coûtera 50 points.", () => {
+                        updateScore(-50);
+                        showInfoModal("Astuce", questions[currentQuestionIndex].hint);
+                        hintBtn.disabled = true;
+                    });
+                } else {
+                    showInfoModal("Points insuffisants", "Il vous faut 50 points pour une astuce.");
+                }
+            }
+
+            function skipQuestion() {
+                if (score >= 150) {
+                    showConfirmModal("Passer la question ?", "Ceci vous coûtera 150 points.", () => {
+                        updateScore(-150);
+                        clearInterval(timerInterval);
+                        const q = questions[currentQuestionIndex];
+                        let correctAnswerText = Array.isArray(q.answer) ? q.answer.map(i => q.options[i]).join(', ') : q.options[q.answer];
+                        userAnswers.push({ question: q.question, answer: "Question passée", isCorrect: false, correctAnswer: correctAnswerText });
+                        nextQuestion();
+                    });
+                } else {
+                    showInfoModal("Points insuffisants", "Il vous faut 150 points pour passer.");
+                }
+            }
+            
+            function endGame() {
+                clearInterval(timerInterval);
+                gameScreen.classList.add('hidden');
+                endScreen.classList.remove('hidden');
+                endScreen.classList.add('fade-in');
+                
+                const maxScore = questions.length * 100;
+                finalScoreEl.textContent = score;
+                finalMaxScoreEl.textContent = maxScore;
+
+                const correctAnswers = userAnswers.filter(a => a.isCorrect).length;
+                const percentage = questions.length > 0 ? (correctAnswers / questions.length) * 100 : 0;
+                let feedbackText = "";
+                let profileTitle = "";
+
+                if (percentage >= 80) {
+                    profileTitle = "Profil Expert";
+                    feedbackText = "Excellent ! Votre performance démontre une solide expertise et une prise de décision rapide. Votre profil nous intéresse vivement.";
+                } else if (percentage >= 50) {
+                    profileTitle = "Profil Prometteur";
+                    feedbackText = "Bonne performance ! Vous avez de bonnes connaissances des problématiques du métier. Nous serions ravis d'en discuter davantage avec vous.";
+                } else {
+                    profileTitle = "Profil à Développer";
+                    feedbackText = "Merci d'avoir participé. Ce challenge était exigeant. Votre motivation est un atout précieux et nous encourageons la persévérance !";
+                }
+                profileTitleEl.textContent = profileTitle;
+                profileDescriptionEl.textContent = feedbackText;
+            }
+
+            function generatePDF() {
+                playSound('click');
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
                 doc.setFont("helvetica", "bold");
-                const qLines = doc.splitTextToSize(`Q${index + 1}: ${ans.question}`, 170);
-                doc.text(qLines, 20, y);
-                y += qLines.length * 5 + 2;
+                doc.setFontSize(20);
+                doc.text("Bilan - Challenge de Recrutement", 105, 20, { align: "center" });
+                doc.setFontSize(16);
+                doc.text("Chargé(e) Études de Prix Confirmé", 105, 30, { align: "center" });
+                doc.setLineWidth(0.5);
+                doc.line(20, 35, 190, 35);
+                
+                doc.setFontSize(14);
+                const maxScore = questions.length * 100;
+                doc.text(`Score Final : ${score} / ${maxScore} points`, 20, 45);
+                
+                const profileTitle = profileTitleEl.textContent;
+                doc.setFont("helvetica", "bold");
+                doc.text(`Profil Obtenu : ${profileTitle}`, 20, 55);
+
                 doc.setFont("helvetica", "normal");
-                doc.setTextColor(ans.isCorrect ? 0 : 255, ans.isCorrect ? 128 : 0, 0);
-                doc.text(`Votre réponse : ${ans.answer}`, 25, y, { maxWidth: 165 });
-                y += 7;
-                if (!ans.isCorrect) {
+                doc.setFontSize(12);
+                const analysisLines = doc.splitTextToSize(`Analyse : ${profileDescriptionEl.textContent}`, 170);
+                doc.text(analysisLines, 20, 65);
+                
+                let y = 65 + (analysisLines.length * 7) + 5;
+
+                doc.setFont("helvetica", "bold");
+                doc.text("Détail de vos réponses :", 20, y);
+                y += 10;
+
+                userAnswers.forEach((ans, index) => {
+                    if (y > 250) { doc.addPage(); y = 20; }
+                    doc.setDrawColor(220, 220, 220);
+                    doc.line(20, y - 5, 190, y - 5);
+                    doc.setFont("helvetica", "bold");
+                    const qLines = doc.splitTextToSize(`Q${index + 1}: ${ans.question}`, 170);
+                    doc.text(qLines, 20, y);
+                    y += qLines.length * 5 + 2;
+                    
+                    doc.setFont("helvetica", "normal");
+                    doc.setTextColor(ans.isCorrect ? 34 : 239, ans.isCorrect ? 197 : 68, ans.isCorrect ? 94 : 68); // green or red
+                    const yourAnsLines = doc.splitTextToSize(`Votre réponse : ${ans.answer}`, 165);
+                    doc.text(yourAnsLines, 25, y);
+                    y += yourAnsLines.length * 5 + 2;
+
+                    if (!ans.isCorrect) {
+                        doc.setTextColor(0, 0, 0);
+                        const correctAnsLines = doc.splitTextToSize(`Réponse correcte : ${ans.correctAnswer}`, 165);
+                        doc.text(correctAnsLines, 25, y);
+                        y += correctAnsLines.length * 5 + 2;
+                    }
                     doc.setTextColor(0, 0, 0);
-                    doc.text(`Réponse correcte : ${ans.correctAnswer}`, 25, y, { maxWidth: 165 });
-                    y += 7;
+                    y += 8; 
+                });
+
+                if (y > 240) { doc.addPage(); y = 20; }
+                doc.setDrawColor(0,0,0);
+                doc.line(20, y, 190, y);
+                y += 10;
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(14);
+                doc.text("Passez à l'étape suivante !", 105, y, { align: "center" });
+                y += 10;
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(12);
+                doc.text("Pour finaliser votre candidature, merci d'envoyer votre CV à :", 105, y, { align: 'center' });
+                y += 10;
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(99, 102, 241); // primary color
+                doc.textWithLink("l.amara@ltd-international.com", 105, y, { url: 'mailto:l.amara@ltd-international.com', align: 'center' });
+                doc.save("Bilan_Challenge_Recrutement.pdf");
+            }
+
+            // --- Event Listeners ---
+            startGameBtn.addEventListener('click', startGame);
+            nextQuestionBtn.addEventListener('click', nextQuestion);
+            hintBtn.addEventListener('click', useHint);
+            skipBtn.addEventListener('click', skipQuestion);
+            downloadPdfBtn.addEventListener('click', generatePDF);
+            
+            confirmYesBtn.addEventListener('click', () => {
+                if (confirmCallback) {
+                    playSound('click');
+                    confirmCallback();
                 }
-                y += 12; 
+                playSound('click');
+                confirmModal.classList.add('hidden');
             });
-            if (y > 240) { doc.addPage(); y = 20; }
-            doc.setDrawColor(0,0,0);
-            doc.line(20, y, 190, y);
-            y += 10;
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(14);
-            doc.text("Passez à l'étape suivante !", 105, y, { align: "center" });
-            y += 10;
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(12);
-            doc.text("Pour finaliser votre candidature, merci d'envoyer votre CV à :", 105, y, { align: 'center' });
-            y += 10;
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(0, 0, 255);
-            doc.textWithLink("l.amara@ltd-international.com", 105, y, { url: 'mailto:l.amara@ltd-international.com', align: 'center' });
-            doc.save("Bilan_Challenge_Recrutement.pdf");
-        }
 
-        // --- Event Listeners ---
-        startGameBtn.addEventListener('click', startGame);
-        nextQuestionBtn.addEventListener('click', nextQuestion);
-        homeBtn.addEventListener('click', () => window.location.reload());
-        forceEndBtn.addEventListener('click', attemptForceEndGame);
-        hintBtn.addEventListener('click', useHint);
-        skipBtn.addEventListener('click', skipQuestion);
-        downloadPdfBtn.addEventListener('click', generatePDF);
-        fabMainBtn.addEventListener('click', () => { playSound('click'); fabContainer.classList.toggle('open'); });
-        compactModeBtn.addEventListener('click', () => {
-            playSound('click');
-            appContainer.classList.toggle('max-w-2xl');
-            appContainer.classList.toggle('max-w-4xl');
-            fabContainer.classList.remove('open');
-        });
-        themeToggleBtn.addEventListener('click', () => {
-            playSound('click');
-            document.body.classList.toggle('light-mode');
-            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
-            fabContainer.classList.remove('open');
-        });
-
-        toolsBtn.addEventListener('click', () => {
-            playSound('click');
-            toolsModal.classList.remove('hidden');
-        });
-        closeToolsBtn.addEventListener('click', () => {
-            playSound('click');
-            toolsModal.classList.add('hidden');
-        });
-
-        // Calculator logic
-        const calcDisplay = document.getElementById('calc-display');
-        let currentInput = '';
-        let operator = '';
-        let firstOperand = null;
-        document.querySelectorAll('.calc-btn').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const value = e.target.textContent;
-                if(!isNaN(value) || value === '.') {
-                    if(currentInput === '0' && value !== '.') currentInput = '';
-                    currentInput += value;
-                    calcDisplay.textContent = currentInput;
-                } else if (value === 'C') {
-                    currentInput = '0';
-                    operator = '';
-                    firstOperand = null;
-                    calcDisplay.textContent = currentInput;
-                } else if (['+', '-', '*', '/'].includes(value)) {
-                    if (firstOperand === null) {
-                        firstOperand = parseFloat(currentInput);
-                    } else if (operator) {
-                        try {
-                           const result = new Function('return ' + firstOperand + operator + currentInput)();
-                           firstOperand = result;
-                        } catch(e) {
-                           firstOperand = null;
-                        }
-                    }
-                    operator = value;
-                    currentInput = '';
-                } else if (value === '=') {
-                    if (firstOperand !== null && operator && currentInput) {
-                        try {
-                            const result = new Function('return ' + firstOperand + operator + currentInput)();
-                            calcDisplay.textContent = result;
-                            firstOperand = result;
-                            currentInput = result.toString();
-                            operator = '';
-                        } catch(e) {
-                            calcDisplay.textContent = 'Error';
-                            currentInput = '';
-                            operator = '';
-                            firstOperand = null;
-                        }
-                    }
-                }
+            confirmNoBtn.addEventListener('click', () => {
+                playSound('click');
+                confirmModal.classList.add('hidden');
             });
         });
-
-        // Apply saved theme on load
-        if (localStorage.getItem('theme') === 'light') {
-            document.body.classList.add('light-mode');
-        }
-
-
     </script>
 </body>
 </html>
