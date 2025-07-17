@@ -7,7 +7,7 @@
     <title>LTD Simulator - Quiz</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -19,16 +19,14 @@
             --secondary-dark: #059669;
             --accent: #f59e0b;
             --accent-dark: #d97706;
-            --success: #22c55e;
-            --error: #ef4444;
             
             /* Surfaces */
             --background: #0f172a;
             --surface: #1e293b;
             --surface-elevated: #334155;
             --surface-hover: #475569;
-            --glass: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.15);
             
             /* Text */
             --text-primary: #f8fafc;
@@ -36,13 +34,16 @@
             --text-muted: #94a3b8;
             
             /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
             --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-            --shadow-glow: 0 0 15px 0px rgba(99, 102, 241, 0.4);
-            
+            --shadow-glow: 0 0 15px 0px rgba(99, 102, 241, 0.3);
+
             /* Animation */
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-slow: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             
             /* Spacing */
             --spacing-xs: 0.5rem;
@@ -52,6 +53,7 @@
             --spacing-xl: 3rem;
             
             /* Borders */
+            --radius-sm: 0.375rem;
             --radius: 0.5rem;
             --radius-md: 0.75rem;
             --radius-lg: 1rem;
@@ -70,46 +72,210 @@
             --text-primary: #1e293b;
             --text-secondary: #475569;
             --text-muted: #64748b;
-            --shadow-glow: 0 0 15px 0px rgba(99, 102, 241, 0.3);
+            --shadow-glow: 0 0 15px 0px rgba(99, 102, 241, 0.2);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body { font-family: 'Inter', sans-serif; background: var(--background); color: var(--text-primary); line-height: 1.6; overflow-x: hidden; transition: var(--transition-slow); }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: var(--transition-slow);
+        }
 
         body::before {
-            content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 20% 50%, rgba(245, 158, 11, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%), radial-gradient(circle at 40% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
-            pointer-events: none; z-index: -1;
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 50% 85%, rgba(245, 158, 11, 0.1) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+            animation: background-pan 30s linear infinite;
         }
         
-        [onclick], .nav-link, .mobile-nav-item, .quiz-card-button, .theme-toggle, .mobile-toggle, .search-button { cursor: pointer; }
+        @keyframes background-pan {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        [onclick], .nav-link, .quiz-card-button, .theme-toggle, .mobile-toggle, .search-button {
+            cursor: pointer;
+        }
 
-        .header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; backdrop-filter: blur(20px) saturate(180%); background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid var(--glass-border); transition: var(--transition); }
-        body.light-mode .header { background: rgba(255, 255, 255, 0.8); }
-        .nav-container { max-width: 1400px; margin: 0 auto; padding: 0 var(--spacing-md); display: flex; align-items: center; justify-content: space-between; height: 4.5rem; }
-        .logo { display: flex; align-items: center; gap: 1rem; text-decoration: none; color: var(--text-primary); font-weight: 800; font-size: 1.5rem; }
-        .logo-icon { font-size: 2rem; }
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px) saturate(180%);
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid var(--glass-border);
+            transition: var(--transition);
+        }
+
+        body.light-mode .header {
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-sm); 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 4.5rem;
+            gap: var(--spacing-md);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 800;
+            font-size: 1.2rem; 
+            transition: var(--transition);
+        }
+        .logo:hover {
+            transform: scale(1.05);
+            text-shadow: 0 0 10px var(--primary-light);
+        }
+
+        .logo-icon {
+            height: 1.8rem;
+            width: auto;
+            vertical-align: -0.4rem;
+        }
         
-        .nav-desktop { display: none; }
-        @media (min-width: 1024px) { .nav-desktop { display: flex; align-items: center; flex-grow: 1; justify-content: space-between; gap: var(--spacing-md); } }
-        .nav-menu { display: flex; align-items: center; gap: var(--spacing-md); list-style: none; }
-        .nav-link { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; color: var(--text-secondary); text-decoration: none; font-weight: 500; border-radius: var(--radius); transition: var(--transition); }
-        .nav-link:hover { color: var(--text-primary); background: var(--glass); }
-        .nav-link.active { color: var(--primary); font-weight: 600; background: rgba(99, 102, 241, 0.1); }
-        
-        .header-search { position: relative; width: 280px; }
-        .header-search input { width: 100%; background-color: var(--surface); border: 1px solid var(--glass-border); color: var(--text-secondary); border-radius: var(--radius); padding: 0.5rem 1rem 0.5rem 2.5rem; font-size: 0.9rem; transition: var(--transition); }
+        .logo-text-extended {
+            display: none;
+        }
+
+        .nav-desktop { display: none; } 
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            list-style: none;
+        }
+
+        .nav-item { position: relative; }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: var(--radius);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+            background: var(--glass);
+        }
+
+        .nav-link.active {
+            color: var(--text-primary);
+            background: linear-gradient(45deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.2));
+            font-weight: 600;
+        }
+
+        .header-search {
+            position: relative;
+        }
+        .header-search input {
+            width: 100%;
+            background-color: var(--surface);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            border-radius: var(--radius);
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
         .header-search input::placeholder { color: var(--text-muted); }
-        .header-search input:focus { background-color: var(--surface-elevated); border-color: var(--primary); color: var(--text-primary); box-shadow: 0 0 0 2px var(--primary-dark); outline: none; }
-        .header-search .fa-search { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .header-search input:focus {
+            background-color: var(--surface-elevated);
+            border-color: var(--primary);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 2px var(--primary-dark);
+            outline: none;
+        }
+        .header-search .fa-search {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
 
-        .nav-actions { display: flex; align-items: center; gap: 1rem; }
-        .theme-toggle { display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-secondary); transition: var(--transition); }
-        .theme-toggle:hover { background: var(--surface-elevated); color: var(--text-primary); }
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            color: var(--text-secondary);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .theme-toggle:hover {
+            background: var(--surface-elevated);
+            color: var(--text-primary);
+            transform: rotate(15deg);
+        }
+
+        .mobile-toggle {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
         
-        .mobile-toggle { display: flex; flex-direction: column; justify-content: center; align-items: center; width: 2.5rem; height: 2.5rem; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); transition: var(--transition); }
-        @media (min-width: 1024px) { .mobile-toggle { display: none; } }
         .hamburger { position: relative; width: 1.25rem; height: 1rem; }
         .hamburger span { position: absolute; left: 0; width: 100%; height: 2px; background: var(--text-primary); border-radius: 1px; transition: var(--transition); }
         .hamburger span:nth-child(1) { top: 0; }
@@ -121,24 +287,46 @@
         
         .mobile-menu { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--background); z-index: 999; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: var(--transition-slow); }
         .mobile-menu.active { opacity: 1; visibility: visible; }
-        .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-md); border-bottom: 1px solid var(--glass-border); }
+        .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--spacing-sm); height: 4.5rem; border-bottom: 1px solid var(--glass-border); }
         .mobile-menu-close { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-primary); }
-        .mobile-menu-content { flex: 1; padding: var(--spacing-lg); overflow-y: auto; }
+        .mobile-menu-content { flex: 1; padding: var(--spacing-lg) var(--spacing-sm); overflow-y: auto; }
         .mobile-search-wrapper { padding-bottom: var(--spacing-lg); margin-bottom: var(--spacing-lg); border-bottom: 1px solid var(--glass-border); }
-        .mobile-nav-items { display: flex; flex-direction: column; gap: 0.5rem; }
-        .mobile-nav-item { display: flex; align-items: center; gap: 1rem; padding: 1rem; color: var(--text-secondary); text-decoration: none; border-radius: var(--radius-lg); }
+        .mobile-search-wrapper .header-search { width: 100%; }
+        .mobile-nav-section h3 { color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--spacing-md); }
+        .mobile-nav-items { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+        .mobile-nav-item { display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-md); color: var(--text-secondary); text-decoration: none; border-radius: var(--radius-md); }
         .mobile-nav-item-icon { font-size: 1.25rem; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border-radius: var(--radius); }
+        .mobile-nav-item:hover { background: var(--glass); color: var(--text-primary); }
 
-        .main-content { margin-top: 4.5rem; padding: var(--spacing-xl) var(--spacing-md); max-width: 1400px; margin-left: auto; margin-right: auto; }
-        .hero { text-align: center; padding: var(--spacing-xl) 0; }
-        .hero h1 { font-size: 3.5rem; font-weight: 800; margin-bottom: var(--spacing-lg); background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .hero p { font-size: 1.25rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto; line-height: 1.7; }
+        .main-content { 
+            margin-top: 4.5rem; 
+            padding: var(--spacing-lg) var(--spacing-sm); 
+            max-width: 1400px; 
+            margin-left: auto; 
+            margin-right: auto; 
+        }
         
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-in { animation: fadeInUp 0.6s ease-out forwards; }
-
+        .hero { text-align: center; padding: var(--spacing-lg) 0; }
+        .hero h1 { 
+            font-size: clamp(2.2rem, 8vw, 4rem); 
+            font-weight: 800; 
+            margin-bottom: var(--spacing-lg); 
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary) 50%, var(--accent) 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: text-gradient-pan 5s ease infinite;
+        }
+        @keyframes text-gradient-pan {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .hero p { font-size: 1.1rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.7; }
+        
         /* --- SLIDER STYLES --- */
-        .slider-container { position: relative; width: 100%; border-radius: var(--radius-xl); overflow: hidden; margin-bottom: var(--spacing-xl); background-color: var(--surface); box-shadow: var(--shadow-md); border: 1px solid var(--glass-border); }
+        .slider-container { position: relative; width: 100%; border-radius: var(--radius-xl); overflow: hidden; margin-bottom: var(--spacing-xl); background-color: var(--surface); box-shadow: var(--shadow-lg); border: 1px solid var(--glass-border); }
         .slider-wrapper { display: flex; transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
         .slide { min-width: 100%; position: relative; overflow: hidden; }
         .slide .slide-background { width: 100%; display: block; aspect-ratio: 16 / 6; transition: transform 8s ease-out; background-color: var(--surface-elevated); }
@@ -171,25 +359,48 @@
         .quiz-card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; font-size: 0.875rem; color: var(--text-muted); }
         .meta-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; background: var(--surface-elevated); border-radius: var(--radius-full); }
         .meta-item .fas { color: var(--accent); }
-        .quiz-card-button { display: inline-block; background: var(--primary); color: white; padding: 0.75rem 2rem; border-radius: var(--radius-full); text-align: center; text-decoration: none; font-weight: 600; transition: var(--transition); margin-top: auto; }
-        .quiz-card-button:hover { background: var(--primary-dark); transform: scale(1.05); }
+        .quiz-card-button { display: inline-block; background: var(--primary); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); text-align: center; text-decoration: none; font-weight: 600; transition: var(--transition-slow); margin-top: auto; }
+        .quiz-card-button:hover { background: var(--primary-dark); transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         
         .notification { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-xl); transform: translateX(calc(100% + var(--spacing-lg))); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1100; backdrop-filter: blur(20px); max-width: 350px; }
         .notification.show { transform: translateX(0); }
-        .notification-content { display: flex; align-items: flex-start; gap: 1rem; }
+        .notification-content { display: flex; align-items: flex-start; gap: var(--spacing-sm); }
         .notification-icon { font-size: 1.25rem; color: var(--primary); margin-top: 2px; }
         .notification-text { color: var(--text-primary); font-weight: 500; flex: 1; }
-        .notification-close { background: none; border: none; color: var(--text-muted); padding: 0; font-size: 1rem; }
-        
-        .progress-bar { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: var(--surface-elevated); z-index: 1001; opacity: 0; transition: opacity 0.3s ease; }
-        .progress-bar.show { opacity: 1; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.3s ease; }
+        .notification-close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0; font-size: 1rem; }
+        .notification.success .notification-icon { color: var(--secondary); }
+        .notification.warning .notification-icon { color: var(--accent); }
+        .notification.error .notification-icon { color: #ef4444; }
 
+        .progress-bar { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: transparent; z-index: 1001; opacity: 0; transition: opacity 0.3s ease; }
+        .progress-bar.show { opacity: 1; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.3s ease; box-shadow: 0 0 10px var(--primary), 0 0 5px var(--secondary); }
+
+        .animate-in {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .animate-in.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
             .hero h1 { font-size: 2.5rem; }
             .hero p { font-size: 1.1rem; }
             .nav-desktop { display: none; }
             .mobile-toggle { display: flex; }
+        }
+        @media (min-width: 1024px) {
+            .mobile-toggle { display: none; }
+            .nav-desktop { display: flex; align-items: center; flex-grow: 1; justify-content: flex-end; gap: var(--spacing-sm); }
+            .header-search { width: 280px; }
+            .nav-menu { gap: var(--spacing-xs); }
+        }
+        @media (min-width: 1280px) {
+            .logo-text-extended { display: inline; }
         }
     </style>
 </head>
@@ -199,11 +410,14 @@
     </div>
 
     <!-- Header -->
-    <header class="header">
+    <header class="header" id="header">
         <nav class="nav-container">
             <a href="index.html" class="logo" onclick="event.preventDefault(); navigateTo('index.html');">
-                <span class="logo-icon">🏗️</span>
-                <span class="logo-text">LTD Simulator</span>
+                <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
+                    <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
+                    <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+                </svg>
+                <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
             </a>
             <div class="nav-desktop">
                 <form action="recherche.html" method="GET" class="header-search">
@@ -217,10 +431,10 @@
                      <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
                      <li class="nav-item"><a href="emploi.html" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
                      <li class="nav-item"><a href="histoire.html" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
-                     <li class="nav-item"><a href="quiz.html" class="nav-link active" onclick="event.preventDefault();"><i class="fas fa-question-circle"></i>&nbsp;Quiz</a></li>
+                     <li class="nav-item"><a href="quiz.html" class="nav-link active" onclick="event.preventDefault(); navigateTo('quiz.html')"><i class="fas fa-question-circle"></i>&nbsp;Quiz</a></li>
                  </ul>
                  <div class="nav-actions">
-                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
                          <i class="fas fa-moon" id="themeIcon"></i>
                      </button>
                  </div>
@@ -235,8 +449,11 @@
     <div class="mobile-menu" id="mobileMenu">
         <div class="mobile-menu-header">
             <a href="index.html" class="logo" onclick="event.preventDefault(); toggleMobileMenu(); navigateTo('index.html');">
-                <span class="logo-icon">🏗️</span>
-                <span class="logo-text">LTD Simulator</span>
+                <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
+                    <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
+                    <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+                </svg>
+                <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
             </a>
             <button class="mobile-menu-close" onclick="toggleMobileMenu()"><i class="fas fa-times"></i></button>
         </div>
@@ -247,8 +464,11 @@
                     <input type="search" name="query" placeholder="Rechercher..." aria-label="Rechercher">
                 </form>
             </div>
-            <div class="mobile-nav-items">
-                <!-- Populated by JS -->
+            <div class="mobile-nav-section">
+                <h3>Navigation</h3>
+                <div class="mobile-nav-items">
+                    <!-- Mobile nav items will be populated by JS -->
+                </div>
             </div>
         </div>
     </div>
@@ -374,9 +594,7 @@
         <div class="notification-content">
             <i class="fas fa-info-circle notification-icon" id="notificationIcon"></i>
             <span class="notification-text" id="notificationText"></span>
-            <button class="notification-close" id="notificationClose" onclick="this.parentElement.parentElement.classList.remove('show')">
-                <i class="fas fa-times"></i>
-            </button>
+            <button class="notification-close" onclick="this.parentElement.parentElement.classList.remove('show')"><i class="fas fa-times"></i></button>
         </div>
     </div>
 
@@ -385,8 +603,8 @@
 
         function showProgress() {
             const progressBar = document.getElementById('progressBar');
-            if (!progressBar) return;
             const progressFill = document.getElementById('progressFill');
+            if (!progressBar || !progressFill) return;
             progressBar.classList.add('show');
             progressFill.style.width = '0%';
             let progress = 0;
@@ -395,7 +613,10 @@
                 if (progress >= 100) {
                     progress = 100;
                     clearInterval(interval);
-                    setTimeout(() => progressBar.classList.remove('show'), 500);
+                    setTimeout(() => {
+                        progressBar.classList.remove('show');
+                        progressFill.style.width = '0%';
+                    }, 500);
                 }
                 progressFill.style.width = progress + '%';
             }, 100);
@@ -408,34 +629,34 @@
                  setTimeout(() => document.getElementById('progressBar').classList.remove('show'), 500);
                  return;
             }
-            setTimeout(() => window.location.href = pageFile, 1500);
+            setTimeout(() => window.location.href = pageFile, 1000);
         }
 
-        function showNotification(message, type = 'info') {
+        function showNotification(message, type = 'info', duration = 3000) {
             const notification = document.getElementById('notification');
-            if (!notification) return;
             const notificationText = document.getElementById('notificationText');
             const notificationIcon = document.getElementById('notificationIcon');
+            if (!notification || !notificationText || !notificationIcon) return;
+            
             notification.classList.remove('success', 'warning', 'error');
-            
+            notificationIcon.className = 'notification-icon fas ';
+
             switch(type) {
-                case 'success': notificationIcon.className = 'fas fa-check-circle notification-icon'; notification.classList.add('success'); break;
-                case 'warning': notificationIcon.className = 'fas fa-exclamation-triangle notification-icon'; notification.classList.add('warning'); break;
-                case 'error': notificationIcon.className = 'fas fa-exclamation-circle notification-icon'; notification.classList.add('error'); break;
-                default: notificationIcon.className = 'fas fa-info-circle notification-icon';
+                case 'success': notificationIcon.classList.add('fa-check-circle'); notification.classList.add('success'); break;
+                case 'warning': notificationIcon.classList.add('fa-exclamation-triangle'); notification.classList.add('warning'); break;
+                case 'error': notificationIcon.classList.add('fa-exclamation-circle'); notification.classList.add('error'); break;
+                default: notificationIcon.classList.add('fa-info-circle');
             }
-            
             notificationText.textContent = message;
             notification.classList.add('show');
-            setTimeout(() => notification.classList.remove('show'), 3000);
+            setTimeout(() => notification.classList.remove('show'), duration);
         }
         
         function updateThemeUI() {
             const themeIcon = document.getElementById('themeIcon');
+            if (!themeIcon) return;
             document.body.classList.toggle('light-mode', currentTheme === 'light');
-            if (themeIcon) {
-                themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
-            }
+            themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
         }
 
         function toggleTheme() {
@@ -444,18 +665,19 @@
             updateThemeUI();
             showNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
         }
-
+        
         function toggleMobileMenu() {
-            const mobileMenu = document.getElementById('mobileMenu');
             const mobileToggle = document.getElementById('mobileToggle');
-            mobileMenu.classList.toggle('active');
+            const mobileMenu = document.getElementById('mobileMenu');
             mobileToggle.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
         }
         
-        /* --- SLIDER LOGIC --- */
         function setupSlider() {
             const slider = document.getElementById('imageSlider');
             if (!slider) return;
+
             const wrapper = slider.querySelector('.slider-wrapper');
             const slides = slider.querySelectorAll('.slide');
             const prevBtn = document.getElementById('sliderPrev');
@@ -498,13 +720,33 @@
                 });
             }
 
-            function nextSlide() { goToSlide((currentIndex + 1) % slides.length); }
-            function prevSlide() { goToSlide((currentIndex - 1 + slides.length) % slides.length); }
-            function startInterval() { slideInterval = setInterval(nextSlide, 7000); }
-            function resetInterval() { clearInterval(slideInterval); startInterval(); }
+            function nextSlide() {
+                const newIndex = (currentIndex + 1) % slides.length;
+                goToSlide(newIndex);
+            }
 
-            nextBtn.addEventListener('click', () => { nextSlide(); resetInterval(); });
-            prevBtn.addEventListener('click', () => { prevSlide(); resetInterval(); });
+            function prevSlide() {
+                const newIndex = (currentIndex - 1 + slides.length) % slides.length;
+                goToSlide(newIndex);
+            }
+            
+            function startInterval() {
+                slideInterval = setInterval(nextSlide, 7000); 
+            }
+
+            function resetInterval() {
+                clearInterval(slideInterval);
+                startInterval();
+            }
+
+            nextBtn.addEventListener('click', () => {
+                nextSlide();
+                resetInterval();
+            });
+            prevBtn.addEventListener('click', () => {
+                prevSlide();
+                resetInterval();
+            });
             
             if (slides.length > 0) {
                 slides[0].classList.add('active');
@@ -516,21 +758,42 @@
         document.addEventListener('DOMContentLoaded', () => {
             updateThemeUI();
             
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.animate-in').forEach(el => {
+                observer.observe(el);
+            });
+
             const desktopNav = document.querySelector('.nav-desktop .nav-menu');
             const mobileNavContainer = document.querySelector('.mobile-menu .mobile-nav-items');
             if(desktopNav && mobileNavContainer) {
-                mobileNavContainer.innerHTML = '';
+                mobileNavContainer.innerHTML = ''; 
                 desktopNav.querySelectorAll('.nav-item').forEach(item => {
                     const link = item.querySelector('a');
                     const newNavItem = document.createElement('a');
                     newNavItem.href = link.href;
                     newNavItem.className = 'mobile-nav-item';
-                    newNavItem.onclick = link.onclick;
+                    
+                    newNavItem.onclick = (e) => {
+                        e.preventDefault();
+                        toggleMobileMenu();
+                        navigateTo(link.getAttribute('href'));
+                    };
+
                     const iconDiv = document.createElement('div');
                     iconDiv.className = 'mobile-nav-item-icon';
                     iconDiv.innerHTML = link.querySelector('i').outerHTML;
+                    
                     const textNode = document.createElement('h4');
                     textNode.textContent = link.textContent.trim();
+
                     newNavItem.appendChild(iconDiv);
                     newNavItem.appendChild(textNode);
                     mobileNavContainer.appendChild(newNavItem);
