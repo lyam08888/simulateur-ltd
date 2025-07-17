@@ -296,7 +296,7 @@
         /* --- Contenu Principal --- */
         .main-content { 
             margin-top: 4.5rem; 
-            padding: var(--spacing-lg) var(--spacing-sm); 
+            padding: var(--spacing-xl) var(--spacing-sm); 
             max-width: 1400px; 
             margin-left: auto; 
             margin-right: auto; 
@@ -432,91 +432,10 @@
         }
 
         /* --- Grilles de contenu --- */
-        .news-banner-grid,
         .quick-actions-grid {
             display: grid;
             grid-template-columns: 1fr;
             gap: var(--spacing-lg);
-        }
-
-        .news-banner {
-            background: var(--surface);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-xl);
-            padding: var(--spacing-lg); 
-            margin: var(--spacing-xl) 0;
-        }
-        .news-banner-header {
-            text-align: center;
-            margin-bottom: var(--spacing-lg);
-        }
-        .news-banner-header h2 {
-            font-size: 1.75rem; 
-            font-weight: 700;
-            margin-bottom: var(--spacing-xs);
-        }
-        .news-banner-header p {
-            color: var(--text-secondary);
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        .news-banner-item {
-            background: var(--background);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--glass-border);
-            text-decoration: none;
-            color: inherit;
-            transition: var(--transition-slow);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-        }
-        .news-banner-item:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: var(--shadow-glow);
-            border-color: var(--primary-light);
-        }
-        .news-banner-item .card-image-top {
-            height: 150px;
-        }
-        .news-banner-item-content {
-            padding: var(--spacing-md);
-        }
-        .new-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: linear-gradient(45deg, var(--accent), var(--accent-dark));
-            color: white;
-            padding: 0.3rem 0.7rem;
-            border-radius: var(--radius-full);
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
-            animation: pulse-glow 2.5s infinite ease-in-out;
-            z-index: 1;
-            border: 1px solid rgba(255,255,255,0.3);
-        }
-        @keyframes pulse-glow {
-            0%, 100% { transform: scale(1); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); }
-            50% { transform: scale(1.05); box-shadow: 0 6px 25px rgba(245, 158, 11, 0.6); }
-        }
-        .news-banner-item-content h5 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: var(--spacing-xs);
-        }
-        .news-banner-item-content p {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
-
-        .quick-actions-grid {
             margin: 4rem 0;
         }
         
@@ -604,11 +523,98 @@
         .progress-bar.show { opacity: 1; }
         .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.3s ease; box-shadow: 0 0 10px var(--primary), 0 0 5px var(--secondary); }
         
+        /* --- Pop-up Nouveautés --- */
+        .news-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-sm);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .news-popup-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .news-popup-content {
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-lg);
+            text-align: center;
+            max-width: 90%;
+            width: 600px;
+            box-shadow: var(--shadow-xl);
+            transform: scale(0.9);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .news-popup-overlay.show .news-popup-content {
+            transform: scale(1);
+        }
+
+        .news-popup-content h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-lg);
+            color: var(--text-primary);
+        }
+
+        .news-popup-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 auto var(--spacing-lg);
+            text-align: left;
+            max-width: 450px;
+        }
+
+        .news-popup-content li {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .news-popup-content li a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-xs);
+            border-radius: var(--radius-sm);
+        }
+
+        .news-popup-content li a::before {
+            content: '✓';
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        .news-popup-content li a:hover {
+            color: var(--primary);
+            background-color: var(--glass);
+        }
+
+        .news-popup-content .countdown-timer {
+            margin-top: var(--spacing-md);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
 
         /* --- Media Queries pour la réactivité --- */
 
         @media (min-width: 640px) {
-            .news-banner-grid,
             .quick-actions-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -640,12 +646,6 @@
             .quick-actions-grid {
                 gap: 2rem;
             }
-            .news-banner {
-                padding: var(--spacing-xl);
-            }
-            .news-banner-header h2 {
-                font-size: 2rem;
-            }
         }
 
         @media (min-width: 1024px) {
@@ -668,7 +668,6 @@
             .nav-actions {
                 margin-left: auto;
             }
-            .news-banner-grid,
             .quick-actions-grid {
                 grid-template-columns: repeat(3, 1fr);
             }
@@ -685,6 +684,26 @@
 <body>
     <div class="progress-bar" id="progressBar">
         <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <!-- Pop-up Nouveautés -->
+    <div class="news-popup-overlay" id="newsPopupOverlay">
+        <div class="news-popup-content">
+            <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none" style="height: 4rem; margin-bottom: 1.5rem;">
+                <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
+                <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+            </svg>
+            <h2>Les Nouveautés du Jour</h2>
+            <ul>
+                <li><a href="cv-generator.html" onclick="event.preventDefault(); navigateTo('cv-generator.html')">Testez notre générateur de CV</a></li>
+                <li><a href="quiztelecom.html" onclick="event.preventDefault(); navigateTo('quiztelecom.html')">Mettez à l'épreuve vos connaissances dans les métiers du télécom</a></li>
+                <li><a href="prixtce.html" onclick="event.preventDefault(); navigateTo('prixtce.html')">Prouvez votre capacité à être un bon ingénieur étude de prix TCE</a></li>
+                <li><a href="testperso.html" onclick="event.preventDefault(); navigateTo('testperso.html')">Apprenez-en plus sur votre rôle en entreprise avec notre test de comportement</a></li>
+            </ul>
+            <div class="countdown-timer">
+                Fermeture dans <span id="popupCountdown">5</span> secondes...
+            </div>
+        </div>
     </div>
 
     <!-- Header -->
@@ -802,75 +821,6 @@
             <p>Formez-vous aux métiers d'avenir du BTP avec nos simulateurs professionnels. Le secteur recrute massivement : préparez votre carrière dès maintenant !</p>
         </section>
 
-        <section class="news-banner animate-in">
-            <div class="news-banner-header">
-                <h2>Les Nouveautés à ne pas manquer</h2>
-                <p>Restez à jour avec nos derniers tests, challenges et actualités du secteur.</p>
-            </div>
-            <div class="news-banner-grid">
-                <a href="quiztelecom.html" onclick="event.preventDefault(); navigateTo('quiztelecom.html')" class="news-banner-item">
-                    <div class="card-image-top">
-                        <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <g stroke="var(--primary)" opacity="0.8">
-                                <path d="M 100 110 V 70" stroke-width="4"></path>
-                                <path d="M 100 70 L 80 50" stroke-width="3"></path>
-                                <path d="M 100 70 L 120 50" stroke-width="3"></path>
-                                <path d="M 100 70 L 70 70" stroke-width="3"></path>
-                                <path d="M 100 70 L 130 70" stroke-width="3"></path>
-                                <path d="M 90 60 L 110 60" stroke-width="3"></path>
-                                <path d="M 100 40 m -5, 0 a 5,5 0 1,0 10,0 a 5,5 0 1,0 -10,0" fill="var(--primary-light)"></path>
-                                <path d="M 70 30 q 30 -20 60 0" stroke-dasharray="4"></path>
-                                <path d="M 60 45 q 40 -30 80 0" stroke-dasharray="4"></path>
-                            </g>
-                        </svg>
-                    </div>
-                    <span class="new-badge">Nouveau</span>
-                    <div class="news-banner-item-content">
-                        <h5>Quiz sur les métiers du télécom</h5>
-                        <p>Testez vos connaissances sur la fibre optique, la 5G et les réseaux.</p>
-                    </div>
-                </a>
-                <a href="testperso.html" onclick="event.preventDefault(); navigateTo('testperso.html')" class="news-banner-item">
-                    <div class="card-image-top">
-                        <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <g stroke="var(--primary-light)" opacity="0.7">
-                                <path d="M 100,45 A 25,25 0 1 1 100,95 A 25,25 0 0 1 100,45" stroke-width="3" />
-                                <path d="M 100,45 V 25 M 100,95 V 115 M 75,70 H 55 M 125,70 H 145 M 82,52 L 70,40 M 118,52 L 130,40 M 82,88 L 70,100 M 118,88 L 130,100" />
-                            </g>
-                            <g stroke="var(--secondary)" opacity="0.9">
-                                <path d="M 100,70 m -15,0 a 15,15 0 1,0 30,0 a 15,15 0 1,0 -30,0" fill="var(--secondary)" fill-opacity="0.2"/>
-                                <path d="M 95,65 L 105,75 M 95,75 L 105,65" stroke-width="3"/>
-                            </g>
-                        </svg>
-                    </div>
-                    <span class="new-badge">Nouveau</span>
-                    <div class="news-banner-item-content">
-                        <h5>Test Comportemental</h5>
-                        <p>Évaluez vos soft skills en situation professionnelle.</p>
-                    </div>
-                </a>
-                <a href="prixtce.html" onclick="event.preventDefault(); navigateTo('prixtce.html')" class="news-banner-item">
-                     <div class="card-image-top">
-                         <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                             <g stroke="var(--accent)" opacity="0.8">
-                                 <rect x="60" y="30" width="80" height="70" rx="5" stroke-width="3" fill="var(--accent)" fill-opacity="0.1"/>
-                                 <path d="M 70 50 h 60 M 70 65 h 60 M 70 80 h 25 M 105 80 h 25"/>
-                             </g>
-                             <g stroke="var(--primary-light)" opacity="0.9">
-                                 <path d="M 40 100 h 120" />
-                                 <path d="M 40 100 l -10 -20 h 140 l -10 20" stroke-dasharray="4" />
-                             </g>
-                         </svg>
-                    </div>
-                    <span class="new-badge">Nouveau</span>
-                    <div class="news-banner-item-content">
-                        <h5>Challenge Étude de Prix TCE</h5>
-                        <p>Réalisez un chiffrage complet et un mémoire technique.</p>
-                    </div>
-                </a>
-            </div>
-        </section>
-
         <section class="quick-actions-grid animate-in">
             <a href="simulateur.html" onclick="event.preventDefault(); navigateTo('simulateur.html')" class="quick-action-card">
                 <div class="card-image-top">
@@ -949,268 +899,306 @@
     </div>
 
     <script>
-        // Envelopper tout le script dans une IIFE (Immediately Invoked Function Expression)
-        // pour éviter de polluer l'espace de noms global.
-        (function() {
-            "use strict"; // Activer le mode strict pour un code plus sûr
+        "use strict"; // Activer le mode strict pour un code plus sûr
 
-            // Variable globale pour le thème, initialisée depuis le localStorage
-            let currentTheme = localStorage.getItem('theme') || 'dark';
+        // Variable globale pour le thème, initialisée depuis le localStorage
+        let currentTheme = localStorage.getItem('theme') || 'dark';
 
-            /**
-             * Affiche et anime la barre de progression en haut de la page.
-             */
-            function showProgress() {
-                const progressBar = document.getElementById('progressBar');
-                const progressFill = document.getElementById('progressFill');
-                if (!progressBar || !progressFill) return;
+        /**
+         * Affiche et anime la barre de progression en haut de la page.
+         */
+        function showProgress() {
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            if (!progressBar || !progressFill) return;
 
-                progressBar.classList.add('show');
-                progressFill.style.width = '0%';
-                let progress = 0;
-                const interval = setInterval(() => {
-                    progress += Math.random() * 20;
-                    if (progress >= 100) {
-                        progress = 100;
-                        clearInterval(interval);
+            progressBar.classList.add('show');
+            progressFill.style.width = '0%';
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        progressBar.classList.remove('show');
+                        // Réinitialiser la largeur après la disparition pour la prochaine utilisation
                         setTimeout(() => {
-                            progressBar.classList.remove('show');
-                            // Réinitialiser la largeur après la disparition pour la prochaine utilisation
-                            setTimeout(() => {
-                                progressFill.style.width = '0%';
-                            }, 300);
-                        }, 500);
-                    }
-                    progressFill.style.width = progress + '%';
-                }, 100);
-            }
-
-            /**
-             * Affiche une notification en bas à droite de l'écran.
-             * @param {string} message Le texte à afficher.
-             * @param {string} type Le type de notification ('info', 'success', 'warning', 'error').
-             * @param {number} duration La durée d'affichage en millisecondes.
-             */
-            function showNotification(message, type = 'info', duration = 3000) {
-                const notification = document.getElementById('notification');
-                const notificationText = document.getElementById('notificationText');
-                const notificationIcon = document.getElementById('notificationIcon');
-                if (!notification || !notificationText || !notificationIcon) return;
-                
-                notification.classList.remove('success', 'warning', 'error');
-                notificationIcon.className = 'notification-icon fas'; // Réinitialise les classes de l'icône
-
-                switch(type) {
-                    case 'success':
-                        notificationIcon.classList.add('fa-check-circle');
-                        notification.classList.add('success');
-                        break;
-                    case 'warning':
-                        notificationIcon.classList.add('fa-exclamation-triangle');
-                        notification.classList.add('warning');
-                        break;
-                    case 'error':
-                        notificationIcon.classList.add('fa-exclamation-circle');
-                        notification.classList.add('error');
-                        break;
-                    default:
-                        notificationIcon.classList.add('fa-info-circle');
+                            progressFill.style.width = '0%';
+                        }, 300);
+                    }, 500);
                 }
-                notificationText.textContent = message;
-                notification.classList.add('show');
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                }, duration);
+                progressFill.style.width = progress + '%';
+            }, 100);
+        }
+
+        /**
+         * Affiche une notification en bas à droite de l'écran.
+         * @param {string} message Le texte à afficher.
+         * @param {string} type Le type de notification ('info', 'success', 'warning', 'error').
+         * @param {number} duration La durée d'affichage en millisecondes.
+         */
+        function showNotification(message, type = 'info', duration = 3000) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            const notificationIcon = document.getElementById('notificationIcon');
+            if (!notification || !notificationText || !notificationIcon) return;
+            
+            notification.classList.remove('success', 'warning', 'error');
+            notificationIcon.className = 'notification-icon fas'; // Réinitialise les classes de l'icône
+
+            switch(type) {
+                case 'success':
+                    notificationIcon.classList.add('fa-check-circle');
+                    notification.classList.add('success');
+                    break;
+                case 'warning':
+                    notificationIcon.classList.add('fa-exclamation-triangle');
+                    notification.classList.add('warning');
+                    break;
+                case 'error':
+                    notificationIcon.classList.add('fa-exclamation-circle');
+                    notification.classList.add('error');
+                    break;
+                default:
+                    notificationIcon.classList.add('fa-info-circle');
+            }
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
+
+        /**
+         * Met à jour l'interface utilisateur en fonction du thème (clair/sombre).
+         */
+        function updateThemeUI() {
+            const themeIcon = document.getElementById('themeIcon');
+            if (!themeIcon) return;
+            document.body.classList.toggle('light-mode', currentTheme === 'light');
+            themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+
+        /**
+         * Initialise et gère le carrousel d'images.
+         */
+        function setupSlider() {
+            const slider = document.getElementById('imageSlider');
+            if (!slider) return;
+
+            const wrapper = slider.querySelector('.slider-wrapper');
+            const slides = slider.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('sliderPrev');
+            const nextBtn = document.getElementById('sliderNext');
+            const dotsContainer = document.getElementById('sliderDots');
+            
+            if (!wrapper || slides.length === 0 || !prevBtn || !nextBtn || !dotsContainer) return;
+
+            let currentIndex = 0;
+            let slideInterval;
+
+            if (slides.length <= 1) {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+                dotsContainer.style.display = 'none';
+                if (slides.length === 1) slides[0].classList.add('active');
+                return;
             }
 
-            /**
-             * Met à jour l'interface utilisateur en fonction du thème (clair/sombre).
-             */
-            function updateThemeUI() {
-                const themeIcon = document.getElementById('themeIcon');
-                if (!themeIcon) return;
-                document.body.classList.toggle('light-mode', currentTheme === 'light');
-                themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
-            }
-
-            /**
-             * Initialise et gère le carrousel d'images.
-             */
-            function setupSlider() {
-                const slider = document.getElementById('imageSlider');
-                if (!slider) return;
-
-                const wrapper = slider.querySelector('.slider-wrapper');
-                const slides = slider.querySelectorAll('.slide');
-                const prevBtn = document.getElementById('sliderPrev');
-                const nextBtn = document.getElementById('sliderNext');
-                const dotsContainer = document.getElementById('sliderDots');
-                
-                if (!wrapper || slides.length === 0 || !prevBtn || !nextBtn || !dotsContainer) return;
-
-                let currentIndex = 0;
-                let slideInterval;
-
-                if (slides.length <= 1) {
-                    prevBtn.style.display = 'none';
-                    nextBtn.style.display = 'none';
-                    dotsContainer.style.display = 'none';
-                    if (slides.length === 1) slides[0].classList.add('active');
-                    return;
-                }
-
-                // Créer les points de navigation
-                slides.forEach((_, index) => {
-                    const dot = document.createElement('div');
-                    dot.classList.add('slider-dot');
-                    dot.addEventListener('click', () => {
-                        goToSlide(index);
-                        resetInterval();
-                    });
-                    dotsContainer.appendChild(dot);
+            // Créer les points de navigation
+            slides.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.classList.add('slider-dot');
+                dot.addEventListener('click', () => {
+                    goToSlide(index);
+                    resetInterval();
                 });
-                const dots = dotsContainer.querySelectorAll('.slider-dot');
+                dotsContainer.appendChild(dot);
+            });
+            const dots = dotsContainer.querySelectorAll('.slider-dot');
 
-                function goToSlide(index) {
-                    slides[currentIndex].classList.remove('active');
-                    dots[currentIndex].classList.remove('active');
-                    
-                    currentIndex = (index + slides.length) % slides.length;
-                    
-                    slides[currentIndex].classList.add('active');
-                    dots[currentIndex].classList.add('active');
-                    
-                    wrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
-                }
-
-                function nextSlide() { goToSlide(currentIndex + 1); }
-                function prevSlide() { goToSlide(currentIndex - 1); }
+            function goToSlide(index) {
+                slides[currentIndex].classList.remove('active');
+                dots[currentIndex].classList.remove('active');
                 
-                function startInterval() {
-                    slideInterval = setInterval(nextSlide, 7000); 
-                }
-
-                function resetInterval() {
-                    clearInterval(slideInterval);
-                    startInterval();
-                }
-
-                nextBtn.addEventListener('click', () => { nextSlide(); resetInterval(); });
-                prevBtn.addEventListener('click', () => { prevSlide(); resetInterval(); });
+                currentIndex = (index + slides.length) % slides.length;
                 
-                goToSlide(0);
+                slides[currentIndex].classList.add('active');
+                dots[currentIndex].classList.add('active');
+                
+                wrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+            }
+
+            function nextSlide() { goToSlide(currentIndex + 1); }
+            function prevSlide() { goToSlide(currentIndex - 1); }
+            
+            function startInterval() {
+                slideInterval = setInterval(nextSlide, 7000); 
+            }
+
+            function resetInterval() {
+                clearInterval(slideInterval);
                 startInterval();
             }
 
-            /**
-             * Remplit le menu de navigation mobile en clonant les éléments du menu de bureau.
-             */
-            function populateMobileNav() {
-                const desktopNav = document.querySelector('.nav-desktop .nav-menu');
-                const mobileNavContainer = document.querySelector('.mobile-menu .mobile-nav-items');
-                if(!desktopNav || !mobileNavContainer) return;
-
-                mobileNavContainer.innerHTML = ''; 
-                const navItems = desktopNav.querySelectorAll('.nav-item');
-
-                navItems.forEach(item => {
-                    const link = item.querySelector('a');
-                    if (!link) return;
-
-                    const newNavItem = document.createElement('a');
-                    newNavItem.href = link.href;
-                    newNavItem.className = 'mobile-nav-item';
-                    
-                    const pageFile = link.getAttribute('href');
-                    newNavItem.onclick = (e) => {
-                        e.preventDefault();
-                        window.toggleMobileMenu();
-                        window.navigateTo(pageFile);
-                    };
-
-                    const iconElement = link.querySelector('i');
-                    if (iconElement) {
-                        const iconDiv = document.createElement('div');
-                        iconDiv.className = 'mobile-nav-item-icon';
-                        iconDiv.innerHTML = iconElement.outerHTML;
-                        newNavItem.appendChild(iconDiv);
-                    }
-                    
-                    const textNode = document.createElement('h4');
-                    // Clone le lien pour en extraire le texte sans l'icône
-                    const linkClone = link.cloneNode(true);
-                    const iconClone = linkClone.querySelector('i');
-                    if (iconClone) {
-                        linkClone.removeChild(iconClone);
-                    }
-                    textNode.textContent = linkClone.textContent.trim();
-                    newNavItem.appendChild(textNode);
-
-                    mobileNavContainer.appendChild(newNavItem);
-                });
-            }
-
-            /**
-             * Initialise les animations au défilement pour les éléments avec la classe 'animate-in'.
-             */
-            function initAnimations() {
-                const observer = new IntersectionObserver((entries, obs) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('is-visible');
-                            obs.unobserve(entry.target);
-                        }
-                    });
-                }, { threshold: 0.1 });
-
-                document.querySelectorAll('.animate-in').forEach(el => {
-                    observer.observe(el);
-                });
-            }
-
-            // Exposer les fonctions nécessaires globalement pour qu'elles soient accessibles depuis le HTML (onclick)
-            window.navigateTo = function(pageFile) {
-                showProgress();
-                showNotification(`Chargement de la page...`, 'info');
-                if (window.location.href.endsWith(pageFile)) {
-                     setTimeout(() => {
-                         const progressBar = document.getElementById('progressBar');
-                         if(progressBar) progressBar.classList.remove('show');
-                     }, 500);
-                     return;
-                }
-                setTimeout(() => {
-                    window.location.href = pageFile;
-                }, 1000);
-            }
-
-            window.toggleTheme = function() {
-                currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-                localStorage.setItem('theme', currentTheme);
-                updateThemeUI();
-                showNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
-            }
+            nextBtn.addEventListener('click', () => { nextSlide(); resetInterval(); });
+            prevBtn.addEventListener('click', () => { prevSlide(); resetInterval(); });
             
-            window.toggleMobileMenu = function() {
-                const mobileToggle = document.getElementById('mobileToggle');
-                const mobileMenu = document.getElementById('mobileMenu');
-                if (!mobileToggle || !mobileMenu) return;
+            goToSlide(0);
+            startInterval();
+        }
 
-                mobileToggle.classList.toggle('active');
-                mobileMenu.classList.toggle('active');
-                document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        /**
+         * Remplit le menu de navigation mobile en clonant les éléments du menu de bureau.
+         */
+        function populateMobileNav() {
+            const desktopNav = document.querySelector('.nav-desktop .nav-menu');
+            const mobileNavContainer = document.querySelector('.mobile-menu .mobile-nav-items');
+            if(!desktopNav || !mobileNavContainer) return;
+
+            mobileNavContainer.innerHTML = ''; 
+            const navItems = desktopNav.querySelectorAll('.nav-item');
+
+            navItems.forEach(item => {
+                const link = item.querySelector('a');
+                if (!link) return;
+
+                const newNavItem = document.createElement('a');
+                newNavItem.href = link.href;
+                newNavItem.className = 'mobile-nav-item';
+                
+                const pageFile = link.getAttribute('href');
+                newNavItem.onclick = (e) => {
+                    e.preventDefault();
+                    window.toggleMobileMenu();
+                    window.navigateTo(pageFile);
+                };
+
+                const iconElement = link.querySelector('i');
+                if (iconElement) {
+                    const iconDiv = document.createElement('div');
+                    iconDiv.className = 'mobile-nav-item-icon';
+                    iconDiv.innerHTML = iconElement.outerHTML;
+                    newNavItem.appendChild(iconDiv);
+                }
+                
+                const textNode = document.createElement('h4');
+                // Clone le lien pour en extraire le texte sans l'icône
+                const linkClone = link.cloneNode(true);
+                const iconClone = linkClone.querySelector('i');
+                if (iconClone) {
+                    linkClone.removeChild(iconClone);
+                }
+                textNode.textContent = linkClone.textContent.trim();
+                newNavItem.appendChild(textNode);
+
+                mobileNavContainer.appendChild(newNavItem);
+            });
+        }
+
+        /**
+         * Initialise les animations au défilement pour les éléments avec la classe 'animate-in'.
+         */
+        function initAnimations() {
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.animate-in').forEach(el => {
+                observer.observe(el);
+            });
+        }
+
+        /**
+         * Gère le pop-up des nouveautés qui s'affiche au chargement.
+         */
+        function handleNewsPopup() {
+            const popupOverlay = document.getElementById('newsPopupOverlay');
+            if (!popupOverlay) return;
+
+            // Ne pas montrer le pop-up si déjà vu dans cette session
+            if (sessionStorage.getItem('newsPopupShown')) {
+                popupOverlay.style.display = 'none'; // S'assurer qu'il est bien caché
+                return;
             }
 
+            const countdownElement = document.getElementById('popupCountdown');
+            let countdown = 5;
 
-            // Écouteur d'événement principal qui se déclenche lorsque le DOM est prêt
-            document.addEventListener('DOMContentLoaded', () => {
-                updateThemeUI();
-                initAnimations();
-                populateMobileNav();
-                setupSlider();
-            });
+            // Afficher le pop-up après un court délai
+            setTimeout(() => {
+                popupOverlay.classList.add('show');
+                sessionStorage.setItem('newsPopupShown', 'true');
+            }, 500);
 
-        })();
+            countdownElement.textContent = countdown;
+
+            const interval = setInterval(() => {
+                countdown--;
+                countdownElement.textContent = countdown;
+                if (countdown <= 0) {
+                    clearInterval(interval);
+                    popupOverlay.classList.remove('show');
+                    // Optionnel: cacher complètement l'élément après la transition
+                    setTimeout(() => {
+                        popupOverlay.style.display = 'none';
+                    }, 500);
+                }
+            }, 1000);
+        }
+
+        // Exposer les fonctions nécessaires globalement pour qu'elles soient accessibles depuis le HTML (onclick)
+        window.navigateTo = function(pageFile) {
+            showProgress();
+            // Fermer le pop-up si on clique sur un lien dedans
+            const popupOverlay = document.getElementById('newsPopupOverlay');
+            if(popupOverlay) popupOverlay.classList.remove('show');
+
+            showNotification(`Chargement de la page...`, 'info');
+            if (window.location.href.endsWith(pageFile)) {
+                 setTimeout(() => {
+                     const progressBar = document.getElementById('progressBar');
+                     if(progressBar) progressBar.classList.remove('show');
+                 }, 500);
+                 return;
+            }
+            setTimeout(() => {
+                window.location.href = pageFile;
+            }, 1000);
+        }
+
+        window.toggleTheme = function() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            updateThemeUI();
+            showNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
+        }
+        
+        window.toggleMobileMenu = function() {
+            const mobileToggle = document.getElementById('mobileToggle');
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (!mobileToggle || !mobileMenu) return;
+
+            mobileToggle.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        }
+
+
+        // Écouteur d'événement principal qui se déclenche lorsque le DOM est prêt
+        document.addEventListener('DOMContentLoaded', () => {
+            updateThemeUI();
+            initAnimations();
+            populateMobileNav();
+            setupSlider();
+            handleNewsPopup(); // Lancer le pop-up
+        });
     </script>
 </body>
 </html>
