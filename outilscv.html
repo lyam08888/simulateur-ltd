@@ -1,462 +1,141 @@
+<!--
+Pour utiliser le modèle nakamoto-yama/t5-resume-generation de Hugging Face en pur front,
+on ne fait QU'UN fetch POST vers l'API Space Gradio /run/predict, sans instruction spéciale.
+-->
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Outil de génération de CV par IA intégré à la plateforme LTD Simulator.">
-    <title>LTD Simulator - Outil CV IA</title>
-    <!-- Tailwind CSS -->
+    <title>Générateur de CV IA - LTD Simulator</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Fonts & Icons from your template -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
-    <!-- PDF & React Libraries -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
     <style>
-        /* --- Styles from your site template --- */
-        :root {
-            --primary: #6366f1; --primary-dark: #4f46e5; --primary-light: #a5b4fc;
-            --secondary: #10b981; --secondary-dark: #059669; --accent: #f59e0b; --accent-dark: #d97706;
-            --background: #0f172a; --surface: #1e293b; --surface-elevated: #334155;
-            --glass: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.15);
-            --text-primary: #f8fafc; --text-secondary: #cbd5e1; --text-muted: #94a3b8;
-            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); --transition-slow: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            --radius: 0.5rem; --radius-lg: 1rem; --radius-full: 9999px;
-            --spacing-sm: 1rem; --spacing-md: 1.5rem; --spacing-lg: 2rem;
-        }
-        body.light-mode {
-            --background: #f1f5f9; --surface: #ffffff; --surface-elevated: #e2e8f0;
-            --glass: rgba(0, 0, 0, 0.05); --glass-border: rgba(0, 0, 0, 0.1);
-            --text-primary: #1e293b; --text-secondary: #475569; --text-muted: #64748b;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--background); color: var(--text-primary);
-            line-height: 1.6; overflow-x: hidden; transition: var(--transition-slow);
-        }
-        body::before {
-            content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 40%), radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 40%);
-            pointer-events: none; z-index: -1; animation: background-pan 30s linear infinite;
-        }
-        @keyframes background-pan { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        .header { position: sticky; top: 0; left: 0; right: 0; z-index: 1000; backdrop-filter: blur(20px) saturate(180%); background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid var(--glass-border); }
-        body.light-mode .header { background: rgba(255, 255, 255, 0.8); }
-        .nav-container { max-width: 1400px; margin: 0 auto; padding: 0 var(--spacing-sm); display: flex; align-items: center; justify-content: space-between; height: 4.5rem; }
-        .logo { display: flex; align-items: center; gap: var(--spacing-sm); text-decoration: none; color: var(--text-primary); font-weight: 800; font-size: 1.2rem; }
-        .logo-icon { height: 1.8rem; width: auto; }
-        .nav-desktop { display: none; }
-        .nav-menu { display: flex; align-items: center; gap: var(--spacing-xs); list-style: none; }
-        .nav-link { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; color: var(--text-secondary); text-decoration: none; font-weight: 500; border-radius: var(--radius); transition: var(--transition); }
-        .nav-link:hover { color: var(--text-primary); background: var(--glass); }
-        .nav-link.active { color: var(--text-primary); background: linear-gradient(45deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.2)); font-weight: 600; }
-        .nav-actions { display: flex; align-items: center; gap: var(--spacing-sm); }
-        .theme-toggle { display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-secondary); transition: var(--transition); cursor: pointer; }
-        .theme-toggle:hover { background: var(--surface-elevated); color: var(--text-primary); transform: rotate(15deg); }
-        .mobile-toggle { display: flex; }
-        .main-content { margin-top: 4.5rem; padding: var(--spacing-lg) var(--spacing-sm); max-width: 1600px; margin-left: auto; margin-right: auto; }
-        .hero { text-align: center; padding-bottom: var(--spacing-xl); }
-        .hero h1 { font-size: clamp(2.2rem, 8vw, 3.5rem); font-weight: 800; margin-bottom: 1rem; background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .hero p { font-size: 1.1rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto; line-height: 1.7; }
-        @media (min-width: 1024px) { .mobile-toggle { display: none; } .nav-desktop { display: flex; align-items: center; flex-grow: 1; justify-content: flex-end; gap: var(--spacing-sm); } }
-        
-        /* --- CV Generator Specific Styles --- */
-        .control-panel { background: var(--surface); padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); box-shadow: var(--shadow-md); }
-        .control-panel label { color: var(--text-secondary); font-weight: 500; font-size: 0.875rem; }
-        .control-panel textarea, .control-panel input[type=range], .control-panel input[type=color] { background: var(--background); border: 1px solid var(--glass-border); color: var(--text-primary); border-radius: var(--radius); padding: 0.5rem; transition: var(--transition); width: 100%; }
-        .control-panel textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-dark); outline: none; }
-        .control-panel button { border: none; padding: 0.6rem 1rem; border-radius: var(--radius); font-weight: 600; font-size: 0.875rem; transition: var(--transition); cursor: pointer; width: 100%; }
-        .control-panel button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-primary { background-color: var(--primary); color: white; }
-        .btn-primary:hover:not(:disabled) { background-color: var(--primary-dark); }
-        .btn-secondary { background-color: var(--secondary); color: white; }
-        .btn-secondary:hover:not(:disabled) { background-color: var(--secondary-dark); }
-        .btn-accent { background-color: var(--accent); color: white; }
-        .btn-accent:hover:not(:disabled) { background-color: var(--accent-dark); }
-        .btn-purple { background-color: #8b5cf6; color: white; }
-        .btn-purple:hover:not(:disabled) { background-color: #7c3aed; }
-        .error-message { background-color: #ef4444; color: white; padding: 1rem; border-radius: var(--radius); margin-top: 1rem; }
-        .cv-preview-container { width: 21cm; height: 29.7cm; overflow: hidden; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: auto; transition: all 0.2s ease-in-out; }
-        .control-panel fieldset { border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 1rem; }
-        .control-panel legend { padding: 0 0.5rem; color: var(--text-muted); font-weight: 500; font-size: 0.75rem; text-transform: uppercase; }
-        .control-panel input[type=color] { height: 2rem; padding: 0.25rem; }
-        .control-panel .checkbox-label { display: flex; align-items: center; gap: 0.5rem; user-select: none; }
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #f8fafc; }
+        .cv-preview-container { width: 21cm; min-height: 29.7cm; background: white; color: #22223b; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: auto; }
+        .error-message { background: #ef4444; color: white; padding: 0.8rem; border-radius: 0.5rem; margin-top: 1rem;}
     </style>
 </head>
 <body>
-    <div id="root"></div>
+<div id="root"></div>
 
-    <script type="text/babel">
-        const { useState, useRef, useEffect } = React;
-        const { jsPDF } = window.jspdf;
+<script type="text/babel">
 
-        // --- Schéma JSON et logique API (inchangés) ---
-        const CV_SCHEMA = {
-            type: "OBJECT",
-            properties: {
-                name: { type: "STRING" },
-                title: { type: "STRING" },
-                contact: { type: "OBJECT", properties: { phone: { type: "STRING" }, email: { type: "STRING" }, address: { type: "STRING" }, other: { type: "STRING" } } },
-                sections: {
-                    type: "OBJECT",
-                    properties: {
-                        "Profil": { type: "ARRAY", items: { type: "STRING" } },
-                        "Expérience": { type: "ARRAY", items: { type: "OBJECT", properties: { title: { type: "STRING" }, company: { type: "STRING" }, dates: { type: "STRING" }, description: { type: "ARRAY", items: { type: "STRING" } } } } },
-                        "Formation": { type: "ARRAY", items: { type: "OBJECT", properties: { title: { type: "STRING" }, school: { type: "STRING" }, dates: { type: "STRING" }, description: { type: "ARRAY", items: { type: "STRING" } } } } },
-                        "Atouts": { type: "ARRAY", items: { type: "STRING" } },
-                        "Qualifications": { type: "ARRAY", items: { type: "STRING" } },
-                        "Langues": { type: "ARRAY", items: { type: "STRING" } },
-                        "Centres d'intérêt": { type: "ARRAY", items: { type: "STRING" } }
-                    }
+const { useState, useRef } = React;
+const { jsPDF } = window.jspdf;
+
+function CvTool() {
+    const [inputText, setInputText] = useState('');
+    const [cvText, setCvText] = useState('');
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [error, setError] = useState(null);
+    const cvPreviewRef = useRef(null);
+
+    // Handler: Appel API Hugging Face
+    const handleApiCall = async () => {
+        if (!inputText.trim()) {
+            setError("Veuillez coller un texte de profil ou de parcours.");
+            return;
+        }
+        setIsGenerating(true);
+        setError(null);
+        setCvText("");
+        try {
+            const response = await fetch(
+                "https://nakamoto-yama-t5-resume-generation.hf.space/run/predict",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ data: [inputText] })
                 }
-            }
-        };
-        const getGeminiPayload = (text, instruction) => ({ contents: [{ role: "user", parts: [{ text: instruction.replace('${text}', text) }] }], generationConfig: { responseMimeType: "application/json", responseSchema: CV_SCHEMA } });
-
-        // --- NOUVEAU : Composant de rendu CV amélioré ---
-        const CvPreview = React.forwardRef(({ cvData, options }, ref) => {
-            if (!cvData) {
-                return <div className="cv-preview-container flex items-center justify-center p-8 text-center" style={{backgroundColor: 'var(--surface)', color: 'var(--text-muted)'}}><div><p className="text-xl">L'aperçu de votre CV apparaîtra ici.</p></div></div>;
-            }
-            const { name, title, contact, sections } = cvData;
-            const { accentColor, sidebarColor } = options;
-            const renderableSections = { "Profil": sections?.Profil, "Expérience": sections?.Expérience, "Formation": sections?.Formation, "Atouts": sections?.Atouts, "Qualifications": sections?.Qualifications, "Langues": sections?.Langues, "Centres d'intérêt": sections?.["Centres d'intérêt"] };
-
-            return (
-                <div ref={ref} className="cv-preview-container grid grid-cols-12 font-sans" style={{color: '#374151'}}>
-                    {/* Colonne de Gauche */}
-                    <aside className="col-span-4 text-white p-8 flex flex-col" style={{ backgroundColor: sidebarColor }}>
-                        <div className="flex-grow">
-                            {options.showContact && contact && (
-                                <div className="mb-8">
-                                    <h2 className="text-xl font-bold border-b-2 pb-2 mb-4" style={{borderColor: accentColor}}>CONTACT</h2>
-                                    <div className="space-y-3 text-sm">
-                                        {contact.phone && <p className="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-3 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg><span>{contact.phone}</span></p>}
-                                        {contact.email && <p className="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-3 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg><span>{contact.email}</span></p>}
-                                        {contact.address && <p className="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-3 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span>{contact.address}</span></p>}
-                                        {contact.other && <p className="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-3 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg><span>{contact.other}</span></p>}
-                                    </div>
-                                </div>
-                            )}
-                            {options.showAtouts && renderableSections.Atouts && (
-                                <div className="mb-8">
-                                    <h2 className="text-xl font-bold border-b-2 pb-2 mb-4" style={{borderColor: accentColor}}>ATOUTS</h2>
-                                    <ul className="list-disc list-inside space-y-2 text-sm">{renderableSections.Atouts.map((item, i) => <li key={i}>{item}</li>)}</ul>
-                                </div>
-                            )}
-                            {options.showQualifications && renderableSections.Qualifications && (
-                                <div className="mb-8">
-                                    <h2 className="text-xl font-bold border-b-2 pb-2 mb-4" style={{borderColor: accentColor}}>QUALIFICATIONS</h2>
-                                    <ul className="list-disc list-inside space-y-2 text-sm">{renderableSections.Qualifications.map((item, i) => <li key={i}>{item}</li>)}</ul>
-                                </div>
-                            )}
-                            {options.showLangues && renderableSections.Langues && (
-                                <div className="mb-8">
-                                    <h2 className="text-xl font-bold border-b-2 pb-2 mb-4" style={{borderColor: accentColor}}>LANGUES</h2>
-                                    <div className="text-sm space-y-2">{renderableSections.Langues.map((item, i) => <p key={i}>{item}</p>)}</div>
-                                </div>
-                            )}
-                        </div>
-                    </aside>
-                    {/* Colonne de Droite */}
-                    <main className="col-span-8 p-8">
-                        <header className="mb-8">
-                            <h1 className="text-4xl md:text-5xl font-extrabold" style={{color: sidebarColor}}>{name}</h1>
-                            <h2 className="text-xl md:text-2xl font-semibold text-gray-600">{title}</h2>
-                        </header>
-                        
-                        {options.showProfil && renderableSections.Profil && (
-                            <section className="mb-8">
-                                <h2 className="text-2xl font-bold border-b-2 border-gray-200 pb-2 mb-4" style={{color: sidebarColor}}>PROFIL</h2>
-                                <p className="text-gray-700 text-sm">{renderableSections.Profil.join(' ')}</p>
-                            </section>
-                        )}
-                        {options.showExperience && renderableSections.Expérience && (
-                            <section className="mb-8">
-                                <h2 className="text-2xl font-bold border-b-2 border-gray-200 pb-2 mb-4" style={{color: sidebarColor}}>EXPÉRIENCES PROFESSIONNELLES</h2>
-                                <div className="space-y-6">
-                                    {renderableSections.Expérience.map((exp, i) => (
-                                        <div key={i}>
-                                            <div className="flex justify-between items-baseline">
-                                                <h3 className="font-bold text-md text-gray-800">{exp.title}</h3>
-                                                {!options.hideDates && <p className="text-xs font-medium" style={{color: accentColor}}>{exp.dates}</p>}
-                                            </div>
-                                            <p className="text-sm font-semibold text-gray-600 italic">{exp.company}</p>
-                                            {!options.hideExpDesc && <ul className="list-disc list-inside text-sm text-gray-700 mt-2 space-y-1">{exp.description?.map((desc, j) => <li key={j}>{desc}</li>)}</ul>}
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
-                        )}
-                         {options.showFormation && renderableSections.Formation && (
-                             <section>
-                                <h2 className="text-2xl font-bold border-b-2 border-gray-200 pb-2 mb-4" style={{color: sidebarColor}}>FORMATION</h2>
-                                <div className="space-y-4">
-                                    {renderableSections.Formation.map((form, i) => (
-                                        <div key={i}>
-                                            <div className="flex justify-between items-baseline">
-                                                <h3 className="font-bold text-md text-gray-800">{form.title}</h3>
-                                                {!options.hideDates && <p className="text-xs font-medium" style={{color: accentColor}}>{form.dates}</p>}
-                                            </div>
-                                            <p className="text-sm font-semibold text-gray-600 italic">{form.school}</p>
-                                            {!options.hideFormDesc && form.description && <p className="text-sm text-gray-700 mt-1">{form.description.join(', ')}</p>}
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
-                        )}
-                    </main>
-                </div>
             );
+            const resultText = await response.text();
+
+            let result;
+            try {
+                result = JSON.parse(resultText);
+            } catch (e) {
+                setError(
+                    resultText.startsWith('<')
+                        ? "L'IA Hugging Face est en veille ou saturée. Réessayez dans 1-2 minutes."
+                        : "Erreur API Hugging Face : " + e.message
+                );
+                setIsGenerating(false);
+                return;
+            }
+
+            // result.data[0] = résumé généré (souvent au format texte)
+            setCvText(result.data?.[0] || "Aucune donnée générée.");
+        } catch (err) {
+            setError("Erreur API Hugging Face : " + err.message);
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
+    // Génération PDF
+    const handleDownloadPdf = () => {
+        const input = cvPreviewRef.current;
+        if (!input) return;
+        html2canvas(input, { scale: 3, useCORS: true }).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+            pdf.addImage(imgData, 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
+            pdf.save('cv-ia.pdf');
         });
+    };
 
-        function CvTool() {
-            const [inputText, setInputText] = useState('');
-            const [cvData, setCvData] = useState(null);
-            const [isGenerating, setIsGenerating] = useState(false);
-            const [error, setError] = useState(null);
-            const [isAnonymized, setIsAnonymized] = useState(false);
-            const [postGenOptions, setPostGenOptions] = useState({
-                hideExpDesc: false, hideFormDesc: false, hideDates: false,
-                sidebarColor: '#312e81', accentColor: '#6366f1',
-                showProfil: true, showExperience: true, showFormation: true, 
-                showAtouts: true, showQualifications: true, showLangues: true, showContact: true,
-            });
-            const cvPreviewRef = useRef(null);
-
-            const handleApiCall = async () => {
-  if (!inputText.trim()) {
-    setError("Veuillez coller un texte de profil, expérience ou job description.");
-    return;
-  }
-  setIsGenerating(true);
-  setError(null);
-
-  try {
-    const response = await fetch(
-      "https://nakamoto-yama-t5-resume-generation.hf.space/run/predict",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ "data": [inputText] })
-      }
+    return (
+        <div className="flex flex-col items-center min-h-screen py-10 px-2">
+            <h1 className="text-3xl font-bold mb-3 text-center">Générateur de CV IA</h1>
+            <div className="w-full max-w-xl bg-[#1e293b] p-6 rounded-xl shadow mb-8">
+                <textarea
+                    value={inputText}
+                    onChange={e => setInputText(e.target.value)}
+                    placeholder="Collez ici un texte de parcours, profil, expériences..."
+                    className="w-full h-32 p-3 mb-3 rounded bg-[#0f172a] border border-[#334155] text-white resize-none"
+                />
+                <button
+                    onClick={handleApiCall}
+                    disabled={isGenerating}
+                    className="w-full py-2 rounded bg-[#6366f1] hover:bg-[#4f46e5] font-semibold text-lg text-white transition"
+                >
+                    {isGenerating ? "Génération en cours..." : "Générer le CV"}
+                </button>
+                {error && <div className="error-message mt-3">{error}</div>}
+            </div>
+            <div className="w-full max-w-3xl">
+                <div ref={cvPreviewRef} className="cv-preview-container p-10 mb-6 min-h-[400px]">
+                    {cvText ? (
+                        <pre className="whitespace-pre-line text-lg">{cvText}</pre>
+                    ) : (
+                        <div className="text-gray-400 text-center py-8">
+                            L'aperçu du CV généré s'affichera ici.
+                        </div>
+                    )}
+                </div>
+                <button
+                    onClick={handleDownloadPdf}
+                    disabled={!cvText}
+                    className="w-full py-2 rounded bg-[#10b981] hover:bg-[#059669] font-semibold text-white transition"
+                >
+                    Télécharger en PDF
+                </button>
+            </div>
+            <div className="mt-8 opacity-70 text-xs text-center">
+                Propulsé par <a className="underline" href="https://huggingface.co/spaces/nakamoto-yama/t5-resume-generation" target="_blank" rel="noopener noreferrer">nakamoto-yama/t5-resume-generation</a> (Hugging Face Spaces)
+            </div>
+        </div>
     );
-    const resultText = await response.text();
+}
 
-    let result;
-    try {
-      result = JSON.parse(resultText);
-    } catch (e) {
-      // Erreur HTML reçue à la place du JSON attendu
-      setError(
-        resultText.startsWith('<')
-          ? "L'IA Hugging Face est en veille ou saturée. Réessayez dans 1-2 minutes."
-          : "Erreur API Hugging Face : " + e.message
-      );
-      setIsGenerating(false);
-      return;
-    }
-
-    // Ici, résultat correct
-    // Résultat généralement dans result.data[0]
-    let cvObject;
-    try {
-      cvObject = JSON.parse(result.data[0]);
-    } catch (e) {
-      // Peut être du markdown ou du texte simple
-      cvObject = { Profil: [result.data[0]] };
-    }
-    setCvData(cvObject);
-
-  } catch (err) {
-    setError("Erreur API Hugging Face : " + err.message);
-  } finally {
-    setIsGenerating(false);
-  }
-};
-
-            
-            const handleDownloadPdf = () => {
-                const input = cvPreviewRef.current;
-                if (!input) return;
-                html2canvas(input, { scale: 3, useCORS: true }).then(canvas => {
-                    const imgData = canvas.toDataURL('image/png');
-                    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-                    pdf.addImage(imgData, 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
-                    pdf.save('cv-ia.pdf');
-                });
-            };
-
-            const handleOptionChange = (e) => {
-                const { name, checked, type, value } = e.target;
-                setPostGenOptions(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
-            };
-
-            const initialGenInstruction = "Analyse ce CV : ${text}. Synthétise-le pour une page A4. Extrais nom, titre, contact (phone, email, address, other), et les sections : Profil, Expérience, Formation, Atouts, Qualifications, Langues. Sois concis.";
-            const summarizeInstruction = "Analyse ce CV : ${text}. **Synthétise-le de manière agressive** pour qu'il tienne sur une seule page. Garde uniquement l'essentiel.";
-            const developInstruction = "Voici un CV en JSON : ${text}. Enrichis-le. Crée un 'Profil' engageant. Génère des listes pour 'Atouts' et 'Qualifications' à partir des données. Retourne le JSON complet.";
-
-            const transformCvDataForDisplay = () => {
-                if (!cvData) return null;
-                
-                let transformedData = JSON.parse(JSON.stringify(cvData));
-
-                if (isAnonymized) {
-                    if (transformedData.name) {
-                        const nameParts = transformedData.name.split(' ').filter(p => p);
-                        if (nameParts.length > 1) {
-                            const firstName = nameParts[0];
-                            const lastNameInitial = nameParts[nameParts.length - 1].charAt(0).toUpperCase() + '.';
-                            transformedData.name = `${firstName} ${lastNameInitial}`;
-                        }
-                    }
-                    transformedData.contact = {
-                        phone: '01 56 02 12 25 / 06 34 25 32 96',
-                        email: 'l.amara@ltd-international.com',
-                        address: 'Lyes AMARA - Responsable d’activité recrutement',
-                        other: 'BTP – France'
-                    };
-                }
-                return transformedData;
-            };
-
-            const displayedCvData = transformCvDataForDisplay();
-
-            return (
-                <>
-                    <section className="hero">
-                        <h1>Outil de Génération de CV par IA</h1>
-                        <p>Transformez un texte brut en un CV professionnel et stylisé en quelques clics. Synthétisez, développez et personnalisez le rendu final.</p>
-                    </section>
-                    <div className="flex flex-col xl:flex-row gap-8">
-                        <div className="xl:w-[450px] shrink-0">
-                            <div className="control-panel flex flex-col gap-4 xl:sticky top-28 h-fit max-h-[calc(100vh-8rem)] overflow-y-auto">
-                                <fieldset>
-                                    <legend>1. Données</legend>
-                                    <textarea value={inputText} onChange={(e) => setInputText(e.target.value)} placeholder="Collez le CV brut ici..." className="w-full h-36"></textarea>
-                                </fieldset>
-                                {error && <div className="error-message">{error}</div>}
-                                <fieldset>
-                                    <legend>2. Actions IA</legend>
-                                    <div className="space-y-3">
-                                        <button onClick={() => handleApiCall(initialGenInstruction)} disabled={isGenerating} className="btn-primary">Générer / Mettre à jour</button>
-                                        <div className="grid grid-cols-2 gap-3">
-                                            <button onClick={() => handleApiCall(summarizeInstruction)} disabled={isGenerating || !cvData} className="btn-accent">Synthétiser</button>
-                                            <button onClick={() => handleApiCall(developInstruction)} disabled={isGenerating || !cvData} className="btn-purple">Développer</button>
-                                        </div>
-                                    </div>
-                                </fieldset>
-                                <fieldset>
-                                    <legend>Anonymisation</legend>
-                                    <label className="checkbox-label"><input type="checkbox" name="anonymize" checked={isAnonymized} onChange={(e) => setIsAnonymized(e.target.checked)} className="h-4 w-4 rounded bg-[var(--background)] border-[var(--glass-border)]"/><span>Anonymiser le CV</span></label>
-                                </fieldset>
-                                {cvData && (
-                                    <fieldset>
-                                        <legend>3. Personnalisation</legend>
-                                        <div className="space-y-4">
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div><label>Couleur sidebar</label><input type="color" name="sidebarColor" value={postGenOptions.sidebarColor} onChange={handleOptionChange}/></div>
-                                                <div><label>Couleur accent</label><input type="color" name="accentColor" value={postGenOptions.accentColor} onChange={handleOptionChange}/></div>
-                                            </div>
-                                            <div className="border-t border-[var(--glass-border)] pt-3">
-                                                <h4 className="font-semibold text-sm mb-2">Afficher les sections</h4>
-                                                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                                                    {Object.keys(postGenOptions).filter(k => k.startsWith('show')).map(key => (
-                                                        <label key={key} className="checkbox-label"><input type="checkbox" name={key} checked={postGenOptions[key]} onChange={handleOptionChange} className="h-4 w-4 rounded bg-[var(--background)] border-[var(--glass-border)]"/><span>{key.substring(4)}</span></label>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                            <div className="border-t border-[var(--glass-border)] pt-3">
-                                                <h4 className="font-semibold text-sm mb-2">Options de contenu</h4>
-                                                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                                                    <label className="checkbox-label"><input type="checkbox" name="hideExpDesc" checked={postGenOptions.hideExpDesc} onChange={handleOptionChange} className="h-4 w-4 rounded"/><span>Masquer détails exp.</span></label>
-                                                    <label className="checkbox-label"><input type="checkbox" name="hideFormDesc" checked={postGenOptions.hideFormDesc} onChange={handleOptionChange} className="h-4 w-4 rounded"/><span>Masquer détails form.</span></label>
-                                                    <label className="checkbox-label"><input type="checkbox" name="hideDates" checked={postGenOptions.hideDates} onChange={handleOptionChange} className="h-4 w-4 rounded"/><span>Masquer les dates</span></label>
-                                                </div>
-                                            </div>
-                                            <button onClick={handleDownloadPdf} className="w-full btn-secondary">Télécharger en PDF</button>
-                                        </div>
-                                    </fieldset>
-                                )}
-                            </div>
-                        </div>
-                        <div className="flex-grow flex justify-center items-start">
-                            <CvPreview cvData={displayedCvData} options={postGenOptions} ref={cvPreviewRef} />
-                        </div>
-                    </div>
-                </>
-            );
-        }
-
-        function SiteLayout() {
-            useEffect(() => {
-                const theme = localStorage.getItem('theme') || 'dark';
-                document.body.classList.toggle('light-mode', theme === 'light');
-                const themeIcon = document.getElementById('themeIcon');
-                if(themeIcon) themeIcon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
-            }, []);
-
-            const toggleTheme = () => {
-                const isLight = document.body.classList.toggle('light-mode');
-                localStorage.setItem('theme', isLight ? 'light' : 'dark');
-                const themeIcon = document.getElementById('themeIcon');
-                if(themeIcon) themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
-            };
-
-            return (
-                <>
-                    <header className="header">
-                        <nav className="nav-container">
-                            <a href="#" className="logo">
-                                <svg className="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
-                                    <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fillOpacity="0.7"></path>
-                                    <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
-                                </svg>
-                                <span>LTD Simulator</span>
-                            </a>
-                            <div className="nav-desktop">
-                                <ul className="nav-menu">
-                                   <li className="nav-item"><a href="#" className="nav-link"><i className="fas fa-home"></i>&nbsp;Accueil</a></li>
-                                   <li className="nav-item"><a href="#" className="nav-link"><i className="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
-                                   <li className="nav-item"><a href="#" className="nav-link"><i className="fas fa-brain"></i>&nbsp;Tests</a></li>
-                                   <li className="nav-item"><a href="#" className="nav-link"><i className="fas fa-trophy"></i>&nbsp;Challenges</a></li>
-                                   <li className="nav-item"><a href="#" className="nav-link"><i className="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
-                                   <li className="nav-item"><a href="#" className="nav-link"><i className="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
-                                   <li className="nav-item"><a href="#" className="nav-link"><i className="fas fa-question-circle"></i>&nbsp;Quiz</a></li>
-                                   <li className="nav-item"><a href="#" className="nav-link active"><i className="fas fa-tools"></i>&nbsp;Outils CV</a></li>
-                                </ul>
-                                <div className="nav-actions">
-                                   <button className="theme-toggle" id="themeToggle" onClick={toggleTheme} title="Changer de thème">
-                                       <i className="fas fa-sun" id="themeIcon"></i>
-                                   </button>
-                                </div>
-                            </div>
-                            <button className="mobile-toggle" id="mobileToggle">
-                                <span className="hamburger"><span></span><span></span><span></span></span>
-                            </button>
-                        </nav>
-                    </header>
-                    <main className="main-content">
-                        <CvTool />
-                    </main>
-                </>
-            );
-        }
-
-        const container = document.getElementById('root');
-        const root = ReactDOM.createRoot(container);
-        root.render(<SiteLayout />);
-    </script>
+ReactDOM.createRoot(document.getElementById("root")).render(<CvTool />);
+</script>
 </body>
 </html>
