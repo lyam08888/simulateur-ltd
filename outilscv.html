@@ -226,9 +226,10 @@
             const [cvData, setCvData] = useState(null);
             const [isGenerating, setIsGenerating] = useState(false);
             const [error, setError] = useState(null);
+            const [isAnonymized, setIsAnonymized] = useState(false);
             const [postGenOptions, setPostGenOptions] = useState({
                 hideExpDesc: false, hideFormDesc: false, hideDates: false,
-                sidebarColor: '#312e81', accentColor: '#6366f1', // Indigo-900 and Indigo-500
+                sidebarColor: '#312e81', accentColor: '#6366f1',
                 showProfil: true, showExperience: true, showFormation: true, 
                 showAtouts: true, showQualifications: true, showLangues: true, showContact: true,
             });
@@ -240,8 +241,8 @@
                 setIsGenerating(true);
                 setError(null);
                 const payload = getGeminiPayload(textToProcess, instruction);
-                const apiKey = "AIzaSyCE8nskavak3nrzkVSKLzaAd1jhuXdeuAA";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${AIzaSyCE8nskavak3nrzkVSKLzaAd1jhuXdeuAA}`;
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
                 try {
                     const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                     if (!response.ok) throw new Error(`Erreur API: ${response.status}`);
@@ -277,6 +278,32 @@
             const summarizeInstruction = "Analyse ce CV : ${text}. **Synthétise-le de manière agressive** pour qu'il tienne sur une seule page. Garde uniquement l'essentiel.";
             const developInstruction = "Voici un CV en JSON : ${text}. Enrichis-le. Crée un 'Profil' engageant. Génère des listes pour 'Atouts' et 'Qualifications' à partir des données. Retourne le JSON complet.";
 
+            const transformCvDataForDisplay = () => {
+                if (!cvData) return null;
+                
+                let transformedData = JSON.parse(JSON.stringify(cvData));
+
+                if (isAnonymized) {
+                    if (transformedData.name) {
+                        const nameParts = transformedData.name.split(' ').filter(p => p);
+                        if (nameParts.length > 1) {
+                            const firstName = nameParts[0];
+                            const lastNameInitial = nameParts[nameParts.length - 1].charAt(0).toUpperCase() + '.';
+                            transformedData.name = `${firstName} ${lastNameInitial}`;
+                        }
+                    }
+                    transformedData.contact = {
+                        phone: '01 56 02 12 25 / 06 34 25 32 96',
+                        email: 'l.amara@ltd-international.com',
+                        address: 'Lyes AMARA - Responsable d’activité recrutement',
+                        other: 'BTP – France'
+                    };
+                }
+                return transformedData;
+            };
+
+            const displayedCvData = transformCvDataForDisplay();
+
             return (
                 <>
                     <section className="hero">
@@ -300,6 +327,10 @@
                                             <button onClick={() => handleApiCall(developInstruction)} disabled={isGenerating || !cvData} className="btn-purple">Développer</button>
                                         </div>
                                     </div>
+                                </fieldset>
+                                <fieldset>
+                                    <legend>Anonymisation</legend>
+                                    <label className="checkbox-label"><input type="checkbox" name="anonymize" checked={isAnonymized} onChange={(e) => setIsAnonymized(e.target.checked)} className="h-4 w-4 rounded bg-[var(--background)] border-[var(--glass-border)]"/><span>Anonymiser le CV</span></label>
                                 </fieldset>
                                 {cvData && (
                                     <fieldset>
@@ -332,7 +363,7 @@
                             </div>
                         </div>
                         <div className="flex-grow flex justify-center items-start">
-                            <CvPreview cvData={cvData} options={postGenOptions} ref={cvPreviewRef} />
+                            <CvPreview cvData={displayedCvData} options={postGenOptions} ref={cvPreviewRef} />
                         </div>
                     </div>
                 </>
