@@ -347,7 +347,7 @@
         .slide .slide-background {
             width: 100%;
             display: block;
-            aspect-ratio: 16 / 9; 
+            aspect-ratio: 4 / 3; 
             object-fit: cover;
             transition: transform 8s ease-out;
             background-color: var(--surface-elevated);
@@ -457,7 +457,7 @@
         }
         .news-banner-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* MODIFIÉ: minmax réduit pour une meilleure flexibilité */
+            grid-template-columns: 1fr; /* Mobile-first: une colonne par défaut */
             gap: var(--spacing-lg);
         }
         .news-banner-item {
@@ -527,7 +527,7 @@
 
         .quick-actions-grid {
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); 
+            grid-template-columns: 1fr; /* Mobile-first: une colonne par défaut */
             gap: var(--spacing-md); 
             margin: 4rem 0;
         }
@@ -602,7 +602,12 @@
             transform: translateY(0);
         }
         
-        .btp-wall-street { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-lg); margin-top: var(--spacing-xl); }
+        .btp-wall-street { 
+            display: grid; 
+            grid-template-columns: 1fr; /* Mobile-first: une colonne par défaut */
+            gap: var(--spacing-lg); 
+            margin-top: var(--spacing-xl); 
+        }
         
         .feed-column { 
             background: var(--surface); 
@@ -897,27 +902,15 @@
 
         /* --- Media Queries pour la réactivité --- */
 
-        /* Styles pour très petits écrans (moins de 480px) */
-        @media (max-width: 480px) {
-            .chatbot-container {
-                right: var(--spacing-sm);
-                bottom: calc(var(--spacing-sm) + 4.5rem);
-                width: calc(100% - (2 * var(--spacing-sm)));
-                max-height: calc(100vh - 7rem);
-            }
-            .chatbot-toggler {
-                right: var(--spacing-sm);
-                bottom: var(--spacing-sm);
-                width: 3.5rem;
-                height: 3.5rem;
-                font-size: 1.5rem;
-            }
-            .btp-wall-street {
-                grid-template-columns: 1fr;
+        /* Styles pour tablettes (à partir de 640px) */
+        @media (min-width: 640px) {
+            .news-banner-grid,
+            .quick-actions-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
-        /* Styles pour tablettes (768px et plus) */
+        /* Styles pour tablettes larges et petits ordinateurs (à partir de 768px) */
         @media (min-width: 768px) {
             .nav-container {
                 padding: 0 var(--spacing-md);
@@ -950,6 +943,9 @@
             .news-banner-header h2 {
                 font-size: 2rem;
             }
+            .btp-wall-street {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         /* Styles pour ordinateurs (1024px et plus) */
@@ -969,6 +965,10 @@
             }
             .nav-menu {
                 gap: var(--spacing-xs); 
+            }
+            .news-banner-grid,
+            .quick-actions-grid {
+                grid-template-columns: repeat(3, 1fr);
             }
         }
 
@@ -1007,7 +1007,7 @@
                      <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
                      <li class="nav-item"><a href="emploi.html" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
                      <li class="nav-item"><a href="histoire.html" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
-                     <li class="nav-item"><a href="quiz.html" class="nav-link" onclick="event.preventDefault(); navigateTo('quiz.html')"><i class="fas fa-question-circle"></i>&nbsp;Quiz</a></li>
+                     <li class="nav-item"><a href="quizz.html" class="nav-link" onclick="event.preventDefault(); navigateTo('quizz.html')"><i class="fas fa-question-circle"></i>&nbsp;Quiz</a></li>
                  </ul>
                  <div class="nav-actions">
                      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
@@ -1100,7 +1100,7 @@
                 <p>Restez à jour avec nos derniers tests, challenges et actualités du secteur.</p>
             </div>
             <div class="news-banner-grid">
-                <a href="quiztelecom.html" onclick="event.preventDefault(); navigateTo('quiztelecom.html')" class="news-banner-item">
+                <a href="quizz.html" onclick="event.preventDefault(); navigateTo('quizz.html')" class="news-banner-item">
                     <div class="card-image-top">
                         <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <g stroke="var(--primary)" opacity="0.8">
