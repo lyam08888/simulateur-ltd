@@ -58,40 +58,40 @@ function CvTool() {
     const cvPreviewRef = useRef(null);
 
     const handleApiCall = async () => {
-        if (!inputText.trim()) {
-            setError("Veuillez coller un texte à résumer (profil, parcours, description…).");
+    if (!inputText.trim()) {
+        setError("Veuillez coller un texte à résumer (profil, parcours, description…).");
+        return;
+    }
+    setIsGenerating(true);
+    setError('');
+    try {
+        const response = await fetch(
+            "https://api-inference.huggingface.co/models/facebook/bart-large-cnn",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ "inputs": inputText })
+            }
+        );
+        const result = await response.json();
+        if (!Array.isArray(result) || !result[0] || !result[0].summary_text) {
+            setError(
+                result && result.error ? "Erreur IA : " + result.error :
+                "L'IA Hugging Face est en veille ou saturée. Réessayez dans 1-2 minutes."
+            );
+            setIsGenerating(false);
             return;
         }
-        setIsGenerating(true);
-        setError('');
-        try {
-            const response = await fetch(
-                "https://api-inference.huggingface.co/models/mrm8488/t5-base-finetuned-summarize-news",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                        // Si tu as une clé : "Authorization": "Bearer <ta-clé-HuggingFace>"
-                    },
-                    body: JSON.stringify({ "inputs": inputText })
-                }
-            );
-            const result = await response.json();
-            if (response.status !== 200 || !result || !result[0] || !result[0].generated_text) {
-                setError(
-                  result && result.error ? "Erreur IA : " + result.error :
-                  "L'IA Hugging Face est en veille ou saturée. Réessayez dans 1-2 minutes."
-                );
-                setIsGenerating(false);
-                return;
-            }
-            setCvText(result[0].generated_text);
-        } catch (err) {
-            setError("Erreur API Hugging Face : " + err.message);
-        } finally {
-            setIsGenerating(false);
-        }
-    };
+        setCvText(result[0].summary_text);
+    } catch (err) {
+        setError("Erreur API Hugging Face : " + err.message);
+    } finally {
+        setIsGenerating(false);
+    }
+};
+
 
     const handleDownloadPdf = () => {
         const input = cvPreviewRef.current;
