@@ -900,11 +900,9 @@
 
             function goToSlide(index) {
                 if (slides.length === 0) return;
-                if (index === currentIndex && slides[currentIndex] && slides[currentIndex].classList.contains('active')) return;
-                
-                if(slides[currentIndex]) slides[currentIndex].classList.remove('active');
+                if (slides[currentIndex]) slides[currentIndex].classList.remove('active');
                 currentIndex = (index + slides.length) % slides.length;
-                if(slides[currentIndex]) slides[currentIndex].classList.add('active');
+                if (slides[currentIndex]) slides[currentIndex].classList.add('active');
                 
                 wrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
                 
