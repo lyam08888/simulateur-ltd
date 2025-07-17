@@ -142,6 +142,7 @@
             align-items: center;
             justify-content: space-between;
             height: 4.5rem;
+            gap: var(--spacing-md);
         }
 
         .logo {
@@ -151,7 +152,7 @@
             text-decoration: none;
             color: var(--text-primary);
             font-weight: 800;
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             transition: var(--transition);
         }
         .logo:hover {
@@ -159,7 +160,13 @@
             text-shadow: 0 0 10px var(--primary-light);
         }
         .logo-icon {
-            font-size: 1.75rem;
+            height: 1.8rem;
+            width: auto;
+            vertical-align: -0.4rem;
+        }
+        
+        .logo-text-extended {
+            display: none;
         }
 
         .nav-desktop { display: none; }
@@ -167,7 +174,7 @@
         .nav-menu {
             display: flex;
             align-items: center;
-            gap: var(--spacing-sm);
+            gap: var(--spacing-xs);
             list-style: none;
         }
         .nav-item { position: relative; }
@@ -281,8 +288,6 @@
 
         @media (min-width: 768px) {
             .nav-container { padding: 0 var(--spacing-md); }
-            .logo { font-size: 1.5rem; }
-            .logo-icon { font-size: 2rem; }
             .main-content { padding: var(--spacing-xl) var(--spacing-md); }
         }
 
@@ -293,10 +298,16 @@
                 align-items: center;
                 flex-grow: 1;
                 justify-content: flex-end;
-                gap: var(--spacing-md);
+                gap: var(--spacing-sm);
             }
             .header-search { width: 280px; }
-            .nav-menu { gap: var(--spacing-md); }
+            .nav-menu { gap: var(--spacing-xs); }
+        }
+        
+        @media (min-width: 1280px) {
+            .logo-text-extended {
+                display: inline;
+            }
         }
 
         /* Styles for the Quiz Game */
@@ -315,6 +326,7 @@
             backdrop-filter: blur(10px);
             text-align: center;
             animation: fade-in 0.5s ease-out;
+            position: relative;
         }
         
         @keyframes fade-in {
@@ -339,6 +351,25 @@
             margin-bottom: var(--spacing-md);
         }
 
+        .question-image-container {
+            width: 100%;
+            height: 180px;
+            padding: var(--spacing-sm);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-md);
+            background-color: var(--surface-elevated);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .question-image-container svg {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
         .btn {
             display: inline-block;
             background: var(--primary);
@@ -358,6 +389,78 @@
             background: var(--primary-dark);
             transform: translateY(-2px);
             box-shadow: var(--shadow-glow);
+        }
+        
+        .btn.btn-secondary {
+            background: var(--secondary);
+        }
+        .btn.btn-secondary:hover {
+            background: var(--secondary-dark);
+        }
+
+        .difficulty-selector {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+            margin-top: var(--spacing-lg);
+        }
+        
+        .difficulty-switcher {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            background: var(--surface-elevated);
+            padding: var(--spacing-xs);
+            border-radius: var(--radius-full);
+            border: 1px solid var(--glass-border);
+            position: absolute;
+            top: var(--spacing-md);
+            right: var(--spacing-md);
+        }
+        .difficulty-switcher label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        .difficulty-switcher .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+        .difficulty-switcher .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .difficulty-switcher .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--primary);
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .difficulty-switcher .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        .difficulty-switcher input:checked + .slider {
+            background-color: var(--accent);
+        }
+        .difficulty-switcher input:checked + .slider:before {
+            transform: translateX(24px);
         }
 
         .options-grid {
@@ -412,6 +515,7 @@
             border-radius: var(--radius);
             font-weight: 500;
             display: none;
+            text-align: left;
         }
         
         .feedback.correct {
@@ -428,8 +532,11 @@
         
         .feedback-explanation {
             font-size: 0.9rem;
-            color: var(--text-muted);
+            color: var(--text-secondary);
             margin-top: 0.5rem;
+        }
+        .feedback-explanation strong {
+            color: var(--text-primary);
         }
 
         .progress-bar {
@@ -540,8 +647,11 @@
     <header class="header" id="header">
         <nav class="nav-container">
             <a href="index.html" class="logo" onclick="event.preventDefault(); navigateTo('index.html');">
-                <span class="logo-icon">🏗️</span>
-                <span class="logo-text">LTD Simulator</span>
+                <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
+                    <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
+                    <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+                </svg>
+                <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
             </a>
             <div class="nav-desktop">
                  <form action="recherche.html" method="GET" class="header-search">
@@ -555,7 +665,7 @@
                      <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
                      <li class="nav-item"><a href="emploi.html" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
                      <li class="nav-item"><a href="histoire.html" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
-                     <li class="nav-item"><a href="#" class="nav-link active" onclick="event.preventDefault(); navigateTo('quiztelecom.html')"><i class="fas fa-wifi"></i>&nbsp;Quiz Télécom</a></li>
+                     <li class="nav-item"><a href="#" class="nav-link active" onclick="event.preventDefault();"><i class="fas fa-question-circle"></i>&nbsp;Quiz</a></li>
                  </ul>
                  <div class="nav-actions">
                      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
@@ -573,8 +683,11 @@
     <div class="mobile-menu" id="mobileMenu">
         <div class="mobile-menu-header">
             <a href="index.html" class="logo" onclick="event.preventDefault(); toggleMobileMenu(); navigateTo('index.html');">
-                <span class="logo-icon">🏗️</span>
-                <span class="logo-text">LTD Simulator</span>
+                <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
+                    <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
+                    <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+                </svg>
+                <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
             </a>
             <button class="mobile-menu-close" onclick="toggleMobileMenu()"><i class="fas fa-times"></i></button>
         </div>
@@ -607,10 +720,9 @@
         let currentTheme = localStorage.getItem('theme') || 'dark';
 
         function navigateTo(pageFile) {
-            // In a real scenario, this would load a new page.
-            // Here, we just log it and prevent default action.
+            // This is a placeholder for navigation logic.
+            // In a real multi-page app, you'd use window.location.href = pageFile;
             console.log(`Navigating to ${pageFile}`);
-            // You can add a loading animation here if you want.
         }
 
         function updateThemeUI() {
@@ -636,65 +748,133 @@
 
         // --- QUIZ GAME SCRIPT ---
         const gameContainer = document.getElementById('game-container');
-        const quizData = [
-            {
-                type: 'qcm',
-                question: "Que signifie l'acronyme 'PTO' dans le contexte de la fibre optique ?",
-                options: ["Point de Terminaison Optique", "Prise Technique Obligatoire", "Port de Transfert Ouvert", "Protocole Télécom Opérateur"],
-                correctAnswer: 0,
-                explanation: "Le PTO (Point de Terminaison Optique) est le boîtier mural chez l'abonné où se termine le câble de fibre optique."
-            },
-            {
-                type: 'qcm',
-                question: "Quelle couleur est typiquement associée à un connecteur de fibre optique de type SC/APC ?",
-                options: ["Bleu", "Beige", "Vert", "Noir"],
-                correctAnswer: 2,
-                explanation: "Les connecteurs SC/APC (Angled Physical Contact) sont verts pour minimiser les réflexions de signal, essentiels pour la vidéo."
-            },
-            {
-                type: 'minigame',
-                title: "Mini-Jeu : Raccordement",
-                instruction: "Faites glisser le bon câble (Fibre Optique) vers le port correspondant sur le boîtier PTO.",
-                draggable: { id: 'fibre-cable', text: 'Câble Fibre', icon: 'fa-wave-square' },
-                droppable: { id: 'pto-port', text: 'Port PTO', icon: 'fa-plug' },
-                distractors: [
-                    { id: 'rj45-cable', text: 'Câble RJ45', icon: 'fa-ethernet' }
-                ]
-            },
-            {
-                type: 'qcm',
-                question: "Quel outil est indispensable pour préparer et couper proprement une fibre optique avant de la souder ?",
-                options: ["Un cutter", "Une pince à dénuder", "Un cliveur", "Des ciseaux"],
-                correctAnswer: 2,
-                explanation: "Le cliveur (ou cleaver en anglais) est un outil de haute précision qui permet de réaliser une coupe parfaitement droite de la fibre."
-            },
-            {
-                type: 'qcm',
-                question: "Qu'est-ce qu'une 'soudure par fusion' ?",
-                options: ["Coller deux fibres avec de la résine", "Aligner et fondre deux fibres optiques pour les joindre", " Agrafer deux câbles ensemble", "Utiliser un connecteur mécanique"],
-                correctAnswer: 1,
-                explanation: "La soudure par fusion utilise un arc électrique pour fondre et joindre deux extrémités de fibre, créant une connexion quasi parfaite."
-            },
-             {
-                type: 'qcm',
-                question: "Dans un réseau FTTH (Fiber to the Home), où se situe le NRO ?",
-                options: ["Dans la rue, devant la maison", "Chez l'abonné", "Au central de l'opérateur", "Sur un poteau téléphonique"],
-                correctAnswer: 2,
-                explanation: "Le NRO (Nœud de Raccordement Optique) est le 'central téléphonique' de la fibre, où les signaux de milliers d'abonnés convergent."
-            }
-        ];
+        
+        const fullQuizData = {
+            hard: [
+                {type: 'qcm', question: "Que signifie l'acronyme 'PTO' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="70" y="30" width="60" height="65" rx="3" stroke="var(--text-primary)"/><path d="M 40 62.5 h 30" stroke="var(--primary)"/><path d="M 100 62.5 m -4,0 a 4,4 0 1,0 8,0 a 4,4 0 1,0 -8,0" fill="var(--primary-light)"/></svg>', options: ["Point de Terminaison Optique", "Prise Technique Obligatoire", "Port de Transfert Ouvert", "Protocole Télécom Opérateur"], correctAnswer: 0, explanation: "<strong>Point de Terminaison Optique :</strong> C'est le boîtier mural installé chez l'abonné qui marque la fin du réseau de l'opérateur. Il sert de point de test pour le technicien, lui permettant de vérifier si le signal arrive correctement jusqu'au domicile, et ainsi d'isoler une panne entre le réseau extérieur et l'installation intérieure du client."},
+                {type: 'qcm', question: "Quelle couleur est typiquement associée à un connecteur SC/APC ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="50" y="50" width="100" height="25" rx="3" stroke="var(--text-primary)"/><rect x="140" y="45" width="20" height="35" rx="2" fill="var(--correct)"/></svg>', options: ["Bleu", "Beige", "Vert", "Noir"], correctAnswer: 2, explanation: "<strong>Vert :</strong> Les connecteurs avec une férule polie en angle (APC - Angled Physical Contact) sont verts. Cet angle de 8° réduit drastiquement la réflectance (retour de signal), ce qui est crucial pour les signaux sensibles comme la vidéo ou les réseaux à très longue distance. Le bleu est utilisé pour les connecteurs UPC (Ultra Physical Contact)."},
+                {type: 'minigame', title: "Mini-Jeu : Raccordement", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 50 62.5 h 50" stroke="var(--primary)" stroke-dasharray="4"/><path d="M 150 62.5 h -50" stroke="var(--accent)" stroke-dasharray="4"/><circle cx="50" cy="62.5" r="10" stroke="var(--primary)"/><circle cx="150" cy="62.5" r="10" stroke="var(--accent)"/></svg>', instruction: "Faites glisser le bon câble (Fibre Optique) vers le port correspondant sur le boîtier PTO.", draggable: { id: 'fibre-cable', text: 'Câble Fibre', icon: 'fa-wave-square' }, droppable: { id: 'pto-port', text: 'Port PTO', icon: 'fa-plug' }, distractors: [{ id: 'rj45-cable', text: 'Câble RJ45', icon: 'fa-ethernet' }]},
+                {type: 'qcm', question: "Quel outil est indispensable pour couper proprement une fibre optique ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="60" y="40" width="80" height="45" rx="5" stroke="var(--text-primary)"/><path d="M 60 62.5 h 80" stroke="var(--glass-border)"/><circle cx="100" cy="62.5" r="5" stroke="var(--primary)"/><path d="M 120 40 v -10 h 10 l 5 5" stroke="var(--accent)"/></svg>', options: ["Un cutter", "Une pince à dénuder", "Un cliveur", "Des ciseaux"], correctAnswer: 2, explanation: "<strong>Un cliveur :</strong> Pour qu'une soudure par fusion soit réussie, la surface des deux fibres doit être parfaitement plane et perpendiculaire. Seul un cliveur de précision peut garantir une telle coupe, en créant une micro-fissure puis en appliquant une contrainte pour une cassure nette."},
+                {type: 'qcm', question: "Qu'est-ce qu'une 'soudure par fusion' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 40 62.5 h 55" stroke="var(--primary)"/><path d="M 160 62.5 h -55" stroke="var(--primary)"/><path d="M 95 52.5 l 10 20 l -10 -20 l 5 20 l 5 -20" stroke="var(--accent)"/></svg>', options: ["Coller deux fibres", "Aligner et fondre deux fibres", "Agrafer deux câbles", "Utiliser un connecteur mécanique"], correctAnswer: 1, explanation: "<strong>Aligner et fondre deux fibres :</strong> Une soudeuse par fusion utilise des caméras pour aligner les cœurs des deux fibres au micron près, puis génère un arc électrique pour les fondre et les joindre de manière permanente, assurant une perte de signal minimale (typiquement < 0.05 dB)."},
+                {type: 'qcm', question: "Où se situe le NRO (Nœud de Raccordement Optique) ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 60 100 v -60 l 40 -20 l 40 20 v 60 h -80 z" stroke="var(--text-primary)"/><rect x="85" y="50" width="30" height="50" stroke="var(--primary)" fill="var(--primary-light)" fill-opacity="0.2"/><path d="M 90 55 h 20 M 90 65 h 20 M 90 75 h 20 M 90 85 h 20" stroke="var(--primary)"/></svg>', options: ["Dans la rue", "Chez l'abonné", "Au central de l'opérateur", "Sur un poteau"], correctAnswer: 2, explanation: "<strong>Au central de l'opérateur :</strong> Le NRO est un local technique qui abrite les équipements actifs de l'opérateur (les OLT - Optical Line Terminal). C'est le point de départ du réseau fibre qui dessert ensuite tout un quartier ou une ville."},
+                {type: 'qcm', question: "Qu'est-ce qu'un OTDR ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 30 100 h 140 M 30 20 v 80" stroke="var(--text-muted)"/><path d="M 30 80 l 20 -10 l 20 5 l 20 -40 l 5 5 l 20 -5 l 10 10" stroke="var(--primary)"/><path d="M 90 35 l 0 10 l 10 0" stroke="var(--incorrect)" stroke-width="3"/></svg>', options: ["Un mesureur de puissance", "Un réflectomètre optique temporel", "Un type de connecteur", "Un standard Wi-Fi"], correctAnswer: 1, explanation: "<strong>Un réflectomètre optique temporel :</strong> L'OTDR (Optical Time-Domain Reflectometer) est un outil de diagnostic essentiel. Il envoie une impulsion lumineuse dans la fibre et analyse le signal réfléchi pour créer une carte (réflectogramme) de la ligne, indiquant la distance des connecteurs, des soudures, des contraintes et des coupures."},
+                {type: 'qcm', question: "Quelle est la fonction d'un PBO (Point de Branchement Optique) ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 100 20 v 85" stroke="var(--text-primary)"/><rect x="80" y="40" width="40" height="45" rx="3" stroke="var(--text-primary)" fill="var(--surface)"/><path d="M 80 50 l -20 -10 M 80 65 l -20 0 M 80 80 l -20 10" stroke="var(--secondary)"/></svg>', options: ["Connecter le quartier au NRO", "Raccorder plusieurs clients finaux", "Amplifier le signal", "Convertir le signal"], correctAnswer: 1, explanation: "<strong>Raccorder plusieurs clients finaux :</strong> Le PBO est le dernier point d'éclatement du réseau. Un câble de distribution (ex: 12 fibres) arrive au PBO, et à l'intérieur, des coupleurs ou des soudures permettent de connecter les câbles individuels qui vont vers chaque abonné."},
+                {type: 'qcm', question: "Que mesure-t-on en décibels (dB) sur une liaison optique ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3"><path d="M 40 40 l 120 60" stroke="var(--incorrect)"/><path d="M 40 40 h 120" stroke="var(--correct)"/></svg>', options: ["Le débit", "La distance", "L'atténuation du signal", "La couleur"], correctAnswer: 2, explanation: "<strong>L'atténuation du signal :</strong> Le dB est une unité logarithmique qui mesure la perte de puissance du signal. Chaque composant (fibre, soudure, connecteur) ajoute une petite perte. Le budget optique total doit rester dans les limites acceptables pour que la connexion fonctionne."},
+                {type: 'qcm', question: "Que signifie FTTO ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 50 100 v -50 l 50 -30 l 50 30 v 50 h -100 z" stroke="var(--text-primary)"/><path d="M 150 70 l -100 0" stroke="var(--primary)"/></svg>', options: ["Fiber To The Operator", "Fiber To The Office", "Fast Telecom To Office", "Fiber To The Outlet"], correctAnswer: 1, explanation: "<strong>Fiber To The Office :</strong> C'est une offre destinée aux entreprises qui garantit une fibre dédiée de bout en bout, offrant des débits symétriques et une haute disponibilité, contrairement au FTTH (Fiber To The Home) qui est un réseau partagé (mutualisé)."},
+                {type: 'qcm', question: "Qu'est-ce que le 'multiplexage en longueur d'onde' (WDM) ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 30 50 h 30" stroke="var(--primary)"/><path d="M 30 62.5 h 30" stroke="var(--secondary)"/><path d="M 30 75 h 30" stroke="var(--accent)"/><path d="M 60 50 C 80 50, 80 75, 100 62.5" stroke="var(--text-primary)"/><path d="M 60 62.5 h 40" stroke="var(--text-primary)"/><path d="M 60 75 C 80 75, 80 50, 100 62.5" stroke="var(--text-primary)"/><path d="M 100 62.5 h 70" stroke="var(--text-primary)"/></svg>', options: ["Combiner plusieurs signaux sur une seule fibre en utilisant différentes couleurs de lumière.", "Diviser une fibre en plusieurs canaux temporels.", "Compresser les données avant de les envoyer.", "Utiliser des miroirs pour diriger le signal."], correctAnswer: 0, explanation: "<strong>Le WDM (Wavelength Division Multiplexing)</strong> est une technologie qui révolutionne la capacité des réseaux optiques. Elle permet de faire passer plusieurs canaux de données indépendants sur une seule fibre optique en leur assignant à chacun une longueur d'onde (une 'couleur') de lumière distincte."},
+                {type: 'qcm', question: "Quelle est la différence principale entre un OLT et un ONT ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 30 100 v -60 l 30 -20 l 30 20 v 60 h -60 z" stroke="var(--text-primary)"/><text x="40" y="85" font-size="14" fill="var(--text-primary)">NRO</text><path d="M 60 60 l 50 -20" stroke="var(--primary)"/><path d="M 60 60 l 60 0" stroke="var(--primary)"/><path d="M 60 60 l 50 20" stroke="var(--primary)"/><rect x="120" y="35" width="40" height="15" rx="2" stroke="var(--text-secondary)"/><rect x="130" y="55" width="40" height="15" rx="2" stroke="var(--text-secondary)"/><rect x="120" y="75" width="40" height="15" rx="2" stroke="var(--text-secondary)"/></svg>', options: ["L'OLT est au central, l'ONT est chez le client.", "L'OLT gère le cuivre, l'ONT la fibre.", "L'OLT est passif, l'ONT est actif.", "Il n'y a pas de différence."], correctAnswer: 0, explanation: "<strong>L'OLT (Optical Line Terminal)</strong> est l'équipement de terminaison de ligne optique situé dans le NRO de l'opérateur. <strong>L'ONT (Optical Network Terminal)</strong> est le boîtier situé chez l'abonné qui convertit le signal optique en signaux électriques."},
+                {type: 'qcm', question: "À quoi sert un 'photomètre' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="60" y="40" width="80" height="45" rx="5" stroke="var(--text-primary)"/><rect x="65" y="45" width="70" height="20" rx="2" fill="var(--surface-elevated)"/><text x="70" y="60" font-family="JetBrains Mono, monospace" font-size="12" fill="var(--accent)">-18.5 dBm</text><path d="M 20 70 h 40" stroke="var(--primary)"/></svg>', options: ["Mesurer la longueur d'un câble.", "Mesurer la puissance du signal optique.", "Souder deux fibres ensemble.", "Vérifier la couleur d'un connecteur."], correctAnswer: 1, explanation: "Un <strong>photomètre</strong> (ou mesureur de puissance optique) est un outil fondamental pour vérifier la qualité d'une liaison. Il mesure la puissance du signal lumineux (exprimée en dBm) qui arrive au bout de la fibre."},
+                {type: 'qcm', question: "Qu'est-ce qu'une 'jarretière optique' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 50 62.5 C 80 40, 120 85, 150 62.5" stroke="var(--primary)" fill="none"/><rect x="30" y="57.5" width="20" height="10" rx="2" fill="var(--secondary)"/><rect x="150" y="57.5" width="20" height="10" rx="2" fill="var(--secondary)"/></svg>', options: ["Un outil pour tirer les câbles.", "Un câble de raccordement court pour connecter des équipements.", "Un manchon de protection pour soudure.", "Un type de vêtement de travail."], correctAnswer: 1, explanation: "Une <strong>jarretière optique</strong> est un câble de fibre optique de courte longueur, terminé par des connecteurs à ses deux extrémités. Elle est utilisée pour relier des équipements entre eux dans une baie de brassage, ou pour connecter le PTO à la box internet."},
+                {type: 'qcm', question: "Que signifie le terme 'réflectance' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 40 62.5 h 120" stroke="var(--primary)"/><path d="M 105 55 l -10 7.5 l 10 7.5" stroke="var(--primary)"/><rect x="98" y="50" width="4" height="25" fill="var(--text-primary)"/><path d="M 98 62.5 h -30" stroke="var(--incorrect)"/><path d="M 73 55 l -5 7.5 l 5 7.5" stroke="var(--incorrect)"/></svg>', options: ["La quantité de lumière qui traverse le connecteur.", "La quantité de lumière réfléchie vers la source.", "La résistance du connecteur à la chaleur.", "La couleur du connecteur."], correctAnswer: 1, explanation: "La <strong>réflectance</strong> (ou retour optique) est la quantité de lumière qui est renvoyée en arrière vers la source. Une réflectance élevée est néfaste car elle peut perturber la source laser et dégrader la qualité du signal. Les connecteurs APC sont conçus pour minimiser ce phénomène."},
+                {type: 'qcm', question: "Dans un réseau GPON, que signifie le 'P' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 30 62.5 h 50" stroke="var(--primary)"/><rect x="80" y="50" width="10" height="25" fill="var(--surface-elevated)" stroke="var(--text-primary)"/><path d="M 90 62.5 l 40 -20 M 90 62.5 l 40 0 M 90 62.5 l 40 20" stroke="var(--secondary)"/></svg>', options: ["Power (Puissance)", "Passive (Passif)", "Protocol (Protocole)", "Permanent (Permanent)"], correctAnswer: 1, explanation: "GPON signifie Gigabit <strong>Passive</strong> Optical Network. Le 'P' pour Passif est crucial : il indique que le réseau de distribution entre le NRO et les abonnés n'utilise aucun équipement électronique actif (qui nécessiterait une alimentation)."},
+                {type: 'qcm', question: "Quelle est la principale cause d'atténuation intrinsèque dans une fibre optique ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 30 62.5 h 140" stroke="var(--primary)"/><path d="M 30 62.5 C 60 50, 90 75, 120 62.5 C 140 55, 160 70, 170 62.5" stroke="var(--primary)" opacity="0.3" stroke-width="10"/></svg>', options: ["Les courbures du câble.", "La diffusion Rayleigh.", "Les connecteurs sales.", "La température extérieure."], correctAnswer: 1, explanation: "Sur de longues distances, la principale cause de perte de signal intrinsèque à la fibre est la <strong>diffusion Rayleigh</strong>. Ce phénomène est dû à de microscopiques variations de densité dans le verre qui diffusent la lumière dans toutes les directions."},
+                {type: 'qcm', question: "Qu'est-ce qu'une 'cassette d'épissurage' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="50" y="40" width="100" height="45" rx="5" stroke="var(--text-primary)"/><circle cx="75" cy="62.5" r="15" stroke="var(--glass-border)"/><path d="M 90 62.5 h 20" stroke="var(--primary)"/><rect x="110" y="60" width="20" height="5" rx="1" fill="var(--text-muted)"/></svg>', options: ["Une boîte à outils pour technicien.", "Un support pour enrouler et protéger les soudures optiques.", "Un appareil de mesure.", "Une vidéo de formation."], correctAnswer: 1, explanation: "Une <strong>cassette d'épissurage</strong> (ou de lovage) est un plateau en plastique conçu pour organiser, stocker et protéger les soudures (épissures) et les surlongueurs de fibre à l'intérieur d'un boîtier de raccordement."},
+                {type: 'qcm', question: "Quelle longueur d'onde est utilisée pour le trafic montant (upload) en FTTH GPON ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><text x="30" y="50" font-size="12" fill="var(--text-secondary)">OLT</text><path d="M 60 62.5 h 80" stroke="var(--text-primary)"/><text x="150" y="50" font-size="12" fill="var(--text-secondary)">ONT</text><path d="M 70 55 l 60 0" stroke="var(--accent)"/><text x="90" y="50" font-size="10" fill="var(--accent)">1490nm (Down)</text><path d="M 130 70 l -60 0" stroke="var(--secondary)"/><text x="85" y="78" font-size="10" fill="var(--secondary)">1310nm (Up)</text></svg>', options: ["850 nm", "1310 nm", "1490 nm", "1550 nm"], correctAnswer: 1, explanation: "Dans les réseaux FTTH GPON standards, <strong>1310 nm</strong> est la longueur d'onde utilisée pour le trafic montant (du client vers l'opérateur), tandis que 1490 nm est utilisée pour le trafic descendant."},
+                {type: 'qcm', question: "Que signifie 'G.652D' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 40 62.5 h 120" stroke="var(--primary)" stroke-width="10" stroke-linecap="round"/><text x="65" y="68" font-family="JetBrains Mono, monospace" font-size="16" fill="var(--background)">G.652D</text></svg>', options: ["Une norme de sécurité sur chantier.", "Un type de fibre optique monomode standard.", "Un modèle de soudeuse.", "Un code d'erreur réseau."], correctAnswer: 1, explanation: "<strong>G.652D</strong> est une recommandation de l'UIT-T qui spécifie les caractéristiques d'une fibre optique monomode standard. C'est le type de fibre le plus largement déployé dans les réseaux d'accès comme le FTTH."},
+                {type: 'qcm', question: "À quoi sert la gaine de protection ('buffer') sur une fibre optique ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><circle cx="100" cy="62.5" r="10" stroke="var(--primary)"/><circle cx="100" cy="62.5" r="20" stroke="var(--secondary)"/><circle cx="100" cy="62.5" r="30" stroke="var(--text-muted)"/></svg>', options: ["À guider la lumière.", "À protéger la fibre des chocs et de l'humidité.", "À la colorer pour l'identification.", "À faciliter la soudure."], correctAnswer: 1, explanation: "La <strong>gaine de protection primaire (buffer coating)</strong> est une couche de plastique appliquée directement sur la gaine optique pour la protéger contre les micro-courbures et les agressions physiques lors de la manipulation."},
+                {type: 'qcm', question: "Qu'est-ce que la dispersion chromatique ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 30 62.5 h 50" stroke="var(--text-primary)"/><path d="M 80 62.5 h 70" stroke="var(--primary)" stroke-dasharray="2 4"/><path d="M 80 62.5 h 75" stroke="var(--secondary)" stroke-dasharray="4 2"/><path d="M 80 62.5 h 65" stroke="var(--accent)"/></svg>', options: ["La perte de signal due à la couleur du câble.", "La séparation des couleurs dans un prisme.", "La distorsion d'une impulsion lumineuse car différentes longueurs d'onde voyagent à des vitesses différentes.", "La réflexion de la lumière aux extrémités de la fibre."], correctAnswer: 2, explanation: "La <strong>dispersion chromatique</strong> est un phénomène qui provoque l'étalement d'une impulsion lumineuse dans une fibre. Les différentes 'couleurs' (longueurs d'onde) qui composent le signal ne se propagent pas exactement à la même vitesse, ce qui déforme le signal sur de longues distances."},
+                {type: 'qcm', question: "Quelle est la différence entre une fibre monomode et une fibre multimode ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><circle cx="60" cy="62.5" r="5" stroke="var(--primary)"/><path d="M 20 62.5 h 80" stroke="var(--primary)"/><circle cx="140" cy="62.5" r="25" stroke="var(--secondary)"/><path d="M 100 50 h 40 l -20 25" stroke="var(--secondary)"/><path d="M 100 75 h 40 l -30 -25" stroke="var(--secondary)"/></svg>', options: ["La couleur de la gaine.", "La distance maximale de transmission.", "La taille du cœur de la fibre.", "Le type de connecteur utilisé."], correctAnswer: 2, explanation: "La différence fondamentale est la <strong>taille du cœur</strong>. Une fibre monomode a un cœur très fin (~9µm) qui ne laisse passer qu'un seul rayon lumineux, idéal pour les longues distances. Une fibre multimode a un cœur plus large (~50µm) qui guide plusieurs rayons, utilisée pour des distances plus courtes."},
+                {type: 'qcm', question: "Que mesure l'unité 'dBm' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><text x="70" y="70" font-family="JetBrains Mono" font-size="24" fill="var(--accent)">dBm</text><path d="M 100 40 v -10 M 100 90 v 10" stroke="var(--text-muted)"/><path d="M 100 40 a 20 20 0 1 1 0 50" stroke="var(--text-muted)"/></svg>', options: ["Une perte de signal relative.", "Une mesure de bruit.", "Un niveau de puissance absolu par rapport à 1 milliwatt.", "Un ratio de tension."], correctAnswer: 2, explanation: "Le <strong>dBm</strong> est une unité de puissance absolue. 0 dBm équivaut à 1 milliwatt. C'est l'unité utilisée par les photomètres pour mesurer la puissance d'émission d'un laser ou la puissance reçue au bout d'une liaison."},
+                {type: 'qcm', question: "Qu'est-ce qu'un 'coupleur' (splitter) dans un réseau PON ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 30 62.5 h 50" stroke="var(--primary)"/><rect x="80" y="50" width="10" height="25" fill="var(--surface-elevated)" stroke="var(--text-primary)"/><path d="M 90 62.5 l 40 -20 M 90 62.5 l 40 0 M 90 62.5 l 40 20" stroke="var(--secondary)"/></svg>', options: ["Un composant qui joint deux fibres.", "Un composant qui divise un signal optique en plusieurs sorties.", "Un filtre de couleur.", "Un amplificateur de signal."], correctAnswer: 1, explanation: "Un <strong>coupleur optique</strong>, ou diviseur (splitter), est un composant passif qui prend un signal optique en entrée et le répartit sur plusieurs fibres en sortie. Par exemple, un coupleur 1:8 divise le signal en 8 parts égales."},
+                {type: 'qcm', question: "Qu'est-ce qu'une perte par 'macrocourbure' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3"><path d="M 40 40 h 80 a 20 20 0 0 1 0 40 h -80" stroke="var(--primary)"/><path d="M 120 80 l 20 -20" stroke="var(--incorrect)"/></svg>', options: ["Une perte due à un connecteur sale.", "Une perte due à une courbure visible du câble (rayon de courbure trop faible).", "Une perte due à des défauts microscopiques dans la fibre.", "Une perte à la soudure."], correctAnswer: 1, explanation: "Une perte par <strong>macrocourbure</strong> se produit lorsque la fibre est pliée avec un rayon trop serré. La lumière ne peut plus être correctement guidée par la réflexion totale interne et s'échappe de la gaine, provoquant une forte atténuation."},
+                {type: 'qcm', question: "Quel est le rôle d'un amplificateur EDFA ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 30 70 h 50" stroke="var(--primary)" opacity="0.5"/><rect x="80" y="50" width="40" height="25" stroke="var(--text-primary)"/><text x="85" y="68" font-size="12" fill="var(--accent)">EDFA</text><path d="M 120 55 h 50" stroke="var(--primary)" stroke-width="4"/></svg>', options: ["Régénérer le signal en le reconvertissant en électrique.", "Filtrer les longueurs d'onde indésirables.", "Amplifier directement un signal optique sans conversion.", "Mesurer la puissance du signal."], correctAnswer: 2, explanation: "Un <strong>EDFA (Erbium-Doped Fiber Amplifier)</strong> est un amplificateur optique qui booste la puissance d'un signal lumineux directement, sans avoir à le convertir en signal électrique. C'est essentiel pour les liaisons très longue distance."},
+                {type: 'qcm', question: "Quel est le diamètre typique du cœur d'une fibre monomode ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><circle cx="100" cy="62.5" r="50" stroke="var(--text-muted)"/><circle cx="100" cy="62.5" r="4" stroke="var(--primary)"/><path d="M 100 62.5 h 50" stroke="var(--text-primary)"/><text x="120" y="58" font-size="12" fill="var(--text-primary)">9 µm</text></svg>', options: ["9 micromètres", "50 micromètres", "62.5 micromètres", "125 micromètres"], correctAnswer: 0, explanation: "Le cœur d'une fibre monomode standard (G.652D) a un diamètre d'environ <strong>9 micromètres</strong> (µm). C'est cette finesse qui contraint la lumière à se propager en un seul mode."},
+                {type: 'qcm', question: "À quoi sert un 'stylo optique' (VFL) ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 40 62.5 h 120" stroke="var(--primary)"/><path d="M 80 62.5 l 5 -5 l 5 10 l 5 -10 l 5 5" stroke="var(--incorrect)" stroke-width="3"/><rect x="20" y="55" width="20" height="15" fill="var(--incorrect)"/></svg>', options: ["À nettoyer les connecteurs.", "À écrire sur les câbles.", "À identifier une fibre par un signal sonore.", "À localiser une coupure ou une contrainte par une lumière rouge visible."], correctAnswer: 3, explanation: "Un <strong>VFL (Visual Fault Locator)</strong>, souvent appelé stylo optique, injecte une lumière laser rouge de forte puissance dans la fibre. Si la fibre est cassée ou fortement pliée, la lumière rouge s'échappe et devient visible à l'œil nu, permettant de localiser le défaut."},
+                {type: 'qcm', question: "Quelle est la différence entre une pigtail et une jarretière ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 40 40 C 60 20, 80 60, 100 40" stroke="var(--primary)"/><rect x="30" y="35" width="10" height="10" rx="1" fill="var(--secondary)"/><rect x="100" y="35" width="10" height="10" rx="1" fill="var(--secondary)"/><path d="M 40 85 C 60 65, 80 105, 100 85" stroke="var(--accent)"/><rect x="30" y="80" width="10" height="10" rx="1" fill="var(--secondary)"/></svg>', options: ["La longueur.", "La couleur.", "Le type de fibre.", "Le nombre de connecteurs."], correctAnswer: 3, explanation: "Une <strong>jarretière (patch cord)</strong> est un câble avec un connecteur à chaque extrémité. Un <strong>pigtail</strong> (littéralement 'queue de cochon') est un brin de fibre avec un connecteur à un seul bout, l'autre bout étant nu, destiné à être soudé à un câble."},
+                {type: 'qcm', question: "Qu'est-ce que la 'dispersion modale de polarisation' (PMD) ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 30 62.5 h 50" stroke="var(--text-primary)"/><path d="M 80 62.5 h 70" stroke="var(--primary)" transform="rotate(2 100 62.5)"/><path d="M 80 62.5 h 70" stroke="var(--secondary)" transform="rotate(-2 100 62.5)"/></svg>', options: ["Une dispersion due aux couleurs.", "Une dispersion due à la forme non parfaitement circulaire du cœur de la fibre.", "Une perte de signal due à la polarisation du soleil.", "Une interférence entre deux fibres."], correctAnswer: 1, explanation: "La <strong>PMD</strong> est une forme de dispersion qui se produit car les deux modes de polarisation de la lumière peuvent voyager à des vitesses légèrement différentes, notamment si le cœur de la fibre n'est pas parfaitement cylindrique. C'est un facteur limitant pour les très hauts débits."},
+                {type: 'qcm', question: "À quoi sert la 'gaine d'aramide' (Kevlar) dans un câble ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><circle cx="100" cy="62.5" r="30" stroke="var(--text-primary)"/><circle cx="100" cy="62.5" r="20" stroke="var(--accent)"/><circle cx="100" cy="62.5" r="10" stroke="var(--primary)"/><path d="M 50 62.5 h -20 M 150 62.5 h 20" stroke="var(--text-primary)"/></svg>', options: ["Protection contre les rongeurs.", "Isolation électrique.", "Élément de traction et de résistance mécanique.", "Protection contre le feu."], correctAnswer: 2, explanation: "Les fils d'aramide (souvent de marque Kevlar®) sont intégrés dans les câbles pour fournir une <strong>résistance à la traction</strong>. Ce sont ces fils, et non la fibre elle-même, qui supportent la tension lorsque l'on tire le câble."},
+                {type: 'qcm', question: "Que signifie FTTN ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 30 62.5 h 70" stroke="var(--primary)"/><rect x="100" y="50" width="20" height="25" stroke="var(--text-primary)"/><path d="M 120 62.5 h 50" stroke="var(--text-muted)"/></svg>', options: ["Fiber To The Node", "Fiber To The Neighborhood", "Fast To The Node", "Fiber To The Network"], correctAnswer: 0, explanation: "<strong>Fiber To The Node/Neighborhood</strong> (Fibre jusqu'au nœud/quartier) est une architecture où la fibre optique arrive jusqu'à une armoire de rue (le 'Node'), et la connexion finale jusqu'aux habitations est réalisée avec le réseau cuivre existant (VDSL)."},
+                {type: 'qcm', question: "Qu'est-ce que le DWDM ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="1"><path d="M 30 50 h 140" stroke="var(--primary)"/><path d="M 30 55 h 140" stroke="var(--secondary)"/><path d="M 30 60 h 140" stroke="var(--accent)"/><path d="M 30 65 h 140" stroke="var(--correct)"/><path d="M 30 70 h 140" stroke="var(--incorrect)"/><path d="M 30 75 h 140" stroke="var(--primary-light)"/></svg>', options: ["Une technique de soudure à sec.", "Un type de fibre insensible aux courbures.", "Une version améliorée du Wi-Fi.", "Dense Wavelength Division Multiplexing."], correctAnswer: 3, explanation: "<strong>DWDM</strong> est une évolution du WDM qui utilise un espacement beaucoup plus serré entre les longueurs d'onde, permettant de combiner un très grand nombre de canaux (80, 96 ou plus) sur une seule fibre. C'est la technologie clé des cœurs de réseau longue distance."},
+                {type: 'qcm', question: "Qu'est-ce qu'un adaptateur de fibre nue ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="80" y="50" width="40" height="25" rx="2" stroke="var(--text-primary)"/><path d="M 40 62.5 h 40" stroke="var(--primary)"/></svg>', options: ["Un connecteur permanent.", "Un dispositif pour connecter temporairement une fibre non terminée à un appareil de mesure.", "Une loupe pour inspecter la fibre.", "Un outil de nettoyage."], correctAnswer: 1, explanation: "Un <strong>adaptateur de fibre nue</strong> est un connecteur réutilisable qui permet de connecter rapidement une fibre qui n'a pas encore de connecteur permanent (comme une pigtail) à un équipement de test (OTDR, photomètre)."},
+                {type: 'qcm', question: "Qu'est-ce que la 'longueur d'onde de coupure' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 30 100 v -80" stroke="var(--text-muted)"/><path d="M 30 100 h 140" stroke="var(--text-muted)"/><path d="M 80 20 v 80" stroke="var(--accent)" stroke-dasharray="4"/><path d="M 40 40 h 120" stroke="var(--primary)"/><path d="M 40 80 h 40" stroke="var(--secondary)"/><path d="M 40 80 l 20 -20" stroke="var(--secondary)"/></svg>', options: ["La longueur maximale d'un câble.", "La longueur d'onde à partir de laquelle la fibre commence à perdre du signal.", "La longueur d'onde au-dessus de laquelle une fibre ne propage plus qu'un seul mode.", "La longueur d'onde utilisée pour couper la fibre."], correctAnswer: 2, explanation: "La <strong>longueur d'onde de coupure</strong> est une propriété d'une fibre monomode. En dessous de cette longueur d'onde, la fibre peut se comporter comme une fibre multimode (plusieurs modes se propagent). Au-dessus, seul le mode fondamental est guidé, garantissant le comportement monomode."},
+                {type: 'qcm', question: "Qu'est-ce que le 'lovage' d'une fibre ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><circle cx="100" cy="62.5" r="30" stroke="var(--primary)"/><circle cx="100" cy="62.5" r="20" stroke="var(--primary)"/></svg>', options: ["Le nettoyage de la fibre.", "Le fait de la souder.", "L'enroulement soigné de la surlongueur de fibre dans une cassette.", "Le test de la fibre avec un laser."], correctAnswer: 2, explanation: "Le <strong>lovage</strong> consiste à enrouler la surlongueur de fibre optique de manière soignée et sans contrainte dans une cassette ou un boîtier. Un bon lovage respecte le rayon de courbure minimal et garantit la pérennité de l'installation."},
+                {type: 'qcm', question: "Quelle information un analyseur de spectre optique (OSA) fournit-il ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 30 100 h 140 M 30 20 v 80" stroke="var(--text-muted)"/><path d="M 50 80 v -40" stroke="var(--primary)"/><path d="M 90 80 v -60" stroke="var(--secondary)"/><path d="M 130 80 v -20" stroke="var(--accent)"/></svg>', options: ["La distance d'un défaut.", "La puissance optique sur différentes longueurs d'onde.", "Le type de connecteur.", "Le nom du fabricant de la fibre."], correctAnswer: 1, explanation: "Un <strong>OSA (Optical Spectrum Analyzer)</strong> est un instrument qui affiche la puissance des signaux optiques en fonction de leur longueur d'onde. Il est indispensable pour analyser les réseaux WDM et vérifier la présence, la puissance et la qualité de chaque canal."},
+                {type: 'qcm', question: "Qu'est-ce que la norme 'TIA/EIA-568' définit ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="60" y="50" width="80" height="25" rx="3" stroke="var(--text-primary)"/><path d="M 65 55 h 10" stroke="orange"/><path d="M 80 55 h 10" stroke="green"/><path d="M 95 55 h 10" stroke="blue"/><path d="M 110 55 h 10" stroke="brown"/></svg>', options: ["Les protocoles de sécurité Wi-Fi.", "Les standards pour le câblage structuré en cuivre (Ethernet).", "Les fréquences de la 5G.", "Les codes couleurs de la fibre optique."], correctAnswer: 1, explanation: "La norme <strong>TIA/EIA-568</strong> est un ensemble de standards qui définissent les bonnes pratiques pour le câblage des télécommunications dans les bâtiments commerciaux, notamment l'ordre des paires de fils dans les connecteurs RJ45 (T568A et T568B)."}
+            ],
+            easy: [
+                {type: 'qcm', question: "Principal avantage de la fibre optique ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3"><path d="M 50 80 q 50 -80 100 0" stroke="var(--primary)"/><path d="M 70 80 q 30 -50 60 0" stroke="var(--primary-light)" opacity="0.7"/><path d="M 90 80 q 10 -30 20 0" stroke="var(--primary-light)" opacity="0.5"/></svg>', options: ["Moins chère", "Beaucoup plus rapide", "Disponible partout", "Sans électricité"], correctAnswer: 1, explanation: "<strong>Beaucoup plus rapide :</strong> La fibre optique utilise la lumière pour transmettre des données, ce qui permet des vitesses des centaines de fois supérieures à l'ADSL, qui utilise les anciens câbles téléphoniques en cuivre. C'est idéal pour le streaming, les jeux en ligne et le télétravail."},
+                {type: 'qcm', question: "À quoi sert une 'box internet' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="60" y="50" width="80" height="25" rx="3" stroke="var(--text-primary)"/><path d="M 70 50 v -10 M 85 50 v -10 M 115 50 v -10 M 130 50 v-10" stroke="var(--text-primary)"/><path d="M 100 40 q 20 -20 40 0" stroke="var(--secondary)" stroke-width="3"/><path d="M 100 40 q 10 -10 20 0" stroke="var(--secondary)" stroke-width="3" opacity="0.6"/></svg>', options: ["Regarder la TV", "Connecter la maison à internet", "Recharger son téléphone", "Stocker des photos"], correctAnswer: 1, explanation: "<strong>Connecter la maison à internet :</strong> La box est un modem-routeur. Elle traduit le signal de l'opérateur (fibre, ADSL) en un signal utilisable par vos appareils et crée un réseau local, le plus souvent en Wi-Fi, pour que vous puissiez vous connecter sans fil."},
+                {type: 'qcm', question: "Qu'est-ce que le Wi-Fi ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3"><circle cx="100" cy="100" r="4" fill="var(--primary)" stroke="none"/><path d="M 80 80 q 20 -20 40 0" stroke="var(--primary)"/><path d="M 60 60 q 40 -40 80 0" stroke="var(--primary)"/><path d="M 40 40 q 60 -60 120 0" stroke="var(--primary)"/></svg>', options: ["Un type de câble", "Une technologie pour se connecter sans fil", "Un opérateur", "Un satellite"], correctAnswer: 1, explanation: "<strong>Une technologie pour se connecter sans fil :</strong> Le Wi-Fi utilise des ondes radio pour transmettre des données entre votre box et vos appareils (ordinateurs, téléphones, tablettes), vous évitant d'utiliser des câbles Ethernet (RJ45)."},
+                {type: 'qcm', question: "Métier de la personne qui installe la fibre ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><circle cx="100" cy="45" r="15" stroke="var(--text-primary)"/><path d="M 80 100 v -40 a 20 20 0 0 1 40 0 v 40" stroke="var(--text-primary)"/><rect x="60" y="90" width="80" height="15" rx="3" stroke="var(--accent)" fill="var(--surface)"/></svg>', options: ["Électricien", "Plombier", "Technicien télécom", "Maçon"], correctAnswer: 2, explanation: "<strong>Technicien télécom :</strong> C'est le spécialiste des réseaux de communication. Son travail consiste à tirer le câble de fibre optique depuis la rue jusqu'à votre domicile, à installer la prise (PTO) et à s'assurer que le service fonctionne parfaitement."},
+                {type: 'qcm', question: "Qu'est-ce qu'un 'poteau téléphonique' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3"><path d="M 100 20 v 85" stroke="var(--text-primary)"/><path d="M 100 40 h 40" stroke="var(--secondary)"/><path d="M 100 60 h 50" stroke="var(--secondary)"/></svg>', options: ["Support pour panneaux", "Support pour nids", "Poteau qui soutient les câbles télécoms", "Décoration"], correctAnswer: 2, explanation: "<strong>Poteau qui soutient les câbles télécoms :</strong> Dans de nombreuses zones, notamment rurales ou pavillonnaires, les câbles de téléphone et de fibre optique sont déployés en 'aérien', c'est-à-dire accrochés sur une série de poteaux."},
+                {type: 'qcm', question: "Que signifie '5G' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="var(--primary)" stroke-width="8" stroke="var(--primary)"><text x="50" y="85" font-family="Inter, sans-serif" font-size="60" font-weight="800">5G</text></svg>', options: ["5 Gigaoctets", "5ème génération de réseau mobile", "5x plus rapide que la 4G", "Un forfait"], correctAnswer: 1, explanation: "<strong>5ème génération de réseau mobile :</strong> C'est la dernière évolution des standards de la téléphonie mobile, succédant à la 2G, 3G et 4G. Elle apporte une plus grande vitesse, une réactivité quasi instantanée (faible latence) et la capacité de connecter un très grand nombre d'objets simultanément."},
+                {type: 'qcm', question: "Quel outil pour joindre deux fibres optiques ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="50" y="40" width="100" height="45" rx="5" stroke="var(--text-primary)"/><path d="M 50 62.5 h 100" stroke="var(--glass-border)"/><path d="M 20 62.5 h 30" stroke="var(--primary)"/><path d="M 150 62.5 h 30" stroke="var(--primary)"/><path d="M 95 52.5 l 10 20" stroke="var(--accent)"/></svg>', options: ["Ruban adhésif", "Agrafeuse", "Une soudeuse à fibre", "Colle forte"], correctAnswer: 2, explanation: "<strong>Une soudeuse à fibre :</strong> Cet appareil de haute technologie aligne parfaitement les deux brins de verre (plus fins qu'un cheveu) et les fait fondre avec un arc électrique pour les lier sans presque aucune perte de lumière. C'est un geste technique et précis."},
+                {type: 'qcm', question: "Pourquoi un technicien porte-t-il un casque ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3"><path d="M 70 100 v -20 a 30 30 0 1 1 60 0 v 20" stroke="var(--text-primary)"/><path d="M 60 50 h 80" stroke-width="4" stroke="var(--accent)"/></svg>', options: ["Pour la musique", "Pour la pluie", "Pour se protéger de la chute d'objets", "Pour le style"], correctAnswer: 2, explanation: "<strong>Pour se protéger de la chute d'objets :</strong> Le casque est un Équipement de Protection Individuelle (EPI) fondamental. Sur un chantier, même une petite vis qui tombe de haut peut causer une blessure grave. La sécurité est la priorité numéro un."},
+                {type: 'qcm', question: "Qu'est-ce que le 'raccordement' d'une maison ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3"><path d="M 140 80 h 40 v -40 h -40 z" stroke="var(--text-primary)"/><path d="M 20 80 h 120" stroke="var(--primary)"/></svg>', options: ["Peindre les murs", "Déconnecter la maison", "Connecter la maison au réseau télécom", "Installer le compteur"], correctAnswer: 2, explanation: "<strong>Connecter la maison au réseau télécom :</strong> Le raccordement est l'action de tirer le dernier câble entre le point de branchement dans la rue (ou sur le palier) et l'intérieur du logement pour y installer la prise finale."},
+                {type: 'qcm', question: "Quel est le contraire de 'télécharger' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="4" stroke-linecap="round"><path d="M 80 40 v 50" stroke="var(--secondary)"/><path d="M 65 75 l 15 15 l 15 -15" stroke="var(--secondary)"/><path d="M 120 85 v -50" stroke="var(--primary)"/><path d="M 105 50 l 15 -15 l 15 15" stroke="var(--primary)"/></svg>', options: ["Envoyer (upload)", "Effacer", "Copier", "Installer"], correctAnswer: 0, explanation: "<strong>Envoyer (upload) :</strong> Télécharger (download) consiste à recevoir des données depuis Internet (ex: regarder une vidéo). Envoyer ou téléverser (upload) consiste à transmettre des données vers Internet (ex: publier une photo sur les réseaux sociaux)."},
+                {type: 'qcm', question: "Où se trouve le 'cœur de réseau' d'un opérateur ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="40" y="30" width="30" height="70" rx="2" stroke="var(--text-primary)"/><rect x="85" y="30" width="30" height="70" rx="2" stroke="var(--text-primary)"/><rect x="130" y="30" width="30" height="70" rx="2" stroke="var(--text-primary)"/></svg>', options: ["Dans chaque maison", "Dans des datacenters", "Dans les antennes", "Sous la mer"], correctAnswer: 1, explanation: "<strong>Dans des datacenters :</strong> Ce sont des bâtiments ultra-sécurisés qui abritent les 'cerveaux' du réseau : serveurs, routeurs de très grande capacité, et les équipements qui gèrent tous les services des clients."},
+                {type: 'qcm', question: "Quel câble est remplacé par la fibre optique ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3"><path d="M 40 50 h 120" stroke="var(--text-muted)"/><path d="M 40 75 h 120" stroke="var(--primary)" stroke-dasharray="5"/><path d="M 170 50 l -10 25 l 10 -25" stroke="var(--incorrect)"/></svg>', options: ["Câble électrique", "Câble d'antenne TV", "Câble téléphonique en cuivre", "Tuyau d'eau"], correctAnswer: 2, explanation: "<strong>Câble téléphonique en cuivre :</strong> Le réseau téléphonique historique, constitué de paires de fils de cuivre, est progressivement remplacé par la fibre optique pour permettre le Très Haut Débit."},
+                {type: 'qcm', question: "Qu'est-ce qu'une 'panne réseau' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="4"><circle cx="100" cy="62.5" r="40" stroke="var(--incorrect)"/><path d="M 75 87.5 l 50 -50" stroke="var(--incorrect)"/></svg>', options: ["Coupure de courant", "Interruption du service internet", "Route bloquée", "Fuite d'eau"], correctAnswer: 1, explanation: "<strong>Interruption du service internet :</strong> Une panne réseau signifie que le service fourni par l'opérateur (Internet, téléphone, TV) ne fonctionne plus. La mission du technicien est d'en trouver la cause (câble coupé, équipement défaillant...) et de la réparer."},
+                {type: 'qcm', question: "Rôle d'une 'antenne-relais' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3"><path d="M 100 100 v -80 l 20 10 l -20 -10 l -20 10" stroke="var(--text-primary)"/><path d="M 70 50 q 30 -20 60 0" stroke="var(--primary)" stroke-dasharray="4"/><path d="M 80 60 q 20 -15 40 0" stroke="var(--primary)" stroke-dasharray="4" opacity="0.7"/></svg>', options: ["Décorer", "Connecter votre téléphone mobile au réseau", "Guider les avions", "Prévoir la météo"], correctAnswer: 1, explanation: "<strong>Connecter votre téléphone mobile au réseau :</strong> Les antennes-relais maillent le territoire et communiquent par ondes radio avec votre smartphone, vous permettant de passer des appels et d'accéder à internet en mobilité."},
+                {type: 'qcm', question: "Que faut-il faire avant de travailler sur un poteau télécom ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 120 20 v 85" stroke="var(--text-primary)"/><path d="M 80 100 v -40 a 20 20 0 0 1 40 0 v 40" stroke="var(--text-primary)"/><circle cx="100" cy="45" r="15" stroke="var(--text-primary)"/><path d="M 90 50 h 20" stroke-width="4" stroke="var(--accent)"/></svg>', options: ["Vérifier la météo", "Mettre ses Équipements de Protection Individuelle (EPI).", "Prévenir les voisins.", "Prendre un café."], correctAnswer: 1, explanation: "<strong>La sécurité est la priorité absolue.</strong> Avant toute intervention en hauteur, le technicien doit impérativement porter ses EPI : casque, gants, chaussures de sécurité et harnais antichute. Il doit aussi s'assurer de la stabilité du poteau."},
+                {type: 'qcm', question: "À quoi sert un 'câble de masse' sur une installation ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="70" y="30" width="60" height="65" rx="3" stroke="var(--text-primary)"/><path d="M 100 95 v 15" stroke="var(--secondary)"/><path d="M 85 110 h 30" stroke="var(--secondary)"/><path d="M 90 115 h 20" stroke="var(--secondary)"/><path d="M 95 120 h 10" stroke="var(--secondary)"/></svg>', options: ["Augmenter le poids de l'équipement.", "Guider les autres câbles.", "Protéger les équipements et les personnes contre les surtensions.", "Transmettre les données."], correctAnswer: 2, explanation: "Le <strong>câble de masse</strong> (ou de mise à la terre) est un élément de sécurité essentiel. Il relie les parties métalliques des équipements à la terre pour évacuer les courants de défaut (dus à la foudre ou un problème électrique)."},
+                {type: 'qcm', question: "Qu'est-ce qu'un 'débit symétrique' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="4"><path d="M 70 40 v 50" stroke="var(--primary)"/><path d="M 55 55 l 15 -15 l 15 15" stroke="var(--primary)"/><path d="M 130 90 v -50" stroke="var(--primary)"/><path d="M 115 75 l 15 15 l 15 -15" stroke="var(--primary)"/><text x="50" y="105" font-size="10" fill="var(--text-primary)">Upload</text><text x="110" y="105" font-size="10" fill="var(--text-primary)">Download</text></svg>', options: ["Un débit qui ne change jamais.", "Le même débit pour envoyer (upload) et recevoir (download) des données.", "Une connexion très stable.", "Un type de design de box internet."], correctAnswer: 1, explanation: "On parle de <strong>débit symétrique</strong> lorsque la vitesse pour envoyer des fichiers (upload) est la même que pour en recevoir (download). C'est très utile pour le télétravail ou l'envoi de gros fichiers."},
+                {type: 'qcm', question: "Que signifie l'acronyme 'ADSL' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3"><path d="M 40 55 h 120" stroke="#b45309"/><path d="M 40 70 h 120" stroke="#b45309"/><text x="70" y="95" font-family="JetBrains Mono" font-size="24" fill="var(--text-muted)">ADSL</text></svg>', options: ["Accès Direct et Super Limité.", "Association des Services en Ligne.", "Asymmetric Digital Subscriber Line.", "Autre Débit Sans Limite."], correctAnswer: 2, explanation: "ADSL signifie <strong>Asymmetric Digital Subscriber Line</strong> (Ligne d'abonné numérique asymétrique). 'Asymétrique' car le débit descendant (download) était beaucoup plus élevé que le débit montant (upload)."},
+                {type: 'qcm', question: "Quel est le rôle d'une 'goulotte' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="30" y="50" width="140" height="25" fill="var(--surface-elevated)"/><path d="M 40 62.5 h 120" stroke="var(--primary)" stroke-dasharray="5"/></svg>', options: ["Refroidir les câbles.", "Protéger et cacher les câbles le long d'un mur.", "Amplifier le signal Wi-Fi.", "Connecter deux câbles."], correctAnswer: 1, explanation: "Une <strong>goulotte</strong> est une sorte de conduit en plastique que l'on fixe au mur pour y faire passer des câbles. Cela permet de les protéger et d'avoir une installation propre et esthétique chez le client."},
+                {type: 'qcm', question: "Pourquoi la fibre optique est-elle insensible aux orages ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3"><path d="M 40 80 h 120" stroke="var(--primary)"/><path d="M 100 20 l -10 20 l 20 -5 l -10 25" stroke="var(--accent)"/></svg>', options: ["Elle est bien isolée.", "Elle est enterrée profondément.", "Elle transporte de la lumière et non de l'électricité.", "Elle est faite de plastique."], correctAnswer: 2, explanation: "Contrairement aux câbles en cuivre, la fibre optique guide un signal lumineux. Comme elle n'est pas conductrice d'électricité, elle est <strong>totalement insensible aux interférences électromagnétiques</strong> causées par les orages."},
+                {type: 'qcm', question: "Qu'est-ce qu'un 'plan de câblage' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="40" y="30" width="120" height="70" stroke="var(--text-muted)" fill="none"/><path d="M 50 40 h 20 v 20" stroke="var(--primary)"/><path d="M 70 60 l 30 20" stroke="var(--primary)"/><path d="M 100 80 h 20 v -20" stroke="var(--secondary)"/></svg>', options: ["Une liste de chaînes TV.", "Un schéma indiquant où et comment les câbles doivent être posés.", "Le prix des câbles.", "Un outil pour couper les câbles."], correctAnswer: 1, explanation: "Un <strong>plan de câblage</strong> est un document technique qui montre le chemin que les câbles doivent suivre dans un bâtiment. C'est un guide essentiel pour le technicien, surtout sur les gros chantiers."},
+                {type: 'qcm', question: "Quel est le premier test à faire en cas de panne chez un client ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="50" y="50" width="100" height="25" rx="3" stroke="var(--text-primary)"/><circle cx="70" cy="62.5" r="4" fill="var(--correct)"/><circle cx="85" cy="62.5" r="4" fill="var(--primary)"/><circle cx="100" cy="62.5" r="4" fill="var(--incorrect)"/><circle cx="115" cy="62.5" r="4" fill="var(--text-muted)"/></svg>', options: ["Vérifier si la télévision fonctionne.", "Redémarrer son ordinateur.", "Vérifier les voyants lumineux de la box internet.", "Appeler son support technique."], correctAnswer: 2, explanation: "La première étape de diagnostic est d'<strong>observer les voyants de la box</strong>. Leur état (éteint, clignotant, couleur) donne immédiatement des informations cruciales sur l'état de la connexion."},
+                {type: 'qcm', question: "Que veut dire 'travailler en sécurité' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="4"><path d="M 50 40 l 10 10 l 20 -20" stroke="var(--correct)"/><text x="90" y="45" font-size="12" fill="var(--text-primary)">Casque</text><path d="M 50 65 l 10 10 l 20 -20" stroke="var(--correct)"/><text x="90" y="70" font-size="12" fill="var(--text-primary)">Gants</text><path d="M 50 90 l 10 10 l 20 -20" stroke="var(--correct)"/><text x="90" y="95" font-size="12" fill="var(--text-primary)">Harnais</text></svg>', options: ["Travailler vite pour finir plus tôt.", "Suivre les règles et utiliser les protections pour éviter les accidents.", "Travailler seul pour ne pas être dérangé.", "Faire confiance à sa chance."], correctAnswer: 1, explanation: "Travailler en sécurité signifie <strong>connaître les risques, appliquer les procédures, et toujours utiliser les Équipements de Protection Individuelle (EPI)</strong> et collectifs adaptés."},
+                {type: 'qcm', question: "Qu'est-ce qu'une 'baie de brassage' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="60" y="20" width="80" height="90" rx="3" stroke="var(--text-primary)"/><path d="M 60 35 h 80 M 60 50 h 80 M 60 65 h 80 M 60 80 h 80 M 60 95 h 80" stroke="var(--glass-border)"/></svg>', options: ["Un meuble pour ranger les outils.", "Une armoire technique où tous les câbles réseau sont centralisés.", "Un type de bière apprécié des techniciens.", "Un logiciel de gestion de réseau."], correctAnswer: 1, explanation: "Une <strong>baie de brassage</strong> (ou rack) est une armoire métallique qui centralise tous les câbles et équipements réseau d'un bâtiment. Elle permet de gérer les connexions de manière propre et organisée."},
+                {type: 'qcm', question: "Pourquoi un technicien doit-il être soigneux ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3"><path d="M 30 62.5 C 50 40, 70 85, 90 62.5" stroke="var(--correct)"/><path d="M 110 40 c 10 10, -10 30, 0 40 c 10 -10, -10 -30, 0 -40 c 5 5, -5 15, 0 20" stroke="var(--incorrect)"/></svg>', options: ["Pour ne pas se salir.", "Parce que les clients aiment la propreté.", "Pour que l'installation soit fiable et facile à entretenir.", "Pour travailler plus lentement."], correctAnswer: 2, explanation: "Un travail soigné garantit la <strong>fiabilité de l'installation</strong> (évite les contraintes sur la fibre) et facilite grandement les interventions futures pour le technicien ou ses collègues."},
+                {type: 'qcm', question: "Quel est le rôle d'un 'switch' (commutateur) réseau ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="50" y="50" width="100" height="25" rx="3" stroke="var(--text-primary)"/><path d="M 60 50 v -20 h 10" stroke="var(--secondary)"/><path d="M 75 75 v 10 h 10" stroke="var(--primary)"/><path d="M 95 75 v 10 h 10" stroke="var(--primary)"/><path d="M 115 75 v 10 h 10" stroke="var(--primary)"/></svg>', options: ["Allumer et éteindre le réseau.", "Connecter plusieurs appareils ensemble sur un réseau local.", "Traduire les adresses internet.", "Fournir le Wi-Fi."], correctAnswer: 1, explanation: "Un <strong>switch</strong> est un boîtier qui relie plusieurs appareils (ordinateurs, imprimantes...) au sein d'un même réseau local (LAN) et aiguille intelligemment les données uniquement vers le bon destinataire."},
+                {type: 'qcm', question: "Qu'est-ce que la 'latence' (ou 'ping') ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><circle cx="100" cy="62.5" r="30" stroke="var(--text-muted)"/><path d="M 100 62.5 l 0 -15 M 100 62.5 l 10 0" stroke="var(--text-primary)"/><text x="85" y="95" font-family="JetBrains Mono" font-size="14" fill="var(--accent)">15ms</text></svg>', options: ["La vitesse de téléchargement.", "Le temps de réaction de la connexion.", "Le nombre d'appareils connectés.", "La sécurité de la connexion."], correctAnswer: 1, explanation: "La <strong>latence</strong>, mesurée par le 'ping' en millisecondes (ms), est le temps que met une donnée pour faire un aller-retour entre votre ordinateur et un serveur. Une latence faible est cruciale pour la réactivité (jeux, visio)."},
+                {type: 'qcm', question: "Pourquoi le technicien doit-il bien communiquer avec le client ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><circle cx="70" cy="50" r="15" stroke="var(--text-primary)"/><path d="M 50 90 v -25 a 20 20 0 0 1 40 0 v 25" stroke="var(--text-primary)"/><path d="M 65 55 q 5 5 10 0" stroke="var(--text-primary)"/><circle cx="130" cy="50" r="15" stroke="var(--secondary)"/><path d="M 110 90 v -25 a 20 20 0 0 1 40 0 v 25" stroke="var(--secondary)"/><path d="M 125 55 q 5 5 10 0" stroke="var(--secondary)"/></svg>', options: ["Pour passer le temps.", "Pour vendre des options supplémentaires.", "Pour expliquer ce qu'il fait, rassurer et s'assurer que tout fonctionne comme attendu.", "Pour obtenir un meilleur score."], correctAnswer: 2, explanation: "Une bonne communication est essentielle pour <strong>comprendre le problème, expliquer les travaux, rassurer le client</strong>, et vérifier avec lui que le service est bien rétabli et correspond à ses attentes."},
+                {type: 'qcm', question: "À quoi sert un connecteur RJ45 ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="70" y="50" width="60" height="30" rx="3" stroke="var(--text-primary)"/><path d="M 75 80 v -5 h 50 v 5" stroke="var(--text-primary)"/><path d="M 40 65 h 30" stroke="var(--secondary)"/></svg>', options: ["À brancher le téléphone.", "À connecter un câble réseau (Ethernet).", "À brancher l'alimentation.", "À connecter une antenne TV."], correctAnswer: 1, explanation: "Le connecteur <strong>RJ45</strong> est le standard universel pour les connexions réseau filaires. Il est utilisé au bout des câbles Ethernet pour relier les ordinateurs, les box, les switchs, etc."},
+                {type: 'qcm', question: "Que signifie le 'Débit' d'une connexion ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 40 80 h 120" stroke="var(--text-muted)"/><path d="M 40 60 h 20 l 5 10 l 10 -20 l 10 20 l 5 -10 h 70" stroke="var(--primary)"/></svg>', options: ["La stabilité de la connexion.", "Le prix de l'abonnement.", "La quantité de données transmise par seconde.", "La distance de la connexion."], correctAnswer: 2, explanation: "Le <strong>débit</strong> (ou bande passante) mesure la 'vitesse' de votre connexion, c'est-à-dire la quantité de données (mesurée en Mégabits par seconde - Mb/s) que vous pouvez recevoir ou envoyer."},
+                {type: 'qcm', question: "Pourquoi faut-il un mot de passe pour le Wi-Fi ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="70" y="40" width="60" height="50" rx="5" stroke="var(--text-primary)"/><path d="M 85 60 h 30" stroke="var(--accent)"/><path d="M 85 75 h 30" stroke="var(--accent)"/><circle cx="70" cy="40" r="10" stroke="var(--secondary)" fill="var(--surface)"/><path d="M 67 43 v -6 h 6" stroke="var(--secondary)"/><path d="M 70 40 v -5" stroke="var(--secondary)"/></svg>', options: ["Pour que la connexion soit plus rapide.", "Pour empêcher des inconnus d'utiliser votre connexion.", "C'est une obligation légale.", "Pour que la box ne surchauffe pas."], correctAnswer: 1, explanation: "Le mot de passe Wi-Fi (clé de sécurité) est essentiel pour <strong>sécuriser votre réseau</strong>. Sans lui, n'importe qui à portée pourrait se connecter, utiliser votre débit et potentiellement accéder à vos appareils."},
+                {type: 'qcm', question: "Qu'est-ce qu'un 'serveur' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="60" y="30" width="80" height="20" rx="2" stroke="var(--text-primary)"/><rect x="60" y="60" width="80" height="20" rx="2" stroke="var(--text-primary)"/><rect x="60" y="90" width="80" height="20" rx="2" stroke="var(--text-primary)"/></svg>', options: ["Un ordinateur très puissant qui stocke des sites web ou des données.", "Un technicien qui sert les clients.", "Le nom d'un fournisseur d'accès.", "Un type de câble spécial."], correctAnswer: 0, explanation: "Un <strong>serveur</strong> est un ordinateur conçu pour rester allumé 24h/24 et répondre à des requêtes. Les sites web, les emails, les jeux en ligne, tout cela fonctionne grâce à des serveurs."},
+                {type: 'qcm', question: "Que signifie 'FTTH' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 140 80 h 40 v -40 h -40 z" stroke="var(--text-primary)"/><path d="M 20 80 h 120" stroke="var(--primary)"/><text x="60" y="70" font-size="16" fill="var(--primary)">FTTH</text></svg>', options: ["Fast To The Home.", "For The Telecom House.", "Fiber To The Home.", "Fibre Très Très Haut-débit."], correctAnswer: 2, explanation: "<strong>FTTH</strong> signifie 'Fiber To The Home', soit 'Fibre jusqu'au Domicile'. Cela indique que la liaison en fibre optique va de bout en bout, du central de l'opérateur jusqu'à l'intérieur du logement."},
+                {type: 'qcm', question: "À quoi sert un 'pare-feu' (firewall) ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3"><path d="M 50 20 v 85 h 100 v -85" stroke="var(--accent)"/><path d="M 50 40 h 100 M 50 60 h 100 M 50 80 h 100" stroke="var(--accent)" opacity="0.5"/><path d="M 20 62.5 h 30" stroke="var(--incorrect)"/><path d="M 150 62.5 h 30" stroke="var(--correct)"/></svg>', options: ["À protéger du feu.", "À bloquer les sites web dangereux.", "À filtrer le trafic réseau pour bloquer les menaces.", "À accélérer la connexion."], correctAnswer: 2, explanation: "Un <strong>pare-feu</strong> est une barrière de sécurité qui surveille et contrôle le trafic réseau. Il agit comme un filtre pour bloquer les connexions non autorisées et protéger votre ordinateur des attaques."},
+                {type: 'qcm', question: "Que signifie un voyant vert fixe sur une box ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="60" y="50" width="80" height="25" rx="3" stroke="var(--text-primary)"/><circle cx="100" cy="62.5" r="5" fill="var(--correct)"/></svg>', options: ["Problème détecté.", "Mise à jour en cours.", "En cours de démarrage.", "Le service fonctionne normalement."], correctAnswer: 3, explanation: "En général, un voyant <strong>vert et fixe</strong> est bon signe ! Cela indique que la fonctionnalité associée (alimentation, connexion internet, Wi-Fi...) est active et fonctionne correctement."},
+                {type: 'qcm', question: "Qu'est-ce que le 'Cloud' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 80 50 a 20 20 0 0 1 40 0 a 25 25 0 0 1 0 50 h -60 a 20 20 0 0 1 -10 -38 a 15 15 0 0 1 30 0" stroke="var(--text-primary)" fill="var(--primary-light)" fill-opacity="0.2"/><path d="M 100 80 v -20 l -10 10 l 10 -10 l 10 10" stroke="var(--primary)"/></svg>', options: ["Un type de météo.", "Un réseau de serveurs pour stocker des données en ligne.", "Le nom du réseau Wi-Fi public.", "Un virus informatique."], correctAnswer: 1, explanation: "Le <strong>Cloud</strong> (ou nuage informatique) fait référence à des serveurs distants accessibles via Internet, sur lesquels on peut stocker des fichiers (photos, documents) ou utiliser des applications sans rien installer sur son ordinateur."},
+                {type: 'qcm', question: "Quel outil utilise-t-on pour sertir un connecteur RJ45 ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 60 40 h 80 v 20 h -80 z" stroke="var(--text-primary)"/><path d="M 80 60 v 20 M 120 60 v 20" stroke="var(--text-primary)"/><rect x="70" y="80" width="60" height="10" rx="2" stroke="var(--accent)"/></svg>', options: ["Un marteau.", "Une pince à sertir.", "Un tournevis.", "Une scie."], correctAnswer: 1, explanation: "Une <strong>pince à sertir</strong> est l'outil spécifique qui permet de connecter fermement les fils d'un câble Ethernet à l'intérieur d'un connecteur RJ45, en assurant un contact électrique parfait."},
+                {type: 'qcm', question: "Que signifie 'LAN' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="80" y="20" width="40" height="20" rx="2" stroke="var(--text-primary)"/><path d="M 100 40 v 20" stroke="var(--text-primary)"/><path d="M 50 60 h 100" stroke="var(--text-primary)"/><path d="M 50 60 v 20 M 100 60 v 20 M 150 60 v 20" stroke="var(--text-primary)"/><rect x="40" y="80" width="20" height="15" rx="2" stroke="var(--secondary)"/><rect x="90" y="80" width="20" height="15" rx="2" stroke="var(--secondary)"/><rect x="140" y="80" width="20" height="15" rx="2" stroke="var(--secondary)"/></svg>', options: ["Long Area Network.", "Local Area Network.", "Light Area Network.", "Large Area Network."], correctAnswer: 1, explanation: "<strong>LAN</strong> signifie 'Local Area Network', ou Réseau Local en français. Il désigne le réseau privé à l'intérieur d'un même bâtiment (maison, bureau) qui relie vos appareils entre eux et à la box internet."},
+                {type: 'qcm', question: "Qu'est-ce que la 'VoIP' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 60 40 h 20 l 5 10 l -10 0 l 5 10 h -20 z" stroke="var(--text-primary)"/><path d="M 90 60 h 50" stroke="var(--secondary)"/><text x="95" y="55" font-size="12" fill="var(--text-secondary)">VoIP</text></svg>', options: ["Video over Internet Protocol.", "Voice over Internet Protocol.", "Virus on Internet Protocol.", "Verified on Internet Protocol."], correctAnswer: 1, explanation: "<strong>VoIP</strong> signifie 'Voice over Internet Protocol' (Voix sur IP). C'est la technologie qui permet de passer des appels téléphoniques en utilisant une connexion Internet au lieu de la ligne téléphonique traditionnelle."},
+                {type: 'qcm', question: "À quoi sert un testeur de câble réseau ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="50" y="50" width="40" height="60" rx="3" stroke="var(--text-primary)"/><rect x="110" y="50" width="40" height="60" rx="3" stroke="var(--text-primary)"/><path d="M 90 60 h 20" stroke="var(--secondary)"/><path d="M 90 70 h 20" stroke="var(--secondary)"/><path d="M 90 80 h 20" stroke="var(--incorrect)"/></svg>', options: ["À mesurer la vitesse du câble.", "À vérifier que le câble est bien branché.", "À vérifier que tous les fils du câble sont correctement connectés.", "À nettoyer le câble."], correctAnswer: 2, explanation: "Un <strong>testeur de câble</strong> est un appareil simple qui envoie un signal dans chaque fil d'un câble réseau. Il permet de vérifier la continuité et de s'assurer qu'il n'y a pas de court-circuit ou de mauvais branchement."},
+                {type: 'qcm', question: "Qu'est-ce qu'un onduleur (UPS) ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="70" y="40" width="60" height="50" rx="3" stroke="var(--text-primary)"/><path d="M 40 65 h 30" stroke="var(--incorrect)"/><path d="M 130 65 h 30" stroke="var(--correct)"/><path d="M 85 55 h 30" stroke="var(--secondary)"/><path d="M 85 70 h 30" stroke="var(--secondary)"/></svg>', options: ["Un type de modem.", "Un appareil qui protège de la foudre.", "Une batterie de secours qui prend le relais en cas de coupure de courant.", "Un amplificateur de signal."], correctAnswer: 2, explanation: "Un <strong>onduleur</strong> (UPS - Uninterruptible Power Supply) est un boîtier contenant une batterie. On y branche les équipements sensibles (box, ordinateur) pour qu'ils restent allumés quelques minutes en cas de coupure de courant."},
+                {type: 'qcm', question: "Qu'est-ce qu'un navigateur web ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><circle cx="100" cy="62.5" r="30" stroke="var(--text-primary)"/><circle cx="100" cy="62.5" r="10" stroke="var(--secondary)"/></svg>', options: ["Un moteur de recherche comme Google.", "Un logiciel pour envoyer des emails.", "Un logiciel pour consulter des sites web.", "Le système d'exploitation de l'ordinateur."], correctAnswer: 2, explanation: "Un <strong>navigateur</strong> (ou browser) est le programme que vous utilisez pour aller sur Internet. Chrome, Firefox, Safari et Edge sont des exemples de navigateurs web."},
+                {type: 'qcm', question: "Qu'est-ce qu'une adresse URL ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="40" y="50" width="120" height="25" rx="12.5" stroke="var(--text-primary)"/><text x="45" y="68" font-size="10" fill="var(--text-secondary)">https://www.ltd.fr</text></svg>', options: ["L'adresse de votre domicile.", "L'adresse d'un site web.", "L'adresse de votre ordinateur sur le réseau.", "L'adresse de votre compte email."], correctAnswer: 1, explanation: "L'<strong>URL</strong> (Uniform Resource Locator) est tout simplement l'adresse unique d'une ressource sur Internet, comme une page web, une image ou un fichier. C'est ce que vous tapez dans la barre d'adresse de votre navigateur."},
+                {type: 'qcm', question: "Que signifie 'FTTA' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 100 100 v -80 l 20 10 l -20 -10 l -20 10" stroke="var(--text-primary)"/><path d="M 100 20 h -40" stroke="var(--primary)"/></svg>', options: ["Fiber To The Apartment", "Fiber To The Area", "Fiber To The Antenna", "Fiber To The Attic"], correctAnswer: 2, explanation: "<strong>FTTA</strong> signifie 'Fiber To The Antenna' (Fibre jusqu'à l'Antenne). C'est l'architecture utilisée pour connecter les antennes-relais de téléphonie mobile (4G/5G) avec de la fibre optique, ce qui est indispensable pour fournir de très hauts débits mobiles."},
+                {type: 'qcm', question: "Quel est le code couleur de la première paire dans un câble Ethernet ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="4"><path d="M 60 50 h 80" stroke="blue"/><path d="M 60 75 h 80" stroke="white" stroke-dasharray="8 4"/><path d="M 100 75 h -10" stroke="blue" stroke-dasharray="8 4"/></svg>', options: ["Vert et Blanc/Vert", "Orange et Blanc/Orange", "Bleu et Blanc/Bleu", "Marron et Blanc/Marron"], correctAnswer: 2, explanation: "Dans les standards de câblage T568A et T568B, la paire de fils <strong>Bleu et Blanc/Bleu</strong> est toujours la première paire (broches 4 et 5). C'est un repère important lors du câblage."},
+                {type: 'qcm', question: "Qu'est-ce qu'un 'rayon de courbure' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3"><path d="M 80 40 h 40 a 20 20 0 0 1 -20 20" stroke="var(--primary)"/><path d="M 100 60 v -20 h 20" stroke="var(--text-muted)" stroke-width="1"/><text x="102" y="58" font-size="10" fill="var(--text-muted)">R</text></svg>', options: ["Un type de laser.", "La distance maximale d'un signal.", "Le rayon minimal en dessous duquel un câble ne doit pas être plié.", "L'angle d'un connecteur."], correctAnswer: 2, explanation: "Le <strong>rayon de courbure</strong> minimal est une spécification technique cruciale, surtout pour la fibre optique. Plier un câble plus que ce rayon peut l'endommager de façon permanente et causer une forte perte de signal (atténuation)."},
+                {type: 'qcm', question: "Que fait un technicien lors d'une 'recette' de liaison ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 50 40 h 100 v 50 h -100 z" stroke="var(--text-primary)"/><path d="M 60 55 l 10 10 l 20 -20" stroke="var(--correct)"/><text x="100" y="60" font-size="12" fill="var(--text-secondary)">Test OK</text></svg>', options: ["Il prépare un plat pour le client.", "Il effectue une série de tests pour valider que l'installation est conforme.", "Il rédige la facture.", "Il nettoie le chantier."], correctAnswer: 1, explanation: "Faire la <strong>recette</strong> d'une installation signifie réaliser toutes les mesures (photométrie, réflectométrie) et vérifications nécessaires pour prouver que la liaison est fonctionnelle et respecte le cahier des charges."},
+                {type: 'qcm', question: "Qu'est-ce que le 'tirage de câble' ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><circle cx="50" cy="62.5" r="20" stroke="var(--text-primary)"/><path d="M 70 62.5 h 80" stroke="var(--primary)"/><path d="M 150 62.5 l -10 -10 m 10 10 l -10 10" stroke="var(--primary)"/></svg>', options: ["Choisir un câble au hasard.", "L'action de dérouler et de poser un câble entre deux points.", "Mesurer la longueur d'un câble.", "Couper un câble."], correctAnswer: 1, explanation: "Le <strong>tirage de câble</strong> est l'opération physique qui consiste à faire passer un câble (fibre, cuivre) d'un point A à un point B, que ce soit dans des conduites souterraines, en aérien sur des poteaux ou à l'intérieur d'un bâtiment."},
+                {type: 'qcm', question: "Pourquoi la propreté d'un connecteur optique est-elle si importante ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><circle cx="100" cy="62.5" r="30" stroke="var(--text-primary)"/><circle cx="90" cy="55" r="3" fill="var(--incorrect)"/><circle cx="110" cy="70" r="2" fill="var(--incorrect)"/></svg>', options: ["Pour l'esthétique.", "Pour éviter les courts-circuits.", "Parce qu'une simple poussière peut bloquer le signal lumineux.", "Pour qu'il s'insère plus facilement."], correctAnswer: 2, explanation: "Le cœur d'une fibre est minuscule. Une simple poussière, invisible à l'œil nu, est comme un rocher qui bloquerait le passage de la lumière. Elle peut causer une forte atténuation ou une réflectance élevée, et même endommager les connecteurs."},
+                {type: 'qcm', question: "Qu'est-ce qu'un 'point de mutualisation' (PM) ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="70" y="30" width="60" height="70" stroke="var(--text-primary)"/><path d="M 40 50 h 30" stroke="var(--primary)"/><path d="M 40 65 h 30" stroke="var(--secondary)"/><path d="M 40 80 h 30" stroke="var(--accent)"/><path d="M 130 65 h 30" stroke="var(--text-primary)"/></svg>', options: ["Un endroit où les techniciens se retrouvent.", "Une grosse antenne pour plusieurs opérateurs.", "Une armoire de rue où les réseaux de plusieurs opérateurs sont connectés.", "Un point de vente partagé."], correctAnswer: 2, explanation: "Le <strong>Point de Mutualisation</strong> est une armoire (dans la rue ou en immeuble) où s'arrête le réseau d'un opérateur d'infrastructure et où les opérateurs commerciaux viennent se connecter pour desservir leurs clients respectifs."},
+                {type: 'qcm', question: "Quel est le principal danger en travaillant dans une chambre souterraine ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><rect x="40" y="40" width="120" height="10" stroke="var(--text-muted)"/><path d="M 40 50 v 40 h 120 v -40" stroke="var(--text-primary)"/><path d="M 90 70 a 10 10 0 1 1 20 0 a 15 15 0 0 0 -10 10" stroke="var(--incorrect)"/></svg>', options: ["Le manque de lumière.", "La présence de gaz dangereux.", "Les araignées.", "Le bruit."], correctAnswer: 1, explanation: "Les chambres télécom souterraines peuvent contenir des <strong>gaz toxiques ou inflammables</strong> (monoxyde de carbone, H2S) qui sont invisibles et inodores. Il est impératif d'utiliser un détecteur de gaz avant et pendant toute intervention."},
+                {type: 'qcm', question: "À quoi sert une 'aiguille' de tirage ?", svg: '<svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2"><path d="M 40 62.5 C 80 30, 120 95, 160 62.5" stroke="var(--accent)"/><circle cx="160" cy="62.5" r="3" fill="var(--accent)"/></svg>', options: ["À coudre les câbles ensemble.", "Un fil rigide pour guider un câble dans une gaine.", "À percer des trous dans les murs.", "À mesurer la température."], correctAnswer: 1, explanation: "Une <strong>aiguille de tirage</strong> est un long fil semi-rigide (en nylon ou fibre de verre) que l'on passe d'abord dans une gaine ou une cloison vide. On attache ensuite le vrai câble à son extrémité pour le tirer facilement à travers le conduit."}
+            ]
+        };
 
         let currentQuestionIndex = 0;
         let score = 0;
+        let currentDifficulty = 'easy'; // 'easy' or 'hard'
+        let randomizedQuizData = [];
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function selectDifficultyAndStart(difficulty) {
+            currentDifficulty = difficulty;
+            startGame();
+        }
 
         function startGame() {
             currentQuestionIndex = 0;
             score = 0;
+            const selectedQuizData = fullQuizData[currentDifficulty];
+            randomizedQuizData = [...selectedQuizData];
+            shuffleArray(randomizedQuizData);
             showQuestion(currentQuestionIndex);
         }
 
         function showQuestion(index) {
-            const questionData = quizData[index];
+            const questionData = randomizedQuizData[index];
             if (!questionData) {
                 showFinalScore();
                 return;
@@ -716,12 +896,36 @@
             if (questionData.type === 'minigame') {
                 setupDragAndDrop();
             }
+
+            const difficultyToggle = document.getElementById('difficulty-toggle-checkbox');
+            if(difficultyToggle) {
+                difficultyToggle.checked = (currentDifficulty === 'hard');
+                difficultyToggle.addEventListener('change', (e) => {
+                    selectDifficultyAndStart(e.target.checked ? 'hard' : 'easy');
+                });
+            }
+
             updateProgressBar();
         }
         
+        function getDifficultySwitcher() {
+            return `
+                <div class="difficulty-switcher">
+                    <label for="difficulty-toggle-checkbox">Facile</label>
+                    <label class="switch">
+                        <input type="checkbox" id="difficulty-toggle-checkbox">
+                        <span class="slider"></span>
+                    </label>
+                    <label for="difficulty-toggle-checkbox">Difficile</label>
+                </div>
+            `;
+        }
+
         function getQCMContent(data, index) {
              return `
-                <p class="score-display">Question ${index + 1} / ${quizData.length} | Score: ${score}</p>
+                ${getDifficultySwitcher()}
+                <p class="score-display">Question ${index + 1} / ${randomizedQuizData.length} | Score: ${score}</p>
+                <div class="question-image-container">${data.svg}</div>
                 <h2>${data.question}</h2>
                 <div class="options-grid" id="options-container">
                     ${data.options.map((option, i) => `<button class="option-btn" onclick="selectAnswer(${i}, ${data.correctAnswer})">${option}</button>`).join('')}
@@ -735,7 +939,9 @@
         function getMiniGameContent(data, index) {
             const items = [data.draggable, ...data.distractors].sort(() => Math.random() - 0.5);
             return `
-                <p class="score-display">Mini-Jeu ${index + 1} / ${quizData.length} | Score: ${score}</p>
+                ${getDifficultySwitcher()}
+                <p class="score-display">Mini-Jeu ${index + 1} / ${randomizedQuizData.length} | Score: ${score}</p>
+                <div class="question-image-container">${data.svg}</div>
                 <h2>${data.title}</h2>
                 <p>${data.instruction}</p>
                 <div class="drag-and-drop-container">
@@ -756,19 +962,19 @@
             const feedbackContainer = document.getElementById('feedback-container');
             const nextBtn = document.getElementById('next-btn');
             const buttons = optionsContainer.getElementsByTagName('button');
-            const questionData = quizData[currentQuestionIndex];
+            const questionData = randomizedQuizData[currentQuestionIndex];
 
             for (let btn of buttons) { btn.disabled = true; }
 
             if (selectedIndex === correctIndex) {
                 score += 10;
                 buttons[selectedIndex].classList.add('correct');
-                feedbackContainer.innerHTML = `<strong>Correct !</strong><p class="feedback-explanation">${questionData.explanation}</p>`;
+                feedbackContainer.innerHTML = `<strong>Correct !</strong><div class="feedback-explanation">${questionData.explanation}</div>`;
                 feedbackContainer.className = 'feedback correct';
             } else {
                 buttons[selectedIndex].classList.add('incorrect');
                 buttons[correctIndex].classList.add('correct');
-                feedbackContainer.innerHTML = `<strong>Incorrect.</strong><p class="feedback-explanation">${questionData.explanation}</p>`;
+                feedbackContainer.innerHTML = `<strong>Incorrect.</strong><div class="feedback-explanation">${questionData.explanation}</div>`;
                 feedbackContainer.className = 'feedback incorrect';
             }
             
@@ -784,12 +990,12 @@
         function updateProgressBar() {
             const progressBar = document.getElementById('progress-bar-inner');
             if (progressBar) {
-                progressBar.style.width = `${(currentQuestionIndex / quizData.length) * 100}%`;
+                progressBar.style.width = `${((currentQuestionIndex + 1) / randomizedQuizData.length) * 100}%`;
             }
         }
         
         function showFinalScore() {
-            const percentage = (score / (quizData.length * 10)) * 100;
+            const percentage = (score / (randomizedQuizData.length * 10)) * 100;
             let finalMessage = "C'est un bon début ! Continuez à explorer ce métier passionnant.";
             if (percentage >= 80) finalMessage = "Excellent ! Vous avez l'étoffe d'un expert des réseaux !";
             else if (percentage >= 50) finalMessage = "Bon score ! Vous avez de bonnes bases dans le domaine des télécoms.";
@@ -797,10 +1003,14 @@
             gameContainer.innerHTML = `
                 <div class="game-card">
                     <h1>Quiz Terminé !</h1>
-                    <p>Vous avez découvert quelques facettes du métier de technicien télécom.</p>
-                    <h2>Votre score final : ${score} / ${quizData.length * 10}</h2>
+                    <p>Niveau: <strong style="color: var(--primary-light);">${currentDifficulty === 'easy' ? 'Facile' : 'Difficile'}</strong></p>
+                    <h2>Votre score final : ${score} / ${randomizedQuizData.length * 10}</h2>
                     <p>${finalMessage}</p>
-                    <button class="btn" onclick="startGame()">Recommencer le quiz</button>
+                    <p>Envie de changer de niveau ?</p>
+                    <div class="difficulty-selector">
+                        <button class="btn" onclick="selectDifficultyAndStart('easy')">Recommencer (Facile)</button>
+                        <button class="btn btn-secondary" onclick="selectDifficultyAndStart('hard')">Recommencer (Difficile)</button>
+                    </div>
                 </div>
             `;
         }
@@ -854,8 +1064,15 @@
              gameContainer.innerHTML = `
                 <div class="game-card">
                     <h1>Bienvenue au Quiz Télécom</h1>
-                    <p>Testez vos connaissances et découvrez les bases du métier de technicien télécom à travers des questions et des mini-jeux interactifs. Prêt à relever le défi ?</p>
-                    <button class="btn" onclick="startGame()">Commencer le Quiz</button>
+                    <p>Testez vos connaissances et découvrez les bases du métier de technicien télécom. Choisissez votre niveau pour commencer !</p>
+                    <div class="difficulty-selector">
+                        <button class="btn" onclick="selectDifficultyAndStart('easy')">
+                            <i class="fas fa-seedling"></i> Découverte (Facile)
+                        </button>
+                        <button class="btn btn-secondary" onclick="selectDifficultyAndStart('hard')">
+                            <i class="fas fa-brain"></i> Expert (Difficile)
+                        </button>
+                    </div>
                 </div>
             `;
         }
