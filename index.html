@@ -293,6 +293,86 @@
             transform: rotate(15deg);
         }
 
+        /* --- Dropdown Menus (MODIFIÉ) --- */
+        .nav-item.has-dropdown > .nav-link::after {
+            content: '\f078'; /* Font Awesome chevron-down */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 0.6rem;
+            margin-left: 0.5rem;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-item.has-dropdown:hover > .nav-link::after {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 10px); /* Positionne en dessous du lien avec un petit espace */
+            left: 50%;
+            transform: translateX(-50%);
+            width: max-content; /* S'adapte au contenu */
+            min-width: 220px;
+            background: rgba(30, 41, 59, 0.85); /* Un peu plus opaque */
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            padding: var(--spacing-sm);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(-50%) translateY(10px);
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+            z-index: 1001;
+        }
+        
+        body.light-mode .dropdown-menu {
+            background: rgba(255, 255, 255, 0.85);
+        }
+
+        .nav-item.has-dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+
+        .dropdown-menu a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            text-align: left;
+        }
+
+        .dropdown-menu a:hover {
+            color: var(--text-primary);
+            background: var(--glass);
+        }
+        
+        .dropdown-menu a .fa-fw {
+            width: 1.25em;
+            text-align: center;
+            color: var(--text-muted);
+        }
+        
+        .dropdown-menu a:hover .fa-fw {
+            color: var(--primary);
+        }
+
+
         /* --- Contenu Principal --- */
         .main-content { 
             margin-top: 4.5rem; 
@@ -727,13 +807,51 @@
                  <!-- Le menu de navigation suit la barre de recherche -->
                  <ul class="nav-menu">
                      <li class="nav-item"><a href="index.html" class="nav-link active" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
-                     <li class="nav-item"><a href="simulateur.html" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
-                     <li class="nav-item"><a href="test.html" class="nav-link" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
-                     <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
+                     
+                     <li class="nav-item has-dropdown">
+                         <a href="simulateur.html" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a>
+                         <div class="dropdown-menu">
+                            <a href="simulateur-chantier.html" onclick="event.preventDefault(); navigateTo('simulateur-chantier.html')"><i class="fas fa-hard-hat fa-fw"></i> Gestion de Chantier</a>
+                            <a href="simulateur-prix.html" onclick="event.preventDefault(); navigateTo('simulateur-prix.html')"><i class="fas fa-calculator fa-fw"></i> Étude de Prix</a>
+                            <a href="simulateur-conduite.html" onclick="event.preventDefault(); navigateTo('simulateur-conduite.html')"><i class="fas fa-truck-monster fa-fw"></i> Conduite d'Engins</a>
+                         </div>
+                     </li>
+
+                     <li class="nav-item has-dropdown">
+                         <a href="test.html" class="nav-link" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests</a>
+                         <div class="dropdown-menu">
+                            <a href="test-personnalite.html" onclick="event.preventDefault(); navigateTo('test-personnalite.html')"><i class="fas fa-user-check fa-fw"></i> Test de Personnalité</a>
+                            <a href="test-technique.html" onclick="event.preventDefault(); navigateTo('test-technique.html')"><i class="fas fa-cogs fa-fw"></i> Test Technique BTP</a>
+                            <a href="test-logique.html" onclick="event.preventDefault(); navigateTo('test-logique.html')"><i class="fas fa-lightbulb fa-fw"></i> Test de Logique</a>
+                         </div>
+                     </li>
+
+                     <li class="nav-item has-dropdown">
+                         <a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a>
+                         <div class="dropdown-menu">
+                             <a href="challenge-recrutement.html" onclick="event.preventDefault(); navigateTo('challenge-recrutement.html')"><i class="fas fa-user-tie fa-fw"></i> Challenge Recrutement</a>
+                             <a href="challenge-ecole.html" onclick="event.preventDefault(); navigateTo('challenge-ecole.html')"><i class="fas fa-school fa-fw"></i> Compétition Inter-Écoles</a>
+                         </div>
+                     </li>
+
                      <li class="nav-item"><a href="emploi.html" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
                      <li class="nav-item"><a href="histoire.html" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
-                     <li class="nav-item"><a href="quiz.html" class="nav-link" onclick="event.preventDefault(); navigateTo('quiz.html')"><i class="fas fa-question-circle"></i>&nbsp;Quiz</a></li>
-                     <li class="nav-item"><a href="outils.html" class="nav-link" onclick="event.preventDefault(); navigateTo('outils.html')"><i class="fas fa-wrench"></i>&nbsp;Outils</a></li>
+                     
+                     <li class="nav-item has-dropdown">
+                         <a href="quiz.html" class="nav-link" onclick="event.preventDefault(); navigateTo('quiz.html')"><i class="fas fa-question-circle"></i>&nbsp;Quiz</a>
+                         <div class="dropdown-menu">
+                            <a href="quiz-telecom.html" onclick="event.preventDefault(); navigateTo('quiz-telecom.html')"><i class="fas fa-broadcast-tower fa-fw"></i> Quiz Télécom</a>
+                            <a href="quiz-btp.html" onclick="event.preventDefault(); navigateTo('quiz-btp.html')"><i class="fas fa-building fa-fw"></i> Quiz BTP</a>
+                         </div>
+                     </li>
+
+                     <li class="nav-item has-dropdown">
+                        <a href="outils.html" class="nav-link" onclick="event.preventDefault(); navigateTo('outils.html')"><i class="fas fa-wrench"></i>&nbsp;Outils</a>
+                        <div class="dropdown-menu">
+                           <a href="generateur-cv.html" onclick="event.preventDefault(); navigateTo('generateur-cv.html')"><i class="fas fa-file-alt fa-fw"></i> Générateur de CV</a>
+                           <a href="calculateur-materiaux.html" onclick="event.preventDefault(); navigateTo('calculateur-materiaux.html')"><i class="fas fa-boxes fa-fw"></i> Calculateur Matériaux</a>
+                        </div>
+                    </li>
                  </ul>
                  <!-- Les actions (comme le changement de thème) sont poussées à droite -->
                  <div class="nav-actions">
@@ -1051,6 +1169,8 @@
 
         /**
          * Remplit le menu de navigation mobile en clonant les éléments du menu de bureau.
+         * NOTE : Cette version ne gère pas les sous-menus en mobile pour rester simple.
+         * Une version plus avancée pourrait créer des accordéons.
          */
         function populateMobileNav() {
             const desktopNav = document.querySelector('.nav-desktop .nav-menu');
@@ -1064,18 +1184,23 @@
                 const link = item.querySelector('a');
                 if (!link) return;
 
+                // On ne prend que le premier lien, qui est le lien principal de la catégorie
+                const mainLink = item.children[0];
+                if (!mainLink || mainLink.tagName !== 'A') return;
+
+
                 const newNavItem = document.createElement('a');
-                newNavItem.href = link.href;
+                newNavItem.href = mainLink.href;
                 newNavItem.className = 'mobile-nav-item';
                 
-                const pageFile = link.getAttribute('href');
+                const pageFile = mainLink.getAttribute('href');
                 newNavItem.onclick = (e) => {
                     e.preventDefault();
                     window.toggleMobileMenu();
                     window.navigateTo(pageFile);
                 };
 
-                const iconElement = link.querySelector('i');
+                const iconElement = mainLink.querySelector('i');
                 if (iconElement) {
                     const iconDiv = document.createElement('div');
                     iconDiv.className = 'mobile-nav-item-icon';
@@ -1084,8 +1209,7 @@
                 }
                 
                 const textNode = document.createElement('h4');
-                // Clone le lien pour en extraire le texte sans l'icône
-                const linkClone = link.cloneNode(true);
+                const linkClone = mainLink.cloneNode(true);
                 const iconClone = linkClone.querySelector('i');
                 if (iconClone) {
                     linkClone.removeChild(iconClone);
@@ -1122,16 +1246,14 @@
             const popupOverlay = document.getElementById('newsPopupOverlay');
             if (!popupOverlay) return;
 
-            // Ne pas montrer le pop-up si déjà vu dans cette session
             if (sessionStorage.getItem('newsPopupShown')) {
-                popupOverlay.style.display = 'none'; // S'assurer qu'il est bien caché
+                popupOverlay.style.display = 'none';
                 return;
             }
 
             const countdownElement = document.getElementById('popupCountdown');
             let countdown = 5;
 
-            // Afficher le pop-up après un court délai
             setTimeout(() => {
                 popupOverlay.classList.add('show');
                 sessionStorage.setItem('newsPopupShown', 'true');
@@ -1145,7 +1267,6 @@
                 if (countdown <= 0) {
                     clearInterval(interval);
                     popupOverlay.classList.remove('show');
-                    // Optionnel: cacher complètement l'élément après la transition
                     setTimeout(() => {
                         popupOverlay.style.display = 'none';
                     }, 500);
@@ -1156,7 +1277,6 @@
         // Exposer les fonctions nécessaires globalement pour qu'elles soient accessibles depuis le HTML (onclick)
         window.navigateTo = function(pageFile) {
             showProgress();
-            // Fermer le pop-up si on clique sur un lien dedans
             const popupOverlay = document.getElementById('newsPopupOverlay');
             if(popupOverlay) popupOverlay.classList.remove('show');
 
@@ -1197,7 +1317,7 @@
             initAnimations();
             populateMobileNav();
             setupSlider();
-            handleNewsPopup(); // Lancer le pop-up
+            handleNewsPopup();
         });
     </script>
 </body>
