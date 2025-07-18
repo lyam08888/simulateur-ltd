@@ -807,7 +807,15 @@
                     piece.draggable = true;
                     piece.dataset.pipeType = type;
                     piece.innerHTML = getPipeSVG(type, 0, question.pipeColor) + `<span class="pipe-count" id="pipe-count-${type}">${count}</span>`;
-                    piece.addEventListener('dragstart', e => { if (parseInt(document.getElementById(`pipe-count-${type}`).textContent) > 0) { playSound(sounds.drag, "8n"); e.dataTransfer.setData('text/plain', type); piece.classList.add('dragging'); } else { e.preventDefault(); } });
+                    piece.addEventListener('dragstart', e => { 
+                        if (parseInt(piece.querySelector(`#pipe-count-${type}`).textContent) > 0) { 
+                            playSound(sounds.drag, "8n"); 
+                            e.dataTransfer.setData('text/plain', type); 
+                            piece.classList.add('dragging'); 
+                        } else { 
+                            e.preventDefault(); 
+                        } 
+                    });
                     piece.addEventListener('dragend', () => piece.classList.remove('dragging'));
                     return piece;
                 };
