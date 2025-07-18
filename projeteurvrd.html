@@ -146,51 +146,52 @@
 
         /* --- STYLES SPÉCIFIQUES AU JEU VRD (adaptés au thème) --- */
         .game-card {
-            background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg);
+            background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-xl);
             padding: var(--spacing-lg); width: 100%; box-shadow: var(--shadow-xl);
             backdrop-filter: blur(10px); text-align: center; animation: fadeIn 0.5s ease-out;
-            max-width: 1000px; margin: 0 auto;
+            max-width: 1200px; margin: 0 auto;
         }
+        @media (min-width: 768px) { .game-card { padding: var(--spacing-xl); } }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
         
         .screen { display: none; flex: 1; }
         .screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
         .game-card h1 {
-            font-family: 'Poppins', sans-serif; font-size: clamp(2rem, 5vw, 3rem);
+            font-family: 'Poppins', sans-serif; font-size: clamp(2.2rem, 6vw, 3.5rem);
             font-weight: 800; color: var(--primary-light); margin-bottom: var(--spacing-sm);
         }
         .game-card h2 {
-            font-family: 'Poppins', sans-serif; font-size: clamp(1.2rem, 4vw, 1.8rem);
+            font-family: 'Poppins', sans-serif; font-size: clamp(1.5rem, 4vw, 2rem);
             font-weight: 700; color: var(--text-primary); margin-bottom: var(--spacing-md);
-            line-height: 1.4; max-width: 800px;
+            line-height: 1.4; max-width: 900px;
         }
-        .game-card p { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: var(--spacing-md); max-width: 600px; }
+        .game-card p { font-size: 1.2rem; color: var(--text-secondary); margin-bottom: var(--spacing-md); max-width: 700px; }
         
         .btn {
             display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-            background: var(--primary); color: white; border: none; padding: 0.8rem 1.8rem;
-            border-radius: var(--radius-full); font-size: 1rem; font-weight: 600;
+            background: var(--primary); color: white; border: none; padding: 1rem 2rem;
+            border-radius: var(--radius-full); font-size: 1.1rem; font-weight: 600;
             cursor: pointer; transition: var(--transition); box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
         }
         .btn:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: var(--shadow-glow); }
         .btn:active { transform: translateY(0); }
         .btn:disabled { opacity: 0.7; cursor: not-allowed; background: var(--surface-hover); box-shadow: none; }
 
-        .game-header-stats { display: flex; gap: var(--spacing-md); align-items: center; justify-content: center; margin-bottom: var(--spacing-md); }
-        .game-header-item { display: flex; align-items: center; gap: var(--spacing-xs); font-size: 1.25rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; background: var(--surface-elevated); padding: 0.5rem 1.25rem; border-radius: var(--radius-full); }
+        .game-header-stats { display: flex; gap: var(--spacing-md); align-items: center; justify-content: center; margin-bottom: var(--spacing-md); flex-wrap: wrap; }
+        .game-header-item { display: flex; align-items: center; gap: var(--spacing-xs); font-size: 1.3rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; background: var(--surface-elevated); padding: 0.6rem 1.5rem; border-radius: var(--radius-full); }
         .timer-display.warning { animation: pulse 1s infinite; color: var(--incorrect); }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         
         .answer-grid { display: grid; grid-template-columns: 1fr; gap: var(--spacing-sm); width: 100%; max-width: 1000px; margin-top: var(--spacing-md); }
-        @media (min-width: 640px) { .answer-grid { grid-template-columns: 1fr 1fr; } }
+        @media (min-width: 640px) { .answer-grid { grid-template-columns: 1fr 1fr; gap: var(--spacing-md); } }
 
         .answer-btn {
             width: 100%; background: var(--surface-elevated); color: var(--text-secondary);
-            padding: 1rem; border: 1px solid var(--glass-border); border-radius: var(--radius-md);
-            text-align: center; font-size: 1rem; cursor: pointer; transition: var(--transition);
+            padding: 1.2rem; border: 1px solid var(--glass-border); border-radius: var(--radius-md);
+            text-align: center; font-size: 1.1rem; cursor: pointer; transition: var(--transition);
         }
-        .answer-btn:not(:disabled):hover { background: var(--surface-hover); border-color: var(--primary); color: var(--text-primary); }
+        .answer-btn:not(:disabled):hover { background: var(--surface-hover); border-color: var(--primary); color: var(--text-primary); transform: translateY(-2px); }
         .answer-btn.correct { background: var(--correct) !important; color: var(--text-primary) !important; border-color: var(--correct) !important; animation: bounce 0.5s ease; }
         .answer-btn.incorrect { background: var(--incorrect) !important; color: var(--text-primary) !important; border-color: var(--incorrect) !important; animation: shake 0.5s ease; }
         .answer-btn:disabled { cursor: not-allowed; }
@@ -201,16 +202,16 @@
         .feedback-text { margin-top: var(--spacing-md); font-size: 1.2rem; font-weight: bold; }
         .feedback-solution { font-size: 1rem; font-weight: normal; color: var(--text-secondary); margin-top: var(--spacing-xs); }
 
-        .material-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; width: 100%; max-width: 1000px; margin-top: 2rem; }
+        .material-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; width: 100%; max-width: 1100px; margin-top: 2rem; }
         .material-card { background: var(--surface-elevated); border: 2px solid var(--glass-border); color: var(--text-secondary); border-radius: 1rem; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-        .material-icon { font-size: 3rem; line-height: 1; }
-        .material-card:not(.disabled):hover { transform: translateY(-4px); border-color: var(--primary); color: var(--text-primary); }
-        .material-card.selected { border-color: var(--secondary); box-shadow: 0 0 0 2px var(--secondary); }
+        .material-icon { font-size: 3.5rem; line-height: 1; }
+        .material-card:not(.disabled):hover { transform: translateY(-5px); border-color: var(--primary); color: var(--text-primary); box-shadow: var(--shadow-glow); }
+        .material-card.selected { border-color: var(--secondary); box-shadow: 0 0 0 3px var(--secondary); }
         .material-card.correct { background: var(--correct) !important; color: white !important; border-color: var(--correct) !important; }
         .material-card.incorrect { background: var(--incorrect) !important; color: white !important; border-color: var(--incorrect) !important; }
         .material-card.disabled { cursor: not-allowed; opacity: 0.7; }
 
-        .elevation-input, .text-input { font-size: 1.5rem; padding: 1rem 2rem; border: 1px solid var(--glass-border); border-radius: var(--radius-md); text-align: center; width: 100%; max-width: 400px; transition: all 0.3s ease; margin: 1rem 0; background-color: var(--surface-elevated); color: var(--text-primary); }
+        .elevation-input, .text-input { font-size: 1.8rem; padding: 1rem 2rem; border: 1px solid var(--glass-border); border-radius: var(--radius-md); text-align: center; width: 100%; max-width: 450px; transition: all 0.3s ease; margin: 1rem 0; background-color: var(--surface-elevated); color: var(--text-primary); }
         .elevation-input:focus, .text-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); }
         
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; width: 100%; max-width: 800px; margin: 2rem 0; }
@@ -218,23 +219,40 @@
         .stat-label { font-weight: 500; color: var(--text-secondary); margin-bottom: 0.5rem; }
         .stat-number { font-weight: 800; font-size: 2.5rem; color: var(--primary); }
 
-        .pipe-game-container { display: flex; flex-direction: column; align-items: center; gap: 1rem; width: 100%; }
+        .pipe-game-container { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; width: 100%; }
         .pipe-tray { display: flex; gap: 1rem; background: var(--surface-elevated); padding: 1rem; border-radius: 1rem; flex-wrap: wrap; justify-content: center; }
-        .pipe-piece-draggable { width: 50px; height: 50px; cursor: grab; position: relative; }
+        .pipe-piece-draggable { width: 60px; height: 60px; cursor: grab; position: relative; }
         .pipe-piece-draggable.dragging { opacity: 0.5; }
-        .pipe-count { position: absolute; bottom: -5px; right: -5px; background: var(--primary); color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; }
-        .pipe-grid-container { display: grid; grid-template-columns: repeat(var(--grid-cols, 5), 1fr); border: 2px solid var(--glass-border); border-radius: 1rem; overflow: hidden; background: var(--background); width: 100%; max-width: 90vw; }
+        .pipe-count { position: absolute; bottom: -5px; right: -5px; background: var(--primary); color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; }
+        .pipe-grid-container { 
+            display: grid; 
+            grid-template-columns: repeat(var(--grid-cols, 5), 1fr); 
+            border: 2px solid var(--glass-border); 
+            border-radius: 1rem; 
+            overflow: hidden; 
+            background: var(--background); 
+            width: clamp(320px, 90vw, 800px); /* MODIFIÉ */
+            margin-left: auto;
+            margin-right: auto;
+        }
         .grid-cell { border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; position: relative; background-color: var(--surface); aspect-ratio: 1 / 1; }
         .grid-cell.start-node { background-color: var(--correct); color: white; font-weight: bold; font-size: 1.5rem; }
         .grid-cell.end-node { background-color: var(--incorrect); color: white; font-weight: bold; font-size: 1.5rem; }
         .pipe-piece-placed { width: 100%; height: 100%; transition: transform 0.2s ease; cursor: pointer; }
-        .grid-cell.obstacle-node { background-color: var(--surface-hover); }
+        .grid-cell.obstacle-node { background-color: var(--surface-hover); display: flex; align-items: center; justify-content: center; }
 
-        .draggable { padding: 0.75rem; background: var(--surface-elevated); border: 1px solid var(--glass-border); border-radius: 0.5rem; cursor: grab; transition: all 0.2s ease; user-select: none; }
+        .draggable { padding: 0.75rem 1.25rem; background: var(--surface-elevated); border: 1px solid var(--glass-border); border-radius: 0.5rem; cursor: grab; transition: all 0.2s ease; user-select: none; text-align: center; }
         .draggable:active { cursor: grabbing; background: var(--surface-hover); }
-        .drop-zone { border: 2px dashed var(--glass-border); border-radius: 0.75rem; background: var(--surface); transition: all 0.2s ease; min-height: 100px; padding: 1rem; display: flex; flex-wrap: gap: 0.5rem; justify-content: center; align-items: center; }
-        .drop-zone.hover { border-color: var(--primary); background: var(--surface-hover); }
-        .drop-zone.filled { border-style: solid; }
+        .draggable.correct { background: var(--correct) !important; color: white !important; }
+        .draggable.incorrect { background: var(--incorrect) !important; color: white !important; }
+
+        .drop-zone-container { display: flex; flex-direction: column; align-items: center; gap: 2rem; width: 100%; }
+        .draggable-container { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; background: var(--surface); padding: 1rem; border-radius: 1rem; width: 100%; max-width: 1000px; /* MODIFIÉ */ }
+        .category-container { display: flex; gap: 1.5rem; width: 100%; justify-content: space-around; flex-direction: column; max-width: 1100px; /* MODIFIÉ */ }
+        @media (min-width: 768px) { .category-container { flex-direction: row; } }
+        .category-zone { border: 2px dashed var(--glass-border); border-radius: 1rem; background: var(--surface); transition: all 0.2s ease; min-height: 200px; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; align-items: center; flex: 1; width: 100%; }
+        .category-zone h4 { color: var(--text-secondary); margin-bottom: 1rem; font-size: 1.2rem; border-bottom: 2px solid var(--glass-border); padding-bottom: 0.5rem; width: 100%; }
+        .category-zone.hover { border-color: var(--primary); background: var(--surface-hover); }
 
         .confetti { position: fixed; width: 10px; height: 10px; top: -20px; animation: fall 3s linear forwards; }
         @keyframes fall { to { transform: translateY(100vh) rotate(360deg); } }
@@ -313,7 +331,7 @@
             <div id="homeScreen" class="screen active game-card">
                 <h1>Simulateur Projeteur VRD</h1>
                 <p>Testez vos connaissances et devenez un expert en Voirie et Réseaux Divers. Prêt à relever le défi ?</p>
-                <button id="startBtn" class="btn">Démarrer la simulation</button>
+                <button id="startBtn" class="btn">Démarrer la simulation <i class="fas fa-play"></i></button>
             </div>
 
             <!-- Écran de question -->
@@ -332,7 +350,7 @@
                 <div id="answerContainer"></div>
                 <div id="feedbackText" class="feedback-text"></div>
                 <div style="text-align: center; margin-top: 1.5rem;">
-                    <button id="nextBtn" class="btn" style="display: none;">Question Suivante</button>
+                    <button id="nextBtn" class="btn" style="display: none;">Question Suivante <i class="fas fa-arrow-right"></i></button>
                 </div>
             </div>
 
@@ -354,7 +372,7 @@
                     </div>
                 </div>
                 <p id="finalMessage" style="font-size: 1.5rem; margin-top: 1rem; margin-bottom: 2rem;"></p>
-                <button id="restartBtnFinal" class="btn">Recommencer</button>
+                <button id="restartBtnFinal" class="btn">Recommencer <i class="fas fa-redo"></i></button>
             </div>
         </div>
     </main>
@@ -367,7 +385,7 @@
             const themeIcon = document.getElementById('themeIcon');
             if (!themeIcon) return;
             document.body.classList.toggle('light-mode', currentTheme === 'light');
-            themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+            themeIcon.className = currentTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
         }
         function toggleTheme() {
             currentTheme = currentTheme === 'light' ? 'dark' : 'light';
@@ -399,7 +417,7 @@
                         e.preventDefault();
                         toggleMobileMenu();
                         if (link.href && !link.href.endsWith('#')) {
-                           navigateTo(link.getAttribute('href'));
+                            navigateTo(link.getAttribute('href'));
                         }
                     };
                     const iconDiv = document.createElement('div');
@@ -421,7 +439,43 @@
             };
 
             // --- DONNÉES DU JEU ---
-            const questions = [ { type: 'qcm', text: "Quel est le rôle principal d'un Projeteur VRD ?", answers: [{ text: "Concevoir les bâtiments", correct: false }, { text: "Aménager les espaces extérieurs et réseaux", correct: true }, { text: "Gérer la comptabilité du chantier", correct: false }, { text: "Peindre les murs", correct: false }], solution: "Le Projeteur VRD (Voirie et Réseaux Divers) conçoit les routes, les systèmes d'assainissement, les réseaux d'eau, de gaz, d'électricité et de télécommunications.", points: 100, time: 30, }, { type: 'multiple-choice', text: "Identifiez les matériaux adaptés pour une couche de fondation de chaussée. (Plusieurs réponses possibles)", answers: [{ text: "Terre végétale", correct: false, icon: "🌱" }, { text: "Grave non traitée (GNT)", correct: true, icon: "🪨" }, { text: "Sable", correct: false, icon: "🏖️" }, { text: "Grave-ciment", correct: true, icon: "🧱" }], solution: "La couche de fondation assure la portance de la chaussée. Les graves non traitées (GNT) et les graves traitées (comme le grave-ciment) sont des matériaux couramment utilisés.", points: 150, time: 45, }, { type: 'calculation', text: "Un regard A est à une altitude de 125.50m. Un regard B, distant de 50m, est à 124.75m. Quelle est la pente du réseau en % ?", solution: "Calcul : ((125.50 - 124.75) / 50) * 100 = 1.5%.", correctAnswer: 1.5, tolerance: 0.01, points: 200, time: 60, }, { type: 'pipe-connect', text: "Connectez le réseau d'eaux usées du point A au point B.", gridSize: { rows: 5, cols: 7 }, start: { row: 2, col: 0 }, end: { row: 2, col: 6 }, pieces: { straight: 5, corner: 4 }, solution: "Il faut créer un chemin continu de A à B en utilisant les pièces disponibles.", points: 350, time: 180, pipeColor: '#8B5CF6' }, { type: 'chronological-order', text: "Mettez dans l'ordre les étapes de la construction d'une voirie simple.", items: ["Terrassement", "Mise en place de la couche de fondation", "Pose des bordures et caniveaux", "Application du revêtement (enrobé)", "Signalisation et finitions"], solution: "L'ordre logique est : Terrassement > Couche de fondation > Bordures/Caniveaux > Revêtement > Signalisation.", points: 250, time: 90, }, { type: 'scenario', text: "Scénario : Erreur de conception", scenario: "Vous recevez un plan où un réseau d'eaux pluviales (EP) est connecté directement en amont d'une station d'épuration conçue uniquement pour les eaux usées (EU). Quelle est l'erreur majeure et que proposez-vous ?", answers: [{ text: "Aucune erreur, c'est une pratique standard.", correct: false }, { text: "L'erreur est le mélange des réseaux. Il faut créer un exutoire séparé pour les EP.", correct: true }, { text: "Il faut juste une plus grosse canalisation.", correct: false }, { text: "Il faut inverser le sens de la pente.", correct: false }], solution: "Les réseaux d'eaux pluviales et d'eaux usées doivent être séparatifs. Les EP n'ont pas besoin d'être traitées en station d'épuration et risqueraient de la saturer.", points: 300, time: 75, }, { type: 'qcm', text: "De quelle couleur est le grillage avertisseur pour un réseau électrique enterré ?", answers: [{ text: "Bleu", correct: false }, { text: "Jaune", correct: false }, { text: "Rouge", correct: true }, { text: "Vert", correct: false }], solution: "Le grillage avertisseur rouge signale la présence d'un câble ou d'une canalisation électrique.", points: 100, time: 25 }, { type: 'text-input', text: "Quel logiciel de CAO/DAO est le plus utilisé par les projeteurs VRD ?", correctAnswer: "AutoCAD", solution: "AutoCAD est le standard de l'industrie pour le dessin technique en 2D et 3D.", points: 120, time: 30 }, { type: 'calculation', text: "Une route de 6m de large a une pente en travers de 2.5% depuis l'axe. Quelle est la différence de niveau (en cm) entre l'axe et le bord ?", correctAnswer: 7.5, tolerance: 0.1, solution: "Calcul : (6m / 2) * 0.025 = 0.075m, soit 7.5 cm.", points: 200, time: 60 }, { type: 'multiple-choice', text: "Quels éléments font partie des 'réseaux secs' ?", answers: [{ text: "Adduction d'Eau Potable", correct: false, icon: "💧" }, { text: "Électricité (Basse Tension)", correct: true, icon: "⚡" }, { text: "Télécommunications (Fibre)", correct: true, icon: "📡" }, { text: "Assainissement EU", correct: false, icon: "🚽" }], solution: "Les réseaux secs transportent de l'énergie ou de l'information (électricité, télécom), par opposition aux réseaux humides (eau, assainissement).", points: 150, time: 40 }, { type: 'chronological-order', text: "Ordonnez les couches d'une structure de chaussée, de la plus profonde à la surface.", items: ["Couche de forme", "Couche de fondation", "Couche de base", "Couche de roulement"], solution: "La structure est bâtie depuis le terrain naturel (couche de forme) jusqu'à la surface (couche de roulement).", points: 250, time: 70 }, { type: 'qcm', text: "Que signifie 'DT-DICT' ?", answers: [{ text: "Document Technique - Dessin Industriel et Commercial", correct: false }, { text: "Déclaration de Travaux - Demande d'Intervention sur la Chaussée", correct: false }, { text: "Déclaration de projet de Travaux - Déclaration d'Intention de Commencement de Travaux", correct: true }, { text: "Dossier Technique - Directive Interne de Chantier", correct: false }], solution: "La DT-DICT est une procédure obligatoire pour s'informer sur la présence de réseaux enterrés avant de commencer des travaux.", points: 180, time: 45 }, { type: 'calculation', text: "Un bassin de rétention a une surface de 200m². Il pleut 30 litres/m². Quel volume d'eau (en m³) le bassin doit-il stocker ?", correctAnswer: 6, tolerance: 0.1, solution: "Calcul : 200 m² * 30 L/m² = 6000 Litres. Comme 1000L = 1m³, le volume est de 6 m³.", points: 220, time: 75 }, { type: 'text-input', text: "Comment nomme-t-on le plan représentant les altitudes du terrain le long d'un axe ?", correctAnswer: "Profil en long", solution: "Le profil en long est une coupe verticale qui montre le relief du terrain et le projet le long d'un axe.", points: 150, time: 40 }, { type: 'scenario', text: "Scénario : Réseau inconnu", scenario: "En creusant une tranchée, vous découvrez une canalisation non répertoriée. Quelle est la première action à entreprendre ?", answers: [{ text: "Continuer en faisant attention.", correct: false }, { text: "Arrêter les travaux dans la zone et alerter le conducteur de travaux.", correct: true }, { text: "Essayer d'identifier le réseau en le perçant légèrement.", correct: false }, { text: "Recouvrir et ne rien dire.", correct: false }], solution: "La sécurité prime. Il faut immédiatement arrêter les travaux, sécuriser la zone et informer la hiérarchie.", points: 300, time: 60 }, { type: 'pipe-connect', text: "Connectez le réseau de gaz. Le chemin doit passer par la vanne de coupure.", gridSize: { rows: 6, cols: 8 }, start: { row: 5, col: 3 }, end: { row: 0, col: 7 }, obstacles: [{row: 2, col: 4, type: 'valve'}], pieces: { straight: 8, corner: 6 }, solution: "Le chemin doit être continu de A à B et obligatoirement passer par la case 'valve'.", points: 400, time: 200, bonus: true, pipeColor: '#FBBF24' } ];
+            const questions = [
+                // Set 1 (Originals)
+                { type: 'qcm', text: "Quel est le rôle principal d'un Projeteur VRD ?", answers: [{ text: "Concevoir les bâtiments", correct: false }, { text: "Aménager les espaces extérieurs et réseaux", correct: true }, { text: "Gérer la comptabilité du chantier", correct: false }, { text: "Peindre les murs", correct: false }], solution: "Le Projeteur VRD (Voirie et Réseaux Divers) conçoit les routes, les systèmes d'assainissement, les réseaux d'eau, de gaz, d'électricité et de télécommunications.", points: 100, time: 30, },
+                { type: 'multiple-choice', text: "Identifiez les matériaux adaptés pour une couche de fondation de chaussée. (Plusieurs réponses possibles)", answers: [{ text: "Terre végétale", correct: false, icon: "🌱" }, { text: "Grave non traitée (GNT)", correct: true, icon: "🪨" }, { text: "Sable", correct: false, icon: "🏖️" }, { text: "Grave-ciment", correct: true, icon: "🧱" }], solution: "La couche de fondation assure la portance de la chaussée. Les graves non traitées (GNT) et les graves traitées (comme le grave-ciment) sont des matériaux couramment utilisés.", points: 150, time: 45, },
+                { type: 'calculation', text: "Un regard A est à une altitude de 125.50m. Un regard B, distant de 50m, est à 124.75m. Quelle est la pente du réseau en % ?", solution: "Calcul : ((125.50 - 124.75) / 50) * 100 = 1.5%.", correctAnswer: 1.5, tolerance: 0.01, points: 200, time: 60, },
+                { type: 'pipe-connect', text: "Connectez le réseau d'eaux usées du point A au point B.", gridSize: { rows: 5, cols: 7 }, start: { row: 2, col: 0 }, end: { row: 2, col: 6 }, pieces: { straight: 5, corner: 4 }, solution: "Il faut créer un chemin continu de A à B en utilisant les pièces disponibles.", points: 350, time: 180, pipeColor: '#8B5CF6' },
+                { type: 'chronological-order', text: "Mettez dans l'ordre les étapes de la construction d'une voirie simple.", items: ["Terrassement", "Mise en place de la couche de fondation", "Pose des bordures et caniveaux", "Application du revêtement (enrobé)", "Signalisation et finitions"], solution: "L'ordre logique est : Terrassement > Couche de fondation > Bordures/Caniveaux > Revêtement > Signalisation.", points: 250, time: 90, },
+                { type: 'scenario', text: "Scénario : Erreur de conception", scenario: "Vous recevez un plan où un réseau d'eaux pluviales (EP) est connecté directement en amont d'une station d'épuration conçue uniquement pour les eaux usées (EU). Quelle est l'erreur majeure et que proposez-vous ?", answers: [{ text: "Aucune erreur, c'est une pratique standard.", correct: false }, { text: "L'erreur est le mélange des réseaux. Il faut créer un exutoire séparé pour les EP.", correct: true }, { text: "Il faut juste une plus grosse canalisation.", correct: false }, { text: "Il faut inverser le sens de la pente.", correct: false }], solution: "Les réseaux d'eaux pluviales et d'eaux usées doivent être séparatifs. Les EP n'ont pas besoin d'être traitées en station d'épuration et risqueraient de la saturer.", points: 300, time: 75, },
+                { type: 'qcm', text: "De quelle couleur est le grillage avertisseur pour un réseau électrique enterré ?", answers: [{ text: "Bleu", correct: false }, { text: "Jaune", correct: false }, { text: "Rouge", correct: true }, { text: "Vert", correct: false }], solution: "Le grillage avertisseur rouge signale la présence d'un câble ou d'une canalisation électrique.", points: 100, time: 25 },
+                { type: 'text-input', text: "Quel logiciel de CAO/DAO est le plus utilisé par les projeteurs VRD ?", correctAnswer: "AutoCAD", solution: "AutoCAD est le standard de l'industrie pour le dessin technique en 2D et 3D.", points: 120, time: 30 },
+                { type: 'calculation', text: "Une route de 6m de large a une pente en travers de 2.5% depuis l'axe. Quelle est la différence de niveau (en cm) entre l'axe et le bord ?", correctAnswer: 7.5, tolerance: 0.1, solution: "Calcul : (6m / 2) * 0.025 = 0.075m, soit 7.5 cm.", points: 200, time: 60 },
+                { type: 'multiple-choice', text: "Quels éléments font partie des 'réseaux secs' ?", answers: [{ text: "Adduction d'Eau Potable", correct: false, icon: "💧" }, { text: "Électricité (Basse Tension)", correct: true, icon: "⚡" }, { text: "Télécommunications (Fibre)", correct: true, icon: "📡" }, { text: "Assainissement EU", correct: false, icon: "🚽" }], solution: "Les réseaux secs transportent de l'énergie ou de l'information (électricité, télécom), par opposition aux réseaux humides (eau, assainissement).", points: 150, time: 40 },
+                { type: 'chronological-order', text: "Ordonnez les couches d'une structure de chaussée, de la plus profonde à la surface.", items: ["Couche de forme", "Couche de fondation", "Couche de base", "Couche de roulement"], solution: "La structure est bâtie depuis le terrain naturel (couche de forme) jusqu'à la surface (couche de roulement).", points: 250, time: 70 },
+                { type: 'qcm', text: "Que signifie 'DT-DICT' ?", answers: [{ text: "Document Technique - Dessin Industriel et Commercial", correct: false }, { text: "Déclaration de Travaux - Demande d'Intervention sur la Chaussée", correct: false }, { text: "Déclaration de projet de Travaux - Déclaration d'Intention de Commencement de Travaux", correct: true }, { text: "Dossier Technique - Directive Interne de Chantier", correct: false }], solution: "La DT-DICT est une procédure obligatoire pour s'informer sur la présence de réseaux enterrés avant de commencer des travaux.", points: 180, time: 45 },
+                { type: 'calculation', text: "Un bassin de rétention a une surface de 200m². Il pleut 30 litres/m². Quel volume d'eau (en m³) le bassin doit-il stocker ?", correctAnswer: 6, tolerance: 0.1, solution: "Calcul : 200 m² * 30 L/m² = 6000 Litres. Comme 1000L = 1m³, le volume est de 6 m³.", points: 220, time: 75 },
+                { type: 'text-input', text: "Comment nomme-t-on le plan représentant les altitudes du terrain le long d'un axe ?", correctAnswer: "Profil en long", solution: "Le profil en long est une coupe verticale qui montre le relief du terrain et le projet le long d'un axe.", points: 150, time: 40 },
+                { type: 'scenario', text: "Scénario : Réseau inconnu", scenario: "En creusant une tranchée, vous découvrez une canalisation non répertoriée. Quelle est la première action à entreprendre ?", answers: [{ text: "Continuer en faisant attention.", correct: false }, { text: "Arrêter les travaux dans la zone et alerter le conducteur de travaux.", correct: true }, { text: "Essayer d'identifier le réseau en le perçant légèrement.", correct: false }, { text: "Recouvrir et ne rien dire.", correct: false }], solution: "La sécurité prime. Il faut immédiatement arrêter les travaux, sécuriser la zone et informer la hiérarchie.", points: 300, time: 60 },
+                { type: 'pipe-connect', text: "Connectez le réseau de gaz. Le chemin doit passer par la vanne de coupure.", gridSize: { rows: 6, cols: 8 }, start: { row: 5, col: 3 }, end: { row: 0, col: 7 }, obstacles: [{row: 2, col: 4, type: 'valve'}], pieces: { straight: 8, corner: 6 }, solution: "Le chemin doit être continu de A à B et obligatoirement passer par la case 'valve'.", points: 400, time: 200, bonus: true, pipeColor: '#FBBF24' },
+                
+                // Set 2 (New Questions)
+                { type: 'qcm', text: "Que signifie l'acronyme 'PMR' dans le contexte de l'aménagement urbain ?", answers: [{ text: "Personne à Mobilité Réduite", correct: true }, { text: "Plan de Maîtrise des Risques", correct: false }, { text: "Petit Matériel Roulant", correct: false }, { text: "Poste Mobile de Raccordement", correct: false }], solution: "PMR signifie Personne à Mobilité Réduite. Les aménagements VRD doivent garantir l'accessibilité pour tous.", points: 100, time: 30 },
+                { type: 'qcm', text: "Dans un profil en travers, que représente le 'dévers' ?", answers: [{ text: "La pente longitudinale de la route", correct: false }, { text: "La pente transversale pour l'évacuation de l'eau", correct: true }, { text: "La hauteur du trottoir", correct: false }, { text: "L'épaisseur de la couche de roulement", correct: false }], solution: "Le dévers est la pente transversale d'une chaussée, essentielle pour évacuer les eaux de pluie vers les caniveaux.", points: 120, time: 35 },
+                { type: 'calculation', text: "Un fossé de 80m de long a une section trapézoïdale de 0.5m². Quel volume de déblai (en m³) faut-il excaver ?", correctAnswer: 40, tolerance: 0.1, solution: "Calcul : Volume = Longueur × Section = 80m × 0.5m² = 40 m³.", points: 180, time: 50 },
+                { type: 'text-input', text: "Comment s'appelle la partie supérieure intérieure d'une canalisation ?", correctAnswer: "Génératrice supérieure", solution: "La 'génératrice supérieure' est le point le plus haut à l'intérieur d'une conduite. Le point le plus bas est le 'fil d'eau'.", points: 150, time: 40 },
+                { type: 'scenario', text: "Un plan montre une nouvelle canalisation de gaz passant à moins de 20 cm sous un câble électrique haute tension. Que faites-vous ?", answers: [{ text: "Valider le plan, la profondeur est suffisante.", correct: false }, { text: "Refuser le plan et exiger une distance de sécurité réglementaire.", correct: true }, { text: "Proposer de mettre les deux dans la même gaine.", correct: false }, { text: "Demander un grillage avertisseur plus épais.", correct: false }], solution: "Les règles de sécurité (norme NF P 98-332) imposent des distances minimales strictes entre les réseaux pour éviter les accidents. Ce croisement est non conforme et dangereux.", points: 300, time: 70 },
+                { type: 'multiple-choice', text: "Parmi ces éléments, lesquels sont typiquement indiqués sur un plan de réseaux d'éclairage public ?", answers: [{ text: "Candélabre", correct: true, icon: "💡" }, { text: "Chambre de tirage", correct: true, icon: "🔳" }, { text: "Armoire de commande", correct: true, icon: "🎛️" }, { text: "Bouche à clé", correct: false, icon: "🔑" }], solution: "Un plan d'éclairage public détaille l'emplacement des candélabres, des armoires qui les alimentent et des chambres de tirage pour les câbles. Les bouches à clé concernent les réseaux d'eau.", points: 160, time: 50 },
+                { type: 'chronological-order', text: "Ordonnez les phases d'un projet VRD, de l'idée à la réalisation.", items: ["Études préliminaires (AVP)", "Études de projet (PRO)", "Consultation des entreprises (DCE)", "Exécution des travaux (EXE)", "Réception des ouvrages (AOR)"], solution: "L'ordre est : Avant-Projet (AVP) > Projet (PRO) > Dossier de Consultation des Entreprises (DCE) > Exécution (EXE) > Assistance aux Opérations de Réception (AOR).", points: 280, time: 100 },
+                { type: 'categorize', text: "Classez ces éléments dans les catégories 'Réseaux Humides' et 'Réseaux Secs'.", items: [{ text: "Eau potable", category: "humides" }, { text: "Fibre optique", category: "secs" }, { text: "Assainissement pluvial", category: "humides" }, { text: "Gaz", category: "secs" }, { text: "Basse tension", category: "secs" }, { text: "Chauffage urbain", category: "humides" }], categories: [{ id: "humides", title: "Réseaux Humides (fluides)" }, { id: "secs", title: "Réseaux Secs (énergie/info)" }], solution: "Humides : Eau potable, Assainissement, Chauffage urbain. Secs : Fibre optique, Gaz, Électricité.", points: 300, time: 80 },
+                { type: 'qcm', text: "Qu'est-ce que le 'fil d'eau' d'une canalisation ?", answers: [{ text: "Le niveau le plus haut de l'eau", correct: false }, { text: "L'axe central de la canalisation", correct: false }, { text: "Le niveau intérieur inférieur où l'eau s'écoule", correct: true }, { text: "Un fil de nylon pour le curage", correct: false }], solution: "Le fil d'eau (FE) est la ligne la plus basse à l'intérieur d'un tuyau, déterminant le niveau de l'écoulement. C'est une cote de référence cruciale.", points: 120, time: 35 },
+                { type: 'calculation', text: "Une tranchée fait 2m de profondeur et 0.8m de large. Pour 50m de long, quel est le volume de remblai nécessaire (en m³), en considérant un foisonnement de 20% des terres excavées ?", correctAnswer: 96, tolerance: 0.1, solution: "Volume excavé = 2 × 0.8 × 50 = 80 m³. Volume à remblayer avec foisonnement = 80 × 1.20 = 96 m³.", points: 250, time: 90 },
+                { type: 'text-input', text: "Quel document contractuel décrit précisément les ouvrages à réaliser et leurs spécifications techniques ?", correctAnswer: "CCTP", solution: "Le CCTP (Cahier des Clauses Techniques Particulières) est la 'recette' technique du chantier. Il est rédigé par le projeteur ou l'ingénieur.", points: 180, time: 50 },
+                { type: 'multiple-choice', text: "Quels types de bordures sont utilisés pour délimiter une chaussée d'un trottoir ?", answers: [{ text: "T2", correct: true, icon: "📐" }, { text: "P1", correct: true, icon: "📏" }, { text: "A2", correct: true, icon: "🗺️" }, { text: "Grave-bitume", correct: false, icon: "🧱" }], solution: "Les bordures de type T (Trottoir), P (Piste) et A (Accotement) sont conçues pour cet usage. La grave-bitume est un matériau de structure de chaussée.", points: 160, time: 50 },
+                { type: 'scenario', text: "Un client souhaite un enrobé clair pour une place publique afin de lutter contre les îlots de chaleur. Quel est le principal inconvénient technique ?", answers: [{ text: "Son coût est identique à un enrobé classique.", correct: false }, { text: "Il est moins résistant au trafic lourd.", correct: false }, { text: "Il est plus sensible aux taches et plus éblouissant.", correct: true }, { text: "Il n'existe pas d'enrobé de couleur claire.", correct: false }], solution: "Les enrobés clairs, bien que thermiquement efficaces, se salissent plus vite (taches d'huile, etc.) et peuvent augmenter l'éblouissement par réflexion de la lumière (albédo élevé).", points: 280, time: 70 },
+                { type: 'chronological-order', text: "Mettez dans l'ordre les couches d'un trottoir standard, du bas vers le haut.", items: ["Fond de forme (terrain naturel)", "Couche de fondation (grave)", "Lit de pose (sable)", "Revêtement (pavés ou enrobé)"], solution: "On construit un trottoir en partant du terrain compacté (fond de forme), puis la fondation, le lit de pose pour régler la surface, et enfin le revêtement final.", points: 250, time: 80 },
+                { type: 'pipe-connect', text: "Raccordez le pluvial (A) à l'exutoire (B) en évitant l'ancienne conduite (Obstacle).", gridSize: { rows: 7, cols: 7 }, start: { row: 0, col: 3 }, end: { row: 6, col: 3 }, obstacles: [{row: 3, col: 2}, {row: 3, col: 3}, {row: 3, col: 4}], pieces: { straight: 7, corner: 6 }, solution: "Il fallait contourner l'obstacle central pour relier le départ et l'arrivée.", points: 400, time: 220, bonus: true, pipeColor: '#3B82F6' },
+                { type: 'qcm', text: "Quelle est la pente minimale recommandée pour un caniveau à fente ?", answers: [{ text: "0.2%", correct: false }, { text: "0.5%", correct: true }, { text: "1.0%", correct: false }, { text: "Pas de pente minimale", correct: false }], solution: "Une pente d'au moins 0.5% est recommandée pour assurer un bon auto-curage et éviter la stagnation de l'eau et des sédiments dans les caniveaux à fente.", points: 130, time: 40 }
+            ];
             
             let gameState = {};
             
@@ -434,14 +488,18 @@
                 finish: new Tone.Synth({ oscillator: { type: "sine" }, envelope: { attack: 0.1, decay: 0.5, sustain: 0.3, release: 1 } }).toDestination(),
                 click: new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 2, envelope: { attack: 0.001, decay: 0.2, sustain: 0 } }).toDestination(),
                 timer_tick: new Tone.Synth({ oscillator: { type: 'sine' }, volume: -10, envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 } }).toDestination(),
-                drag: new Tone.NoiseSynth({ noise: { type: 'pink' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0 } }).toDestination(),
+                drag: new Tone.NoiseSynth({ noise: { type: 'pink' }, volume: -15, envelope: { attack: 0.005, decay: 0.05, sustain: 0 } }).toDestination(),
                 drop: new Tone.MembraneSynth({ pitchDecay: 0.008, octaves: 4, envelope: { attack: 0.001, decay: 0.3, sustain: 0 } }).toDestination(),
                 confetti: new Tone.PluckSynth({ attackNoise: 1, dampening: 4000, resonance: 0.7 }).toDestination()
             };
             
             function playSound(sound, ...args) {
                 if (isSoundOn && sound && typeof sound.triggerAttackRelease === 'function') {
-                    sound.triggerAttackRelease(...args);
+                    try {
+                        sound.triggerAttackRelease(...args);
+                    } catch (e) {
+                        console.error("Audio playback error:", e);
+                    }
                 }
             }
 
@@ -456,9 +514,10 @@
 
             function startGame() {
                 // Demande à l'utilisateur d'interagir pour activer l'audio
-                Tone.start();
-                isSoundOn = true; // Activer le son au démarrage du jeu
-                playSound(sounds.start, "C4", "8n");
+                Tone.start().then(() => {
+                    isSoundOn = true; // Activer le son au démarrage du jeu
+                    playSound(sounds.start, "C4", "8n");
+                });
                 gameState.answeredQuestions = new Array(gameState.questions.length).fill(null);
                 startTotalTimer();
                 nextQuestion();
@@ -478,7 +537,16 @@
                 gameState.isQuestionAnswered = false;
                 dom.displays.questionText.innerHTML = `Question ${gameState.currentQuestionIndex + 1}/${gameState.questions.length}: ${question.text}`;
                 dom.displays.answerContainer.innerHTML = '';
-                const interfaceBuilder = { 'qcm': createQCMInterface, 'scenario': createQCMInterface, 'multiple-choice': createMultipleChoiceInterface, 'calculation': createCalculationInterface, 'text-input': createTextInputInterface, 'chronological-order': createChronologicalOrderInterface, 'pipe-connect': createPipeConnectInterface, }[question.type];
+                const interfaceBuilder = { 
+                    'qcm': createQCMInterface, 
+                    'scenario': createQCMInterface, 
+                    'multiple-choice': createMultipleChoiceInterface, 
+                    'calculation': createCalculationInterface, 
+                    'text-input': createTextInputInterface, 
+                    'chronological-order': createDragDropOrderInterface, 
+                    'pipe-connect': createPipeConnectInterface,
+                    'categorize': createCategorizeInterface
+                }[question.type];
                 if (interfaceBuilder) interfaceBuilder(question);
                 startTimer(question.time);
                 switchScreen('question');
@@ -551,44 +619,83 @@
                 dom.displays.answerContainer.appendChild(input);
                 addSubmitButton(() => { const value = input.value.trim(); if (value) handleAnswer(value, value); });
             }
-
-            function createChronologicalOrderInterface(question) {
+            
+            function createDragDropOrderInterface(question) {
                 const container = document.createElement('div');
-                container.style.width = '100%';
-                container.style.maxWidth = '800px';
+                container.className = 'drop-zone-container';
                 const dropZone = document.createElement('div');
-                dropZone.className = 'drop-zone';
-                dropZone.textContent = 'Déposez les étapes ici';
+                dropZone.className = 'category-zone';
+                dropZone.style.minHeight = 'auto';
+                dropZone.innerHTML = '<h4>Ordonnez les étapes ici</h4>';
                 const draggableContainer = document.createElement('div');
-                draggableContainer.className = 'mt-6 p-4 flex flex-wrap gap-2 justify-center';
+                draggableContainer.className = 'draggable-container';
                 shuffleArray([...question.items]).forEach((item) => {
-                    const el = document.createElement('div');
-                    el.className = 'draggable';
-                    el.textContent = item;
-                    el.draggable = true;
-                    el.dataset.id = item;
-                    el.addEventListener('dragstart', e => { playSound(sounds.drag, "8n"); e.dataTransfer.setData('text/plain', item); setTimeout(() => el.style.opacity = '0.5', 0); });
-                    el.addEventListener('dragend', () => el.style.opacity = '1');
+                    const el = createDraggableElement(item, item);
                     draggableContainer.appendChild(el);
                 });
                 container.appendChild(dropZone);
                 container.appendChild(draggableContainer);
                 dom.displays.answerContainer.appendChild(container);
-                [dropZone, draggableContainer].forEach(zone => {
+                setupDragDrop([dropZone, draggableContainer]);
+                addSubmitButton(() => { const droppedItems = Array.from(dropZone.querySelectorAll('.draggable')).map(child => child.dataset.id); handleAnswer(droppedItems, droppedItems); });
+            }
+
+            function createCategorizeInterface(question) {
+                const container = document.createElement('div');
+                container.className = 'drop-zone-container';
+                const categoryContainer = document.createElement('div');
+                categoryContainer.className = 'category-container';
+                question.categories.forEach(cat => {
+                    const zone = document.createElement('div');
+                    zone.className = 'category-zone';
+                    zone.dataset.category = cat.id;
+                    zone.innerHTML = `<h4>${cat.title}</h4>`;
+                    categoryContainer.appendChild(zone);
+                });
+                const draggableContainer = document.createElement('div');
+                draggableContainer.className = 'draggable-container';
+                shuffleArray([...question.items]).forEach((item) => {
+                    const el = createDraggableElement(item.text, item.text, item.category);
+                    draggableContainer.appendChild(el);
+                });
+                container.appendChild(categoryContainer);
+                container.appendChild(draggableContainer);
+                dom.displays.answerContainer.appendChild(container);
+                setupDragDrop([...categoryContainer.children, draggableContainer]);
+                addSubmitButton(() => {
+                    const answer = {};
+                    categoryContainer.querySelectorAll('.category-zone').forEach(zone => {
+                        answer[zone.dataset.category] = Array.from(zone.querySelectorAll('.draggable')).map(el => el.dataset.id);
+                    });
+                    handleAnswer(answer, answer);
+                });
+            }
+
+            function createDraggableElement(id, text, category = '') {
+                const el = document.createElement('div');
+                el.className = 'draggable';
+                el.textContent = text;
+                el.draggable = true;
+                el.dataset.id = id;
+                if (category) el.dataset.category = category;
+                el.addEventListener('dragstart', e => { playSound(sounds.drag, "8n"); e.dataTransfer.setData('text/plain', id); setTimeout(() => el.style.opacity = '0.5', 0); });
+                el.addEventListener('dragend', () => el.style.opacity = '1');
+                return el;
+            }
+
+            function setupDragDrop(zones) {
+                zones.forEach(zone => {
                     zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('hover'); });
                     zone.addEventListener('dragleave', () => zone.classList.remove('hover'));
                     zone.addEventListener('drop', e => {
                         e.preventDefault();
                         playSound(sounds.drop, "C3", "8n");
                         zone.classList.remove('hover');
-                        if (dropZone.textContent === 'Déposez les étapes ici') { dropZone.textContent = ''; dropZone.classList.add('filled'); }
-                        const data = e.dataTransfer.getData('text/plain');
-                        const draggable = document.querySelector(`.draggable[data-id="${data}"]`);
+                        const id = e.dataTransfer.getData('text/plain');
+                        const draggable = document.querySelector(`.draggable[data-id="${id}"]`);
                         if (draggable) zone.appendChild(draggable);
-                        if (dropZone.children.length === 0) { dropZone.textContent = 'Déposez les étapes ici'; dropZone.classList.remove('filled'); }
                     });
                 });
-                addSubmitButton(() => { const droppedItems = Array.from(dropZone.children).map(child => child.dataset.id); handleAnswer(droppedItems, droppedItems); });
             }
             
             function createPipeConnectInterface(question) {
@@ -621,13 +728,13 @@
                         else if (r === question.end.row && c === question.end.col) cell.classList.add('end-node');
                         else if (question.obstacles?.some(o => o.row === r && o.col === c)) {
                             cell.classList.add('obstacle-node');
-                            cell.innerHTML = `<div style="width: 66%; height: 66%; color: var(--text-primary);"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18M12 12a4 4 0 1 0 0-0.001 4 4 0 0 0 0 0.001z"/><path d="m16 8-4-4-4 4"/></svg></div>`;
+                            cell.innerHTML = `<div style="width: 66%; height: 66%; color: var(--text-muted);"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M18.364 18.364a9 9 0 1 1-12.728-12.728A9 9 0 0 1 18.364 18.364zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/><path d="m4 4 16 16"/></svg></div>`;
                             cell.dataset.obstacle = true;
                         }
-                        cell.addEventListener('dragover', e => e.preventDefault());
+                        cell.addEventListener('dragover', e => { if (!cell.hasChildNodes()) e.preventDefault(); });
                         cell.addEventListener('drop', e => {
                             e.preventDefault();
-                            if (cell.innerHTML !== '' || cell.classList.contains('start-node') || cell.classList.contains('end-node')) return;
+                            if (cell.innerHTML !== '' || cell.classList.contains('start-node') || cell.classList.contains('end-node') || cell.dataset.obstacle) return;
                             const type = e.dataTransfer.getData('text/plain');
                             const countEl = document.getElementById(`pipe-count-${type}`);
                             let count = parseInt(countEl.textContent);
@@ -699,6 +806,20 @@
                     case 'text-input': isCorrect = userAnswer && userAnswer.toLowerCase().trim() === question.correctAnswer.toLowerCase().trim(); break;
                     case 'chronological-order': isCorrect = userAnswer && userAnswer.length === question.items.length && userAnswer.every((item, index) => item === question.items[index]); break;
                     case 'pipe-connect': isCorrect = checkPipeConnection(userAnswer, question); break;
+                    case 'categorize':
+                        isCorrect = true;
+                        for(const item of question.items) {
+                            const correctCategory = item.category;
+                            const placedCategory = Object.keys(userAnswer).find(cat => userAnswer[cat].includes(item.text));
+                            if(correctCategory !== placedCategory) {
+                                isCorrect = false;
+                                break;
+                            }
+                        }
+                        // Also check for extra items in wrong places
+                        const allPlacedItems = Object.values(userAnswer).flat();
+                        if (allPlacedItems.length !== question.items.length) isCorrect = false;
+                        break;
                 }
                 gameState.answeredQuestions[gameState.currentQuestionIndex] = { answer: answerForStorage, isCorrect: isCorrect };
                 if (isCorrect) {
@@ -718,9 +839,9 @@
             }
 
             function showSolutionVisuals(question, isCorrect) {
-                 const answerElements = dom.displays.answerContainer.querySelectorAll('.answer-btn, .material-card, .draggable, .pipe-piece-placed, input, button');
-                 answerElements.forEach(el => { el.style.pointerEvents = 'none'; el.disabled = true; if(el.classList.contains('material-card')) el.classList.add('disabled'); });
-                 switch (question.type) {
+                const answerElements = dom.displays.answerContainer.querySelectorAll('.answer-btn, .material-card, .draggable, .pipe-piece-placed, input, button, .pipe-piece-draggable');
+                answerElements.forEach(el => { el.style.pointerEvents = 'none'; el.disabled = true; if(el.classList.contains('material-card')) el.classList.add('disabled'); });
+                switch (question.type) {
                     case 'qcm': case 'scenario': dom.displays.answerContainer.querySelectorAll('.answer-btn').forEach((btn, index) => { if (question.answers[index].correct) btn.classList.add('correct'); }); break;
                     case 'multiple-choice':
                         dom.displays.answerContainer.querySelectorAll('.material-card').forEach((card, index) => {
@@ -730,13 +851,38 @@
                             else if (isSelected && !isCorrectAnswer) card.classList.add('incorrect');
                         });
                         break;
-                 }
+                    case 'categorize':
+                        dom.displays.answerContainer.querySelectorAll('.draggable').forEach(el => {
+                            const correctCategory = el.dataset.category;
+                            const placedCategory = el.parentElement.dataset.category;
+                            if (correctCategory === placedCategory) {
+                                el.classList.add('correct');
+                            } else {
+                                el.classList.add('incorrect');
+                            }
+                        });
+                        break;
+                    case 'chronological-order':
+                         dom.displays.answerContainer.querySelectorAll('.draggable').forEach(el => {
+                            const userOrder = Array.from(el.parentElement.children).map(child => child.dataset.id);
+                            const correctIndex = question.items.indexOf(el.dataset.id);
+                            const userIndex = userOrder.indexOf(el.dataset.id);
+                            if (el.parentElement.classList.contains('category-zone')) {
+                                if (correctIndex === userIndex) {
+                                    el.classList.add('correct');
+                                } else {
+                                    el.classList.add('incorrect');
+                                }
+                            }
+                         });
+                         break;
+                }
             }
             
             function getPipeSVG(type, rotation, color) {
                 let path = '';
-                if (type === 'straight') path = `<path d="M0 50 L100 50" stroke="${color}" stroke-width="12" stroke-linecap="round" />`;
-                else if (type === 'corner') path = `<path d="M0 50 L50 50 L50 100" stroke="${color}" stroke-width="12" stroke-linecap="round" fill="none" />`;
+                if (type === 'straight') path = `<path d="M0 50 L100 50" stroke="${color}" stroke-width="15" stroke-linecap="round" />`;
+                else if (type === 'corner') path = `<path d="M0 50 L50 50 L50 100" stroke="${color}" stroke-width="15" stroke-linecap="round" fill="none" />`;
                 return `<svg class="w-full h-full" viewBox="0 0 100 100" style="transform: rotate(${rotation}deg);">${path}</svg>`;
             }
 
