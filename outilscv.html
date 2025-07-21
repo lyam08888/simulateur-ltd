@@ -127,11 +127,33 @@
         .highlight {
             background-color: #fef08a; /* yellow-200 */
         }
+        /* Modal styles */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
 
     <div id="app" class="min-h-screen p-2 md:p-6"></div>
+    <div id="modal-container"></div>
 
     <script type="module">
         // --- INITIAL DATA ---
@@ -160,6 +182,11 @@
                 { id: Date.now() + 6, category: 'Design', name: 'UX/UI Design', level: 4, icon: 'figma' },
                 { id: Date.now() + 7, category: 'Marketing', name: 'SEO/SEA', level: 4, icon: 'trending-up' },
             ],
+            softSkills: [
+                { id: Date.now() + 17, name: 'Travail d\'équipe' },
+                { id: Date.now() + 18, name: 'Communication' },
+                { id: Date.now() + 19, name: 'Résolution de problèmes' }
+            ],
             awards: [
                 { id: Date.now() + 8, name: 'Trophée de l\'Innovation Digitale', issuer: 'Web Summit', date: '2021', description: 'Récompense pour un projet innovant de réalité augmentée en e-commerce.'}
             ],
@@ -182,6 +209,12 @@
         };
 
         // --- CONFIGURATIONS ---
+        const themes = {
+            professional: { name: 'Professionnel', settings: { activeTemplate: 'classic', activePalette: 'indigo', activeFont: 'serif', headerAlignment: 'left' } },
+            creative: { name: 'Créatif', settings: { activeTemplate: 'creative', activePalette: 'sunset', activeFont: 'sans', headerAlignment: 'center', experienceStyle: 'timeline' } },
+            academic: { name: 'Académique', settings: { activeTemplate: 'classic', activePalette: 'monochrome', activeFont: 'serif', activeLayout: 'single' } },
+            startup: { name: 'Startup', settings: { activeTemplate: 'tech', activePalette: 'ocean', activeFont: 'mono', skillDisplayStyle: 'radar' } }
+        };
         const templates = { modern: { name: 'Moderne' }, classic: { name: 'Classique' }, creative: { name: 'Créatif' }, minimalist: { name: 'Minimaliste' }, tech: { name: 'Tech' } };
         const layouts = { single: { name: 'Une colonne' }, two: { name: 'Deux colonnes' } };
         const fonts = {
@@ -198,11 +231,11 @@
         };
         const hobbyIcons = ['code', 'book-open', 'camera', 'music', 'plane', 'dumbbell', 'paintbrush', 'heart', 'star', 'lightbulb', 'compass'];
         const socialIcons = { linkedin: 'linkedin', github: 'github', twitter: 'twitter', globe: 'globe', default: 'link' };
-        const sectionIcons = ['briefcase', 'projector', 'graduation-cap', 'award', 'zap', 'globe', 'heart', 'user-check', 'star', 'link'];
+        const sectionIcons = ['briefcase', 'projector', 'graduation-cap', 'award', 'zap', 'globe', 'heart', 'user-check', 'star', 'link', 'users'];
         const iconPacks = {
-            professional: { name: 'Professionnel', icons: { socials: 'link', experiences: 'briefcase', projects: 'projector', education: 'graduation-cap', awards: 'award', skills: 'zap', languages: 'globe', hobbies: 'coffee' } },
-            creative: { name: 'Créatif', icons: { socials: 'share-2', experiences: 'feather', projects: 'wand', education: 'book-open', awards: 'sparkles', skills: 'palette', languages: 'message-circle', hobbies: 'music' } },
-            minimalist: { name: 'Minimaliste', icons: { socials: 'arrow-up-right', experiences: 'square', projects: 'triangle', education: 'circle', awards: 'star', skills: 'bar-chart-2', languages: 'chevron-right', hobbies: 'more-horizontal' } }
+            professional: { name: 'Professionnel', icons: { socials: 'link', experiences: 'briefcase', projects: 'projector', education: 'graduation-cap', awards: 'award', skills: 'zap', languages: 'globe', hobbies: 'coffee', softSkills: 'users' } },
+            creative: { name: 'Créatif', icons: { socials: 'share-2', experiences: 'feather', projects: 'wand', education: 'book-open', awards: 'sparkles', skills: 'palette', languages: 'message-circle', hobbies: 'music', softSkills: 'heart' } },
+            minimalist: { name: 'Minimaliste', icons: { socials: 'arrow-up-right', experiences: 'square', projects: 'triangle', education: 'circle', awards: 'star', skills: 'bar-chart-2', languages: 'chevron-right', hobbies: 'more-horizontal', softSkills: 'dot' } }
         };
 
         // --- STATE MANAGEMENT ---
@@ -215,7 +248,7 @@
             try {
                 const stateToSave = { ...state };
                 delete stateToSave.photo;
-                localStorage.setItem('cvState_v6', JSON.stringify(stateToSave));
+                localStorage.setItem('cvState_v7', JSON.stringify(stateToSave));
             } catch (error) {
                 console.error("Could not save data:", error);
             }
@@ -229,17 +262,20 @@
         
         function renderApp() {
             const appContainer = document.getElementById('app');
+            const mainContentClass = state.focusMode ? 'grid-cols-1 justify-center' : 'grid-cols-1 xl:grid-cols-[minmax(450px,1fr)_1.5fr]';
             appContainer.innerHTML = `
                 <div class="max-w-screen-2xl mx-auto">
                     ${renderHeaderControls()}
-                    <div id="main-content" class="grid ${state.previewMode ? 'grid-cols-1' : 'grid-cols-1 xl:grid-cols-[minmax(450px,1fr)_1.5fr]'} gap-8 items-start">
-                        ${!state.previewMode ? `<div id="editor-panel" class="space-y-6 bg-white p-4 rounded-lg shadow-sm">${renderEditor()}</div>` : ''}
+                    <div id="main-content" class="grid ${mainContentClass} gap-8 items-start">
+                        <div id="editor-panel" class="space-y-6 bg-white p-4 rounded-lg shadow-sm">${renderEditor()}</div>
+                        ${!state.focusMode ? `
                         <div id="preview-panel" class="flex flex-col items-center sticky top-24">
                             ${renderPreviewControls()}
                             <div id="cv-outer-container" class="origin-top shadow-2xl transition-transform duration-300" style="transform: scale(${state.previewScale})">
                                 ${renderCV()}
                             </div>
                         </div>
+                        ` : ''}
                     </div>
                 </div>
             `;
@@ -255,6 +291,12 @@
                     <h1 class="text-xl font-bold text-gray-800 flex items-center gap-2"><i data-lucide="file-text" class="text-indigo-600"></i>Créateur de CV Expert</h1>
                     <div class="flex items-center flex-wrap gap-2">
                          <div class="tooltip">
+                            <button id="toggle-focus-mode" class="p-2 rounded-lg transition-colors ${state.focusMode ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'}">
+                                <i data-lucide="pen-square" class="w-4 h-4"></i>
+                            </button>
+                            <span class="tooltip-text">Mode Focus</span>
+                        </div>
+                        <div class="tooltip">
                             <button id="randomize-design" class="p-2 rounded-lg transition-colors bg-purple-100 text-purple-700 hover:bg-purple-200">
                                 <i data-lucide="sparkles" class="w-4 h-4"></i>
                             </button>
@@ -272,15 +314,16 @@
                             </button>
                             <span class="tooltip-text">${state.isAnonymized ? "Désanonymiser" : "Anonymiser"}</span>
                         </div>
-                        <button id="toggle-preview-mode" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 flex items-center gap-2 transition-colors">
-                            <i data-lucide="eye" class="w-4 h-4"></i> <span class="hidden sm:inline">${state.previewMode ? 'Éditer' : 'Plein écran'}</span>
-                        </button>
-                        <button id="generate-pdf" ${state.isDownloadingPdf ? 'disabled' : ''} class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center justify-center gap-2 transition-colors disabled:bg-indigo-300 w-[180px]">
-                            ${state.isDownloadingPdf 
-                                ? `<i data-lucide="loader-circle" class="animate-spin w-4 h-4"></i> Téléchargement...` 
-                                : `<i data-lucide="download" class="w-4 h-4"></i> Télécharger PDF`
-                            }
-                        </button>
+                        <div class="relative inline-block">
+                            <button id="export-dropdown-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center justify-center gap-2 transition-colors w-[180px]">
+                                <i data-lucide="download" class="w-4 h-4"></i> Télécharger <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                            </button>
+                            <div id="export-options" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-20">
+                                <a href="#" id="generate-pdf" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">PDF</a>
+                                <a href="#" id="export-txt" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Fichier Texte (.txt)</a>
+                                <a href="#" id="export-md" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Markdown (.md)</a>
+                            </div>
+                        </div>
                     </div>
                 </header>
             `;
@@ -317,6 +360,7 @@
                     case 'education': return cvData.education?.length > 0 && visibilityCheck(blockId) ? renderEducation() : '';
                     case 'awards': return cvData.awards?.length > 0 && visibilityCheck(blockId) ? renderAwards() : '';
                     case 'skills': return cvData.skills?.length > 0 && visibilityCheck(blockId) ? renderSkills() : '';
+                    case 'softSkills': return cvData.softSkills?.length > 0 && visibilityCheck(blockId) ? renderSoftSkills() : '';
                     case 'languages': return cvData.languages?.length > 0 && visibilityCheck(blockId) ? renderLanguages() : '';
                     case 'hobbies': return cvData.hobbies?.length > 0 && visibilityCheck(blockId) ? renderHobbies() : '';
                     default: 
@@ -378,7 +422,7 @@
         }
         
         function renderCvHeader(personalData) {
-            const { sectionSpacing, photo, photoShape, nameFontSize, activePalette, headerAlignment } = state;
+            const { sectionSpacing, photo, photoShape, nameFontSize, activePalette, headerAlignment, visibility } = state;
             const currentPalette = palettes[activePalette] || state.customPalette;
             const alignClasses = {
                 left: 'items-start text-left',
@@ -390,21 +434,17 @@
                         <img src="${photo}" alt="User" class="mb-4 w-32 h-32 object-cover shadow-lg" style="border-radius: ${photoShape === 'round' ? '50%' : '0.75rem'};">
                     ` : ''}
                     <h1 class="font-bold mb-1 text-gray-900" style="font-size: ${nameFontSize}pt;">
-                        ${personalData.firstName} ${personalData.lastName}
+                        ${visibility.personal.firstName ? personalData.firstName : ''} ${visibility.personal.lastName ? personalData.lastName : ''}
                     </h1>
-                    <h2 class="text-xl mb-3 font-medium" style="color: ${currentPalette.primary};">
-                        ${personalData.title}
-                    </h2>
+                    ${visibility.personal.title ? `<h2 class="text-xl mb-3 font-medium" style="color: ${currentPalette.primary};">${personalData.title}</h2>` : ''}
                     ${!state.isAnonymized ? `
                         <div class="flex flex-wrap ${headerAlignment === 'center' ? 'justify-center' : ''} gap-x-6 gap-y-2 text-gray-600 mb-4 text-sm">
-                            <div class="flex items-center gap-2"><i data-lucide="mail" class="w-3.5 h-3.5"></i>${personalData.email}</div>
-                            <div class="flex items-center gap-2"><i data-lucide="phone" class="w-3.5 h-3.5"></i>${personalData.phone}</div>
-                            <div class="flex items-center gap-2"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i>${personalData.address}</div>
+                            ${visibility.personal.email ? `<div class="flex items-center gap-2"><i data-lucide="mail" class="w-3.5 h-3.5"></i>${personalData.email}</div>` : ''}
+                            ${visibility.personal.phone ? `<div class="flex items-center gap-2"><i data-lucide="phone" class="w-3.5 h-3.5"></i>${personalData.phone}</div>` : ''}
+                            ${visibility.personal.address ? `<div class="flex items-center gap-2"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i>${personalData.address}</div>` : ''}
                         </div>
                     ` : ''}
-                    <p class="text-gray-700 leading-relaxed max-w-3xl">
-                        ${personalData.summary}
-                    </p>
+                    ${visibility.personal.summary ? `<p class="text-gray-700 leading-relaxed max-w-3xl">${personalData.summary}</p>` : ''}
                 </div>
             `;
         }
@@ -592,6 +632,22 @@
             return renderSection('Compétences', content, state.sectionIcons.skills);
         }
 
+        function renderSoftSkills() {
+            const { cvData, itemSpacing, activePalette } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
+            const content = `
+                <div class="flex flex-wrap gap-2">
+                    ${(cvData.softSkills || []).map(skill => `
+                        <div class="flex items-center gap-2 p-2 rounded-lg" style="background-color: ${currentPalette.secondary}; color: ${currentPalette.accent};">
+                            <i data-lucide="check-circle" class="w-4 h-4"></i>
+                            <span class="text-sm font-medium">${skill.name}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            return renderSection('Qualités Humaines', content, state.sectionIcons.softSkills);
+        }
+
         function renderLanguages() {
             const { cvData, itemSpacing } = state;
             const content = `
@@ -644,12 +700,19 @@
         }
 
         function renderInputField(label, value, dataPath, placeholder, icon, type = 'text') {
+            const visibilityPath = dataPath.replace('cvData.', '');
+            const isVisible = getValueFromPath(state.visibility, visibilityPath);
             return `
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-600 mb-1 flex items-center">
-                        ${icon ? `<i data-lucide="${icon}" class="w-3.5 h-3.5 mr-2"></i>` : ''}
-                        ${label}
-                    </label>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-sm font-medium text-gray-600 flex items-center">
+                            ${icon ? `<i data-lucide="${icon}" class="w-3.5 h-3.5 mr-2"></i>` : ''}
+                            ${label}
+                        </label>
+                        <button class="toggle-field-visibility p-1" data-path="${visibilityPath}">
+                             <i data-lucide="${isVisible ? 'eye' : 'eye-off'}" class="w-4 h-4 text-gray-400 hover:text-gray-600"></i>
+                        </button>
+                    </div>
                     <input
                         type="${type}"
                         value="${value || ''}"
@@ -662,6 +725,8 @@
         }
 
         function renderTextareaField(label, value, dataPath, placeholder, icon, rows = 3, aiContext = '') {
+             const visibilityPath = dataPath.replace('cvData.', '');
+            const isVisible = getValueFromPath(state.visibility, visibilityPath);
             return `
                 <div class="mb-4">
                     <div class="flex justify-between items-center mb-1">
@@ -669,9 +734,14 @@
                             ${icon ? `<i data-lucide="${icon}" class="w-3.5 h-3.5 mr-2"></i>` : ''}
                             ${label}
                         </label>
-                        <button class="generate-ai-text text-xs text-purple-600 hover:text-purple-800 flex items-center gap-1" data-path="${dataPath}" data-context="${aiContext}">
-                            <i data-lucide="sparkles" class="w-3 h-3"></i> Améliorer avec l'IA
-                        </button>
+                        <div class="flex items-center gap-2">
+                             <button class="generate-ai-text text-xs text-purple-600 hover:text-purple-800 flex items-center gap-1" data-path="${dataPath}" data-context="${aiContext}">
+                                <i data-lucide="sparkles" class="w-3 h-3"></i> IA
+                            </button>
+                            <button class="toggle-field-visibility p-1" data-path="${visibilityPath}">
+                                 <i data-lucide="${isVisible ? 'eye' : 'eye-off'}" class="w-4 h-4 text-gray-400 hover:text-gray-600"></i>
+                            </button>
+                        </div>
                     </div>
                     <textarea
                         data-path="${dataPath}"
@@ -694,7 +764,6 @@
 
         function renderEditor() {
             return `
-                ${renderCvScore()}
                 ${renderAccordion('Contenu du CV', 'edit-3', `
                     ${renderAccordion('Informations Personnelles', 'user', `
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -723,18 +792,22 @@
                     `, false, 'socials')}
                     ${renderAccordion('Expériences', 'briefcase', `
                         ${state.cvData.experiences.map((exp, index) => `
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
-                                ${renderInputField(`Poste ${index+1}`, exp.position, `cvData.experiences.${index}.position`)}
-                                ${renderInputField('Entreprise', exp.company, `cvData.experiences.${index}.company`)}
-                                ${renderInputField('Date de début', exp.startDate, `cvData.experiences.${index}.startDate`)}
-                                ${renderInputField('Date de fin', exp.endDate, `cvData.experiences.${index}.endDate`)}
-                                <div class="md:col-span-2">${renderTextareaField('Description', exp.description, `cvData.experiences.${index}.description`, '', 'align-left', 4, `Description de mission pour le poste de ${exp.position} chez ${exp.company}`)}</div>
-                                <div class="md:col-span-2 flex justify-between items-center">
+                            <div class="border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
+                                <div class="flex justify-end -mb-2">
                                     <button class="toggle-item-visibility flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900" data-section="experiences" data-id="${exp.id}">
                                         <i data-lucide="${state.visibility.experiences[exp.id] ? 'eye' : 'eye-off'}" class="w-4 h-4"></i>
                                         <span>${state.visibility.experiences[exp.id] ? "Visible" : "Caché"}</span>
                                     </button>
-                                    <button class="remove-list-item text-red-500 hover:text-red-700 text-sm flex items-center gap-1" data-section="experiences" data-id="${exp.id}"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Supprimer</button>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    ${renderInputField(`Poste ${index+1}`, exp.position, `cvData.experiences.${index}.position`)}
+                                    ${renderInputField('Entreprise', exp.company, `cvData.experiences.${index}.company`)}
+                                    ${renderInputField('Date de début', exp.startDate, `cvData.experiences.${index}.startDate`)}
+                                    ${renderInputField('Date de fin', exp.endDate, `cvData.experiences.${index}.endDate`)}
+                                    <div class="md:col-span-2">${renderTextareaField('Description', exp.description, `cvData.experiences.${index}.description`, '', 'align-left', 4, `Description de mission pour le poste de ${exp.position} chez ${exp.company}`)}</div>
+                                    <div class="md:col-span-2 flex justify-end">
+                                        <button class="remove-list-item text-red-500 hover:text-red-700 text-sm flex items-center gap-1" data-section="experiences" data-id="${exp.id}"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Supprimer</button>
+                                    </div>
                                 </div>
                             </div>
                         `).join('')}
@@ -770,10 +843,10 @@
                 ${renderAccordion('Design & Mise en Page', 'palette', `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8">
                         <div>
-                            <h4 class="font-semibold mb-2 text-gray-700">Modèle</h4>
+                            <h4 class="font-semibold mb-2 text-gray-700">Thèmes</h4>
                             <div class="flex flex-col space-y-2">
-                                ${Object.entries(templates).map(([key, t]) => `
-                                    <button data-control="activeTemplate" data-value="${key}" class="p-2 rounded-lg border-2 text-sm transition-all ${state.activeTemplate === key ? 'border-indigo-500 bg-indigo-50 font-semibold' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}">${t.name}</button>
+                                ${Object.entries(themes).map(([key, t]) => `
+                                    <button data-theme="${key}" class="theme-btn p-2 rounded-lg border-2 text-sm transition-all ${state.activeTheme === key ? 'border-indigo-500 bg-indigo-50 font-semibold' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}">${t.name}</button>
                                 `).join('')}
                             </div>
                         </div>
@@ -932,6 +1005,7 @@
                     <div class="mt-6">
                         <h4 class="font-semibold mb-2 text-gray-700">Analyseur de Mots-clés (ATS)</h4>
                         <textarea id="job-description-input" placeholder="Collez la description du poste ici..." rows="5" class="w-full px-3 py-2 border border-gray-300 rounded-lg">${state.jobDescription}</textarea>
+                        <button id="analyze-job-match" class="mt-2 px-4 py-2 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 text-sm flex items-center gap-2"><i data-lucide="search"></i> Analyser l'Adéquation</button>
                     </div>
                     <div class="mt-6">
                         <h4 class="font-semibold mb-2 text-gray-700">Préparation "Postuler en 1 Clic"</h4>
@@ -957,6 +1031,7 @@
                         </div>
                     </div>
                 `, false, 'tools')}
+                ${renderCvScore()}
             `;
         }
         
@@ -964,7 +1039,7 @@
             const score = calculateCvScore();
             const color = score < 40 ? 'bg-red-500' : score < 80 ? 'bg-yellow-500' : 'bg-green-500';
             return `
-                <div class="mb-4">
+                <div class="mt-6">
                     <h4 class="font-semibold text-gray-700">Score du CV</h4>
                     <div class="w-full bg-gray-200 rounded-full h-4 mt-2">
                         <div class="${color} h-4 rounded-full text-white text-xs flex items-center justify-center" style="width: ${score}%">
@@ -1098,11 +1173,19 @@
         
         function attachEventListeners() {
             // Header controls
+            document.getElementById('toggle-focus-mode')?.addEventListener('click', () => setState({ focusMode: !state.focusMode }));
             document.getElementById('randomize-design')?.addEventListener('click', handleRandomizeDesign);
             document.getElementById('share-cv')?.addEventListener('click', handleShare);
             document.getElementById('toggle-anonymize')?.addEventListener('click', () => setState({ isAnonymized: !state.isAnonymized }));
-            document.getElementById('toggle-preview-mode')?.addEventListener('click', () => setState({ previewMode: !state.previewMode }));
+            document.getElementById('export-dropdown-btn')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.getElementById('export-options').classList.toggle('hidden');
+            });
+            document.addEventListener('click', () => document.getElementById('export-options')?.classList.add('hidden'));
+
             document.getElementById('generate-pdf')?.addEventListener('click', generatePDF);
+            document.getElementById('export-txt')?.addEventListener('click', (e) => handleExport('txt'));
+            document.getElementById('export-md')?.addEventListener('click', (e) => handleExport('md'));
 
             // Preview controls
             document.getElementById('zoom-in')?.addEventListener('click', () => setState({ previewScale: Math.min(1.5, state.previewScale + 0.1) }));
@@ -1145,11 +1228,13 @@
             document.querySelectorAll('.add-list-item').forEach(btn => btn.addEventListener('click', handleAddListItem));
             document.querySelectorAll('.remove-list-item').forEach(btn => btn.addEventListener('click', handleRemoveListItem));
             document.querySelectorAll('.toggle-item-visibility').forEach(btn => btn.addEventListener('click', handleToggleItemVisibility));
+            document.querySelectorAll('.toggle-field-visibility').forEach(btn => btn.addEventListener('click', handleToggleFieldVisibility));
             document.querySelectorAll('.toggle-section-visibility').forEach(btn => btn.addEventListener('click', handleToggleSectionVisibility));
             document.querySelectorAll('.generate-ai-text').forEach(btn => btn.addEventListener('click', handleAIGenerate));
             
             // Tools
             document.getElementById('job-description-input')?.addEventListener('input', (e) => setState({ jobDescription: e.target.value }));
+            document.getElementById('analyze-job-match')?.addEventListener('click', handleAnalyzeJobMatch);
             document.getElementById('import-data')?.addEventListener('click', () => document.getElementById('import-file').click());
             document.getElementById('import-file')?.addEventListener('change', handleImportData);
             document.getElementById('export-data')?.addEventListener('click', handleExportData);
@@ -1162,9 +1247,10 @@
                 btn.addEventListener('click', (e) => {
                     const control = e.currentTarget.dataset.control;
                     const value = e.currentTarget.dataset.value;
-                    setState({ [control]: value });
+                    setState({ [control]: value, activeTheme: 'custom' });
                 });
             });
+            document.querySelectorAll('.theme-btn').forEach(btn => btn.addEventListener('click', handleThemeChange));
             document.getElementById('icon-pack-selector')?.addEventListener('change', handleIconPackChange);
 
             // Accordions
@@ -1241,6 +1327,7 @@
             const path = e.target.dataset.path;
             const value = e.target.type === 'range' ? parseFloat(e.target.value) : e.target.value;
             updateStateFromPath(path, value);
+            setState({ activeTheme: 'custom' });
         }
 
         function updateStateFromPath(path, value) {
@@ -1248,10 +1335,17 @@
             let tempState = JSON.parse(JSON.stringify(state));
             let current = tempState;
             for (let i = 0; i < keys.length - 1; i++) {
+                if (current[keys[i]] === undefined) {
+                    current[keys[i]] = {};
+                }
                 current = current[keys[i]];
             }
             current[keys[keys.length - 1]] = value;
             setState(tempState);
+        }
+        
+        function getValueFromPath(obj, path) {
+            return path.split('.').reduce((acc, part) => acc && acc[part], obj);
         }
         
         function handleAddListItem(e) {
@@ -1263,6 +1357,7 @@
                 ...(section === 'education' && { institution: '', degree: '', startDate: '', endDate: '', description: '' }),
                 ...(section === 'awards' && { name: '', issuer: '', date: '', description: '' }),
                 ...(section === 'skills' && { category: 'Nouvelle Catégorie', name: '', level: 3, icon: '' }),
+                ...(section === 'softSkills' && { name: '' }),
                 ...(section === 'languages' && { name: '', level: '' }),
                 ...(section === 'hobbies' && { name: '', icon: 'heart' }),
                 ...(section === 'socials' && { network: 'linkedin', url: '' }),
@@ -1271,7 +1366,7 @@
 
             const newCvData = { ...state.cvData, [section]: [...(state.cvData[section] || []), newItem] };
             
-            const itemVisibilitySections = ['experiences', 'education', 'projects', 'awards', 'socials'];
+            const itemVisibilitySections = ['experiences', 'education', 'projects', 'awards', 'socials', 'softSkills'];
             if (itemVisibilitySections.includes(section)) {
                 const newVisibility = { ...state.visibility, [section]: { ...(state.visibility[section] || {}), [newItem.id]: true } };
                 setState({ cvData: newCvData, visibility: newVisibility });
@@ -1291,7 +1386,7 @@
             const id = parseInt(e.currentTarget.dataset.id, 10);
             const newCvData = { ...state.cvData, [section]: state.cvData[section].filter(item => item.id !== id) };
             
-            const itemVisibilitySections = ['experiences', 'education', 'projects', 'awards', 'socials'];
+            const itemVisibilitySections = ['experiences', 'education', 'projects', 'awards', 'socials', 'softSkills'];
             if (itemVisibilitySections.includes(section)) {
                 const newSectionVisibility = { ...state.visibility[section] };
                 delete newSectionVisibility[id];
@@ -1319,6 +1414,13 @@
             const newVisibility = { ...state.visibility };
             newVisibility[section][id] = !newVisibility[section][id];
             setState({ visibility: newVisibility });
+        }
+        
+        function handleToggleFieldVisibility(e) {
+            const path = e.currentTarget.dataset.path;
+            const fullPath = `visibility.${path}`;
+            const currentValue = getValueFromPath(state, fullPath);
+            updateStateFromPath(fullPath, !currentValue);
         }
         
         function handleToggleSectionVisibility(e) {
@@ -1356,6 +1458,7 @@
                 skillDisplayStyle: randomChoice(['bars', 'stars']),
                 experienceStyle: randomChoice(['default', 'timeline']),
                 headerAlignment: randomChoice(['left', 'center']),
+                activeTheme: 'custom'
             });
         }
 
@@ -1413,12 +1516,31 @@
             const originalScale = element.style.transform;
             element.style.transform = 'scale(1)';
 
+            const chartCanvas = document.getElementById('skill-chart');
+            const chartImg = document.createElement('img');
+            let chartReplaced = false;
+
+            // Temporarily replace chart canvas with an image to help PDF rendering
+            if (chartCanvas && state.skillDisplayStyle === 'radar' && chartInstance) {
+                try {
+                    chartImg.src = chartInstance.toBase64Image();
+                    chartImg.style.width = '100%';
+                    chartImg.style.maxWidth = '448px'; // max-w-md
+                    chartImg.style.margin = '0 auto';
+                    chartCanvas.style.display = 'none';
+                    chartCanvas.parentNode.appendChild(chartImg);
+                    chartReplaced = true;
+                } catch (e) {
+                    console.error("Could not convert chart to image", e);
+                }
+            }
+
             try {
                 const opt = {
                     margin: 0,
                     filename: state.isAnonymized ? 'cv_anonyme.pdf' : `CV_${state.cvData.personal.firstName}_${state.cvData.personal.lastName}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 3, useCORS: true, letterRendering: true, scrollY: -window.scrollY },
+                    html2canvas: { scale: 2, useCORS: true, letterRendering: true, scrollY: -window.scrollY }, // Reduced scale
                     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
                     pagebreak: { mode: ['css', 'legacy'] }
                 };
@@ -1431,6 +1553,12 @@
                 console.error("PDF Generation Error:", error);
                 alert("Erreur lors de la création du PDF.");
             } finally {
+                // Clean up chart image replacement
+                if (chartReplaced) {
+                    chartCanvas.style.display = 'block';
+                    chartCanvas.parentNode.removeChild(chartImg);
+                }
+                
                 element.style.transform = originalScale;
                 setState({ isDownloadingPdf: false });
             }
@@ -1465,6 +1593,29 @@
                 text += `- ${skill.category}: ${skill.name}\n`;
             });
             return text;
+        }
+        
+        function handleExport(format) {
+            let content = '';
+            let filename = `CV_${state.cvData.personal.firstName}_${state.cvData.personal.lastName}.${format}`;
+            let mimeType = 'text/plain';
+
+            if (format === 'txt') {
+                content = generateOneClickApplyText().replace(/\*\*/g, ''); // Remove markdown bold
+            } else if (format === 'md') {
+                content = generateOneClickApplyText();
+                mimeType = 'text/markdown';
+            }
+
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
 
         function handleExportData() {
@@ -1533,15 +1684,123 @@
                 setState({ activeIconPack: packName, sectionIcons: { ...iconPacks[packName].icons } });
             }
         }
+        
+        function handleThemeChange(e) {
+            const themeName = e.currentTarget.dataset.theme;
+            if (themes[themeName]) {
+                setState({ ...themes[themeName].settings, activeTheme: themeName });
+            }
+        }
 
         function handleShare() {
             const data = btoa(JSON.stringify(state));
             const url = `${window.location.href.split('?')[0]}?data=${data}`;
-            navigator.clipboard.writeText(url).then(() => {
-                alert('Lien de partage copié dans le presse-papiers !');
-            }, () => {
-                alert('Erreur lors de la copie du lien.');
+            
+            const modalContent = `
+                <div class="modal-backdrop">
+                    <div class="modal-content w-full max-w-2xl">
+                        <h3 class="text-xl font-bold mb-4">Partager votre CV</h3>
+                        <p class="text-sm text-gray-600 mb-2">Copiez ce lien pour partager une version en ligne de votre CV. Les modifications que vous ferez après la création de ce lien n'apparaîtront pas.</p>
+                        <input type="text" readonly value="${url}" class="w-full p-2 border rounded bg-gray-100 mb-4">
+                        <div class="flex justify-between items-center">
+                            <button id="show-analytics-btn" class="text-sm text-blue-600 hover:underline">Voir le tableau de bord (simulation)</button>
+                            <button id="close-modal-btn" class="px-4 py-2 bg-gray-200 rounded-lg">Fermer</button>
+                        </div>
+                    </div>
+                </div>`;
+            document.getElementById('modal-container').innerHTML = modalContent;
+            document.getElementById('close-modal-btn').onclick = () => document.getElementById('modal-container').innerHTML = '';
+            document.getElementById('show-analytics-btn').onclick = showAnalyticsDashboard;
+        }
+        
+        function showAnalyticsDashboard() {
+             const modalContent = `
+                <div class="modal-backdrop">
+                    <div class="modal-content w-full max-w-3xl">
+                        <h3 class="text-xl font-bold mb-4">Tableau de Bord Analytique (Simulation)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center mb-6">
+                            <div class="p-4 bg-blue-50 rounded-lg"><p class="text-3xl font-bold">${Math.floor(Math.random() * 100) + 10}</p><p class="text-sm text-gray-600">Vues totales</p></div>
+                            <div class="p-4 bg-green-50 rounded-lg"><p class="text-3xl font-bold">${Math.floor(Math.random() * 120) + 30}s</p><p class="text-sm text-gray-600">Temps moyen</p></div>
+                            <div class="p-4 bg-yellow-50 rounded-lg"><p class="text-3xl font-bold">${Math.floor(Math.random() * 5) + 1}</p><p class="text-sm text-gray-600">Téléchargements</p></div>
+                        </div>
+                        <div><canvas id="analytics-chart"></canvas></div>
+                        <div class="text-right mt-4">
+                            <button id="close-modal-btn" class="px-4 py-2 bg-gray-200 rounded-lg">Fermer</button>
+                        </div>
+                    </div>
+                </div>`;
+            document.getElementById('modal-container').innerHTML = modalContent;
+            lucide.createIcons();
+            document.getElementById('close-modal-btn').onclick = () => document.getElementById('modal-container').innerHTML = '';
+
+            const ctx = document.getElementById('analytics-chart');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    datasets: [{
+                        label: 'Vues par jour',
+                        data: Array.from({length: 7}, () => Math.floor(Math.random() * 15)),
+                        borderColor: '#4f46e5',
+                        tension: 0.1
+                    }]
+                }
             });
+        }
+        
+        async function handleAnalyzeJobMatch() {
+            const button = document.getElementById('analyze-job-match');
+            if (!state.jobDescription) {
+                alert("Veuillez coller une description de poste d'abord.");
+                return;
+            }
+            
+            const cvText = generateOneClickApplyText();
+            const prompt = `En tant qu'expert en recrutement, analyse l'adéquation entre le CV suivant et la description de poste. Fournis une réponse structurée en Markdown avec : 1. Un score de compatibilité sur 100. 2. Une section "Points Forts" listant les éléments du CV qui correspondent bien. 3. Une section "Axes d'Amélioration" suggérant des modifications ou des ajouts au CV pour mieux correspondre à l'offre. \n\n**CV :**\n${cvText}\n\n**DESCRIPTION DE POSTE :**\n${state.jobDescription}`;
+            
+            button.innerHTML = '<i data-lucide="loader-circle" class="animate-spin w-4 h-4"></i> Analyse en cours...';
+            lucide.createIcons();
+            
+            try {
+                 let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // Leave empty
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
+                    const analysis = result.candidates[0].content.parts[0].text;
+                    showAnalysisModal(analysis);
+                } else {
+                    throw new Error('Invalid AI response format');
+                }
+            } catch (error) {
+                 console.error("AI Analysis Error:", error);
+                alert("Une erreur est survenue lors de l'analyse IA.");
+            } finally {
+                button.innerHTML = '<i data-lucide="search"></i> Analyser l\'Adéquation';
+                lucide.createIcons();
+            }
+        }
+        
+        function showAnalysisModal(analysis) {
+             const modalContent = `
+                <div class="modal-backdrop">
+                    <div class="modal-content w-full max-w-2xl prose">
+                        <h3 class="text-xl font-bold mb-4">Analyse d'Adéquation IA</h3>
+                        <div>${analysis.replace(/\n/g, '<br>')}</div>
+                        <div class="text-right mt-4">
+                            <button id="close-modal-btn" class="px-4 py-2 bg-gray-200 rounded-lg">Fermer</button>
+                        </div>
+                    </div>
+                </div>`;
+            document.getElementById('modal-container').innerHTML = modalContent;
+            document.getElementById('close-modal-btn').onclick = () => document.getElementById('modal-container').innerHTML = '';
         }
 
         function calculateCvScore() {
@@ -1596,6 +1855,7 @@
                     }]
                 },
                 options: {
+                    animation: false,
                     scales: {
                         r: {
                             angleLines: {
@@ -1643,16 +1903,21 @@
             }
             
             const allSectionIds = [
-                'personal', 'socials', 'experiences', 'projects', 'education', 'awards', 'skills', 'languages', 'hobbies',
+                'personal', 'socials', 'experiences', 'projects', 'education', 'awards', 'skills', 'softSkills', 'languages', 'hobbies',
                 ...(cvData.customSections || []).map(s => `custom-${s.id}`)
             ];
 
-            const initialVisibility = allSectionIds.reduce((acc, id) => {
-                acc[id] = true;
-                return acc;
-            }, {});
+            const initialVisibility = {
+                personal: {
+                    firstName: true, lastName: true, title: true, email: true, phone: true, address: true, summary: true
+                }
+            };
 
-            ['experiences', 'projects', 'education', 'awards', 'socials'].forEach(section => {
+            allSectionIds.forEach(id => {
+                if (id !== 'personal') initialVisibility[id] = true;
+            });
+
+            ['experiences', 'projects', 'education', 'awards', 'socials', 'softSkills'].forEach(section => {
                 initialVisibility[section] = {};
                 (cvData[section] || []).forEach(item => {
                     initialVisibility[section][item.id] = true;
@@ -1663,6 +1928,7 @@
                 cvData,
                 activeTemplate: 'modern',
                 activePalette: 'indigo',
+                activeTheme: 'custom',
                 customPalette: { primary: '#4f46e5', secondary: '#eef2ff', accent: '#3730a3', textOnPrimary: '#ffffff' },
                 backgroundColor: '#ffffff',
                 activeLayout: 'two',
@@ -1688,13 +1954,13 @@
                 skillDisplayStyle: 'bars',
                 visibility: initialVisibility,
                 sectionIcons: {
-                    socials: 'link', experiences: 'briefcase', projects: 'projector', education: 'graduation-cap', awards: 'award', skills: 'zap', languages: 'globe', hobbies: 'heart'
+                    socials: 'link', experiences: 'briefcase', projects: 'projector', education: 'graduation-cap', awards: 'award', skills: 'zap', softSkills: 'users', languages: 'globe', hobbies: 'heart'
                 },
                 activeIconPack: 'custom',
-                blockOrder: ['socials', 'experiences', 'projects', 'education', 'awards', 'skills', 'languages', 'hobbies', ...(cvData.customSections || []).map(s => `custom-${s.id}`)],
+                blockOrder: ['socials', 'experiences', 'projects', 'education', 'awards', 'skills', 'softSkills', 'languages', 'hobbies', ...(cvData.customSections || []).map(s => `custom-${s.id}`)],
                 columnAssignment: {
                     left: ['personal', 'skills', 'languages', 'hobbies'],
-                    right: ['socials', 'experiences', 'projects', 'education', 'awards']
+                    right: ['socials', 'experiences', 'projects', 'education', 'awards', 'softSkills']
                 },
                 openAccordions: {
                     content: true,
@@ -1710,7 +1976,8 @@
                 dividerStyle: 'none',
                 showMarginGuides: false,
                 jobDescription: '',
-                snapshots: []
+                snapshots: [],
+                focusMode: false
             };
             
             let finalState = { ...defaultState, ...loadedState };
