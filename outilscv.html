@@ -25,6 +25,13 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+        .cv-page {
+            width: 210mm;
+            min-height: 297mm;
+            page-break-after: always;
+            box-sizing: border-box;
+            position: relative;
+        }
         .cv-section, .cv-item, .cv-header {
             page-break-inside: avoid;
         }
@@ -105,6 +112,20 @@
             background-color: white;
             border: 2px solid var(--primary-color, #4f46e5);
         }
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 80px;
+            font-weight: bold;
+            color: rgba(0, 0, 0, 0.1);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        .highlight {
+            background-color: #fef08a; /* yellow-200 */
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -133,10 +154,10 @@
                 { id: Date.now() + 3, institution: 'INSEEC Lyon', degree: 'Master en Management Digital', startDate: '2015', endDate: '2017', description: 'Spécialisation en stratégie digitale et gestion de projet.' }
             ],
             skills: [
-                { id: Date.now() + 4, name: 'Gestion de Projet Agile', level: 5 },
-                { id: Date.now() + 5, name: 'Scrum & Kanban', level: 5 },
-                { id: Date.now() + 6, name: 'UX/UI Design', level: 4 },
-                { id: Date.now() + 7, name: 'SEO/SEA', level: 4 },
+                { id: Date.now() + 4, category: 'Gestion de Projet', name: 'Méthodes Agiles', level: 5, icon: 'zap' },
+                { id: Date.now() + 5, category: 'Gestion de Projet', name: 'Scrum & Kanban', level: 5, icon: 'columns' },
+                { id: Date.now() + 6, category: 'Design', name: 'UX/UI Design', level: 4, icon: 'figma' },
+                { id: Date.now() + 7, category: 'Marketing', name: 'SEO/SEA', level: 4, icon: 'trending-up' },
             ],
             awards: [
                 { id: Date.now() + 8, name: 'Trophée de l\'Innovation Digitale', issuer: 'Web Summit', date: '2021', description: 'Récompense pour un projet innovant de réalité augmentée en e-commerce.'}
@@ -167,17 +188,16 @@
             serif: { name: 'Lora (Serif)', family: "'Lora', serif" },
             mono: { name: 'JetBrains Mono', family: "'JetBrains Mono', monospace" },
         };
-        const colors = {
-            indigo: { primary: '#4f46e5', secondary: '#eef2ff', accent: '#3730a3', textOnPrimary: '#ffffff' },
-            blue: { primary: '#2563eb', secondary: '#eff6ff', accent: '#1d4ed8', textOnPrimary: '#ffffff' },
-            green: { primary: '#059669', secondary: '#f0fdf4', accent: '#047857', textOnPrimary: '#ffffff' },
-            purple: { primary: '#7c3aed', secondary: '#faf5ff', accent: '#6d28d9', textOnPrimary: '#ffffff' },
-            red: { primary: '#dc2626', secondary: '#fef2f2', accent: '#b91c1c', textOnPrimary: '#ffffff' },
-            gray: { primary: '#4b5563', secondary: '#f9fafb', accent: '#1f2937', textOnPrimary: '#ffffff' }
+        const palettes = {
+            indigo: { name: 'Indigo', primary: '#4f46e5', secondary: '#eef2ff', accent: '#3730a3', textOnPrimary: '#ffffff' },
+            ocean: { name: 'Océan', primary: '#0891b2', secondary: '#ecfeff', accent: '#164e63', textOnPrimary: '#ffffff' },
+            forest: { name: 'Forêt', primary: '#166534', secondary: '#f0fdf4', accent: '#14532d', textOnPrimary: '#ffffff' },
+            sunset: { name: 'Crépuscule', primary: '#ea580c', secondary: '#fff7ed', accent: '#c2410c', textOnPrimary: '#ffffff' },
+            monochrome: { name: 'Monochrome', primary: '#1f2937', secondary: '#f9fafb', accent: '#111827', textOnPrimary: '#ffffff' }
         };
         const hobbyIcons = ['code', 'book-open', 'camera', 'music', 'plane', 'dumbbell', 'paintbrush', 'heart', 'star', 'lightbulb', 'compass'];
         const socialIcons = { linkedin: 'linkedin', github: 'github', twitter: 'twitter', globe: 'globe', default: 'link' };
-        const sectionIcons = ['briefcase', 'projector', 'graduation-cap', 'award', 'zap', 'globe', 'heart', 'user-check', 'star'];
+        const sectionIcons = ['briefcase', 'projector', 'graduation-cap', 'award', 'zap', 'globe', 'heart', 'user-check', 'star', 'link'];
 
         // --- STATE MANAGEMENT ---
         let state = {};
@@ -188,7 +208,7 @@
             try {
                 const stateToSave = { ...state };
                 delete stateToSave.photo;
-                localStorage.setItem('cvState_v4', JSON.stringify(stateToSave));
+                localStorage.setItem('cvState_v5', JSON.stringify(stateToSave));
             } catch (error) {
                 console.error("Could not save data:", error);
             }
@@ -267,7 +287,12 @@
         // --- CV Rendering ---
 
         function renderCV() {
-            const { cvData, activeTemplate, activeFont, backgroundColor, pagePadding, baseFontSize, lineHeight, colors: stateColors, activeColor } = state;
+            // This is a simplified multi-page simulation for the live preview.
+            // The actual PDF generation will handle page breaks more accurately.
+            // For now, we render everything in one continuous block.
+            const { cvData, activeTemplate, activeFont, backgroundColor, pagePadding, baseFontSize, lineHeight, activePalette, watermarkText, watermarkOpacity } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
+
             const personalDataForRender = state.isAnonymized
                 ? { ...cvData.personal, lastName: `${cvData.personal.lastName.charAt(0)}.`, email: '', phone: '', address: '' }
                 : cvData.personal;
@@ -320,19 +345,30 @@
             }
 
             return `
-                <div id="cv-preview-container" class="bg-white" style="width: 210mm; min-height: 297mm; box-sizing: border-box; overflow: hidden; --primary-color: ${stateColors[activeColor].primary};">
-                    <div id="cv-preview" class="text-gray-800 template-${activeTemplate}" style="font-family: ${fonts[activeFont].family}; background-color: ${backgroundColor}; box-sizing: border-box; width: 100%; height: 100%;">
-                        <div class="h-full w-full flex flex-col relative" style="font-size: ${baseFontSize}pt; line-height: ${lineHeight}; padding: ${pagePadding}rem;">
-                            <div class="flex-grow">${cvContent}</div>
-                            ${state.showVCardQR && !state.isAnonymized ? '<div id="vcard-qr-code" class="absolute bottom-4 right-4 bg-white p-2 rounded-md shadow-lg"></div>' : ''}
+                <div id="cv-preview-container" class="bg-white">
+                    <div class="cv-page relative" style="--primary-color: ${currentPalette.primary};">
+                        <div id="cv-preview" class="text-gray-800 template-${activeTemplate}" style="font-family: ${fonts[activeFont].family}; background-color: ${backgroundColor}; box-sizing: border-box; width: 100%; height: 100%;">
+                            <div class="h-full w-full flex flex-col" style="font-size: ${baseFontSize}pt; line-height: ${lineHeight};">
+                                <header class="p-4" style="padding: ${pagePadding}rem; padding-bottom: 0;">${state.headerText.replace('{page}', '1')}</header>
+                                <div class="flex-grow" style="padding: ${pagePadding}rem; paddingTop: 0; padding-bottom: 0;">${cvContent}</div>
+                                <footer class="p-4" style="padding: ${pagePadding}rem; padding-top: 0;">${state.footerText.replace('{page}', '1')}</footer>
+                            </div>
                         </div>
+                        ${watermarkText ? `<div class="watermark" style="opacity: ${watermarkOpacity};">${watermarkText}</div>` : ''}
+                        ${state.showMarginGuides ? `
+                            <div class="absolute top-0 left-0 bottom-0 bg-indigo-500/10" style="width: ${pagePadding}rem;"></div>
+                            <div class="absolute top-0 right-0 bottom-0 bg-indigo-500/10" style="width: ${pagePadding}rem;"></div>
+                            <div class="absolute top-0 left-0 right-0 bg-indigo-500/10" style="height: ${pagePadding}rem;"></div>
+                            <div class="absolute bottom-0 left-0 right-0 bg-indigo-500/10" style="height: ${pagePadding}rem;"></div>
+                        ` : ''}
                     </div>
                 </div>
             `;
         }
         
         function renderCvHeader(personalData) {
-            const { sectionSpacing, photo, photoShape, nameFontSize, activeColor, headerAlignment, colors: stateColors } = state;
+            const { sectionSpacing, photo, photoShape, nameFontSize, activePalette, headerAlignment } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
             const alignClasses = {
                 left: 'items-start text-left',
                 center: 'items-center text-center'
@@ -345,7 +381,7 @@
                     <h1 class="font-bold mb-1 text-gray-900" style="font-size: ${nameFontSize}pt;">
                         ${personalData.firstName} ${personalData.lastName}
                     </h1>
-                    <h2 class="text-xl mb-3 font-medium" style="color: ${stateColors[activeColor].primary};">
+                    <h2 class="text-xl mb-3 font-medium" style="color: ${currentPalette.primary};">
                         ${personalData.title}
                     </h2>
                     ${!state.isAnonymized ? `
@@ -363,35 +399,43 @@
         }
 
         function renderSection(title, content, iconName = 'briefcase') {
-            const { sectionTitleStyle, activeColor, sectionTitleFontSize, sectionSpacing, colors: stateColors } = state;
+            const { sectionTitleStyle, activePalette, sectionTitleFontSize, sectionSpacing, textTransform, letterSpacing, dividerStyle } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
             const titleStyles = {
                 border: `border-b-2 pb-1`,
                 background: `p-2 rounded-md`,
                 simple: ``,
             };
-            const titleColor = sectionTitleStyle === 'background' ? stateColors[activeColor].textOnPrimary : stateColors[activeColor].primary;
-            const titleBg = sectionTitleStyle === 'background' ? stateColors[activeColor].primary : 'transparent';
+            const titleColor = sectionTitleStyle === 'background' ? currentPalette.textOnPrimary : currentPalette.primary;
+            const titleBg = sectionTitleStyle === 'background' ? currentPalette.primary : 'transparent';
+            const dividerHtml = {
+                solid: '<hr class="my-2 border-gray-200">',
+                dotted: '<hr class="my-2 border-dotted border-gray-300">',
+                none: ''
+            }[dividerStyle] || '';
 
             return `
                 <div class="cv-section" style="margin-bottom: ${sectionSpacing}rem;">
-                    <h3 class="font-bold mb-3 uppercase tracking-wider flex items-center gap-2 ${titleStyles[sectionTitleStyle]}" style="color: ${titleColor}; background-color: ${titleBg}; border-color: ${stateColors[activeColor].primary}; font-size: ${sectionTitleFontSize}pt;">
+                    <h3 class="font-bold mb-3 tracking-wider flex items-center gap-2 ${titleStyles[sectionTitleStyle]}" style="color: ${titleColor}; background-color: ${titleBg}; border-color: ${currentPalette.primary}; font-size: ${sectionTitleFontSize}pt; text-transform: ${textTransform}; letter-spacing: ${letterSpacing}px;">
                         <i data-lucide="${iconName}" class="w-4 h-4"></i>
                         <span>${title}</span>
                     </h3>
                     ${content}
+                    ${dividerHtml}
                 </div>
             `;
         }
 
         function renderExperiences() {
-            const { cvData, itemSpacing, activeColor, visibility, experienceStyle, colors: stateColors } = state;
+            const { cvData, itemSpacing, activePalette, visibility, experienceStyle } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
             
             const items = cvData.experiences.filter(exp => visibility.experiences[exp.id]).map(exp => `
                 <div class="cv-item relative ${experienceStyle === 'timeline' ? 'timeline-item pb-4' : ''}">
                     <div class="flex justify-between items-start mb-1">
                         <div>
                             <h4 class="font-semibold text-base">${exp.position}</h4>
-                            <p class="font-medium" style="color: ${stateColors[activeColor].accent};">${exp.company}</p>
+                            <p class="font-medium" style="color: ${currentPalette.accent};">${exp.company}</p>
                         </div>
                         <span class="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">${exp.startDate} - ${exp.endDate}</span>
                     </div>
@@ -408,14 +452,15 @@
         }
         
         function renderEducation() {
-            const { cvData, itemSpacing, activeColor, visibility, experienceStyle, colors: stateColors } = state;
+            const { cvData, itemSpacing, activePalette, visibility, experienceStyle } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
 
              const items = cvData.education.filter(edu => visibility.education[edu.id]).map(edu => `
                 <div class="cv-item relative ${experienceStyle === 'timeline' ? 'timeline-item pb-4' : ''}">
                     <div class="flex justify-between items-start mb-1">
                         <div>
                             <h4 class="font-semibold text-base">${edu.degree}</h4>
-                            <p class="font-medium" style="color: ${stateColors[activeColor].accent};">${edu.institution}</p>
+                            <p class="font-medium" style="color: ${currentPalette.accent};">${edu.institution}</p>
                         </div>
                         <span class="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">${edu.startDate} - ${edu.endDate}</span>
                     </div>
@@ -451,14 +496,15 @@
         }
 
         function renderProjects() {
-            const { cvData, itemSpacing, activeColor, visibility, colors: stateColors } = state;
+            const { cvData, itemSpacing, activePalette, visibility } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
             const content = `
                 <div style="display: flex; flex-direction: column; gap: ${itemSpacing}rem;">
                     ${(cvData.projects || []).filter(p => visibility.projects[p.id]).map(p => `
                         <div class="cv-item">
                             <div class="flex justify-between items-start mb-1">
                                 <h4 class="font-semibold text-base">${p.name}</h4>
-                                ${p.url ? `<a href="${p.url}" target="_blank" rel="noopener noreferrer" class="font-mono text-sm" style="color: ${stateColors[activeColor].primary};">Voir le projet</a>` : ''}
+                                ${p.url ? `<a href="${p.url}" target="_blank" rel="noopener noreferrer" class="font-mono text-sm" style="color: ${currentPalette.primary};">Voir le projet</a>` : ''}
                             </div>
                             <p class="text-gray-600">${p.description}</p>
                         </div>
@@ -469,7 +515,8 @@
         }
 
         function renderAwards() {
-            const { cvData, itemSpacing, activeColor, visibility, colors: stateColors } = state;
+            const { cvData, itemSpacing, activePalette, visibility } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
             const content = `
                 <div style="display: flex; flex-direction: column; gap: ${itemSpacing}rem;">
                     ${(cvData.awards || []).filter(a => visibility.awards[a.id]).map(award => `
@@ -477,7 +524,7 @@
                             <div class="flex justify-between items-start mb-1">
                                 <div>
                                     <h4 class="font-semibold text-base">${award.name}</h4>
-                                    <p class="font-medium" style="color: ${stateColors[activeColor].accent};">${award.issuer}</p>
+                                    <p class="font-medium" style="color: ${currentPalette.accent};">${award.issuer}</p>
                                 </div>
                                 <span class="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">${award.date}</span>
                             </div>
@@ -490,27 +537,44 @@
         }
 
         function renderSkills() {
-            const { cvData, itemSpacing, skillDisplayStyle, activeColor, colors: stateColors } = state;
-            const content = `
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6" style="gap-y: ${itemSpacing/2}rem;">
-                    ${cvData.skills.map(skill => `
-                        <div>
-                            <span class="font-medium">${skill.name}</span>
-                            ${skillDisplayStyle === 'stars' ? `
-                                <div class="flex items-center mt-1">
-                                    ${[...Array(5)].map((_, i) => `
-                                        <i data-lucide="star" class="w-4 h-4 ${i < skill.level ? 'fill-current' : ''}" style="color: ${i < skill.level ? stateColors[activeColor].primary : '#e0e0e0'};"></i>
-                                    `).join('')}
+            const { cvData, itemSpacing, skillDisplayStyle, activePalette } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
+            const groupedSkills = cvData.skills.reduce((acc, skill) => {
+                const category = skill.category || 'Autres';
+                if (!acc[category]) {
+                    acc[category] = [];
+                }
+                acc[category].push(skill);
+                return acc;
+            }, {});
+
+            const content = Object.keys(groupedSkills).map(category => `
+                <div class="mb-3">
+                    <h5 class="font-bold text-sm mb-2 text-gray-600">${category}</h5>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6" style="gap-y: ${itemSpacing/2}rem;">
+                        ${groupedSkills[category].map(skill => `
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    ${skill.icon ? `<i data-lucide="${skill.icon}" class="w-3.5 h-3.5 text-gray-500"></i>` : ''}
+                                    <span class="font-medium">${skill.name}</span>
                                 </div>
-                            ` : `
-                                <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
-                                    <div class="h-2 rounded-full" style="width: ${skill.level * 20}%; background-color: ${stateColors[activeColor].primary};"></div>
-                                </div>
-                            `}
-                        </div>
-                    `).join('')}
+                                ${skillDisplayStyle === 'stars' ? `
+                                    <div class="flex items-center mt-1">
+                                        ${[...Array(5)].map((_, i) => `
+                                            <i data-lucide="star" class="w-4 h-4 ${i < skill.level ? 'fill-current' : ''}" style="color: ${i < skill.level ? currentPalette.primary : '#e0e0e0'};"></i>
+                                        `).join('')}
+                                    </div>
+                                ` : `
+                                    <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                                        <div class="h-2 rounded-full" style="width: ${skill.level * 20}%; background-color: ${currentPalette.primary};"></div>
+                                    </div>
+                                `}
+                            </div>
+                        `).join('')}
+                    </div>
                 </div>
-            `;
+            `).join('');
+            
             return renderSection('Compétences', content, state.sectionIcons.skills);
         }
 
@@ -530,12 +594,13 @@
         }
 
         function renderHobbies() {
-            const { cvData, itemSpacing, activeColor, colors: stateColors } = state;
+            const { cvData, itemSpacing, activePalette } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
             const content = `
                 <div class="flex flex-wrap" style="gap: ${itemSpacing/2}rem;">
                     ${cvData.hobbies.map(hobby => `
                         <div class="flex items-center p-2 bg-gray-100 rounded-lg">
-                            <i data-lucide="${hobby.icon}" class="w-3.5 h-3.5 mr-2" style="color: ${stateColors[activeColor].primary};"></i>
+                            <i data-lucide="${hobby.icon}" class="w-3.5 h-3.5 mr-2" style="color: ${currentPalette.primary};"></i>
                             <span>${hobby.name}</span>
                         </div>
                     `).join('')}
@@ -660,6 +725,20 @@
                         `).join('')}
                         <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="experiences"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter une expérience</button>
                     `, false, 'experiences')}
+                     ${renderAccordion('Compétences', 'zap', `
+                        ${state.cvData.skills.map((skill, index) => `
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
+                                ${renderInputField(`Catégorie`, skill.category, `cvData.skills.${index}.category`)}
+                                ${renderInputField(`Compétence`, skill.name, `cvData.skills.${index}.name`)}
+                                ${renderInputField(`Icône (Lucide)`, skill.icon, `cvData.skills.${index}.icon`)}
+                                <div class="flex items-center">
+                                    <input type="range" min="1" max="5" value="${skill.level}" data-path="cvData.skills.${index}.level" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                    <button class="remove-list-item text-red-500 hover:text-red-700 ml-4" data-section="skills" data-id="${skill.id}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="skills"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter une compétence</button>
+                    `, false, 'skills')}
                     ${renderAccordion('Sections Personnalisées', 'plus-square', `
                         ${(state.cvData.customSections || []).map((section, index) => `
                              <div class="border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
@@ -692,15 +771,15 @@
                             </div>
                         </div>
                          <div class="md:col-span-2">
-                            <h4 class="font-semibold mb-2 text-gray-700">Couleur d'accent</h4>
+                            <h4 class="font-semibold mb-2 text-gray-700">Palette de couleurs</h4>
                             <div class="flex gap-3 flex-wrap items-center">
-                                ${Object.entries(colors).filter(([key]) => key !== 'custom').map(([key, c]) => `
+                                ${Object.entries(palettes).map(([key, p]) => `
                                     <div class="tooltip">
-                                        <button data-control="activeColor" data-value="${key}" class="w-8 h-8 rounded-full border-4 transition-all ${state.activeColor === key ? 'border-indigo-500 scale-110' : 'border-transparent hover:border-gray-300'}" style="background-color: ${c.primary}"></button>
-                                        <span class="tooltip-text">${key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                                        <button data-control="activePalette" data-value="${key}" class="w-8 h-8 rounded-full border-4 transition-all ${state.activePalette === key ? 'border-indigo-500 scale-110' : 'border-transparent hover:border-gray-300'}" style="background-color: ${p.primary}"></button>
+                                        <span class="tooltip-text">${p.name}</span>
                                     </div>
                                 `).join('')}
-                                <input type="color" id="custom-color-picker" value="${state.colors[state.activeColor].primary}" class="w-8 h-8 p-0 border-none rounded-full cursor-pointer">
+                                <input type="color" id="custom-color-picker" value="${(palettes[state.activePalette] || state.customPalette).primary}" class="w-8 h-8 p-0 border-none rounded-full cursor-pointer">
                             </div>
                         </div>
                         <div class="md:col-span-2">
@@ -770,6 +849,20 @@
                             </div>
                         </div>
                         <div class="sm:col-span-2">
+                            <h4 class="font-semibold mb-2 text-gray-700">Typographie des titres</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                ${renderSlider('Espacement lettres (px)', state.letterSpacing, 'letterSpacing', -1, 3, 0.1)}
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-1">Casse</label>
+                                    <select data-path="textTransform" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                        <option value="uppercase" ${state.textTransform === 'uppercase' ? 'selected' : ''}>Majuscules</option>
+                                        <option value="capitalize" ${state.textTransform === 'capitalize' ? 'selected' : ''}>Capitalize</option>
+                                        <option value="none" ${state.textTransform === 'none' ? 'selected' : ''}>Aucune</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sm:col-span-2">
                             <h4 class="font-semibold mb-2 text-gray-700">Icônes des sections</h4>
                             <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
                                 ${Object.keys(state.sectionIcons).map(sectionKey => `
@@ -787,8 +880,8 @@
                 ${renderAccordion('Organisation & Options', 'settings', `
                     <h4 class="font-semibold mb-3">Organisation des sections</h4>
                     ${state.activeLayout === 'two' ? renderTwoColumnLayoutEditor() : renderSingleColumnLayoutEditor()}
-                    <div class="mt-6">
-                        <h4 class="font-semibold mb-2 text-gray-700">Options diverses</h4>
+                    <div class="mt-6 space-y-4">
+                        <h4 class="font-semibold text-gray-700">Options diverses</h4>
                         <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                             <label for="show-vcard-qr" class="text-sm font-medium text-gray-800">Afficher le QR Code vCard</label>
                             <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
@@ -797,10 +890,44 @@
                             </div>
                             <style>.toggle-checkbox:checked { right: 0; border-color: #4f46e5; } .toggle-checkbox:checked + .toggle-label { background-color: #4f46e5; }</style>
                         </div>
+                         <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <label for="show-margin-guides" class="text-sm font-medium text-gray-800">Afficher les guides de marge</label>
+                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" id="show-margin-guides" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" ${state.showMarginGuides ? 'checked' : ''}/>
+                                <label for="show-margin-guides" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-gray-50 rounded-lg">
+                            <label class="text-sm font-medium text-gray-800">Séparateur de section</label>
+                             <select data-path="dividerStyle" class="w-full mt-2 px-3 py-2 border border-gray-300 rounded-lg">
+                                <option value="none" ${state.dividerStyle === 'none' ? 'selected' : ''}>Aucun</option>
+                                <option value="solid" ${state.dividerStyle === 'solid' ? 'selected' : ''}>Ligne pleine</option>
+                                <option value="dotted" ${state.dividerStyle === 'dotted' ? 'selected' : ''}>Pointillés</option>
+                            </select>
+                        </div>
                     </div>
                 `, false, 'organization')}
+                ${renderAccordion('En-tête, Pied de Page & Filigrane', 'layout-template', `
+                    <div class="space-y-4">
+                        ${renderInputField('Texte de l\'en-tête', state.headerText, 'headerText', 'Ex: {page} / Mon CV')}
+                        ${renderInputField('Texte du pied de page', state.footerText, 'footerText', 'Ex: Alexandre Dubois - {page}')}
+                        <p class="text-xs text-gray-500">Utilisez <code>{page}</code> pour le numéro de page.</p>
+                        <hr>
+                        ${renderInputField('Texte du filigrane', state.watermarkText, 'watermarkText', 'Ex: CONFIDENTIEL')}
+                        ${renderSlider('Opacité du filigrane', state.watermarkOpacity, 'watermarkOpacity', 0.05, 0.3, 0.01)}
+                    </div>
+                `, false, 'headerFooter')}
                 ${renderAccordion('Outils & Assistance', 'wrench', `
                     ${renderCvAdvisor()}
+                    <div class="mt-6">
+                        <h4 class="font-semibold mb-2 text-gray-700">Analyseur de Mots-clés (ATS)</h4>
+                        <textarea id="job-description-input" placeholder="Collez la description du poste ici..." rows="5" class="w-full px-3 py-2 border border-gray-300 rounded-lg">${state.jobDescription}</textarea>
+                    </div>
+                    <div class="mt-6">
+                        <h4 class="font-semibold mb-2 text-gray-700">Préparation "Postuler en 1 Clic"</h4>
+                        <p class="text-xs text-gray-500 mb-2">Copiez ce texte pour le coller facilement dans les formulaires de candidature en ligne.</p>
+                        <textarea id="one-click-apply-output" rows="8" class="w-full p-2 bg-gray-100 border rounded-lg text-xs" readonly>${generateOneClickApplyText()}</textarea>
+                    </div>
                     <div class="mt-6">
                         <h4 class="font-semibold mb-2 text-gray-700">Gestion des données</h4>
                         <div class="flex gap-2">
@@ -814,13 +941,10 @@
         }
         
         function renderCvAdvisor() {
-            const { cvData } = state;
+            const { cvData, jobDescription } = state;
             const advice = [];
             if (cvData.personal.summary.length < 150) {
                 advice.push({ text: 'Votre résumé est un peu court. Essayez de le développer pour mieux accrocher le recruteur.', icon: 'info' });
-            }
-            if (cvData.personal.summary.length > 500) {
-                advice.push({ text: 'Votre résumé est un peu long. Essayez d\'être plus concis.', icon: 'info' });
             }
             if (cvData.experiences.length < 2) {
                 advice.push({ text: 'Pensez à ajouter au moins deux expériences professionnelles pertinentes.', icon: 'alert-triangle' });
@@ -831,6 +955,17 @@
             }
             if (cvData.skills.length < 5) {
                  advice.push({ text: 'Listez au moins 5 compétences clés pour valoriser votre profil.', icon: 'info' });
+            }
+            
+            // ATS Keyword check
+            if (jobDescription) {
+                const cvText = JSON.stringify(cvData).toLowerCase();
+                const keywords = jobDescription.toLowerCase().match(/\b(\w{4,})\b/g) || [];
+                const uniqueKeywords = [...new Set(keywords)];
+                const missingKeywords = uniqueKeywords.filter(kw => !cvText.includes(kw));
+                if (missingKeywords.length > 5) {
+                     advice.push({ text: `Il semble manquer des mots-clés de l'offre, comme : ${missingKeywords.slice(0,3).join(', ')}...`, icon: 'search' });
+                }
             }
 
             return `
@@ -930,6 +1065,7 @@
             });
             document.getElementById('column-ratio')?.addEventListener('change', (e) => setState({ columnRatio: e.target.value }));
             document.getElementById('show-vcard-qr')?.addEventListener('change', (e) => setState({ showVCardQR: e.target.checked }));
+            document.getElementById('show-margin-guides')?.addEventListener('change', (e) => setState({ showMarginGuides: e.target.checked }));
             document.getElementById('custom-color-picker')?.addEventListener('input', (e) => {
                 const primary = e.target.value;
                 const getContrastYIQ = (hexcolor) => {
@@ -940,16 +1076,14 @@
                     const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
                     return (yiq >= 128) ? '#1f2937' : '#ffffff';
                 }
-                const newColors = {
-                    ...state.colors,
-                    custom: {
-                        primary: primary,
-                        secondary: '#f4f4f5',
-                        accent: primary,
-                        textOnPrimary: getContrastYIQ(primary)
-                    }
+                const newCustomPalette = {
+                    name: 'Personnalisée',
+                    primary: primary,
+                    secondary: '#f4f4f5',
+                    accent: primary,
+                    textOnPrimary: getContrastYIQ(primary)
                 };
-                setState({ colors: newColors, activeColor: 'custom' });
+                setState({ customPalette: newCustomPalette, activePalette: 'custom' });
             });
             
             // Photo upload
@@ -964,6 +1098,7 @@
             document.querySelectorAll('.generate-ai-text').forEach(btn => btn.addEventListener('click', handleAIGenerate));
             
             // Tools
+            document.getElementById('job-description-input')?.addEventListener('input', (e) => setState({ jobDescription: e.target.value }));
             document.getElementById('import-data')?.addEventListener('click', () => document.getElementById('import-file').click());
             document.getElementById('import-file')?.addEventListener('change', handleImportData);
             document.getElementById('export-data')?.addEventListener('click', handleExportData);
@@ -1072,7 +1207,7 @@
                 ...(section === 'projects' && { name: '', url: '', description: '' }),
                 ...(section === 'education' && { institution: '', degree: '', startDate: '', endDate: '', description: '' }),
                 ...(section === 'awards' && { name: '', issuer: '', date: '', description: '' }),
-                ...(section === 'skills' && { name: '', level: 3 }),
+                ...(section === 'skills' && { category: 'Nouvelle Catégorie', name: '', level: 3, icon: '' }),
                 ...(section === 'languages' && { name: '', level: '' }),
                 ...(section === 'hobbies' && { name: '', icon: 'heart' }),
                 ...(section === 'socials' && { network: 'linkedin', url: '' }),
@@ -1159,7 +1294,7 @@
             
             setState({
                 activeTemplate: randomChoice(Object.keys(templates)),
-                activeColor: randomChoice(Object.keys(colors)),
+                activePalette: randomChoice(Object.keys(palettes)),
                 activeFont: randomChoice(Object.keys(fonts)),
                 activeLayout: randomChoice(Object.keys(layouts)),
                 sectionTitleStyle: randomChoice(['border', 'background', 'simple']),
@@ -1230,7 +1365,7 @@
                     image: { type: 'jpeg', quality: 0.98 },
                     html2canvas: { scale: 3, useCORS: true, letterRendering: true, scrollY: -window.scrollY },
                     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                    pagebreak: { mode: ['css', 'legacy'] }
                 };
                 if (window.html2pdf) {
                     await window.html2pdf().from(element).set(opt).save();
@@ -1263,6 +1398,20 @@
             }
         }
         
+        function generateOneClickApplyText() {
+            const { cvData } = state;
+            let text = `**${cvData.personal.firstName} ${cvData.personal.lastName}**\n${cvData.personal.title}\n\n**Résumé**\n${cvData.personal.summary}\n\n`;
+            text += `**Expériences**\n`;
+            cvData.experiences.forEach(exp => {
+                text += `- ${exp.position} chez ${exp.company} (${exp.startDate} - ${exp.endDate})\n  ${exp.description}\n`;
+            });
+            text += `\n**Compétences**\n`;
+            cvData.skills.forEach(skill => {
+                text += `- ${skill.category}: ${skill.name}\n`;
+            });
+            return text;
+        }
+
         function handleExportData() {
             const dataStr = JSON.stringify(state, null, 2);
             const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
@@ -1295,7 +1444,7 @@
 
         // --- INITIALIZATION ---
         function init() {
-            const savedState = localStorage.getItem('cvState_v4');
+            const savedState = localStorage.getItem('cvState_v5');
             let cvData = initialCvData;
             let loadedState = {};
             if (savedState) {
@@ -1304,7 +1453,7 @@
                     cvData = loadedState.cvData || initialCvData;
                 } catch(e) {
                     console.error("Could not parse saved state, using defaults.", e);
-                    localStorage.removeItem('cvState_v4');
+                    localStorage.removeItem('cvState_v5');
                 }
             }
             
@@ -1327,9 +1476,9 @@
 
             const defaultState = {
                 cvData,
-                colors: colors,
                 activeTemplate: 'modern',
-                activeColor: 'indigo',
+                activePalette: 'indigo',
+                customPalette: { primary: '#4f46e5', secondary: '#eef2ff', accent: '#3730a3', textOnPrimary: '#ffffff' },
                 backgroundColor: '#ffffff',
                 activeLayout: 'two',
                 columnRatio: 'large-right',
@@ -1365,13 +1514,21 @@
                     content: true,
                     personalInfo: true,
                     design: true
-                }
+                },
+                headerText: '',
+                footerText: '{page}',
+                watermarkText: '',
+                watermarkOpacity: 0.1,
+                letterSpacing: 0,
+                textTransform: 'uppercase',
+                dividerStyle: 'none',
+                showMarginGuides: false,
+                jobDescription: ''
             };
             
             let finalState = { ...defaultState, ...loadedState };
             finalState.visibility = loadedState.visibility || initialVisibility;
             finalState.cvData = loadedState.cvData || cvData;
-            finalState.colors = loadedState.colors || colors;
             
             setState(finalState, true);
         }
