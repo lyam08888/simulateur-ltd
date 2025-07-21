@@ -1,1359 +1,1020 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Download, Eye, User, Briefcase, GraduationCap, Award, Phone, Mail, MapPin, Plus, Minus, Move, Palette, Globe, Heart, Sparkles, LoaderCircle, ShieldCheck, Zap, ArrowLeftRight, CheckCircle, Building, Text, Rows, Expand, EyeOff, Camera, QrCode, Trash2, FileText, Lightbulb, Image as ImageIcon, Square, Circle } from 'lucide-react';
-
-// A React component for a CV Generator
-
-// Component for a single input field
-const InputField = ({ label, value, onChange, placeholder, Icon }) => (
-    <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-            {Icon && <Icon size={16} className="mr-2" />}
-            {label}
-        </label>
-        <input
-            type="text"
-            value={value}
-            onChange={onChange}
-            placeholder={placeholder || label}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-        />
-    </div>
-);
-
-// Component for a textarea
-const TextareaField = ({ label, value, onChange, placeholder, Icon, rows = 3, children }) => (
-    <div className="mb-4">
-        <div className="flex justify-between items-center mb-1">
-            <label className="block text-sm font-medium text-gray-700 flex items-center">
-                {Icon && <Icon size={16} className="mr-2" />}
-                {label}
-            </label>
-            {children}
-        </div>
-        <textarea
-            value={value}
-            onChange={onChange}
-            placeholder={placeholder || label}
-            rows={rows}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-        />
-    </div>
-);
-
-const initialCvData = {
-    personal: {
-        firstName: 'John',
-        lastName: 'Doe',
-        title: 'Développeur Full Stack',
-        email: 'john.doe@email.com',
-        phone: '+33 6 12 34 56 78',
-        address: 'Paris, France',
-        summary: 'Développeur passionné avec 5 ans d\'expérience dans le développement web moderne, spécialisé en React et Node.js. À la recherche de nouvelles opportunités pour mettre à profit mes compétences techniques et ma créativité.',
-        onlineProfileUrl: ''
-    },
-    experiences: [
-        { id: 1, company: 'Tech Solutions Inc.', position: 'Développeur Senior', startDate: '2020', endDate: '2024', description: 'Conception et développement d\'applications web complexes en utilisant React, Redux, et Node.js. Mentorat de développeurs juniors et participation active aux revues de code.' }
-    ],
-    education: [
-        { id: 1, institution: 'Université de Paris', degree: 'Master en Informatique', startDate: '2018', endDate: '2020', description: 'Spécialisation en génie logiciel et développement web.' }
-    ],
-    skills: ['JavaScript (ES6+)', 'React', 'Node.js', 'TypeScript', 'SQL', 'Docker'],
-    languages: [
-        { id: 1, name: 'Français', level: 'Natif' },
-        { id: 2, name: 'Anglais', level: 'Courant (C1)' }
-    ],
-    hobbies: ['Photographie', 'Voyage', 'Lecture']
-};
-
-const exampleData = {
-    dev: { ...initialCvData },
-    manager: {
-        personal: { ...initialCvData.personal, firstName: 'Jane', lastName: 'Smith', title: 'Chef de Projet Senior', summary: 'Chef de projet expérimentée avec 10 ans de succès dans la gestion de projets techniques complexes, de la conception à la livraison. Excellentes compétences en communication et en leadership.'},
-        experiences: [{id: 1, company: 'Innovate Corp.', position: 'Chef de Projet', startDate: '2018', endDate: '2024', description: 'Gestion d\'équipes pluridisciplinaires pour livrer des solutions logicielles. Suivi du budget, du planning et des risques.'}],
-        education: [{id: 1, institution: 'HEC Paris', degree: 'Master in Management', startDate: '2016', endDate: '2018', description: ''}],
-        skills: ['Gestion de projet', 'Méthode Agile', 'Scrum', 'JIRA', 'Budgeting'],
-        languages: [{id: 1, name: 'Français', level: 'Natif'}, {id: 2, name: 'Anglais', level: 'Bilingue'}],
-        hobbies: ['Marathon', 'Échecs']
-    }
-}
-
-
-const CVGenerator = () => {
-    // STATE MANAGEMENT
-    const [activeTemplate, setActiveTemplate] = useState('modern');
-    const [activeColor, setActiveColor] = useState('blue');
-    const [backgroundColor, setBackgroundColor] = useState('#ffffff');
-    const [leftColumnBackgroundColor, setLeftColumnBackgroundColor] = useState('#f9fafb');
-    const [rightColumnBackgroundColor, setRightColumnBackgroundColor] = useState('#ffffff');
-    const [activeLayout, setActiveLayout] = useState('single');
-    const [columnRatio, setColumnRatio] = useState('large-left');
-    const [activeFont, setActiveFont] = useState('sans');
-    const [previewMode, setPreviewMode] = useState(false);
-    const [isAnonymized, setIsAnonymized] = useState(false);
-    const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
-    const [showRecruiterBanner, setShowRecruiterBanner] = useState(false);
-    const [showQRCode, setShowQRCode] = useState(false);
-    const [photo, setPhoto] = useState(null);
-    const [photoShape, setPhotoShape] = useState('round');
-    const [sectionTitleStyle, setSectionTitleStyle] = useState('border');
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créateur de CV Pro</title>
     
-    // Formatting State
-    const [baseFontSize, setBaseFontSize] = useState(10); // in points
-    const [nameFontSize, setNameFontSize] = useState(28); // in points
-    const [sectionTitleFontSize, setSectionTitleFontSize] = useState(14); // in points
-    const [lineHeight, setLineHeight] = useState(1.5); // relative
-    const [pagePadding, setPagePadding] = useState(1.5); // in rem
-
-    // AI Feature State
-    const [aiInput, setAiInput] = useState('');
-    const [isAiLoading, setIsAiLoading] = useState(false);
-    const [isAiSynthesizing, setIsAiSynthesizing] = useState(false);
-    const [summarizingField, setSummarizingField] = useState(null);
-    const [aiError, setAiError] = useState('');
-    const [synthesisSuccess, setSynthesisSuccess] = useState(false);
-
-
-    // Drag and Drop State
-    const [draggedBlock, setDraggedBlock] = useState(null);
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
-    // Ref for the CV preview element for PDF generation
-    const cvPreviewRef = useRef();
-    const qrCodeRef = useRef();
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=JetBrains+Mono&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
-    // CV Data State with Local Storage
-    const [cvData, setCvData] = useState(() => {
-        try {
-            const savedData = localStorage.getItem('cvData');
-            return savedData ? JSON.parse(savedData) : initialCvData;
-        } catch (error) {
-            console.error("Could not parse saved CV data:", error);
-            return initialCvData;
+    <!-- PDF & QR Code Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    
+    <style>
+        /* Custom styles */
+        body {
+            font-family: 'Inter', sans-serif;
         }
-    });
-
-    // Visibility State
-    const [visibility, setVisibility] = useState({
-        personal: true,
-        experiences: cvData.experiences.reduce((acc, exp) => ({ ...acc, [exp.id]: true }), {}),
-        education: cvData.education.reduce((acc, edu) => ({ ...acc, [edu.id]: true }), {}),
-        skills: true,
-        languages: true,
-        hobbies: true,
-    });
-
-    // Order and Column Management State
-    const [blockOrder, setBlockOrder] = useState(['experiences', 'education', 'skills', 'languages', 'hobbies']);
-    const [columnAssignment, setColumnAssignment] = useState({
-        left: ['personal', 'skills', 'languages', 'hobbies'],
-        right: ['experiences', 'education']
-    });
-
-    // DATA DEFINITIONS (Templates, Layouts, Fonts, Colors)
-    const templates = {
-        modern: { name: 'Moderne' },
-        classic: { name: 'Classique' },
-        creative: { name: 'Créatif' },
-        minimalist: { name: 'Minimaliste' },
-        academic: { name: 'Académique' },
-    };
-    const layouts = {
-        single: { name: 'Une colonne' },
-        two: { name: 'Deux colonnes' },
-    };
-    const fonts = {
-        sans: { name: 'Sans-serif', family: "'Inter', sans-serif" },
-        serif: { name: 'Serif', family: "'Georgia', serif" },
-        mono: { name: 'Monospace', family: "'JetBrains Mono', monospace" },
-    };
-    const colors = {
-        blue: { primary: '#3b82f6', secondary: '#eff6ff', accent: '#1e40af', textOnPrimary: '#ffffff' },
-        green: { primary: '#10b981', secondary: '#f0fdf4', accent: '#047857', textOnPrimary: '#ffffff' },
-        purple: { primary: '#8b5cf6', secondary: '#faf5ff', accent: '#6d28d9', textOnPrimary: '#ffffff' },
-        red: { primary: '#ef4444', secondary: '#fef2f2', accent: '#dc2626', textOnPrimary: '#ffffff' },
-        gray: { primary: '#6b7280', secondary: '#f9fafb', accent: '#374151', textOnPrimary: '#ffffff' }
-    };
-
-    // Effect to load external scripts
-    useEffect(() => {
-        const scripts = [
-            { id: 'html2pdf-script', src: "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" },
-            { id: 'qrcode-script', src: "https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" }
-        ];
-
-        scripts.forEach(scriptInfo => {
-            if (!document.getElementById(scriptInfo.id)) {
-                const script = document.createElement('script');
-                script.id = scriptInfo.id;
-                script.src = scriptInfo.src;
-                script.async = true;
-                document.body.appendChild(script);
-            }
-        });
-    }, []);
-
-    // Effect for saving to Local Storage
-    useEffect(() => {
-        try {
-            localStorage.setItem('cvData', JSON.stringify(cvData));
-        } catch (error) {
-            console.error("Could not save CV data:", error);
+        .cv-section, .cv-item, .cv-header {
+            page-break-inside: avoid;
         }
-    }, [cvData]);
-    
-    // Effect for QR Code Generation
-    useEffect(() => {
-        if (showQRCode && cvData.personal.onlineProfileUrl && window.qrcode) {
-            try {
-                const qr = window.qrcode(0, 'M');
-                qr.addData(cvData.personal.onlineProfileUrl);
-                qr.make();
-                if (qrCodeRef.current) {
-                    qrCodeRef.current.innerHTML = qr.createImgTag(4, 4);
-                }
-            } catch (error) {
-                console.error("QR Code generation failed:", error);
-            }
+        .dragging {
+            opacity: 0.5;
+            background-color: #eef2ff;
         }
-    }, [showQRCode, cvData.personal.onlineProfileUrl]);
-    
-    const jsonSchemaForAI = {
-        type: "OBJECT",
-        properties: {
+        .drag-over {
+            border-style: solid;
+            border-color: #4f46e5;
+        }
+        /* Simple transition for accordion */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            opacity: 0;
+        }
+        .accordion-content.open {
+            max-height: 2000px; /* Adjust as needed */
+            opacity: 1;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: max-content;
+            background-color: #1f2937;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.75rem;
+            pointer-events: none;
+        }
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <div id="app" class="min-h-screen p-2 md:p-6"></div>
+
+    <script type="module">
+        // --- INITIAL DATA ---
+        const initialCvData = {
             personal: {
-                type: "OBJECT",
-                properties: {
-                    firstName: { type: "STRING" },
-                    lastName: { type: "STRING" },
-                    title: { type: "STRING" },
-                    email: { type: "STRING" },
-                    phone: { type: "STRING" },
-                    address: { type: "STRING" },
-                    summary: { type: "STRING" }
-                }
+                firstName: 'Alexandre',
+                lastName: 'Dubois',
+                title: 'Chef de Projet Digital',
+                email: 'alex.dubois@email.com',
+                phone: '+33 6 98 76 54 32',
+                address: 'Lyon, France',
+                summary: 'Chef de projet digital créatif et rigoureux, avec 8 ans d\'expérience dans la gestion de projets web et mobiles, de la conception à la mise en production. Passionné par l\'innovation et l\'optimisation de l\'expérience utilisateur.',
+                onlineProfileUrl: ''
             },
-            experiences: {
-                type: "ARRAY",
-                items: {
-                    type: "OBJECT",
-                    properties: {
-                        company: { type: "STRING" },
-                        position: { type: "STRING" },
-                        startDate: { type: "STRING" },
-                        endDate: { type: "STRING" },
-                        description: { type: "STRING" }
-                    }
-                }
-            },
-            education: {
-                type: "ARRAY",
-                items: {
-                    type: "OBJECT",
-                    properties: {
-                        institution: { type: "STRING" },
-                        degree: { type: "STRING" },
-                        startDate: { type: "STRING" },
-                        endDate: { type: "STRING" },
-                        description: { type: "STRING" }
-                    }
-                }
-            },
-            skills: { type: "ARRAY", items: { type: "STRING" } },
-            languages: {
-                type: "ARRAY",
-                items: {
-                    type: "OBJECT",
-                    properties: {
-                        name: { type: "STRING" },
-                        level: { type: "STRING" }
-                    }
-                }
-            },
-            hobbies: { type: "ARRAY", items: { type: "STRING" } }
-        }
-    };
-
-    // AI COMPLETION HANDLER
-    const handleAiGenerate = async () => {
-        if (!aiInput.trim()) {
-            setAiError("Veuillez entrer des informations à analyser.");
-            return;
-        }
-        setIsAiLoading(true);
-        setAiError('');
-
-        const prompt = `
-            Analyze the following text and extract the information into a valid JSON object.
-            The user's text is: "${aiInput}"
-            Fill the JSON schema below. If information is missing, leave the field empty. Be concise and professional.
-            Return ONLY the JSON object, without any extra text or markdown formatting.
-        `;
-
-        try {
-            const payload = {
-                contents: [{ role: "user", parts: [{ text: prompt }] }],
-                generationConfig: {
-                    responseMimeType: "application/json",
-                    responseSchema: jsonSchemaForAI
-                }
-            };
-            const apiKey = ""; // Left empty to be handled by the environment
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) {
-                throw new Error(`API request failed with status ${response.status}`);
-            }
-
-            const result = await response.json();
-
-            if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0].text) {
-                const parsedJson = JSON.parse(result.candidates[0].content.parts[0].text);
-                
-                // Merge AI data with existing data structure to ensure all keys are present
-                setCvData(prev => ({
-                    personal: { ...prev.personal, ...parsedJson.personal },
-                    experiences: (parsedJson.experiences || []).map((exp, i) => ({ id: Date.now() + i, ...exp })),
-                    education: (parsedJson.education || []).map((edu, i) => ({ id: Date.now() + i, ...edu })),
-                    skills: parsedJson.skills || [],
-                    languages: (parsedJson.languages || []).map((lang, i) => ({ id: Date.now() + i, ...lang })),
-                    hobbies: parsedJson.hobbies || []
-                }));
-            } else {
-                throw new Error("Invalid response structure from AI.");
-            }
-
-        } catch (error) {
-            console.error("AI Generation Error:", error);
-            setAiError("Le service IA est momentanément indisponible. Veuillez réessayer plus tard.");
-        } finally {
-            setIsAiLoading(false);
-        }
-    };
-    
-    // AI SYNTHESIS HANDLER
-    const handleAiSynthesize = async () => {
-        setIsAiSynthesizing(true);
-        setAiError('');
-    
-        const prompt = `
-            En tant qu'expert en recrutement, votre tâche est de synthétiser les données de CV suivantes pour les rendre plus concises et percutantes.
-            Conservez le sens principal mais utilisez moins de mots. Raccourcissez le résumé ("summary") et toutes les descriptions ("description") des expériences et des formations.
-            Ne modifiez pas les noms, les entreprises, les dates, les titres de poste ou les diplômes.
-            Voici les données actuelles du CV :
-            ${JSON.stringify(cvData)}
-            
-            Veuillez renvoyer l'intégralité des données du CV, avec les textes synthétisés, en respectant exactement le même format JSON. Renvoyez UNIQUEMENT l'objet JSON.
-        `;
-    
-        try {
-            const payload = {
-                contents: [{ role: "user", parts: [{ text: prompt }] }],
-                generationConfig: {
-                    responseMimeType: "application/json",
-                    responseSchema: jsonSchemaForAI
-                }
-            };
-            const apiKey = ""; // Left empty
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-    
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-    
-            if (!response.ok) {
-                throw new Error(`API request failed with status ${response.status}`);
-            }
-    
-            const result = await response.json();
-    
-            if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0].text) {
-                const synthesizedJson = JSON.parse(result.candidates[0].content.parts[0].text);
-                
-                // Safely merge the synthesized data
-                setCvData(prev => {
-                    const newData = { ...prev };
-    
-                    if (synthesizedJson.personal && synthesizedJson.personal.summary) {
-                        newData.personal.summary = synthesizedJson.personal.summary;
-                    }
-    
-                    if (synthesizedJson.experiences) {
-                        newData.experiences = prev.experiences.map((exp, index) => {
-                            if (synthesizedJson.experiences[index] && synthesizedJson.experiences[index].description) {
-                                return { ...exp, description: synthesizedJson.experiences[index].description };
-                            }
-                            return exp;
-                        });
-                    }
-    
-                    if (synthesizedJson.education) {
-                        newData.education = prev.education.map((edu, index) => {
-                            if (synthesizedJson.education[index] && synthesizedJson.education[index].description) {
-                                return { ...edu, description: synthesizedJson.education[index].description };
-                            }
-                            return edu;
-                        });
-                    }
-                    
-                    return newData;
-                });
-                
-                setSynthesisSuccess(true);
-                setTimeout(() => setSynthesisSuccess(false), 3000);
-
-            } else {
-                throw new Error("Invalid response structure from AI.");
-            }
-    
-        } catch (error) {
-            console.error("AI Synthesis Error:", error);
-            setAiError("Le service IA est momentanément indisponible. Veuillez réessayer plus tard.");
-        } finally {
-            setIsAiSynthesizing(false);
-        }
-    };
-    
-    // AI Summarize Field Handler
-    const handleAiSummarizeField = async (section, id, field, currentText) => {
-        const fieldIdentifier = id ? `${section}-${id}` : section;
-        setSummarizingField(fieldIdentifier);
-        setAiError('');
-
-        const prompt = `Synthétise le texte suivant pour un CV en une seule phrase percutante et très concise : "${currentText}"`;
-
-        try {
-            const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
-            const apiKey = ""; // Left empty
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
-
-            const result = await response.json();
-            
-            if (result.candidates && result.candidates[0].content.parts[0].text) {
-                const summarizedText = result.candidates[0].content.parts[0].text;
-                if (id) {
-                    handleListItemChange(section, id, field, summarizedText);
-                } else {
-                    handleCvDataChange(section, field, summarizedText);
-                }
-            } else {
-                throw new Error("Invalid response structure from AI.");
-            }
-
-        } catch (error) {
-            console.error("AI Summarize Error:", error);
-            setAiError("Erreur lors de la synthèse du champ.");
-        } finally {
-            setSummarizingField(null);
-        }
-    };
-
-
-    // DATA UPDATE HANDLERS
-    const handleCvDataChange = (section, field, value) => {
-        setCvData(prev => ({
-            ...prev,
-            [section]: { ...prev[section], [field]: value }
-        }));
-    };
-
-    const handleListItemChange = (section, id, field, value) => {
-        setCvData(prev => ({
-            ...prev,
-            [section]: prev[section].map(item =>
-                item.id === id ? { ...item, [field]: value } : item
-            )
-        }));
-    };
-    
-    const handleLanguageChange = (id, field, value) => {
-        handleListItemChange('languages', id, field, value);
-    };
-
-    const addListItem = (section) => {
-        const newItem = {
-            id: Date.now(),
-            ...(section === 'experiences' && { company: '', position: '', startDate: '', endDate: '', description: '' }),
-            ...(section === 'education' && { institution: '', degree: '', startDate: '', endDate: '', description: '' }),
-            ...(section === 'languages' && { name: '', level: '' }),
+            experiences: [
+                { id: 1, company: 'Web Agency "La Crème"', position: 'Chef de Projet Senior', startDate: '2019', endDate: 'Présent', description: 'Pilotage de projets d\'envergure pour des clients grands comptes. Gestion des équipes de développement et de design. Responsable du respect des délais et des budgets.' }
+            ],
+            projects: [
+                { id: 1, name: 'Refonte E-commerce', url: 'exemple.com', description: 'Direction de la refonte complète d\'une plateforme e-commerce, résultant en une augmentation de 25% des conversions.' }
+            ],
+            education: [
+                { id: 1, institution: 'INSEEC Lyon', degree: 'Master en Management Digital', startDate: '2015', endDate: '2017', description: 'Spécialisation en stratégie digitale et gestion de projet.' }
+            ],
+            skills: [
+                { id: 1, name: 'Gestion de Projet Agile', level: 5 },
+                { id: 2, name: 'Scrum & Kanban', level: 5 },
+                { id: 3, name: 'UX/UI Design', level: 4 },
+                { id: 4, name: 'SEO/SEA', level: 4 },
+            ],
+            awards: [
+                { id: 1, name: 'Trophée de l\'Innovation Digitale', issuer: 'Web Summit', date: '2021', description: 'Récompense pour un projet innovant de réalité augmentée en e-commerce.'}
+            ],
+            languages: [
+                { id: 1, name: 'Français', level: 'Natif' },
+                { id: 2, name: 'Anglais', level: 'Courant (C1)' }
+            ],
+            hobbies: [
+                { id: 1, name: 'Photographie Urbaine', icon: 'camera' },
+                { id: 2, name: 'Veille Technologique', icon: 'code' },
+                { id: 3, name: 'Randonnée', icon: 'dumbbell' }
+            ]
         };
-        setCvData(prev => ({
-            ...prev,
-            [section]: [...prev[section], newItem]
-        }));
 
-        // Also update visibility state
-        if (section === 'experiences' || section === 'education') {
-            setVisibility(prev => ({
-                ...prev,
-                [section]: {
-                    ...prev[section],
-                    [newItem.id]: true
-                }
-            }));
-        }
-    };
+        // --- CONFIGURATIONS ---
+        const templates = { modern: { name: 'Moderne' }, classic: { name: 'Classique' }, creative: { name: 'Créatif' }, minimalist: { name: 'Minimaliste' } };
+        const layouts = { single: { name: 'Une colonne' }, two: { name: 'Deux colonnes' } };
+        const fonts = {
+            sans: { name: 'Inter (Sans)', family: "'Inter', sans-serif" },
+            serif: { name: 'Lora (Serif)', family: "'Lora', serif" },
+            mono: { name: 'JetBrains Mono', family: "'JetBrains Mono', monospace" },
+        };
+        const colors = {
+            indigo: { primary: '#4f46e5', secondary: '#eef2ff', accent: '#3730a3', textOnPrimary: '#ffffff' },
+            blue: { primary: '#2563eb', secondary: '#eff6ff', accent: '#1d4ed8', textOnPrimary: '#ffffff' },
+            green: { primary: '#059669', secondary: '#f0fdf4', accent: '#047857', textOnPrimary: '#ffffff' },
+            purple: { primary: '#7c3aed', secondary: '#faf5ff', accent: '#6d28d9', textOnPrimary: '#ffffff' },
+            red: { primary: '#dc2626', secondary: '#fef2f2', accent: '#b91c1c', textOnPrimary: '#ffffff' },
+            gray: { primary: '#4b5563', secondary: '#f9fafb', accent: '#1f2937', textOnPrimary: '#ffffff' }
+        };
+        const hobbyIcons = ['code', 'book-open', 'camera', 'music', 'plane', 'dumbbell', 'paintbrush', 'heart', 'star'];
 
-    const removeListItem = (section, id) => {
-        setCvData(prev => ({
-            ...prev,
-            [section]: prev[section].filter(item => item.id !== id)
-        }));
+        // --- STATE MANAGEMENT ---
+        let state = {};
 
-        // Also update visibility state
-        if (section === 'experiences' || section === 'education') {
-            setVisibility(prev => {
-                const newSectionVisibility = { ...prev[section] };
-                delete newSectionVisibility[id];
-                return {
-                    ...prev,
-                    [section]: newSectionVisibility
-                };
-            });
-        }
-    };
-    
-    const handleSimpleListChange = (section, value) => {
-         setCvData(prev => ({
-            ...prev,
-            [section]: value.split(',').map(item => item.trim()).filter(Boolean)
-        }));
-    }
-
-    const handlePhotoChange = (e) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            setPhoto(URL.createObjectURL(file));
-        }
-    };
-    
-    // VISIBILITY HANDLERS
-    const toggleSectionVisibility = (section) => {
-        setVisibility(prev => ({
-            ...prev,
-            [section]: !prev[section]
-        }));
-    };
-
-    const toggleItemVisibility = (section, id) => {
-        setVisibility(prev => ({
-            ...prev,
-            [section]: {
-                ...prev[section],
-                [id]: !prev[section][id]
+        function setState(newState) {
+            state = { ...state, ...newState };
+            console.log("State updated:", state);
+            
+            // Save to localStorage
+            try {
+                localStorage.setItem('cvData_v2', JSON.stringify(state.cvData));
+            } catch (error) {
+                console.error("Could not save data:", error);
             }
-        }));
-    };
-
-
-    // DRAG AND DROP HANDLERS
-    const handleDragStart = (e, blockId) => {
-        setDraggedBlock(blockId);
-        e.dataTransfer.effectAllowed = 'move';
-        e.currentTarget.style.opacity = '0.5';
-    };
-
-    const handleDragOver = (e) => {
-        e.preventDefault(); 
-    };
-
-    const handleDrop = (e, targetBlockId, targetColumn) => {
-        e.preventDefault();
-        if (!draggedBlock) return;
-
-        if (activeLayout === 'two') {
-            setColumnAssignment(prev => {
-                const newAssignment = {
-                    left: prev.left.filter(id => id !== draggedBlock),
-                    right: prev.right.filter(id => id !== draggedBlock)
-                };
-
-                const targetList = newAssignment[targetColumn];
-                const dropIndex = targetList.indexOf(targetBlockId);
-                
-                if (dropIndex !== -1) {
-                    targetList.splice(dropIndex, 0, draggedBlock);
-                } else {
-                    targetList.push(draggedBlock);
-                }
-                
-                return newAssignment;
-            });
-        } else {
-            setBlockOrder(prev => {
-                const newOrder = prev.filter(id => id !== draggedBlock);
-                const dropIndex = newOrder.indexOf(targetBlockId);
-                newOrder.splice(dropIndex, 0, draggedBlock);
-                return newOrder;
-            });
+            
+            renderApp();
         }
+
+        // --- RENDER FUNCTIONS ---
         
-        e.currentTarget.style.opacity = '1';
-        setDraggedBlock(null);
-    };
-    
-    const handleDragEnd = (e) => {
-        e.currentTarget.style.opacity = '1';
-    }
-    
-    const handleDropOnColumn = (e, column) => {
-        e.preventDefault();
-        if(!columnAssignment[column].length) {
-            handleDrop(e, null, column);
+        function renderApp() {
+            const appContainer = document.getElementById('app');
+            appContainer.innerHTML = `
+                <div class="max-w-screen-2xl mx-auto">
+                    ${renderHeaderControls()}
+                    <div id="main-content" class="grid ${state.previewMode ? 'grid-cols-1' : 'grid-cols-1 xl:grid-cols-[1fr,1.5fr]'} gap-8 items-start">
+                        ${!state.previewMode ? `<div id="editor-panel" class="space-y-6">${renderEditor()}</div>` : ''}
+                        <div id="preview-panel" class="flex flex-col items-center sticky top-28">
+                            ${renderPreviewControls()}
+                            <div id="cv-outer-container" class="origin-top shadow-2xl transition-transform duration-300" style="transform: scale(${state.previewScale})">
+                                ${renderCV()}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            attachEventListeners();
+            lucide.createIcons();
+            generateVCardQR();
         }
-    }
-    
-    const invertColumns = () => {
-        setColumnAssignment(prev => ({
-            left: prev.right,
-            right: prev.left
-        }));
-    };
 
-
-    // UTILITY FUNCTIONS
-    const getBlockTitle = (blockId) => ({
-        personal: 'Informations personnelles',
-        experiences: 'Expérience professionnelle',
-        education: 'Formation',
-        skills: 'Compétences',
-        languages: 'Langues',
-        hobbies: 'Centres d\'intérêt'
-    }[blockId] || blockId);
-
-    const generatePdfFilename = () => {
-        const { firstName, lastName, title } = cvData.personal;
-        const first = firstName.trim();
-        const lastInitial = lastName.trim().charAt(0);
-        const jobTitle = title.trim().replace(/\s+/g, ''); // Remove spaces
-        if (!first || !lastInitial || !jobTitle) return 'cv.pdf';
-        return `${first}${lastInitial}-${jobTitle}.pdf`;
-    }
-
-    const generatePDF = async () => {
-        const element = cvPreviewRef.current;
-        if (!element || isDownloadingPdf) return;
-
-        setIsDownloadingPdf(true);
-        setAiError('');
-
-        const originalHeight = element.style.height;
-        element.style.height = 'auto'; // Let content define height
-
-        try {
-            const opt = {
-                margin: 0,
-                filename: isAnonymized ? 'cv_anonyme.pdf' : generatePdfFilename(),
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 3, useCORS: true, letterRendering: true, scrollY: -window.scrollY },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-            };
-
-            if (window.html2pdf) {
-                await window.html2pdf().from(element).set(opt).save();
-            } else {
-                throw new Error("La bibliothèque de génération PDF n'a pas pu être chargée.");
-            }
-        } catch (error) {
-            console.error("PDF Generation Error:", error);
-            setAiError("Une erreur est survenue lors de la création du PDF.");
-        } finally {
-            element.style.height = originalHeight;
-            setIsDownloadingPdf(false);
-        }
-    };
-
-    // RENDER FUNCTIONS FOR CV SECTIONS
-    const renderRecruiterBanner = () => (
-        <div className="flex justify-between items-center p-4 border-b-2 border-gray-300 mb-4">
-            <div className="text-2xl font-bold text-blue-800">LTD Recrutement</div>
-            <div className="text-right text-xs">
-                <p className="font-bold">Lyes AMARA</p>
-                <p>Responsable d’activité recrutement – BTP – France</p>
-                <p>Fixe : 01 56 02 12 25 / Mobile : 06 34 25 32 96</p>
-                <p>Mail : l.amara@ltd-international.com</p>
-            </div>
-        </div>
-    );
-
-    const renderHeader = (personalData) => (
-        <div className={`cv-header mb-6 ${activeTemplate} flex flex-col items-center`}>
-            {photo && !isAnonymized && (
-                <img 
-                    src={photo} 
-                    alt="User" 
-                    className={`mb-4 ${photoShape === 'round' ? 'rounded-full' : 'rounded-lg'} w-32 h-32 object-cover`}
-                />
-            )}
-            <h1 className="font-bold mb-1 text-gray-900" style={{ fontSize: `${nameFontSize}pt` }}>
-                {personalData.firstName} {personalData.lastName}
-            </h1>
-            <h2 className="text-xl mb-3" style={{ color: colors[activeColor].primary }}>
-                {personalData.title}
-            </h2>
-            {!isAnonymized && (
-                <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-gray-600 mb-4 text-sm">
-                    <div className="flex items-center gap-2"><Mail size={14} />{personalData.email}</div>
-                    <div className="flex items-center gap-2"><Phone size={14} />{personalData.phone}</div>
-                    <div className="flex items-center gap-2"><MapPin size={14} />{personalData.address}</div>
-                </div>
-            )}
-            <p className="text-gray-700 leading-relaxed text-center max-w-3xl mx-auto">
-                {personalData.summary}
-            </p>
-        </div>
-    );
-
-    const renderSection = (title, content) => {
-        const titleStyles = {
-            border: `border-b-2 pb-1`,
-            background: `p-2 rounded-md`,
-            simple: ``,
-        };
-        const titleColor = sectionTitleStyle === 'background' ? colors[activeColor].textOnPrimary : colors[activeColor].primary;
-        const titleBg = sectionTitleStyle === 'background' ? colors[activeColor].primary : 'transparent';
-
-        return (
-            <div className="cv-section mb-5">
-                <h3 
-                    className={`font-bold mb-3 ${activeTemplate} ${titleStyles[sectionTitleStyle]}`} 
-                    style={{ 
-                        color: titleColor,
-                        backgroundColor: titleBg,
-                        borderColor: colors[activeColor].primary, 
-                        fontSize: `${sectionTitleFontSize}pt` 
-                    }}
-                >
-                    {title}
-                </h3>
-                {content}
-            </div>
-        );
-    };
-
-    const renderExperiences = () => renderSection('Expérience Professionnelle',
-        <div className="space-y-4">
-            {cvData.experiences.filter(exp => visibility.experiences[exp.id]).map(exp => (
-                <div key={exp.id} className="cv-item">
-                    <div className="flex justify-between items-start mb-1">
-                        <div>
-                            <h4 className="font-semibold">{exp.position}</h4>
-                            <p style={{ color: colors[activeColor].accent }}>{exp.company}</p>
-                        </div>
-                        <span className="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">{exp.startDate} - {exp.endDate}</span>
-                    </div>
-                    <p className="text-gray-600">{exp.description}</p>
-                </div>
-            ))}
-        </div>
-    );
-
-    const renderEducation = () => renderSection('Formation',
-        <div className="space-y-4">
-            {cvData.education.filter(edu => visibility.education[edu.id]).map(edu => (
-                <div key={edu.id} className="cv-item">
-                    <div className="flex justify-between items-start mb-1">
-                        <div>
-                            <h4 className="font-semibold">{edu.degree}</h4>
-                            <p style={{ color: colors[activeColor].accent }}>{edu.institution}</p>
-                        </div>
-                        <span className="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">{edu.startDate} - {edu.endDate}</span>
-                    </div>
-                    <p className="text-gray-600">{edu.description}</p>
-                </div>
-            ))}
-        </div>
-    );
-
-    const renderSkills = () => renderSection('Compétences',
-        <div className="flex flex-wrap gap-2">
-            {cvData.skills.map((skill, index) => (
-                <span key={index} className="px-3 py-1 text-sm rounded-full" style={{ backgroundColor: colors[activeColor].secondary, color: colors[activeColor].accent }}>
-                    {skill}
-                </span>
-            ))}
-        </div>
-    );
-
-    const renderLanguages = () => renderSection('Langues',
-        <div className="space-y-2">
-            {cvData.languages.map((lang) => (
-                <div key={lang.id} className="flex justify-between py-1">
-                    <span className="font-medium">{lang.name}</span>
-                    <span className="text-gray-600">{lang.level}</span>
-                </div>
-            ))}
-        </div>
-    );
-
-    const renderHobbies = () => renderSection('Centres d\'intérêt',
-        <div className="flex flex-wrap gap-2">
-            {cvData.hobbies.map((hobby, index) => (
-                <span key={index} className="px-3 py-1 text-sm rounded-full bg-gray-100 text-gray-700">
-                    {hobby}
-                </span>
-            ))}
-        </div>
-    );
-
-    // DYNAMIC CV RENDERER
-    const renderCV = () => {
-        const personalDataForRender = isAnonymized 
-            ? {
-                ...cvData.personal,
-                lastName: `${cvData.personal.lastName.charAt(0)}.`,
-                email: '', phone: '', address: ''
-              }
-            : cvData.personal;
-
-        const getBlockComponent = (blockId) => ({
-            'personal': renderHeader(personalDataForRender),
-            'experiences': renderExperiences(),
-            'education': renderEducation(),
-            'skills': renderSkills(),
-            'languages': renderLanguages(),
-            'hobbies': renderHobbies(),
-        }[blockId] || null);
-        
-        const getColumnClasses = () => {
-            switch (columnRatio) {
-                case 'large-right': return { left: 'w-1/3', right: 'w-2/3' };
-                case 'equal': return { left: 'w-1/2', right: 'w-1/2' };
-                case 'large-left': default: return { left: 'w-2/3', right: 'w-1/3' };
-            }
-        };
-        const { left: leftColClass, right: rightColClass } = getColumnClasses();
-
-        const cvContent = activeLayout === 'two' ? (
-            <div className="flex gap-6 h-full">
-                <div className={`${leftColClass} space-y-4 p-6 rounded-lg`} style={{ backgroundColor: leftColumnBackgroundColor }}>
-                    {columnAssignment.left.filter(id => visibility[id]).map(blockId => <React.Fragment key={blockId}>{getBlockComponent(blockId)}</React.Fragment>)}
-                </div>
-                <div className={`${rightColClass} space-y-4 p-6 rounded-lg`} style={{ backgroundColor: rightColumnBackgroundColor }}>
-                    {columnAssignment.right.filter(id => visibility[id]).map(blockId => <React.Fragment key={blockId}>{getBlockComponent(blockId)}</React.Fragment>)}
-                </div>
-            </div>
-        ) : (
-            <>
-                {visibility.personal && getBlockComponent('personal')}
-                <div className="space-y-4">
-                    {blockOrder.filter(id => visibility[id]).map(blockId => <React.Fragment key={blockId}>{getBlockComponent(blockId)}</React.Fragment>)}
-                </div>
-            </>
-        );
-
-        return (
-            <div
-                id="cv-preview-container"
-                className="bg-white"
-                style={{
-                    width: '210mm',
-                    minHeight: '297mm',
-                    boxSizing: 'border-box',
-                    overflow: 'hidden'
-                }}
-            >
-                <div
-                    id="cv-preview"
-                    className={`text-gray-800 template-${activeTemplate}`}
-                    style={{
-                        fontFamily: fonts[activeFont].family,
-                        backgroundColor: backgroundColor,
-                        boxSizing: 'border-box',
-                        width: '100%',
-                        height: '100%',
-                    }}
-                >
-                    <div 
-                        className="h-full w-full flex flex-col"
-                        style={{
-                            fontSize: `${baseFontSize}pt`,
-                            lineHeight: lineHeight,
-                            padding: `${pagePadding}rem`
-                        }}
-                    >
-                        {showRecruiterBanner && renderRecruiterBanner()}
-                        <div className="flex-grow">
-                            {cvContent}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    };
-    
-    // EDITOR UI COMPONENTS
-    
-    const renderDraggableBlock = (blockId, column) => (
-        <div
-            key={blockId}
-            draggable
-            onDragStart={(e) => handleDragStart(e, blockId)}
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, blockId, column)}
-            onDragEnd={handleDragEnd}
-            className="p-3 bg-gray-100 border border-gray-200 rounded-lg cursor-move hover:bg-gray-200 transition-colors flex items-center gap-2"
-        >
-            <Move size={16} className="text-gray-500" />
-            <span className="font-medium text-sm flex-grow">{getBlockTitle(blockId)}</span>
-            <button onClick={() => toggleSectionVisibility(blockId)} className="p-1 hover:bg-gray-300 rounded-full" title={visibility[blockId] ? "Cacher la section" : "Afficher la section"}>
-                {visibility[blockId] ? <Eye size={16} className="text-gray-600"/> : <EyeOff size={16} className="text-gray-400"/>}
-            </button>
-        </div>
-    );
-
-    const renderEditor = () => (
-        <div className="space-y-8">
-            {/* Personal Info Section */}
-            <div className="p-6 bg-white rounded-lg shadow">
-                <h3 className="text-xl font-bold mb-4 flex items-center"><User className="mr-2" /> Informations Personnelles</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <InputField label="Prénom" value={cvData.personal.firstName} onChange={(e) => handleCvDataChange('personal', 'firstName', e.target.value)} />
-                    <InputField label="Nom" value={cvData.personal.lastName} onChange={(e) => handleCvDataChange('personal', 'lastName', e.target.value)} />
-                    <InputField label="Titre du poste" value={cvData.personal.title} onChange={(e) => handleCvDataChange('personal', 'title', e.target.value)} />
-                    <InputField label="Email" value={cvData.personal.email} onChange={(e) => handleCvDataChange('personal', 'email', e.target.value)} />
-                    <InputField label="Téléphone" value={cvData.personal.phone} onChange={(e) => handleCvDataChange('personal', 'phone', e.target.value)} />
-                    <InputField label="Adresse" value={cvData.personal.address} onChange={(e) => handleCvDataChange('personal', 'address', e.target.value)} />
-                    <div className="md:col-span-2">
-                        <TextareaField 
-                            label="Résumé" 
-                            value={cvData.personal.summary} 
-                            onChange={(e) => handleCvDataChange('personal', 'summary', e.target.value)}
-                        >
-                             <button 
-                                onClick={() => handleAiSummarizeField('personal', null, 'summary', cvData.personal.summary)}
-                                disabled={summarizingField !== null}
-                                className="p-1 text-gray-500 hover:text-purple-600"
-                                title="Synthétiser ce champ"
-                            >
-                                {summarizingField === 'personal' ? <LoaderCircle size={16} className="animate-spin" /> : <Zap size={16} />}
+        function renderHeaderControls() {
+            return `
+                <header class="bg-white rounded-xl shadow-md p-4 mb-6 flex flex-wrap justify-between items-center gap-4 sticky top-4 z-20">
+                    <h1 class="text-xl font-bold text-gray-800">Créateur de CV Pro</h1>
+                    <div class="flex items-center flex-wrap gap-2">
+                        <div class="tooltip">
+                            <button id="toggle-anonymize" class="p-2 rounded-lg transition-colors ${state.isAnonymized ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'}">
+                                <i data-lucide="shield-check" class="w-4 h-4"></i>
                             </button>
-                        </TextareaField>
-                    </div>
-                </div>
-            </div>
-
-            {/* Experiences Section */}
-            <div className="p-6 bg-white rounded-lg shadow">
-                <h3 className="text-xl font-bold mb-4 flex items-center"><Briefcase className="mr-2" /> Expériences</h3>
-                {cvData.experiences.map((exp, index) => (
-                    <div key={exp.id} className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
-                        <InputField label={`Poste ${index+1}`} value={exp.position} onChange={(e) => handleListItemChange('experiences', exp.id, 'position', e.target.value)} />
-                        <InputField label="Entreprise" value={exp.company} onChange={(e) => handleListItemChange('experiences', exp.id, 'company', e.target.value)} />
-                        <InputField label="Date de début" value={exp.startDate} onChange={(e) => handleListItemChange('experiences', exp.id, 'startDate', e.target.value)} />
-                        <InputField label="Date de fin" value={exp.endDate} onChange={(e) => handleListItemChange('experiences', exp.id, 'endDate', e.target.value)} />
-                        <div className="md:col-span-2">
-                          <TextareaField 
-                            label="Description" 
-                            value={exp.description} 
-                            onChange={(e) => handleListItemChange('experiences', exp.id, 'description', e.target.value)}
-                          >
-                            <button 
-                                onClick={() => handleAiSummarizeField('experiences', exp.id, 'description', exp.description)}
-                                disabled={summarizingField !== null}
-                                className="p-1 text-gray-500 hover:text-purple-600"
-                                title="Synthétiser ce champ"
-                            >
-                                {summarizingField === `experiences-${exp.id}` ? <LoaderCircle size={16} className="animate-spin" /> : <Zap size={16} />}
-                            </button>
-                          </TextareaField>
+                            <span class="tooltip-text">${state.isAnonymized ? "Désanonymiser" : "Anonymiser"}</span>
                         </div>
-                        <div className="md:col-span-2 flex justify-between items-center">
-                            <button onClick={() => toggleItemVisibility('experiences', exp.id)} className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900" title={visibility.experiences[exp.id] ? "Cacher cet élément" : "Afficher cet élément"}>
-                                {visibility.experiences[exp.id] ? <Eye size={16} /> : <EyeOff size={16} />}
-                                <span>{visibility.experiences[exp.id] ? "Visible" : "Caché"}</span>
-                            </button>
-                            <button onClick={() => removeListItem('experiences', exp.id)} className="text-red-500 hover:text-red-700 text-sm">
-                                <Minus size={16} className="inline-block mr-1"/> Supprimer l'expérience
-                            </button>
-                        </div>
-                    </div>
-                ))}
-                 <button onClick={() => addListItem('experiences')} className="mt-4 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 text-sm">
-                    <Plus size={16} className="inline-block mr-1"/> Ajouter une expérience
-                </button>
-            </div>
-            
-             {/* Education Section */}
-            <div className="p-6 bg-white rounded-lg shadow">
-                <h3 className="text-xl font-bold mb-4 flex items-center"><GraduationCap className="mr-2" /> Formation</h3>
-                {cvData.education.map((edu, index) => (
-                    <div key={edu.id} className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
-                        <InputField label={`Diplôme ${index+1}`} value={edu.degree} onChange={(e) => handleListItemChange('education', edu.id, 'degree', e.target.value)} />
-                        <InputField label="Établissement" value={edu.institution} onChange={(e) => handleListItemChange('education', edu.id, 'institution', e.target.value)} />
-                        <InputField label="Date de début" value={edu.startDate} onChange={(e) => handleListItemChange('education', edu.id, 'startDate', e.target.value)} />
-                        <InputField label="Date de fin" value={edu.endDate} onChange={(e) => handleListItemChange('education', edu.id, 'endDate', e.target.value)} />
-                        <div className="md:col-span-2">
-                            <TextareaField 
-                                label="Description" 
-                                value={edu.description} 
-                                onChange={(e) => handleListItemChange('education', edu.id, 'description', e.target.value)}
-                            >
-                                <button 
-                                    onClick={() => handleAiSummarizeField('education', edu.id, 'description', edu.description)}
-                                    disabled={summarizingField !== null}
-                                    className="p-1 text-gray-500 hover:text-purple-600"
-                                    title="Synthétiser ce champ"
-                                >
-                                    {summarizingField === `education-${edu.id}` ? <LoaderCircle size={16} className="animate-spin" /> : <Zap size={16} />}
-                                </button>
-                            </TextareaField>
-                        </div>
-                        <div className="md:col-span-2 flex justify-between items-center">
-                             <button onClick={() => toggleItemVisibility('education', edu.id)} className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900" title={visibility.education[edu.id] ? "Cacher cet élément" : "Afficher cet élément"}>
-                                {visibility.education[edu.id] ? <Eye size={16} /> : <EyeOff size={16} />}
-                                <span>{visibility.education[edu.id] ? "Visible" : "Caché"}</span>
-                            </button>
-                            <button onClick={() => removeListItem('education', edu.id)} className="text-red-500 hover:text-red-700 text-sm">
-                                <Minus size={16} className="inline-block mr-1"/> Supprimer la formation
-                            </button>
-                        </div>
-                    </div>
-                ))}
-                 <button onClick={() => addListItem('education')} className="mt-4 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 text-sm">
-                    <Plus size={16} className="inline-block mr-1"/> Ajouter une formation
-                </button>
-            </div>
-            
-            {/* Skills, Languages, Hobbies */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                 <div className="p-6 bg-white rounded-lg shadow">
-                    <h3 className="text-xl font-bold mb-4 flex items-center"><Award className="mr-2" /> Compétences</h3>
-                    <TextareaField 
-                        label="Compétences (séparées par une virgule)"
-                        value={cvData.skills.join(', ')}
-                        onChange={(e) => handleSimpleListChange('skills', e.target.value)}
-                    />
-                </div>
-                 <div className="p-6 bg-white rounded-lg shadow">
-                    <h3 className="text-xl font-bold mb-4 flex items-center"><Globe className="mr-2" /> Langues</h3>
-                    {cvData.languages.map((lang, index) => (
-                        <div key={lang.id} className="flex items-center gap-2 mb-2">
-                           <InputField label={`Langue ${index+1}`} value={lang.name} onChange={(e) => handleLanguageChange(lang.id, 'name', e.target.value)} />
-                           <InputField label="Niveau" value={lang.level} onChange={(e) => handleLanguageChange(lang.id, 'level', e.target.value)} />
-                           <button onClick={() => removeListItem('languages', lang.id)} className="text-red-500 hover:text-red-700 mt-5">
-                                <Minus size={16}/>
-                            </button>
-                        </div>
-                    ))}
-                    <button onClick={() => addListItem('languages')} className="mt-2 text-blue-700 text-sm">
-                        <Plus size={16} className="inline-block mr-1"/> Ajouter
-                    </button>
-                </div>
-                 <div className="p-6 bg-white rounded-lg shadow">
-                    <h3 className="text-xl font-bold mb-4 flex items-center"><Heart className="mr-2" /> Centres d'intérêt</h3>
-                    <TextareaField 
-                        label="Centres d'intérêt (séparés par une virgule)"
-                        value={cvData.hobbies.join(', ')}
-                        onChange={(e) => handleSimpleListChange('hobbies', e.target.value)}
-                    />
-                </div>
-            </div>
-        </div>
-    );
-
-    // MAIN COMPONENT RENDER
-    return (
-        <div className="min-h-screen bg-gray-100 p-2 md:p-8 font-sans">
-            <style>
-                {`
-                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=JetBrains+Mono&family=Georgia&display=swap');
-                
-                /* PDF Generation Helper */
-                .cv-section, .cv-item, .cv-header {
-                    page-break-inside: avoid;
-                }
-
-                /* Template Specific Styles */
-                .template-modern .cv-header { text-align: center; }
-                
-                .template-classic .cv-header { text-align: left; }
-                .template-classic .cv-header h1 { font-family: 'Georgia', serif; }
-                .template-classic .cv-section h3 { text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; }
-                
-                .template-creative .cv-header { text-align: center; }
-                .template-creative .cv-header h1 { font-family: 'JetBrains Mono', monospace; }
-                .template-creative .cv-section h3 { font-style: italic; text-align: right; padding-right: 1rem; border-right-width: 3px; border-bottom-width: 0 !important; }
-
-                .template-minimalist { font-family: 'Inter', sans-serif; }
-                .template-minimalist .cv-header h1 { font-weight: 400; }
-                .template-minimalist .cv-section h3 { font-weight: 500; border: none; }
-
-                .template-academic { font-family: 'Georgia', serif; }
-                .template-academic .cv-section h3 { text-align: center; border-bottom: 2px solid; margin-bottom: 1rem; padding-bottom: 0.5rem; }
-                `}
-            </style>
-            <div className="max-w-screen-2xl mx-auto">
-                {/* Header */}
-                <header className="bg-white rounded-lg shadow p-4 mb-8 flex flex-wrap justify-between items-center gap-4">
-                    <h1 className="text-2xl font-bold text-gray-800">Générateur de CV</h1>
-                    <div className="flex items-center flex-wrap gap-3">
-                        <button 
-                            onClick={() => setShowRecruiterBanner(!showRecruiterBanner)}
-                            className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${
-                                showRecruiterBanner
-                                ? 'bg-blue-600 text-white hover:bg-blue-700'
-                                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-                            }`}
-                        >
-                            <Building size={16} />
-                            Bannière
+                        <button id="toggle-preview-mode" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 flex items-center gap-2 transition-colors">
+                            <i data-lucide="eye" class="w-4 h-4"></i> <span class="hidden sm:inline">${state.previewMode ? 'Éditer' : 'Plein écran'}</span>
                         </button>
-                        <button 
-                            onClick={() => setIsAnonymized(!isAnonymized)} 
-                            className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${
-                                isAnonymized 
-                                ? 'bg-green-600 text-white hover:bg-green-700' 
-                                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-                            }`}
-                        >
-                            <ShieldCheck size={16} />
-                            Anonymiser
-                        </button>
-                        <button onClick={() => setPreviewMode(!previewMode)} className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 flex items-center gap-2 transition-colors">
-                            <Eye size={16} />
-                            {previewMode ? 'Éditer' : 'Aperçu'}
-                        </button>
-                        <button onClick={generatePDF} disabled={isDownloadingPdf} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 transition-colors disabled:bg-blue-300 w-[190px]">
-                            {isDownloadingPdf ? (
-                                <>
-                                    <LoaderCircle size={16} className="animate-spin" />
-                                    Téléchargement...
-                                </>
-                            ) : (
-                                <>
-                                    <Download size={16} />
-                                    Télécharger PDF
-                                </>
-                            )}
+                        <button id="generate-pdf" ${state.isDownloadingPdf ? 'disabled' : ''} class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center justify-center gap-2 transition-colors disabled:bg-indigo-300 w-[180px]">
+                            ${state.isDownloadingPdf 
+                                ? `<i data-lucide="loader-circle" class="animate-spin w-4 h-4"></i> Téléchargement...` 
+                                : `<i data-lucide="download" class="w-4 h-4"></i> Télécharger PDF`
+                            }
                         </button>
                     </div>
                 </header>
+            `;
+        }
 
-                <div className={`grid ${previewMode ? 'grid-cols-1' : 'grid-cols-1 xl:grid-cols-2'} gap-8 items-start`}>
-                    {/* Editor Panel */}
-                    <div className={`${previewMode ? 'hidden' : 'block'} space-y-8`}>
-                        {/* Customization Panel */}
-                        <div className="p-6 bg-white rounded-lg shadow">
-                             <h3 className="text-xl font-bold mb-4 flex items-center"><Palette className="mr-2" /> Personnalisation</h3>
-                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                 <div>
-                                     <h4 className="font-semibold mb-2">Modèle</h4>
-                                     <div className="flex flex-col space-y-2">
-                                         {Object.entries(templates).map(([key, t]) => (
-                                             <button key={key} onClick={() => setActiveTemplate(key)} className={`p-2 rounded-lg border-2 text-sm ${activeTemplate === key ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`}>{t.name}</button>
-                                         ))}
-                                     </div>
-                                 </div>
-                                 <div>
-                                     <h4 className="font-semibold mb-2">Mise en page</h4>
-                                     <div className="flex flex-col space-y-2">
-                                         {Object.entries(layouts).map(([key, l]) => (
-                                             <button key={key} onClick={() => setActiveLayout(key)} className={`p-2 rounded-lg border-2 text-sm ${activeLayout === key ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`}>{l.name}</button>
-                                         ))}
-                                     </div>
-                                     {activeLayout === 'two' && (
-                                         <div className="mt-4">
-                                             <h4 className="font-semibold mb-2">Ratio des colonnes</h4>
-                                             <div className="flex flex-col space-y-2">
-                                                 <button onClick={() => setColumnRatio('large-left')} className={`p-2 rounded-lg border-2 text-sm ${columnRatio === 'large-left' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`}>Large à Gauche</button>
-                                                 <button onClick={() => setColumnRatio('equal')} className={`p-2 rounded-lg border-2 text-sm ${columnRatio === 'equal' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`}>Égales</button>
-                                                 <button onClick={() => setColumnRatio('large-right')} className={`p-2 rounded-lg border-2 text-sm ${columnRatio === 'large-right' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`}>Large à Droite</button>
-                                             </div>
-                                         </div>
-                                     )}
-                                 </div>
-                                 <div>
-                                     <h4 className="font-semibold mb-2">Police</h4>
-                                     <div className="flex flex-col space-y-2">
-                                         {Object.entries(fonts).map(([key, f]) => (
-                                             <button key={key} onClick={() => setActiveFont(key)} style={{fontFamily: f.family}} className={`p-2 rounded-lg border-2 text-sm ${activeFont === key ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`}>{f.name}</button>
-                                         ))}
-                                     </div>
-                                 </div>
-                                 <div className="lg:col-span-3">
-                                      <h4 className="font-semibold mb-2">Couleur d'accent</h4>
-                                      <div className="flex gap-3">
-                                           {Object.entries(colors).map(([key, c]) => (
-                                                <button key={key} onClick={() => setActiveColor(key)} className={`w-10 h-10 rounded-full border-4 ${activeColor === key ? 'border-blue-500' : 'border-transparent'}`} style={{backgroundColor: c.primary}}></button>
-                                           ))}
-                                      </div>
-                                 </div>
-                                 <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                     <div>
-                                         <h4 className="font-semibold mb-2">Fond Page</h4>
-                                         <input type="color" value={backgroundColor} onChange={(e) => setBackgroundColor(e.target.value)} className="w-full h-10 p-1 border border-gray-300 rounded-lg cursor-pointer" />
-                                     </div>
-                                     <div>
-                                         <h4 className="font-semibold mb-2">Fond Col. Gauche</h4>
-                                         <input type="color" value={leftColumnBackgroundColor} onChange={(e) => setLeftColumnBackgroundColor(e.target.value)} className="w-full h-10 p-1 border border-gray-300 rounded-lg cursor-pointer disabled:opacity-50" disabled={activeLayout !== 'two'} />
-                                     </div>
-                                     <div>
-                                         <h4 className="font-semibold mb-2">Fond Col. Droite</h4>
-                                         <input type="color" value={rightColumnBackgroundColor} onChange={(e) => setRightColumnBackgroundColor(e.target.value)} className="w-full h-10 p-1 border border-gray-300 rounded-lg cursor-pointer disabled:opacity-50" disabled={activeLayout !== 'two'} />
-                                     </div>
-                                 </div>
-                                 <div className="lg:col-span-3">
-                                    <h4 className="font-semibold mb-2">Style des Titres</h4>
-                                    <div className="flex gap-2">
-                                        <button onClick={() => setSectionTitleStyle('border')} className={`p-2 rounded-lg border-2 text-sm flex-1 ${sectionTitleStyle === 'border' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`}>Bordure</button>
-                                        <button onClick={() => setSectionTitleStyle('background')} className={`p-2 rounded-lg border-2 text-sm flex-1 ${sectionTitleStyle === 'background' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`}>Arrière-plan</button>
-                                        <button onClick={() => setSectionTitleStyle('simple')} className={`p-2 rounded-lg border-2 text-sm flex-1 ${sectionTitleStyle === 'simple' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`}>Simple</button>
-                                    </div>
-                                 </div>
-                                 <div className="lg:col-span-3 space-y-4">
-                                     <h4 className="text-lg font-semibold -mb-2">Mise en Forme</h4>
-                                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                         <div>
-                                             <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center"><Text size={14} className="mr-2"/> Taille Nom: {nameFontSize}pt</label>
-                                             <input type="range" min="24" max="48" step="1" value={nameFontSize} onChange={(e) => setNameFontSize(parseFloat(e.target.value))} className="w-full" />
-                                         </div>
-                                         <div>
-                                             <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center"><Text size={14} className="mr-2"/> Taille Titres: {sectionTitleFontSize}pt</label>
-                                             <input type="range" min="12" max="20" step="0.5" value={sectionTitleFontSize} onChange={(e) => setSectionTitleFontSize(parseFloat(e.target.value))} className="w-full" />
-                                         </div>
-                                         <div>
-                                             <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center"><Text size={14} className="mr-2"/> Taille Texte: {baseFontSize}pt</label>
-                                             <input type="range" min="8" max="12" step="0.5" value={baseFontSize} onChange={(e) => setBaseFontSize(parseFloat(e.target.value))} className="w-full" />
-                                         </div>
-                                         <div>
-                                             <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center"><Rows size={14} className="mr-2"/> Espacement: {lineHeight}</label>
-                                             <input type="range" min="1.2" max="2" step="0.1" value={lineHeight} onChange={(e) => setLineHeight(parseFloat(e.target.value))} className="w-full" />
-                                         </div>
-                                         <div>
-                                             <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center"><Expand size={14} className="mr-2"/> Marges: {pagePadding}rem</label>
-                                             <input type="range" min="1" max="3" step="0.25" value={pagePadding} onChange={(e) => setPagePadding(parseFloat(e.target.value))} className="w-full" />
-                                         </div>
-                                     </div>
-                                 </div>
-                             </div>
-                        </div>
-
-                        {/* Photo Panel */}
-                        <div className="p-6 bg-white rounded-lg shadow">
-                            <h3 className="text-xl font-bold mb-4 flex items-center"><ImageIcon className="mr-2" /> Photo</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-                                <div>
-                                    <label htmlFor="photo-upload" className="w-full text-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 cursor-pointer">
-                                        Télécharger une photo
-                                    </label>
-                                    <input id="photo-upload" type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <h4 className="font-semibold">Forme:</h4>
-                                    <button onClick={() => setPhotoShape('round')} className={`p-2 rounded-lg border-2 ${photoShape === 'round' ? 'border-blue-500 bg-blue-50' : 'border-transparent'}`}><Circle/></button>
-                                    <button onClick={() => setPhotoShape('square')} className={`p-2 rounded-lg border-2 ${photoShape === 'square' ? 'border-blue-500 bg-blue-50' : 'border-transparent'}`}><Square/></button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* AI Filler Section */}
-                        <div className="p-6 bg-white rounded-lg shadow">
-                            <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-xl font-bold flex items-center">
-                                    <Sparkles className="mr-2 text-purple-500" /> Outils IA
-                                </h3>
-                                {synthesisSuccess && (
-                                    <div className="flex items-center text-green-600 bg-green-100 px-3 py-1 rounded-lg">
-                                        <CheckCircle size={16} className="mr-2" />
-                                        Contenu synthétisé !
-                                    </div>
-                                )}
-                            </div>
-                            <TextareaField 
-                                label="Collez ici vos informations pour le remplissage automatique"
-                                value={aiInput}
-                                onChange={(e) => setAiInput(e.target.value)}
-                                placeholder="Ex: Je m'appelle Jean Dupont, développeur web chez Google depuis 2020..."
-                                rows={6}
-                            />
-                            <div className="flex flex-col space-y-2">
-                                <button 
-                                    onClick={handleAiGenerate}
-                                    disabled={isAiLoading || isAiSynthesizing}
-                                    className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center justify-center gap-2 transition-colors disabled:bg-purple-300"
-                                >
-                                    {isAiLoading ? <><LoaderCircle size={16} className="animate-spin" /> Analyse en cours...</> : <><Sparkles size={16} /> Remplir le formulaire</>}
-                                </button>
-                                <button
-                                    onClick={handleAiSynthesize}
-                                    disabled={isAiLoading || isAiSynthesizing}
-                                    className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-center gap-2 transition-colors disabled:bg-green-300"
-                                >
-                                    {isAiSynthesizing ? <><LoaderCircle size={16} className="animate-spin" /> Synthèse en cours...</> : <><Zap size={16} /> Synthétiser le contenu</>}
-                                </button>
-                            </div>
-                            {aiError && <p className="text-red-500 text-sm mt-2">{aiError}</p>}
-                        </div>
-                        
-                        {/* Block Organization */}
-                        <div className="p-6 bg-white rounded-lg shadow">
-                             <h3 className="text-xl font-bold mb-4 flex items-center"><Move className="mr-2" /> Organisation des sections</h3>
-                             {activeLayout === 'two' ? (
-                                 <div className="space-y-4">
-                                     <button onClick={invertColumns} className="w-full px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 flex items-center justify-center gap-2 transition-colors">
-                                         <ArrowLeftRight size={16} />
-                                         Inverser les colonnes
-                                     </button>
-                                     <div className="grid grid-cols-2 gap-4">
-                                         <div>
-                                             <h4 className="font-semibold mb-2 text-center">Colonne Gauche</h4>
-                                             <div onDragOver={handleDragOver} onDrop={(e) => handleDropOnColumn(e, 'left')} className="p-2 space-y-2 bg-gray-50 rounded-lg min-h-[200px] border-2 border-dashed">
-                                                 {columnAssignment.left.map(id => renderDraggableBlock(id, 'left'))}
-                                             </div>
-                                         </div>
-                                         <div>
-                                             <h4 className="font-semibold mb-2 text-center">Colonne Droite</h4>
-                                             <div onDragOver={handleDragOver} onDrop={(e) => handleDropOnColumn(e, 'right')} className="p-2 space-y-2 bg-gray-50 rounded-lg min-h-[200px] border-2 border-dashed">
-                                                 {columnAssignment.right.map(id => renderDraggableBlock(id, 'right'))}
-                                             </div>
-                                         </div>
-                                     </div>
-                                 </div>
-                             ) : (
-                                 <div className="space-y-2">
-                                     {blockOrder.map(id => renderDraggableBlock(id))}
-                                 </div>
-                             )}
-                        </div>
-                        
-                        {/* Example Data Loader */}
-                        <div className="p-6 bg-white rounded-lg shadow">
-                            <h3 className="text-xl font-bold mb-4 flex items-center"><FileText className="mr-2" /> Exemples</h3>
-                            <div className="flex gap-4">
-                                <button onClick={() => setCvData(exampleData.dev)} className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">Charger profil Développeur</button>
-                                <button onClick={() => setCvData(exampleData.manager)} className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">Charger profil Manager</button>
-                            </div>
-                        </div>
-
-                        {renderEditor()}
+        function renderPreviewControls() {
+            return `
+                <div class="w-full flex justify-center items-center gap-2 mb-4 bg-white p-2 rounded-lg shadow-sm">
+                    <div class="tooltip">
+                        <button id="zoom-out" class="p-2 rounded-full hover:bg-gray-100"><i data-lucide="zoom-out" class="w-4 h-4"></i></button>
+                        <span class="tooltip-text">Zoom arrière</span>
                     </div>
+                    <input type="range" id="zoom-slider" min="0.3" max="1.5" step="0.01" value="${state.previewScale}" class="w-32">
+                    <div class="tooltip">
+                        <button id="zoom-in" class="p-2 rounded-full hover:bg-gray-100"><i data-lucide="zoom-in" class="w-4 h-4"></i></button>
+                        <span class="tooltip-text">Zoom avant</span>
+                    </div>
+                    <div class="tooltip">
+                        <button id="zoom-reset" class="p-2 rounded-full hover:bg-gray-100"><i data-lucide="rotate-cw" class="w-4 h-4"></i></button>
+                        <span class="tooltip-text">Réinitialiser</span>
+                    </div>
+                    <span class="text-sm font-mono text-gray-500">${Math.round(state.previewScale * 100)}%</span>
+                </div>
+            `;
+        }
 
-                    {/* CV Preview */}
-                    <div className={`flex justify-center ${previewMode ? 'w-full' : ''}`}>
-                        <div ref={cvPreviewRef} className="transform scale-75 md:scale-90 xl:scale-100 origin-top shadow-lg">
-                           {renderCV()}
+        // --- CV Rendering ---
+
+        function renderCV() {
+            const { cvData, activeTemplate, activeFont, backgroundColor, pagePadding, baseFontSize, lineHeight } = state;
+            const personalDataForRender = state.isAnonymized
+                ? { ...cvData.personal, lastName: `${cvData.personal.lastName.charAt(0)}.`, email: '', phone: '', address: '' }
+                : cvData.personal;
+
+            const getBlockComponent = (blockId) => {
+                 switch(blockId) {
+                    case 'personal': return renderCvHeader(personalDataForRender);
+                    case 'experiences': return cvData.experiences?.length > 0 && visibilityCheck('experiences') ? renderExperiences() : '';
+                    case 'projects': return cvData.projects?.length > 0 && visibilityCheck('projects') ? renderProjects() : '';
+                    case 'education': return cvData.education?.length > 0 && visibilityCheck('education') ? renderEducation() : '';
+                    case 'awards': return cvData.awards?.length > 0 && visibilityCheck('awards') ? renderAwards() : '';
+                    case 'skills': return cvData.skills?.length > 0 && visibilityCheck('skills') ? renderSkills() : '';
+                    case 'languages': return cvData.languages?.length > 0 && visibilityCheck('languages') ? renderLanguages() : '';
+                    case 'hobbies': return cvData.hobbies?.length > 0 && visibilityCheck('hobbies') ? renderHobbies() : '';
+                    default: return '';
+                }
+            };
+
+            const { left: leftColClass, right: rightColClass } = {
+                'large-right': { left: 'w-1/3', right: 'w-2/3' },
+                'equal': { left: 'w-1/2', right: 'w-1/2' },
+                'large-left': { left: 'w-2/3', right: 'w-1/3' },
+            }[state.columnRatio];
+
+            let cvContent;
+            if (state.activeLayout === 'two') {
+                cvContent = `
+                    <div class="flex h-full" style="gap: ${pagePadding}rem">
+                        <div class="${leftColClass} flex flex-col">
+                            ${state.columnAssignment.left.map(blockId => getBlockComponent(blockId)).join('')}
+                        </div>
+                        <div class="${rightColClass} flex flex-col">
+                            ${state.columnAssignment.right.map(blockId => getBlockComponent(blockId)).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                cvContent = `
+                    ${getBlockComponent('personal')}
+                    <div class="flex flex-col">
+                        ${state.blockOrder.map(blockId => getBlockComponent(blockId)).join('')}
+                    </div>
+                `;
+            }
+
+            return `
+                <div id="cv-preview-container" class="bg-white" style="width: 210mm; min-height: 297mm; box-sizing: border-box; overflow: hidden;">
+                    <div id="cv-preview" class="text-gray-800 template-${activeTemplate}" style="font-family: ${fonts[activeFont].family}; background-color: ${backgroundColor}; box-sizing: border-box; width: 100%; height: 100%;">
+                        <div class="h-full w-full flex flex-col relative" style="font-size: ${baseFontSize}pt; line-height: ${lineHeight}; padding: ${pagePadding}rem;">
+                            <div class="flex-grow pt-4">${cvContent}</div>
+                            ${state.showVCardQR && !state.isAnonymized ? '<div id="vcard-qr-code" class="absolute bottom-4 right-4 bg-white p-2 rounded-md shadow-lg"></div>' : ''}
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    );
-};
+            `;
+        }
+        
+        function renderCvHeader(personalData) {
+            const { sectionSpacing, photo, photoShape, nameFontSize, activeColor } = state;
+            return `
+                <div class="cv-header flex flex-col items-center" style="margin-bottom: ${sectionSpacing}rem;">
+                    ${photo && !state.isAnonymized ? `
+                        <img src="${photo}" alt="User" class="mb-4 w-32 h-32 object-cover shadow-lg" style="border-radius: ${photoShape === 'round' ? '50%' : '0.75rem'};">
+                    ` : ''}
+                    <h1 class="font-bold mb-1 text-gray-900" style="font-size: ${nameFontSize}pt;">
+                        ${personalData.firstName} ${personalData.lastName}
+                    </h1>
+                    <h2 class="text-xl mb-3" style="color: ${colors[activeColor].primary};">
+                        ${personalData.title}
+                    </h2>
+                    ${!state.isAnonymized ? `
+                        <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-gray-600 mb-4 text-sm">
+                            <div class="flex items-center gap-2"><i data-lucide="mail" class="w-3.5 h-3.5"></i>${personalData.email}</div>
+                            <div class="flex items-center gap-2"><i data-lucide="phone" class="w-3.5 h-3.5"></i>${personalData.phone}</div>
+                            <div class="flex items-center gap-2"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i>${personalData.address}</div>
+                        </div>
+                    ` : ''}
+                    <p class="text-gray-700 leading-relaxed text-center max-w-3xl mx-auto">
+                        ${personalData.summary}
+                    </p>
+                </div>
+            `;
+        }
 
-export default CVGenerator;
+        function renderSection(title, content) {
+            const { sectionTitleStyle, activeColor, sectionTitleFontSize, sectionSpacing, itemSpacing } = state;
+            const titleStyles = {
+                border: `border-b-2 pb-1`,
+                background: `p-2 rounded-md`,
+                simple: ``,
+            };
+            const titleColor = sectionTitleStyle === 'background' ? colors[activeColor].textOnPrimary : colors[activeColor].primary;
+            const titleBg = sectionTitleStyle === 'background' ? colors[activeColor].primary : 'transparent';
+
+            return `
+                <div class="cv-section" style="margin-bottom: ${sectionSpacing}rem;">
+                    <h3 class="font-bold mb-3 ${titleStyles[sectionTitleStyle]}" style="color: ${titleColor}; background-color: ${titleBg}; border-color: ${colors[activeColor].primary}; font-size: ${sectionTitleFontSize}pt;">
+                        ${title}
+                    </h3>
+                    ${content}
+                </div>
+            `;
+        }
+
+        function renderExperiences() {
+            const { cvData, itemSpacing, activeColor, visibility } = state;
+            const content = `
+                <div style="display: flex; flex-direction: column; gap: ${itemSpacing}rem;">
+                    ${cvData.experiences.filter(exp => visibility.experiences[exp.id]).map(exp => `
+                        <div class="cv-item">
+                            <div class="flex justify-between items-start mb-1">
+                                <div>
+                                    <h4 class="font-semibold">${exp.position}</h4>
+                                    <p style="color: ${colors[activeColor].accent};">${exp.company}</p>
+                                </div>
+                                <span class="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">${exp.startDate} - ${exp.endDate}</span>
+                            </div>
+                            <p class="text-gray-600">${exp.description}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            return renderSection('Expérience Professionnelle', content);
+        }
+        
+        function renderProjects() {
+            const { cvData, itemSpacing, activeColor, visibility } = state;
+            const content = `
+                <div style="display: flex; flex-direction: column; gap: ${itemSpacing}rem;">
+                    ${(cvData.projects || []).filter(p => visibility.projects[p.id]).map(p => `
+                        <div class="cv-item">
+                            <div class="flex justify-between items-start mb-1">
+                                <h4 class="font-semibold">${p.name}</h4>
+                                ${p.url ? `<a href="${p.url}" target="_blank" rel="noopener noreferrer" class="font-mono text-sm" style="color: ${colors[activeColor].primary};">Voir le projet</a>` : ''}
+                            </div>
+                            <p class="text-gray-600">${p.description}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            return renderSection('Projets', content);
+        }
+
+        function renderEducation() {
+            const { cvData, itemSpacing, activeColor, visibility } = state;
+            const content = `
+                <div style="display: flex; flex-direction: column; gap: ${itemSpacing}rem;">
+                    ${cvData.education.filter(edu => visibility.education[edu.id]).map(edu => `
+                        <div class="cv-item">
+                            <div class="flex justify-between items-start mb-1">
+                                <div>
+                                    <h4 class="font-semibold">${edu.degree}</h4>
+                                    <p style="color: ${colors[activeColor].accent};">${edu.institution}</p>
+                                </div>
+                                <span class="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">${edu.startDate} - ${edu.endDate}</span>
+                            </div>
+                            <p class="text-gray-600">${edu.description}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            return renderSection('Formation', content);
+        }
+
+        function renderAwards() {
+            const { cvData, itemSpacing, activeColor, visibility } = state;
+            const content = `
+                <div style="display: flex; flex-direction: column; gap: ${itemSpacing}rem;">
+                    ${(cvData.awards || []).filter(a => visibility.awards[a.id]).map(award => `
+                        <div class="cv-item">
+                            <div class="flex justify-between items-start mb-1">
+                                <div>
+                                    <h4 class="font-semibold">${award.name}</h4>
+                                    <p style="color: ${colors[activeColor].accent};">${award.issuer}</p>
+                                </div>
+                                <span class="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">${award.date}</span>
+                            </div>
+                            <p class="text-gray-600">${award.description}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            return renderSection('Récompenses', content);
+        }
+
+        function renderSkills() {
+            const { cvData, itemSpacing, skillDisplayStyle, activeColor } = state;
+            const content = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6" style="gap: ${itemSpacing}rem;">
+                    ${cvData.skills.map(skill => `
+                        <div>
+                            <span class="font-medium">${skill.name}</span>
+                            ${skillDisplayStyle === 'stars' ? `
+                                <div class="flex items-center mt-1">
+                                    ${[...Array(5)].map((_, i) => `
+                                        <i data-lucide="star" class="w-4 h-4 ${i < skill.level ? 'fill-current' : ''}" style="color: ${i < skill.level ? colors[activeColor].primary : '#e0e0e0'};"></i>
+                                    `).join('')}
+                                </div>
+                            ` : `
+                                <div class="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+                                    <div class="h-2.5 rounded-full" style="width: ${skill.level * 20}%; background-color: ${colors[activeColor].primary};"></div>
+                                </div>
+                            `}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            return renderSection('Compétences', content);
+        }
+
+        function renderLanguages() {
+            const { cvData, itemSpacing } = state;
+            const content = `
+                <div style="display: flex; flex-direction: column; gap: ${itemSpacing / 2}rem;">
+                    ${cvData.languages.map(lang => `
+                        <div class="flex justify-between py-1">
+                            <span class="font-medium">${lang.name}</span>
+                            <span class="text-gray-600">${lang.level}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            return renderSection('Langues', content);
+        }
+
+        function renderHobbies() {
+            const { cvData, itemSpacing, activeColor } = state;
+            const content = `
+                <div class="flex flex-wrap" style="gap: ${itemSpacing}rem;">
+                    ${cvData.hobbies.map(hobby => `
+                        <div class="flex items-center p-2 bg-gray-100 rounded-lg">
+                            <i data-lucide="${hobby.icon}" class="w-3.5 h-3.5 mr-2" style="color: ${colors[activeColor].primary};"></i>
+                            <span>${hobby.name}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            return renderSection('Centres d\'intérêt', content);
+        }
+        
+        // --- Editor Rendering ---
+
+        function renderAccordion(title, icon, content, defaultOpen = false, id) {
+            const isOpen = state.openAccordions[id];
+            return `
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <button data-accordion-id="${id}" class="accordion-toggle w-full flex justify-between items-center p-4 font-bold text-gray-800 hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center">
+                            <i data-lucide="${icon}" class="mr-3 text-indigo-600 w-5 h-5"></i>
+                            <span class="text-md">${title}</span>
+                        </div>
+                        <i data-lucide="chevron-down" class="transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''} w-5 h-5"></i>
+                    </button>
+                    <div class="accordion-content ${isOpen ? 'open' : ''} border-t border-gray-200">
+                        <div class="p-5">${content}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderInputField(label, value, dataPath, placeholder, icon, type = 'text') {
+            return `
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-600 mb-1 flex items-center">
+                        ${icon ? `<i data-lucide="${icon}" class="w-3.5 h-3.5 mr-2"></i>` : ''}
+                        ${label}
+                    </label>
+                    <input
+                        type="${type}"
+                        value="${value || ''}"
+                        data-path="${dataPath}"
+                        placeholder="${placeholder || label}"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                    />
+                </div>
+            `;
+        }
+
+        function renderTextareaField(label, value, dataPath, placeholder, icon, rows = 3) {
+            return `
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-600 mb-1 flex items-center">
+                         ${icon ? `<i data-lucide="${icon}" class="w-3.5 h-3.5 mr-2"></i>` : ''}
+                        ${label}
+                    </label>
+                    <textarea
+                        data-path="${dataPath}"
+                        placeholder="${placeholder || label}"
+                        rows="${rows}"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                    >${value || ''}</textarea>
+                </div>
+            `;
+        }
+
+        function renderEditor() {
+            return `
+                ${renderAccordion('Contenu du CV', 'edit-3', `
+                    ${renderAccordion('Informations Personnelles', 'user', `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            ${renderInputField('Prénom', state.cvData.personal.firstName, 'cvData.personal.firstName')}
+                            ${renderInputField('Nom', state.cvData.personal.lastName, 'cvData.personal.lastName')}
+                            ${renderInputField('Titre du poste', state.cvData.personal.title, 'cvData.personal.title')}
+                            ${renderInputField('Email', state.cvData.personal.email, 'cvData.personal.email')}
+                            ${renderInputField('Téléphone', state.cvData.personal.phone, 'cvData.personal.phone')}
+                            ${renderInputField('Adresse', state.cvData.personal.address, 'cvData.personal.address')}
+                            <div class="md:col-span-2">
+                                ${renderTextareaField('Résumé', state.cvData.personal.summary, 'cvData.personal.summary')}
+                            </div>
+                        </div>
+                    `, true, 'personalInfo')}
+                    ${renderAccordion('Expériences', 'briefcase', `
+                        ${state.cvData.experiences.map((exp, index) => `
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
+                                ${renderInputField(`Poste ${index+1}`, exp.position, `cvData.experiences.${index}.position`)}
+                                ${renderInputField('Entreprise', exp.company, `cvData.experiences.${index}.company`)}
+                                ${renderInputField('Date de début', exp.startDate, `cvData.experiences.${index}.startDate`)}
+                                ${renderInputField('Date de fin', exp.endDate, `cvData.experiences.${index}.endDate`)}
+                                <div class="md:col-span-2">${renderTextareaField('Description', exp.description, `cvData.experiences.${index}.description`)}</div>
+                                <div class="md:col-span-2 flex justify-between items-center">
+                                    <button class="toggle-item-visibility flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900" data-section="experiences" data-id="${exp.id}">
+                                        <i data-lucide="${state.visibility.experiences[exp.id] ? 'eye' : 'eye-off'}" class="w-4 h-4"></i>
+                                        <span>${state.visibility.experiences[exp.id] ? "Visible" : "Caché"}</span>
+                                    </button>
+                                    <button class="remove-list-item text-red-500 hover:text-red-700 text-sm flex items-center gap-1" data-section="experiences" data-id="${exp.id}"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Supprimer</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="experiences"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter une expérience</button>
+                    `, false, 'experiences')}
+                    ${renderAccordion('Projets', 'projector', `
+                        ${(state.cvData.projects || []).map((p, index) => `
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
+                                ${renderInputField(`Projet ${index+1}`, p.name, `cvData.projects.${index}.name`)}
+                                ${renderInputField('URL', p.url, `cvData.projects.${index}.url`)}
+                                <div class="md:col-span-2">${renderTextareaField('Description', p.description, `cvData.projects.${index}.description`)}</div>
+                                <div class="md:col-span-2 flex justify-between items-center">
+                                    <button class="toggle-item-visibility flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900" data-section="projects" data-id="${p.id}">
+                                        <i data-lucide="${state.visibility.projects[p.id] ? 'eye' : 'eye-off'}" class="w-4 h-4"></i>
+                                        <span>${state.visibility.projects[p.id] ? "Visible" : "Caché"}</span>
+                                    </button>
+                                    <button class="remove-list-item text-red-500 hover:text-red-700 text-sm flex items-center gap-1" data-section="projects" data-id="${p.id}"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Supprimer</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="projects"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter un projet</button>
+                    `, false, 'projects')}
+                    ${renderAccordion('Formation', 'graduation-cap', `
+                        ${state.cvData.education.map((edu, index) => `
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
+                                ${renderInputField(`Diplôme ${index+1}`, edu.degree, `cvData.education.${index}.degree`)}
+                                ${renderInputField('Établissement', edu.institution, `cvData.education.${index}.institution`)}
+                                ${renderInputField('Date de début', edu.startDate, `cvData.education.${index}.startDate`)}
+                                ${renderInputField('Date de fin', edu.endDate, `cvData.education.${index}.endDate`)}
+                                <div class="md:col-span-2">${renderTextareaField('Description', edu.description, `cvData.education.${index}.description`)}</div>
+                                <div class="md:col-span-2 flex justify-between items-center">
+                                    <button class="toggle-item-visibility flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900" data-section="education" data-id="${edu.id}">
+                                        <i data-lucide="${state.visibility.education[edu.id] ? 'eye' : 'eye-off'}" class="w-4 h-4"></i>
+                                        <span>${state.visibility.education[edu.id] ? "Visible" : "Caché"}</span>
+                                    </button>
+                                    <button class="remove-list-item text-red-500 hover:text-red-700 text-sm flex items-center gap-1" data-section="education" data-id="${edu.id}"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Supprimer</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="education"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter une formation</button>
+                    `, false, 'education')}
+                    ${renderAccordion('Compétences', 'zap', `
+                        ${state.cvData.skills.map((skill, index) => `
+                            <div class="grid grid-cols-3 gap-4 items-center border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
+                                <div class="col-span-2">${renderInputField(`Compétence ${index+1}`, skill.name, `cvData.skills.${index}.name`)}</div>
+                                <div class="flex items-center">
+                                    <input type="range" min="1" max="5" value="${skill.level}" data-path="cvData.skills.${index}.level" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                    <button class="remove-list-item text-red-500 hover:text-red-700 ml-4" data-section="skills" data-id="${skill.id}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="skills"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter une compétence</button>
+                    `, false, 'skills')}
+                    ${renderAccordion('Langues', 'globe', `
+                        ${state.cvData.languages.map((lang, index) => `
+                            <div class="grid grid-cols-3 gap-4 items-center border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
+                                <div class="col-span-2">${renderInputField(`Langue ${index+1}`, lang.name, `cvData.languages.${index}.name`)}</div>
+                                <div class="flex items-center">
+                                    ${renderInputField('Niveau', lang.level, `cvData.languages.${index}.level`)}
+                                    <button class="remove-list-item text-red-500 hover:text-red-700 ml-4" data-section="languages" data-id="${lang.id}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="languages"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter une langue</button>
+                    `, false, 'languages')}
+                    ${renderAccordion('Centres d\'intérêt', 'heart', `
+                        ${state.cvData.hobbies.map((hobby, index) => `
+                            <div class="grid grid-cols-3 gap-4 items-center border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
+                                <div class="col-span-2">${renderInputField(`Hobby ${index+1}`, hobby.name, `cvData.hobbies.${index}.name`)}</div>
+                                <div class="flex items-center">
+                                    <select data-path="cvData.hobbies.${index}.icon" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                                        ${hobbyIcons.map(icon => `<option value="${icon}" ${hobby.icon === icon ? 'selected' : ''}>${icon}</option>`).join('')}
+                                    </select>
+                                    <button class="remove-list-item text-red-500 hover:text-red-700 ml-4" data-section="hobbies" data-id="${hobby.id}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="hobbies"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter un hobby</button>
+                    `, false, 'hobbies')}
+                `, true, 'content')}
+                ${renderAccordion('Design & Mise en Page', 'palette', `
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div>
+                            <h4 class="font-semibold mb-2">Modèle</h4>
+                            <div class="flex flex-col space-y-2">
+                                ${Object.entries(templates).map(([key, t]) => `
+                                    <button data-control="activeTemplate" data-value="${key}" class="p-2 rounded-lg border-2 text-sm ${state.activeTemplate === key ? 'border-indigo-500 bg-indigo-50 font-semibold' : 'border-gray-200 hover:border-gray-300'}">${t.name}</button>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2">Mise en page</h4>
+                            <div class="flex flex-col space-y-2">
+                                ${Object.entries(layouts).map(([key, l]) => `
+                                    <button data-control="activeLayout" data-value="${key}" class="p-2 rounded-lg border-2 text-sm ${state.activeLayout === key ? 'border-indigo-500 bg-indigo-50 font-semibold' : 'border-gray-200 hover:border-gray-300'}">${l.name}</button>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2">Police</h4>
+                            <div class="flex flex-col space-y-2">
+                                ${Object.entries(fonts).map(([key, f]) => `
+                                    <button data-control="activeFont" data-value="${key}" style="font-family: ${f.family}" class="p-2 rounded-lg border-2 text-sm ${state.activeFont === key ? 'border-indigo-500 bg-indigo-50 font-semibold' : 'border-gray-200 hover:border-gray-300'}">${f.name}</button>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="lg:col-span-3">
+                            <h4 class="font-semibold mb-2">Couleur d'accent</h4>
+                            <div class="flex gap-3 flex-wrap">
+                                ${Object.entries(colors).map(([key, c]) => `
+                                    <div class="tooltip">
+                                        <button data-control="activeColor" data-value="${key}" class="w-10 h-10 rounded-full border-4 transition-all ${state.activeColor === key ? 'border-indigo-500 scale-110' : 'border-transparent'}" style="background-color: ${c.primary}"></button>
+                                        <span class="tooltip-text">${key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `, true, 'design')}
+                ${renderAccordion('Organisation & Options', 'settings', `
+                    <h4 class="font-semibold mb-3">Organisation des sections</h4>
+                    ${state.activeLayout === 'two' ? renderTwoColumnLayoutEditor() : renderSingleColumnLayoutEditor()}
+                `, false, 'organization')}
+            `;
+        }
+        
+        function renderDraggableBlock(blockId, column) {
+            const blockNames = {personal: 'Infos Personnelles', experiences: 'Expériences', projects: 'Projets', education: 'Formation', awards: 'Récompenses', skills: 'Compétences', languages: 'Langues', hobbies: 'Centres d\'intérêt'};
+            return `
+                <div draggable="true" data-block-id="${blockId}" class="draggable-block p-3 bg-gray-100 border border-gray-200 rounded-lg cursor-move hover:bg-indigo-50 hover:border-indigo-200 transition-colors flex items-center gap-2">
+                    <i data-lucide="move" class="w-4 h-4 text-gray-500"></i>
+                    <span class="font-medium text-sm flex-grow">${blockNames[blockId]}</span>
+                    <div class="tooltip">
+                        <button class="toggle-section-visibility p-1 hover:bg-gray-300 rounded-full" data-section="${blockId}">
+                            <i data-lucide="${visibilityCheck(blockId) ? 'eye' : 'eye-off'}" class="w-4 h-4 ${visibilityCheck(blockId) ? 'text-gray-600' : 'text-gray-400'}"></i>
+                        </button>
+                        <span class="tooltip-text">${visibilityCheck(blockId) ? "Cacher" : "Afficher"}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSingleColumnLayoutEditor() {
+            return `
+                <div class="space-y-2 drop-zone" data-column="main">
+                    ${state.blockOrder.map(id => renderDraggableBlock(id, 'main')).join('')}
+                </div>
+            `;
+        }
+
+        function renderTwoColumnLayoutEditor() {
+            return `
+                <div class="space-y-4">
+                    <button id="invert-columns" class="w-full px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 flex items-center justify-center gap-2 transition-colors"><i data-lucide="arrow-left-right" class="w-4 h-4"></i> Inverser les colonnes</button>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <h4 class="font-semibold mb-2 text-center">Colonne Gauche</h4>
+                            <div class="p-2 space-y-2 bg-gray-50 rounded-lg min-h-[200px] border-2 border-dashed drop-zone" data-column="left">
+                                ${state.columnAssignment.left.map(id => renderDraggableBlock(id, 'left')).join('')}
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2 text-center">Colonne Droite</h4>
+                            <div class="p-2 space-y-2 bg-gray-50 rounded-lg min-h-[200px] border-2 border-dashed drop-zone" data-column="right">
+                                ${state.columnAssignment.right.map(id => renderDraggableBlock(id, 'right')).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- EVENT HANDLERS & LOGIC ---
+        
+        function attachEventListeners() {
+            // Header controls
+            document.getElementById('toggle-anonymize')?.addEventListener('click', () => setState({ isAnonymized: !state.isAnonymized }));
+            document.getElementById('toggle-preview-mode')?.addEventListener('click', () => setState({ previewMode: !state.previewMode }));
+            document.getElementById('generate-pdf')?.addEventListener('click', generatePDF);
+
+            // Preview controls
+            document.getElementById('zoom-in')?.addEventListener('click', () => setState({ previewScale: Math.min(1.5, state.previewScale + 0.1) }));
+            document.getElementById('zoom-out')?.addEventListener('click', () => setState({ previewScale: Math.max(0.3, state.previewScale - 0.1) }));
+            document.getElementById('zoom-reset')?.addEventListener('click', () => setState({ previewScale: state.previewMode ? 1 : 0.8 }));
+            document.getElementById('zoom-slider')?.addEventListener('input', (e) => setState({ previewScale: parseFloat(e.target.value) }));
+
+            // Editor inputs
+            document.querySelectorAll('input[data-path], textarea[data-path], select[data-path]').forEach(input => {
+                input.addEventListener('input', handleInputChange);
+            });
+            
+            // Editor buttons (add/remove items, etc.)
+            document.querySelectorAll('.add-list-item').forEach(btn => btn.addEventListener('click', handleAddListItem));
+            document.querySelectorAll('.remove-list-item').forEach(btn => btn.addEventListener('click', handleRemoveListItem));
+            document.querySelectorAll('.toggle-item-visibility').forEach(btn => btn.addEventListener('click', handleToggleItemVisibility));
+            document.querySelectorAll('.toggle-section-visibility').forEach(btn => btn.addEventListener('click', handleToggleSectionVisibility));
+            
+            // Design controls
+            document.querySelectorAll('button[data-control]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const control = e.currentTarget.dataset.control;
+                    const value = e.currentTarget.dataset.value;
+                    setState({ [control]: value });
+                });
+            });
+
+            // Accordions
+            document.querySelectorAll('.accordion-toggle').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.currentTarget.dataset.accordionId;
+                    const newAccordionsState = { ...state.openAccordions, [id]: !state.openAccordions[id] };
+                    setState({ openAccordions: newAccordionsState });
+                });
+            });
+            
+            // Drag and Drop
+            attachDragDropListeners();
+            
+            // Invert columns
+            document.getElementById('invert-columns')?.addEventListener('click', () => {
+                setState({ columnAssignment: { left: state.columnAssignment.right, right: state.columnAssignment.left }});
+            });
+        }
+        
+        let draggedBlock = null;
+
+        function attachDragDropListeners() {
+            document.querySelectorAll('.draggable-block').forEach(item => {
+                item.addEventListener('dragstart', e => {
+                    draggedBlock = e.target.closest('.draggable-block').dataset.blockId;
+                    e.target.closest('.draggable-block').classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+                item.addEventListener('dragend', e => {
+                    e.target.closest('.draggable-block').classList.remove('dragging');
+                    draggedBlock = null;
+                });
+            });
+
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    zone.classList.add('drag-over');
+                });
+                 zone.addEventListener('dragleave', e => {
+                    zone.classList.remove('drag-over');
+                });
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
+                    if (!draggedBlock) return;
+
+                    const targetBlockEl = e.target.closest('.draggable-block');
+                    const targetBlockId = targetBlockEl ? targetBlockEl.dataset.blockId : null;
+                    const targetColumn = zone.dataset.column;
+
+                    if (state.activeLayout === 'two') {
+                        const newAssignment = {
+                            left: state.columnAssignment.left.filter(id => id !== draggedBlock),
+                            right: state.columnAssignment.right.filter(id => id !== draggedBlock)
+                        };
+                        const targetList = newAssignment[targetColumn];
+                        const dropIndex = targetBlockId ? targetList.indexOf(targetBlockId) : targetList.length;
+                        targetList.splice(dropIndex, 0, draggedBlock);
+                        setState({ columnAssignment: newAssignment });
+                    } else {
+                        const newOrder = [...state.blockOrder].filter(id => id !== draggedBlock);
+                        const dropIndex = targetBlockId ? newOrder.indexOf(targetBlockId) : newOrder.length;
+                        newOrder.splice(dropIndex, 0, draggedBlock);
+                        setState({ blockOrder: newOrder });
+                    }
+                    draggedBlock = null;
+                });
+            });
+        }
+
+        function handleInputChange(e) {
+            const path = e.target.dataset.path;
+            const value = e.target.type === 'range' ? parseFloat(e.target.value) : e.target.value;
+            const keys = path.split('.');
+            
+            let tempState = JSON.parse(JSON.stringify(state));
+            let current = tempState;
+
+            for (let i = 0; i < keys.length - 1; i++) {
+                current = current[keys[i]];
+            }
+            current[keys[keys.length - 1]] = value;
+            
+            setState(tempState);
+        }
+        
+        function handleAddListItem(e) {
+            const section = e.currentTarget.dataset.section;
+            const newItem = {
+                id: Date.now(),
+                ...(section === 'experiences' && { company: '', position: '', startDate: '', endDate: '', description: '' }),
+                ...(section === 'projects' && { name: '', url: '', description: '' }),
+                ...(section === 'education' && { institution: '', degree: '', startDate: '', endDate: '', description: '' }),
+                ...(section === 'awards' && { name: '', issuer: '', date: '', description: '' }),
+                ...(section === 'skills' && { name: '', level: 3 }),
+                ...(section === 'languages' && { name: '', level: '' }),
+                ...(section === 'hobbies' && { name: '', icon: 'heart' }),
+            };
+
+            const newCvData = { ...state.cvData, [section]: [...(state.cvData[section] || []), newItem] };
+            
+            if (['experiences', 'education', 'projects', 'awards'].includes(section)) {
+                const newVisibility = { ...state.visibility, [section]: { ...(state.visibility[section] || {}), [newItem.id]: true } };
+                setState({ cvData: newCvData, visibility: newVisibility });
+            } else {
+                setState({ cvData: newCvData });
+            }
+        }
+
+        function handleRemoveListItem(e) {
+            const section = e.currentTarget.dataset.section;
+            const id = parseInt(e.currentTarget.dataset.id, 10);
+            const newCvData = { ...state.cvData, [section]: state.cvData[section].filter(item => item.id !== id) };
+            
+            if (['experiences', 'education', 'projects', 'awards'].includes(section)) {
+                const newSectionVisibility = { ...state.visibility[section] };
+                delete newSectionVisibility[id];
+                const newVisibility = { ...state.visibility, [section]: newSectionVisibility };
+                setState({ cvData: newCvData, visibility: newVisibility });
+            } else {
+                setState({ cvData: newCvData });
+            }
+        }
+        
+        function handleToggleItemVisibility(e) {
+            const section = e.currentTarget.dataset.section;
+            const id = parseInt(e.currentTarget.dataset.id, 10);
+            const newVisibility = { ...state.visibility };
+            newVisibility[section][id] = !newVisibility[section][id];
+            setState({ visibility: newVisibility });
+        }
+        
+        function handleToggleSectionVisibility(e) {
+            const section = e.currentTarget.dataset.section;
+            const newVisibility = { ...state.visibility, [section]: !state.visibility[section] };
+            setState({ visibility: newVisibility });
+        }
+        
+        function visibilityCheck(section, id = null) {
+            if (id !== null) {
+                return state.visibility[section] && state.visibility[section][id];
+            }
+            return state.visibility[section];
+        }
+
+        async function generatePDF() {
+            const element = document.getElementById('cv-preview-container');
+            if (!element || state.isDownloadingPdf) return;
+            
+            setState({ isDownloadingPdf: true });
+
+            const originalScale = element.style.transform;
+            element.style.transform = 'scale(1)';
+
+            try {
+                const opt = {
+                    margin: 0,
+                    filename: state.isAnonymized ? 'cv_anonyme.pdf' : `CV_${state.cvData.personal.firstName}${state.cvData.personal.lastName}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 3, useCORS: true, letterRendering: true, scrollY: -window.scrollY },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                };
+                if (window.html2pdf) {
+                    await window.html2pdf().from(element).set(opt).save();
+                } else {
+                    throw new Error("PDF library not loaded.");
+                }
+            } catch (error) {
+                console.error("PDF Generation Error:", error);
+                alert("Erreur lors de la création du PDF.");
+            } finally {
+                element.style.transform = originalScale;
+                setState({ isDownloadingPdf: false });
+            }
+        }
+        
+        function generateVCardQR() {
+            const qrContainer = document.getElementById('vcard-qr-code');
+            if (state.showVCardQR && !state.isAnonymized && window.qrcode && qrContainer) {
+                try {
+                    const { firstName, lastName, email, phone } = state.cvData.personal;
+                    const vCardData = `BEGIN:VCARD\nVERSION:3.0\nN:${lastName};${firstName}\nFN:${firstName} ${lastName}\nEMAIL:${email}\nTEL:${phone}\nEND:VCARD`;
+                    const qr = window.qrcode(0, 'M');
+                    qr.addData(vCardData);
+                    qr.make();
+                    qrContainer.innerHTML = qr.createImgTag(4, 8);
+                } catch (error) {
+                    console.error("vCard QR Code generation failed:", error);
+                    qrContainer.innerHTML = 'Error';
+                }
+            }
+        }
+        
+        // --- INITIALIZATION ---
+        function init() {
+            // Load data from localStorage or use initial data
+            const savedCvData = localStorage.getItem('cvData_v2');
+            
+            const cvData = savedCvData ? JSON.parse(savedCvData) : initialCvData;
+            
+            const initialVisibility = {
+                personal: true,
+                experiences: cvData.experiences.reduce((acc, exp) => ({ ...acc, [exp.id]: true }), {}),
+                projects: (cvData.projects || []).reduce((acc, p) => ({ ...acc, [p.id]: true }), {}),
+                education: cvData.education.reduce((acc, edu) => ({ ...acc, [edu.id]: true }), {}),
+                awards: (cvData.awards || []).reduce((acc, a) => ({ ...acc, [a.id]: true }), {}),
+                skills: true,
+                languages: true,
+                hobbies: true,
+            };
+
+            state = {
+                cvData,
+                activeTemplate: 'modern',
+                activeColor: 'indigo',
+                backgroundColor: '#ffffff',
+                activeLayout: 'two',
+                columnRatio: 'large-right',
+                activeFont: 'sans',
+                previewMode: false,
+                isAnonymized: false,
+                isDownloadingPdf: false,
+                showVCardQR: false, // Set to true to show QR code by default
+                photo: null, // No photo by default
+                photoShape: 'round',
+                sectionTitleStyle: 'border',
+                previewScale: 0.8,
+                baseFontSize: 10,
+                nameFontSize: 28,
+                sectionTitleFontSize: 14,
+                lineHeight: 1.5,
+                pagePadding: 1.5,
+                sectionSpacing: 1.25,
+                itemSpacing: 1,
+                skillDisplayStyle: 'bars',
+                visibility: initialVisibility,
+                blockOrder: ['experiences', 'projects', 'education', 'awards', 'skills', 'languages', 'hobbies'],
+                columnAssignment: {
+                    left: ['personal', 'skills', 'languages', 'hobbies'],
+                    right: ['experiences', 'projects', 'education', 'awards']
+                },
+                openAccordions: {
+                    content: true,
+                    personalInfo: true,
+                    design: true
+                }
+            };
+
+            renderApp();
+        }
+
+        // Start the application
+        init();
+
+    </script>
+</body>
+</html>
