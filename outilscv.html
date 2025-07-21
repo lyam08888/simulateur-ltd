@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Créateur de CV Pro Avancé</title>
+    <title>Créateur de CV Expert</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -37,7 +37,6 @@
             border-color: #4f46e5;
             background-color: #f4f4f5;
         }
-        /* Simple transition for accordion */
         .accordion-content {
             max-height: 0;
             overflow: hidden;
@@ -83,13 +82,28 @@
             cursor: pointer;
             border-radius: 50%;
         }
-
         input[type="range"]::-moz-range-thumb {
             width: 16px;
             height: 16px;
             background: #4f46e5;
             cursor: pointer;
             border-radius: 50%;
+        }
+        .timeline {
+            position: relative;
+            padding-left: 25px;
+            border-left: 2px solid #e5e7eb;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -34px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: white;
+            border: 2px solid var(--primary-color, #4f46e5);
         }
     </style>
 </head>
@@ -108,34 +122,40 @@
                 phone: '+33 6 98 76 54 32',
                 address: 'Lyon, France',
                 summary: 'Chef de projet digital créatif et rigoureux, avec 8 ans d\'expérience dans la gestion de projets web et mobiles, de la conception à la mise en production. Passionné par l\'innovation et l\'optimisation de l\'expérience utilisateur.',
-                onlineProfileUrl: ''
             },
             experiences: [
-                { id: 1, company: 'Web Agency "La Crème"', position: 'Chef de Projet Senior', startDate: '2019', endDate: 'Présent', description: 'Pilotage de projets d\'envergure pour des clients grands comptes. Gestion des équipes de développement et de design. Responsable du respect des délais et des budgets.' }
+                { id: Date.now() + 1, company: 'Web Agency "La Crème"', position: 'Chef de Projet Senior', startDate: '2019', endDate: 'Présent', description: 'Pilotage de projets d\'envergure pour des clients grands comptes. Gestion des équipes de développement et de design. Responsable du respect des délais et des budgets.' }
             ],
             projects: [
-                { id: 1, name: 'Refonte E-commerce', url: 'exemple.com', description: 'Direction de la refonte complète d\'une plateforme e-commerce, résultant en une augmentation de 25% des conversions.' }
+                { id: Date.now() + 2, name: 'Refonte E-commerce', url: 'exemple.com', description: 'Direction de la refonte complète d\'une plateforme e-commerce, résultant en une augmentation de 25% des conversions.' }
             ],
             education: [
-                { id: 1, institution: 'INSEEC Lyon', degree: 'Master en Management Digital', startDate: '2015', endDate: '2017', description: 'Spécialisation en stratégie digitale et gestion de projet.' }
+                { id: Date.now() + 3, institution: 'INSEEC Lyon', degree: 'Master en Management Digital', startDate: '2015', endDate: '2017', description: 'Spécialisation en stratégie digitale et gestion de projet.' }
             ],
             skills: [
-                { id: 1, name: 'Gestion de Projet Agile', level: 5 },
-                { id: 2, name: 'Scrum & Kanban', level: 5 },
-                { id: 3, name: 'UX/UI Design', level: 4 },
-                { id: 4, name: 'SEO/SEA', level: 4 },
+                { id: Date.now() + 4, name: 'Gestion de Projet Agile', level: 5 },
+                { id: Date.now() + 5, name: 'Scrum & Kanban', level: 5 },
+                { id: Date.now() + 6, name: 'UX/UI Design', level: 4 },
+                { id: Date.now() + 7, name: 'SEO/SEA', level: 4 },
             ],
             awards: [
-                { id: 1, name: 'Trophée de l\'Innovation Digitale', issuer: 'Web Summit', date: '2021', description: 'Récompense pour un projet innovant de réalité augmentée en e-commerce.'}
+                { id: Date.now() + 8, name: 'Trophée de l\'Innovation Digitale', issuer: 'Web Summit', date: '2021', description: 'Récompense pour un projet innovant de réalité augmentée en e-commerce.'}
             ],
             languages: [
-                { id: 1, name: 'Français', level: 'Natif' },
-                { id: 2, name: 'Anglais', level: 'Courant (C1)' }
+                { id: Date.now() + 9, name: 'Français', level: 'Natif' },
+                { id: Date.now() + 10, name: 'Anglais', level: 'Courant (C1)' }
             ],
             hobbies: [
-                { id: 1, name: 'Photographie Urbaine', icon: 'camera' },
-                { id: 2, name: 'Veille Technologique', icon: 'code' },
-                { id: 3, name: 'Randonnée', icon: 'dumbbell' }
+                { id: Date.now() + 11, name: 'Photographie Urbaine', icon: 'camera' },
+                { id: Date.now() + 12, name: 'Veille Technologique', icon: 'code' },
+                { id: Date.now() + 13, name: 'Randonnée', icon: 'dumbbell' }
+            ],
+            socials: [
+                { id: Date.now() + 14, network: 'linkedin', url: 'https://linkedin.com/in/alexandredubois' },
+                { id: Date.now() + 15, network: 'github', url: 'https://github.com/alexandredubois' }
+            ],
+            customSections: [
+                { id: Date.now() + 16, title: 'Bénévolat', content: 'Organisation d\'événements caritatifs pour l\'association "Code for Good".' }
             ]
         };
 
@@ -155,7 +175,9 @@
             red: { primary: '#dc2626', secondary: '#fef2f2', accent: '#b91c1c', textOnPrimary: '#ffffff' },
             gray: { primary: '#4b5563', secondary: '#f9fafb', accent: '#1f2937', textOnPrimary: '#ffffff' }
         };
-        const hobbyIcons = ['code', 'book-open', 'camera', 'music', 'plane', 'dumbbell', 'paintbrush', 'heart', 'star', 'lightbulb'];
+        const hobbyIcons = ['code', 'book-open', 'camera', 'music', 'plane', 'dumbbell', 'paintbrush', 'heart', 'star', 'lightbulb', 'compass'];
+        const socialIcons = { linkedin: 'linkedin', github: 'github', twitter: 'twitter', globe: 'globe', default: 'link' };
+        const sectionIcons = ['briefcase', 'projector', 'graduation-cap', 'award', 'zap', 'globe', 'heart', 'user-check', 'star'];
 
         // --- STATE MANAGEMENT ---
         let state = {};
@@ -163,11 +185,10 @@
         function setState(newState, render = true) {
             state = { ...state, ...newState };
             
-            // Save to localStorage
             try {
                 const stateToSave = { ...state };
-                delete stateToSave.photo; // Don't save blob url
-                localStorage.setItem('cvState_v3', JSON.stringify(stateToSave));
+                delete stateToSave.photo;
+                localStorage.setItem('cvState_v4', JSON.stringify(stateToSave));
             } catch (error) {
                 console.error("Could not save data:", error);
             }
@@ -184,7 +205,7 @@
             appContainer.innerHTML = `
                 <div class="max-w-screen-2xl mx-auto">
                     ${renderHeaderControls()}
-                    <div id="main-content" class="grid ${state.previewMode ? 'grid-cols-1' : 'grid-cols-1 xl:grid-cols-[minmax(400px,1fr)_1.5fr]'} gap-8 items-start">
+                    <div id="main-content" class="grid ${state.previewMode ? 'grid-cols-1' : 'grid-cols-1 xl:grid-cols-[minmax(450px,1fr)_1.5fr]'} gap-8 items-start">
                         ${!state.previewMode ? `<div id="editor-panel" class="space-y-6 bg-white p-4 rounded-lg shadow-sm">${renderEditor()}</div>` : ''}
                         <div id="preview-panel" class="flex flex-col items-center sticky top-24">
                             ${renderPreviewControls()}
@@ -203,13 +224,13 @@
         function renderHeaderControls() {
             return `
                 <header class="bg-white rounded-xl shadow-md p-4 mb-6 flex flex-wrap justify-between items-center gap-4 sticky top-4 z-30">
-                    <h1 class="text-xl font-bold text-gray-800 flex items-center gap-2"><i data-lucide="file-text" class="text-indigo-600"></i>Créateur de CV Pro</h1>
+                    <h1 class="text-xl font-bold text-gray-800 flex items-center gap-2"><i data-lucide="file-text" class="text-indigo-600"></i>Créateur de CV Expert</h1>
                     <div class="flex items-center flex-wrap gap-2">
                          <div class="tooltip">
                             <button id="randomize-design" class="p-2 rounded-lg transition-colors bg-purple-100 text-purple-700 hover:bg-purple-200">
                                 <i data-lucide="sparkles" class="w-4 h-4"></i>
                             </button>
-                            <span class="tooltip-text">Design Aléatoire (IA)</span>
+                            <span class="tooltip-text">Design Aléatoire</span>
                         </div>
                         <div class="tooltip">
                             <button id="toggle-anonymize" class="p-2 rounded-lg transition-colors ${state.isAnonymized ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'}">
@@ -234,19 +255,10 @@
         function renderPreviewControls() {
             return `
                 <div class="w-full flex justify-center items-center gap-2 mb-4 bg-white p-2 rounded-lg shadow-sm">
-                    <div class="tooltip">
-                        <button id="zoom-out" class="p-2 rounded-full hover:bg-gray-100"><i data-lucide="zoom-out" class="w-4 h-4"></i></button>
-                        <span class="tooltip-text">Zoom arrière</span>
-                    </div>
+                    <div class="tooltip"><button id="zoom-out" class="p-2 rounded-full hover:bg-gray-100"><i data-lucide="zoom-out" class="w-4 h-4"></i></button><span class="tooltip-text">Zoom arrière</span></div>
                     <input type="range" id="zoom-slider" min="0.3" max="1.5" step="0.01" value="${state.previewScale}" class="w-32">
-                    <div class="tooltip">
-                        <button id="zoom-in" class="p-2 rounded-full hover:bg-gray-100"><i data-lucide="zoom-in" class="w-4 h-4"></i></button>
-                        <span class="tooltip-text">Zoom avant</span>
-                    </div>
-                    <div class="tooltip">
-                        <button id="zoom-reset" class="p-2 rounded-full hover:bg-gray-100"><i data-lucide="rotate-cw" class="w-4 h-4"></i></button>
-                        <span class="tooltip-text">Réinitialiser</span>
-                    </div>
+                    <div class="tooltip"><button id="zoom-in" class="p-2 rounded-full hover:bg-gray-100"><i data-lucide="zoom-in" class="w-4 h-4"></i></button><span class="tooltip-text">Zoom avant</span></div>
+                    <div class="tooltip"><button id="zoom-reset" class="p-2 rounded-full hover:bg-gray-100"><i data-lucide="rotate-cw" class="w-4 h-4"></i></button><span class="tooltip-text">Réinitialiser</span></div>
                     <span class="text-sm font-mono text-gray-500">${Math.round(state.previewScale * 100)}%</span>
                 </div>
             `;
@@ -255,7 +267,7 @@
         // --- CV Rendering ---
 
         function renderCV() {
-            const { cvData, activeTemplate, activeFont, backgroundColor, pagePadding, baseFontSize, lineHeight } = state;
+            const { cvData, activeTemplate, activeFont, backgroundColor, pagePadding, baseFontSize, lineHeight, colors: stateColors, activeColor } = state;
             const personalDataForRender = state.isAnonymized
                 ? { ...cvData.personal, lastName: `${cvData.personal.lastName.charAt(0)}.`, email: '', phone: '', address: '' }
                 : cvData.personal;
@@ -263,6 +275,7 @@
             const getBlockComponent = (blockId) => {
                  switch(blockId) {
                     case 'personal': return renderCvHeader(personalDataForRender);
+                    case 'socials': return cvData.socials?.length > 0 && visibilityCheck(blockId) ? renderSocials() : '';
                     case 'experiences': return cvData.experiences?.length > 0 && visibilityCheck(blockId) ? renderExperiences() : '';
                     case 'projects': return cvData.projects?.length > 0 && visibilityCheck(blockId) ? renderProjects() : '';
                     case 'education': return cvData.education?.length > 0 && visibilityCheck(blockId) ? renderEducation() : '';
@@ -270,7 +283,12 @@
                     case 'skills': return cvData.skills?.length > 0 && visibilityCheck(blockId) ? renderSkills() : '';
                     case 'languages': return cvData.languages?.length > 0 && visibilityCheck(blockId) ? renderLanguages() : '';
                     case 'hobbies': return cvData.hobbies?.length > 0 && visibilityCheck(blockId) ? renderHobbies() : '';
-                    default: return '';
+                    default: 
+                        if (blockId.startsWith('custom-')) {
+                            const section = cvData.customSections.find(s => `custom-${s.id}` === blockId);
+                            return section && visibilityCheck(blockId) ? renderCustomSection(section) : '';
+                        }
+                        return '';
                 }
             };
 
@@ -302,7 +320,7 @@
             }
 
             return `
-                <div id="cv-preview-container" class="bg-white" style="width: 210mm; min-height: 297mm; box-sizing: border-box; overflow: hidden;">
+                <div id="cv-preview-container" class="bg-white" style="width: 210mm; min-height: 297mm; box-sizing: border-box; overflow: hidden; --primary-color: ${stateColors[activeColor].primary};">
                     <div id="cv-preview" class="text-gray-800 template-${activeTemplate}" style="font-family: ${fonts[activeFont].family}; background-color: ${backgroundColor}; box-sizing: border-box; width: 100%; height: 100%;">
                         <div class="h-full w-full flex flex-col relative" style="font-size: ${baseFontSize}pt; line-height: ${lineHeight}; padding: ${pagePadding}rem;">
                             <div class="flex-grow">${cvContent}</div>
@@ -314,46 +332,51 @@
         }
         
         function renderCvHeader(personalData) {
-            const { sectionSpacing, photo, photoShape, nameFontSize, activeColor } = state;
+            const { sectionSpacing, photo, photoShape, nameFontSize, activeColor, headerAlignment, colors: stateColors } = state;
+            const alignClasses = {
+                left: 'items-start text-left',
+                center: 'items-center text-center'
+            };
             return `
-                <div class="cv-header flex flex-col items-center text-center" style="margin-bottom: ${sectionSpacing}rem;">
+                <div class="cv-header flex flex-col ${alignClasses[headerAlignment]}" style="margin-bottom: ${sectionSpacing}rem;">
                     ${photo && !state.isAnonymized ? `
                         <img src="${photo}" alt="User" class="mb-4 w-32 h-32 object-cover shadow-lg" style="border-radius: ${photoShape === 'round' ? '50%' : '0.75rem'};">
                     ` : ''}
                     <h1 class="font-bold mb-1 text-gray-900" style="font-size: ${nameFontSize}pt;">
                         ${personalData.firstName} ${personalData.lastName}
                     </h1>
-                    <h2 class="text-xl mb-3 font-medium" style="color: ${colors[activeColor].primary};">
+                    <h2 class="text-xl mb-3 font-medium" style="color: ${stateColors[activeColor].primary};">
                         ${personalData.title}
                     </h2>
                     ${!state.isAnonymized ? `
-                        <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-gray-600 mb-4 text-sm">
+                        <div class="flex flex-wrap ${headerAlignment === 'center' ? 'justify-center' : ''} gap-x-6 gap-y-2 text-gray-600 mb-4 text-sm">
                             <div class="flex items-center gap-2"><i data-lucide="mail" class="w-3.5 h-3.5"></i>${personalData.email}</div>
                             <div class="flex items-center gap-2"><i data-lucide="phone" class="w-3.5 h-3.5"></i>${personalData.phone}</div>
                             <div class="flex items-center gap-2"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i>${personalData.address}</div>
                         </div>
                     ` : ''}
-                    <p class="text-gray-700 leading-relaxed max-w-3xl mx-auto">
+                    <p class="text-gray-700 leading-relaxed max-w-3xl">
                         ${personalData.summary}
                     </p>
                 </div>
             `;
         }
 
-        function renderSection(title, content) {
-            const { sectionTitleStyle, activeColor, sectionTitleFontSize, sectionSpacing } = state;
+        function renderSection(title, content, iconName = 'briefcase') {
+            const { sectionTitleStyle, activeColor, sectionTitleFontSize, sectionSpacing, colors: stateColors } = state;
             const titleStyles = {
                 border: `border-b-2 pb-1`,
                 background: `p-2 rounded-md`,
                 simple: ``,
             };
-            const titleColor = sectionTitleStyle === 'background' ? colors[activeColor].textOnPrimary : colors[activeColor].primary;
-            const titleBg = sectionTitleStyle === 'background' ? colors[activeColor].primary : 'transparent';
+            const titleColor = sectionTitleStyle === 'background' ? stateColors[activeColor].textOnPrimary : stateColors[activeColor].primary;
+            const titleBg = sectionTitleStyle === 'background' ? stateColors[activeColor].primary : 'transparent';
 
             return `
                 <div class="cv-section" style="margin-bottom: ${sectionSpacing}rem;">
-                    <h3 class="font-bold mb-3 uppercase tracking-wider ${titleStyles[sectionTitleStyle]}" style="color: ${titleColor}; background-color: ${titleBg}; border-color: ${colors[activeColor].primary}; font-size: ${sectionTitleFontSize}pt;">
-                        ${title}
+                    <h3 class="font-bold mb-3 uppercase tracking-wider flex items-center gap-2 ${titleStyles[sectionTitleStyle]}" style="color: ${titleColor}; background-color: ${titleBg}; border-color: ${stateColors[activeColor].primary}; font-size: ${sectionTitleFontSize}pt;">
+                        <i data-lucide="${iconName}" class="w-4 h-4"></i>
+                        <span>${title}</span>
                     </h3>
                     ${content}
                 </div>
@@ -361,67 +384,92 @@
         }
 
         function renderExperiences() {
-            const { cvData, itemSpacing, activeColor, visibility } = state;
-            const content = `
-                <div style="display: flex; flex-direction: column; gap: ${itemSpacing}rem;">
-                    ${cvData.experiences.filter(exp => visibility.experiences[exp.id]).map(exp => `
-                        <div class="cv-item">
-                            <div class="flex justify-between items-start mb-1">
-                                <div>
-                                    <h4 class="font-semibold text-base">${exp.position}</h4>
-                                    <p class="font-medium" style="color: ${colors[activeColor].accent};">${exp.company}</p>
-                                </div>
-                                <span class="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">${exp.startDate} - ${exp.endDate}</span>
-                            </div>
-                            <p class="text-gray-600">${exp.description}</p>
+            const { cvData, itemSpacing, activeColor, visibility, experienceStyle, colors: stateColors } = state;
+            
+            const items = cvData.experiences.filter(exp => visibility.experiences[exp.id]).map(exp => `
+                <div class="cv-item relative ${experienceStyle === 'timeline' ? 'timeline-item pb-4' : ''}">
+                    <div class="flex justify-between items-start mb-1">
+                        <div>
+                            <h4 class="font-semibold text-base">${exp.position}</h4>
+                            <p class="font-medium" style="color: ${stateColors[activeColor].accent};">${exp.company}</p>
                         </div>
+                        <span class="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">${exp.startDate} - ${exp.endDate}</span>
+                    </div>
+                    <p class="text-gray-600">${exp.description}</p>
+                </div>
+            `).join('');
+
+            const content = `
+                <div style="display: flex; flex-direction: column; gap: ${itemSpacing}rem;" class="${experienceStyle === 'timeline' ? 'timeline' : ''}">
+                    ${items}
+                </div>
+            `;
+            return renderSection('Expérience Professionnelle', content, state.sectionIcons.experiences);
+        }
+        
+        function renderEducation() {
+            const { cvData, itemSpacing, activeColor, visibility, experienceStyle, colors: stateColors } = state;
+
+             const items = cvData.education.filter(edu => visibility.education[edu.id]).map(edu => `
+                <div class="cv-item relative ${experienceStyle === 'timeline' ? 'timeline-item pb-4' : ''}">
+                    <div class="flex justify-between items-start mb-1">
+                        <div>
+                            <h4 class="font-semibold text-base">${edu.degree}</h4>
+                            <p class="font-medium" style="color: ${stateColors[activeColor].accent};">${edu.institution}</p>
+                        </div>
+                        <span class="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">${edu.startDate} - ${edu.endDate}</span>
+                    </div>
+                    <p class="text-gray-600">${edu.description}</p>
+                </div>
+            `).join('');
+
+            const content = `
+                <div style="display: flex; flex-direction: column; gap: ${itemSpacing}rem;" class="${experienceStyle === 'timeline' ? 'timeline' : ''}">
+                   ${items}
+                </div>
+            `;
+            return renderSection('Formation', content, state.sectionIcons.education);
+        }
+
+        function renderSocials() {
+            const { cvData, visibility } = state;
+            const content = `
+                <div class="flex flex-wrap gap-4">
+                    ${cvData.socials.filter(s => visibility.socials[s.id]).map(social => `
+                        <a href="${social.url}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 text-gray-700 hover:text-[var(--primary-color)] transition-colors">
+                            <i data-lucide="${socialIcons[social.network] || socialIcons.default}" class="w-4 h-4"></i>
+                            <span class="text-sm">${social.url.replace(/^(https?:\/\/)?(www\.)?/, '')}</span>
+                        </a>
                     `).join('')}
                 </div>
             `;
-            return renderSection('Expérience Professionnelle', content);
+            return renderSection('Réseaux & Liens', content, state.sectionIcons.socials);
         }
-        
+
+        function renderCustomSection(section) {
+            return renderSection(section.title, `<p class="text-gray-600">${section.content}</p>`, state.sectionIcons[`custom-${section.id}`] || 'star');
+        }
+
         function renderProjects() {
-            const { cvData, itemSpacing, activeColor, visibility } = state;
+            const { cvData, itemSpacing, activeColor, visibility, colors: stateColors } = state;
             const content = `
                 <div style="display: flex; flex-direction: column; gap: ${itemSpacing}rem;">
                     ${(cvData.projects || []).filter(p => visibility.projects[p.id]).map(p => `
                         <div class="cv-item">
                             <div class="flex justify-between items-start mb-1">
                                 <h4 class="font-semibold text-base">${p.name}</h4>
-                                ${p.url ? `<a href="${p.url}" target="_blank" rel="noopener noreferrer" class="font-mono text-sm" style="color: ${colors[activeColor].primary};">Voir le projet</a>` : ''}
+                                ${p.url ? `<a href="${p.url}" target="_blank" rel="noopener noreferrer" class="font-mono text-sm" style="color: ${stateColors[activeColor].primary};">Voir le projet</a>` : ''}
                             </div>
                             <p class="text-gray-600">${p.description}</p>
                         </div>
                     `).join('')}
                 </div>
             `;
-            return renderSection('Projets', content);
-        }
-
-        function renderEducation() {
-            const { cvData, itemSpacing, activeColor, visibility } = state;
-            const content = `
-                <div style="display: flex; flex-direction: column; gap: ${itemSpacing}rem;">
-                    ${cvData.education.filter(edu => visibility.education[edu.id]).map(edu => `
-                        <div class="cv-item">
-                            <div class="flex justify-between items-start mb-1">
-                                <div>
-                                    <h4 class="font-semibold text-base">${edu.degree}</h4>
-                                    <p class="font-medium" style="color: ${colors[activeColor].accent};">${edu.institution}</p>
-                                </div>
-                                <span class="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">${edu.startDate} - ${edu.endDate}</span>
-                            </div>
-                            <p class="text-gray-600">${edu.description}</p>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-            return renderSection('Formation', content);
+            return renderSection('Projets', content, state.sectionIcons.projects);
         }
 
         function renderAwards() {
-            const { cvData, itemSpacing, activeColor, visibility } = state;
+            const { cvData, itemSpacing, activeColor, visibility, colors: stateColors } = state;
             const content = `
                 <div style="display: flex; flex-direction: column; gap: ${itemSpacing}rem;">
                     ${(cvData.awards || []).filter(a => visibility.awards[a.id]).map(award => `
@@ -429,7 +477,7 @@
                             <div class="flex justify-between items-start mb-1">
                                 <div>
                                     <h4 class="font-semibold text-base">${award.name}</h4>
-                                    <p class="font-medium" style="color: ${colors[activeColor].accent};">${award.issuer}</p>
+                                    <p class="font-medium" style="color: ${stateColors[activeColor].accent};">${award.issuer}</p>
                                 </div>
                                 <span class="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">${award.date}</span>
                             </div>
@@ -438,11 +486,11 @@
                     `).join('')}
                 </div>
             `;
-            return renderSection('Récompenses', content);
+            return renderSection('Récompenses', content, state.sectionIcons.awards);
         }
 
         function renderSkills() {
-            const { cvData, itemSpacing, skillDisplayStyle, activeColor } = state;
+            const { cvData, itemSpacing, skillDisplayStyle, activeColor, colors: stateColors } = state;
             const content = `
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6" style="gap-y: ${itemSpacing/2}rem;">
                     ${cvData.skills.map(skill => `
@@ -451,19 +499,19 @@
                             ${skillDisplayStyle === 'stars' ? `
                                 <div class="flex items-center mt-1">
                                     ${[...Array(5)].map((_, i) => `
-                                        <i data-lucide="star" class="w-4 h-4 ${i < skill.level ? 'fill-current' : ''}" style="color: ${i < skill.level ? colors[activeColor].primary : '#e0e0e0'};"></i>
+                                        <i data-lucide="star" class="w-4 h-4 ${i < skill.level ? 'fill-current' : ''}" style="color: ${i < skill.level ? stateColors[activeColor].primary : '#e0e0e0'};"></i>
                                     `).join('')}
                                 </div>
                             ` : `
                                 <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
-                                    <div class="h-2 rounded-full" style="width: ${skill.level * 20}%; background-color: ${colors[activeColor].primary};"></div>
+                                    <div class="h-2 rounded-full" style="width: ${skill.level * 20}%; background-color: ${stateColors[activeColor].primary};"></div>
                                 </div>
                             `}
                         </div>
                     `).join('')}
                 </div>
             `;
-            return renderSection('Compétences', content);
+            return renderSection('Compétences', content, state.sectionIcons.skills);
         }
 
         function renderLanguages() {
@@ -478,22 +526,22 @@
                     `).join('')}
                 </div>
             `;
-            return renderSection('Langues', content);
+            return renderSection('Langues', content, state.sectionIcons.languages);
         }
 
         function renderHobbies() {
-            const { cvData, itemSpacing, activeColor } = state;
+            const { cvData, itemSpacing, activeColor, colors: stateColors } = state;
             const content = `
                 <div class="flex flex-wrap" style="gap: ${itemSpacing/2}rem;">
                     ${cvData.hobbies.map(hobby => `
                         <div class="flex items-center p-2 bg-gray-100 rounded-lg">
-                            <i data-lucide="${hobby.icon}" class="w-3.5 h-3.5 mr-2" style="color: ${colors[activeColor].primary};"></i>
+                            <i data-lucide="${hobby.icon}" class="w-3.5 h-3.5 mr-2" style="color: ${stateColors[activeColor].primary};"></i>
                             <span>${hobby.name}</span>
                         </div>
                     `).join('')}
                 </div>
             `;
-            return renderSection('Centres d\'intérêt', content);
+            return renderSection('Centres d\'intérêt', content, state.sectionIcons.hobbies);
         }
         
         // --- Editor Rendering ---
@@ -534,13 +582,18 @@
             `;
         }
 
-        function renderTextareaField(label, value, dataPath, placeholder, icon, rows = 3) {
+        function renderTextareaField(label, value, dataPath, placeholder, icon, rows = 3, aiContext = '') {
             return `
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-600 mb-1 flex items-center">
-                         ${icon ? `<i data-lucide="${icon}" class="w-3.5 h-3.5 mr-2"></i>` : ''}
-                        ${label}
-                    </label>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-sm font-medium text-gray-600 flex items-center">
+                            ${icon ? `<i data-lucide="${icon}" class="w-3.5 h-3.5 mr-2"></i>` : ''}
+                            ${label}
+                        </label>
+                        <button class="generate-ai-text text-xs text-purple-600 hover:text-purple-800 flex items-center gap-1" data-path="${dataPath}" data-context="${aiContext}">
+                            <i data-lucide="sparkles" class="w-3 h-3"></i> Améliorer avec l'IA
+                        </button>
+                    </div>
                     <textarea
                         data-path="${dataPath}"
                         placeholder="${placeholder || label}"
@@ -572,10 +625,22 @@
                             ${renderInputField('Téléphone', state.cvData.personal.phone, 'cvData.personal.phone')}
                             <div class="md:col-span-2">${renderInputField('Adresse', state.cvData.personal.address, 'cvData.personal.address')}</div>
                             <div class="md:col-span-2">
-                                ${renderTextareaField('Résumé', state.cvData.personal.summary, 'cvData.personal.summary')}
+                                ${renderTextareaField('Résumé', state.cvData.personal.summary, 'cvData.personal.summary', '', 'align-left', 4, `Pour un poste de ${state.cvData.personal.title}`)}
                             </div>
                         </div>
                     `, true, 'personalInfo')}
+                    ${renderAccordion('Réseaux & Liens', 'link', `
+                        ${(state.cvData.socials || []).map((social, index) => `
+                            <div class="grid grid-cols-[1fr,2fr,auto] gap-2 items-center border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
+                                <select data-path="cvData.socials.${index}.network" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                    ${Object.keys(socialIcons).map(net => `<option value="${net}" ${social.network === net ? 'selected' : ''}>${net.charAt(0).toUpperCase() + net.slice(1)}</option>`).join('')}
+                                </select>
+                                ${renderInputField('URL', social.url, `cvData.socials.${index}.url`)}
+                                <button class="remove-list-item text-red-500 hover:text-red-700 p-2" data-section="socials" data-id="${social.id}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </div>
+                        `).join('')}
+                        <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="socials"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter un lien</button>
+                    `, false, 'socials')}
                     ${renderAccordion('Expériences', 'briefcase', `
                         ${state.cvData.experiences.map((exp, index) => `
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
@@ -583,7 +648,7 @@
                                 ${renderInputField('Entreprise', exp.company, `cvData.experiences.${index}.company`)}
                                 ${renderInputField('Date de début', exp.startDate, `cvData.experiences.${index}.startDate`)}
                                 ${renderInputField('Date de fin', exp.endDate, `cvData.experiences.${index}.endDate`)}
-                                <div class="md:col-span-2">${renderTextareaField('Description', exp.description, `cvData.experiences.${index}.description`)}</div>
+                                <div class="md:col-span-2">${renderTextareaField('Description', exp.description, `cvData.experiences.${index}.description`, '', 'align-left', 4, `Description de mission pour le poste de ${exp.position} chez ${exp.company}`)}</div>
                                 <div class="md:col-span-2 flex justify-between items-center">
                                     <button class="toggle-item-visibility flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900" data-section="experiences" data-id="${exp.id}">
                                         <i data-lucide="${state.visibility.experiences[exp.id] ? 'eye' : 'eye-off'}" class="w-4 h-4"></i>
@@ -595,80 +660,18 @@
                         `).join('')}
                         <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="experiences"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter une expérience</button>
                     `, false, 'experiences')}
-                    ${renderAccordion('Projets', 'projector', `
-                        ${(state.cvData.projects || []).map((p, index) => `
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
-                                ${renderInputField(`Projet ${index+1}`, p.name, `cvData.projects.${index}.name`)}
-                                ${renderInputField('URL', p.url, `cvData.projects.${index}.url`)}
-                                <div class="md:col-span-2">${renderTextareaField('Description', p.description, `cvData.projects.${index}.description`)}</div>
-                                <div class="md:col-span-2 flex justify-between items-center">
-                                    <button class="toggle-item-visibility flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900" data-section="projects" data-id="${p.id}">
-                                        <i data-lucide="${state.visibility.projects[p.id] ? 'eye' : 'eye-off'}" class="w-4 h-4"></i>
-                                        <span>${state.visibility.projects[p.id] ? "Visible" : "Caché"}</span>
-                                    </button>
-                                    <button class="remove-list-item text-red-500 hover:text-red-700 text-sm flex items-center gap-1" data-section="projects" data-id="${p.id}"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Supprimer</button>
+                    ${renderAccordion('Sections Personnalisées', 'plus-square', `
+                        ${(state.cvData.customSections || []).map((section, index) => `
+                             <div class="border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
+                                ${renderInputField(`Titre de la section`, section.title, `cvData.customSections.${index}.title`)}
+                                ${renderTextareaField('Contenu', section.content, `cvData.customSections.${index}.content`)}
+                                <div class="flex justify-end">
+                                    <button class="remove-list-item text-red-500 hover:text-red-700 text-sm flex items-center gap-1" data-section="customSections" data-id="${section.id}"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Supprimer la section</button>
                                 </div>
                             </div>
                         `).join('')}
-                        <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="projects"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter un projet</button>
-                    `, false, 'projects')}
-                    ${renderAccordion('Formation', 'graduation-cap', `
-                        ${state.cvData.education.map((edu, index) => `
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
-                                ${renderInputField(`Diplôme ${index+1}`, edu.degree, `cvData.education.${index}.degree`)}
-                                ${renderInputField('Établissement', edu.institution, `cvData.education.${index}.institution`)}
-                                ${renderInputField('Date de début', edu.startDate, `cvData.education.${index}.startDate`)}
-                                ${renderInputField('Date de fin', edu.endDate, `cvData.education.${index}.endDate`)}
-                                <div class="md:col-span-2">${renderTextareaField('Description', edu.description, `cvData.education.${index}.description`)}</div>
-                                <div class="md:col-span-2 flex justify-between items-center">
-                                    <button class="toggle-item-visibility flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900" data-section="education" data-id="${edu.id}">
-                                        <i data-lucide="${state.visibility.education[edu.id] ? 'eye' : 'eye-off'}" class="w-4 h-4"></i>
-                                        <span>${state.visibility.education[edu.id] ? "Visible" : "Caché"}</span>
-                                    </button>
-                                    <button class="remove-list-item text-red-500 hover:text-red-700 text-sm flex items-center gap-1" data-section="education" data-id="${edu.id}"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Supprimer</button>
-                                </div>
-                            </div>
-                        `).join('')}
-                        <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="education"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter une formation</button>
-                    `, false, 'education')}
-                    ${renderAccordion('Compétences', 'zap', `
-                        ${state.cvData.skills.map((skill, index) => `
-                            <div class="grid grid-cols-3 gap-4 items-center border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
-                                <div class="col-span-2">${renderInputField(`Compétence ${index+1}`, skill.name, `cvData.skills.${index}.name`)}</div>
-                                <div class="flex items-center">
-                                    <input type="range" min="1" max="5" value="${skill.level}" data-path="cvData.skills.${index}.level" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                                    <button class="remove-list-item text-red-500 hover:text-red-700 ml-4" data-section="skills" data-id="${skill.id}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                </div>
-                            </div>
-                        `).join('')}
-                        <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="skills"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter une compétence</button>
-                    `, false, 'skills')}
-                    ${renderAccordion('Langues', 'globe', `
-                        ${state.cvData.languages.map((lang, index) => `
-                            <div class="grid grid-cols-2 gap-4 items-center border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
-                                ${renderInputField(`Langue ${index+1}`, lang.name, `cvData.languages.${index}.name`)}
-                                <div class="flex items-center">
-                                    ${renderInputField('Niveau', lang.level, `cvData.languages.${index}.level`)}
-                                    <button class="remove-list-item text-red-500 hover:text-red-700 ml-2" data-section="languages" data-id="${lang.id}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                </div>
-                            </div>
-                        `).join('')}
-                        <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="languages"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter une langue</button>
-                    `, false, 'languages')}
-                    ${renderAccordion('Centres d\'intérêt', 'heart', `
-                        ${state.cvData.hobbies.map((hobby, index) => `
-                            <div class="grid grid-cols-2 gap-4 items-center border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
-                                ${renderInputField(`Hobby ${index+1}`, hobby.name, `cvData.hobbies.${index}.name`)}
-                                <div class="flex items-center">
-                                    <select data-path="cvData.hobbies.${index}.icon" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
-                                        ${hobbyIcons.map(icon => `<option value="${icon}" ${hobby.icon === icon ? 'selected' : ''}>${icon}</option>`).join('')}
-                                    </select>
-                                    <button class="remove-list-item text-red-500 hover:text-red-700 ml-2" data-section="hobbies" data-id="${hobby.id}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                </div>
-                            </div>
-                        `).join('')}
-                        <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="hobbies"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter un hobby</button>
-                    `, false, 'hobbies')}
+                        <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="customSections"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter une section</button>
+                    `, false, 'customSections')}
                 `, true, 'content')}
                 ${renderAccordion('Design & Mise en Page', 'palette', `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8">
@@ -690,13 +693,14 @@
                         </div>
                          <div class="md:col-span-2">
                             <h4 class="font-semibold mb-2 text-gray-700">Couleur d'accent</h4>
-                            <div class="flex gap-3 flex-wrap">
-                                ${Object.entries(colors).map(([key, c]) => `
+                            <div class="flex gap-3 flex-wrap items-center">
+                                ${Object.entries(colors).filter(([key]) => key !== 'custom').map(([key, c]) => `
                                     <div class="tooltip">
-                                        <button data-control="activeColor" data-value="${key}" class="w-10 h-10 rounded-full border-4 transition-all ${state.activeColor === key ? 'border-indigo-500 scale-110' : 'border-transparent hover:border-gray-300'}" style="background-color: ${c.primary}"></button>
+                                        <button data-control="activeColor" data-value="${key}" class="w-8 h-8 rounded-full border-4 transition-all ${state.activeColor === key ? 'border-indigo-500 scale-110' : 'border-transparent hover:border-gray-300'}" style="background-color: ${c.primary}"></button>
                                         <span class="tooltip-text">${key.charAt(0).toUpperCase() + key.slice(1)}</span>
                                     </div>
                                 `).join('')}
+                                <input type="color" id="custom-color-picker" value="${state.colors[state.activeColor].primary}" class="w-8 h-8 p-0 border-none rounded-full cursor-pointer">
                             </div>
                         </div>
                         <div class="md:col-span-2">
@@ -705,38 +709,6 @@
                                 ${Object.entries(fonts).map(([key, f]) => `
                                     <button data-control="activeFont" data-value="${key}" style="font-family: ${f.family}" class="p-2 rounded-lg border-2 text-sm transition-all ${state.activeFont === key ? 'border-indigo-500 bg-indigo-50 font-semibold' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}">${f.name}</button>
                                 `).join('')}
-                            </div>
-                        </div>
-                        <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-8">
-                           <div>
-                                <h4 class="font-semibold mb-2 text-gray-700">Photo de profil</h4>
-                                <div class="flex items-center gap-2">
-                                    <input type="file" id="photo-upload" class="hidden" accept="image/*">
-                                    <label for="photo-upload" class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-2 cursor-pointer"><i data-lucide="upload-cloud"></i> Charger</label>
-                                    <button id="remove-photo" class="p-2 text-red-500 hover:bg-red-100 rounded-full"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                </div>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold mb-2 text-gray-700">Forme de la photo</h4>
-                                <div class="flex gap-2">
-                                    <button data-control="photoShape" data-value="round" class="p-2 rounded-lg border-2 ${state.photoShape === 'round' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="circle" class="w-5 h-5"></i></button>
-                                    <button data-control="photoShape" data-value="square" class="p-2 rounded-lg border-2 ${state.photoShape === 'square' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="square" class="w-5 h-5"></i></button>
-                                </div>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold mb-2 text-gray-700">Style des titres</h4>
-                                <div class="flex gap-2">
-                                    <button data-control="sectionTitleStyle" data-value="border" class="p-2 rounded-lg border-2 ${state.sectionTitleStyle === 'border' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}">Bordure</button>
-                                    <button data-control="sectionTitleStyle" data-value="background" class="p-2 rounded-lg border-2 ${state.sectionTitleStyle === 'background' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}">Fond</button>
-                                    <button data-control="sectionTitleStyle" data-value="simple" class="p-2 rounded-lg border-2 ${state.sectionTitleStyle === 'simple' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}">Simple</button>
-                                </div>
-                            </div>
-                             <div>
-                                <h4 class="font-semibold mb-2 text-gray-700">Affichage compétences</h4>
-                                <div class="flex gap-2">
-                                    <button data-control="skillDisplayStyle" data-value="bars" class="p-2 rounded-lg border-2 ${state.skillDisplayStyle === 'bars' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="bar-chart-horizontal" class="w-5 h-5"></i></button>
-                                    <button data-control="skillDisplayStyle" data-value="stars" class="p-2 rounded-lg border-2 ${state.skillDisplayStyle === 'stars' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="star" class="w-5 h-5"></i></button>
-                                </div>
                             </div>
                         </div>
                         <div class="md:col-span-2 space-y-4">
@@ -751,6 +723,67 @@
                         </div>
                     </div>
                 `, true, 'design')}
+                ${renderAccordion('Détails du Design', 'wand', `
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-8">
+                        <div>
+                            <h4 class="font-semibold mb-2 text-gray-700">Photo de profil</h4>
+                            <div class="flex items-center gap-2">
+                                <input type="file" id="photo-upload" class="hidden" accept="image/*">
+                                <label for="photo-upload" class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-2 cursor-pointer"><i data-lucide="upload-cloud"></i> Charger</label>
+                                <button id="remove-photo" class="p-2 text-red-500 hover:bg-red-100 rounded-full"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2 text-gray-700">Forme de la photo</h4>
+                            <div class="flex gap-2">
+                                <button data-control="photoShape" data-value="round" class="p-2 rounded-lg border-2 ${state.photoShape === 'round' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="circle" class="w-5 h-5"></i></button>
+                                <button data-control="photoShape" data-value="square" class="p-2 rounded-lg border-2 ${state.photoShape === 'square' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="square" class="w-5 h-5"></i></button>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2 text-gray-700">Alignement de l'en-tête</h4>
+                            <div class="flex gap-2">
+                                <button data-control="headerAlignment" data-value="left" class="p-2 rounded-lg border-2 ${state.headerAlignment === 'left' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="align-left" class="w-5 h-5"></i></button>
+                                <button data-control="headerAlignment" data-value="center" class="p-2 rounded-lg border-2 ${state.headerAlignment === 'center' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="align-center" class="w-5 h-5"></i></button>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2 text-gray-700">Style des titres</h4>
+                            <div class="flex gap-2">
+                                <button data-control="sectionTitleStyle" data-value="border" class="p-2 rounded-lg border-2 ${state.sectionTitleStyle === 'border' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}">Bordure</button>
+                                <button data-control="sectionTitleStyle" data-value="background" class="p-2 rounded-lg border-2 ${state.sectionTitleStyle === 'background' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}">Fond</button>
+                                <button data-control="sectionTitleStyle" data-value="simple" class="p-2 rounded-lg border-2 ${state.sectionTitleStyle === 'simple' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}">Simple</button>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2 text-gray-700">Style Expériences</h4>
+                            <div class="flex gap-2">
+                                <button data-control="experienceStyle" data-value="default" class="p-2 rounded-lg border-2 ${state.experienceStyle === 'default' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="list" class="w-5 h-5"></i></button>
+                                <button data-control="experienceStyle" data-value="timeline" class="p-2 rounded-lg border-2 ${state.experienceStyle === 'timeline' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="git-commit-vertical" class="w-5 h-5"></i></button>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2 text-gray-700">Affichage compétences</h4>
+                            <div class="flex gap-2">
+                                <button data-control="skillDisplayStyle" data-value="bars" class="p-2 rounded-lg border-2 ${state.skillDisplayStyle === 'bars' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="bar-chart-horizontal" class="w-5 h-5"></i></button>
+                                <button data-control="skillDisplayStyle" data-value="stars" class="p-2 rounded-lg border-2 ${state.skillDisplayStyle === 'stars' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="star" class="w-5 h-5"></i></button>
+                            </div>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <h4 class="font-semibold mb-2 text-gray-700">Icônes des sections</h4>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                ${Object.keys(state.sectionIcons).map(sectionKey => `
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-600 mb-1">${sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1)}</label>
+                                        <select data-path="sectionIcons.${sectionKey}" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                            ${sectionIcons.map(icon => `<option value="${icon}" ${state.sectionIcons[sectionKey] === icon ? 'selected' : ''}>${icon}</option>`).join('')}
+                                        </select>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `, false, 'designDetails')}
                 ${renderAccordion('Organisation & Options', 'settings', `
                     <h4 class="font-semibold mb-3">Organisation des sections</h4>
                     ${state.activeLayout === 'two' ? renderTwoColumnLayoutEditor() : renderSingleColumnLayoutEditor()}
@@ -766,15 +799,66 @@
                         </div>
                     </div>
                 `, false, 'organization')}
+                ${renderAccordion('Outils & Assistance', 'wrench', `
+                    ${renderCvAdvisor()}
+                    <div class="mt-6">
+                        <h4 class="font-semibold mb-2 text-gray-700">Gestion des données</h4>
+                        <div class="flex gap-2">
+                            <button id="import-data" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 text-sm flex items-center gap-2"><i data-lucide="upload"></i> Importer JSON</button>
+                            <input type="file" id="import-file" class="hidden" accept="application/json">
+                            <button id="export-data" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 text-sm flex items-center gap-2"><i data-lucide="download"></i> Exporter JSON</button>
+                        </div>
+                    </div>
+                `, false, 'tools')}
             `;
         }
         
+        function renderCvAdvisor() {
+            const { cvData } = state;
+            const advice = [];
+            if (cvData.personal.summary.length < 150) {
+                advice.push({ text: 'Votre résumé est un peu court. Essayez de le développer pour mieux accrocher le recruteur.', icon: 'info' });
+            }
+            if (cvData.personal.summary.length > 500) {
+                advice.push({ text: 'Votre résumé est un peu long. Essayez d\'être plus concis.', icon: 'info' });
+            }
+            if (cvData.experiences.length < 2) {
+                advice.push({ text: 'Pensez à ajouter au moins deux expériences professionnelles pertinentes.', icon: 'alert-triangle' });
+            }
+            const hasActionVerbs = cvData.experiences.some(exp => /(géré|optimisé|développé|créé|piloté)/i.test(exp.description));
+            if (!hasActionVerbs) {
+                 advice.push({ text: 'Utilisez des verbes d\'action (ex: "géré", "optimisé") pour décrire vos missions.', icon: 'check-circle' });
+            }
+            if (cvData.skills.length < 5) {
+                 advice.push({ text: 'Listez au moins 5 compétences clés pour valoriser votre profil.', icon: 'info' });
+            }
+
+            return `
+                <div>
+                    <h4 class="font-semibold mb-2 text-gray-700">Conseiller CV</h4>
+                    <div class="space-y-2">
+                        ${advice.map(item => `
+                            <div class="flex items-start gap-2 text-sm p-2 rounded-lg ${item.icon === 'alert-triangle' ? 'bg-yellow-50 text-yellow-800' : 'bg-green-50 text-green-800'}">
+                                <i data-lucide="${item.icon}" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
+                                <span>${item.text}</span>
+                            </div>
+                        `).join('')}
+                        ${advice.length === 0 ? `<div class="text-sm text-gray-500">Votre CV semble bien parti !</div>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
         function renderDraggableBlock(blockId, column) {
-            const blockNames = {personal: 'Infos Personnelles', experiences: 'Expériences', projects: 'Projets', education: 'Formation', awards: 'Récompenses', skills: 'Compétences', languages: 'Langues', hobbies: 'Centres d\'intérêt'};
+            const blockNames = {personal: 'Infos Personnelles', socials: 'Réseaux & Liens', experiences: 'Expériences', projects: 'Projets', education: 'Formation', awards: 'Récompenses', skills: 'Compétences', languages: 'Langues', hobbies: 'Centres d\'intérêt'};
+            const name = blockId.startsWith('custom-') 
+                ? state.cvData.customSections.find(s => `custom-${s.id}` === blockId)?.title || 'Section perso.'
+                : blockNames[blockId];
+
             return `
                 <div draggable="true" data-block-id="${blockId}" class="draggable-block p-3 bg-gray-100 border border-gray-200 rounded-lg cursor-move hover:bg-indigo-50 hover:border-indigo-200 transition-colors flex items-center gap-2">
                     <i data-lucide="move" class="w-4 h-4 text-gray-500"></i>
-                    <span class="font-medium text-sm flex-grow">${blockNames[blockId]}</span>
+                    <span class="font-medium text-sm flex-grow">${name}</span>
                     <div class="tooltip">
                         <button class="toggle-section-visibility p-1 hover:bg-gray-300 rounded-full" data-section="${blockId}">
                             <i data-lucide="${visibilityCheck(blockId) ? 'eye' : 'eye-off'}" class="w-4 h-4 ${visibilityCheck(blockId) ? 'text-gray-600' : 'text-gray-400'}"></i>
@@ -837,7 +921,7 @@
             // Preview controls
             document.getElementById('zoom-in')?.addEventListener('click', () => setState({ previewScale: Math.min(1.5, state.previewScale + 0.1) }));
             document.getElementById('zoom-out')?.addEventListener('click', () => setState({ previewScale: Math.max(0.3, state.previewScale - 0.1) }));
-            document.getElementById('zoom-reset')?.addEventListener('click', () => setState({ previewScale: state.previewMode ? 1 : 0.8 }));
+            document.getElementById('zoom-reset')?.addEventListener('click', () => setState({ previewScale: state.previewMode ? 1 : 0.7 }));
             document.getElementById('zoom-slider')?.addEventListener('input', (e) => setState({ previewScale: parseFloat(e.target.value) }));
 
             // Editor inputs
@@ -846,17 +930,44 @@
             });
             document.getElementById('column-ratio')?.addEventListener('change', (e) => setState({ columnRatio: e.target.value }));
             document.getElementById('show-vcard-qr')?.addEventListener('change', (e) => setState({ showVCardQR: e.target.checked }));
+            document.getElementById('custom-color-picker')?.addEventListener('input', (e) => {
+                const primary = e.target.value;
+                const getContrastYIQ = (hexcolor) => {
+                    hexcolor = hexcolor.replace("#", "");
+                    const r = parseInt(hexcolor.substr(0, 2), 16);
+                    const g = parseInt(hexcolor.substr(2, 2), 16);
+                    const b = parseInt(hexcolor.substr(4, 2), 16);
+                    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+                    return (yiq >= 128) ? '#1f2937' : '#ffffff';
+                }
+                const newColors = {
+                    ...state.colors,
+                    custom: {
+                        primary: primary,
+                        secondary: '#f4f4f5',
+                        accent: primary,
+                        textOnPrimary: getContrastYIQ(primary)
+                    }
+                };
+                setState({ colors: newColors, activeColor: 'custom' });
+            });
             
             // Photo upload
             document.getElementById('photo-upload')?.addEventListener('change', handlePhotoChange);
             document.getElementById('remove-photo')?.addEventListener('click', () => setState({ photo: null }));
 
-            // Editor buttons (add/remove items, etc.)
+            // Editor buttons
             document.querySelectorAll('.add-list-item').forEach(btn => btn.addEventListener('click', handleAddListItem));
             document.querySelectorAll('.remove-list-item').forEach(btn => btn.addEventListener('click', handleRemoveListItem));
             document.querySelectorAll('.toggle-item-visibility').forEach(btn => btn.addEventListener('click', handleToggleItemVisibility));
             document.querySelectorAll('.toggle-section-visibility').forEach(btn => btn.addEventListener('click', handleToggleSectionVisibility));
+            document.querySelectorAll('.generate-ai-text').forEach(btn => btn.addEventListener('click', handleAIGenerate));
             
+            // Tools
+            document.getElementById('import-data')?.addEventListener('click', () => document.getElementById('import-file').click());
+            document.getElementById('import-file')?.addEventListener('change', handleImportData);
+            document.getElementById('export-data')?.addEventListener('click', handleExportData);
+
             // Design controls
             document.querySelectorAll('button[data-control]').forEach(btn => {
                 btn.addEventListener('click', (e) => {
@@ -939,16 +1050,17 @@
         function handleInputChange(e) {
             const path = e.target.dataset.path;
             const value = e.target.type === 'range' ? parseFloat(e.target.value) : e.target.value;
+            updateStateFromPath(path, value);
+        }
+
+        function updateStateFromPath(path, value) {
             const keys = path.split('.');
-            
             let tempState = JSON.parse(JSON.stringify(state));
             let current = tempState;
-
             for (let i = 0; i < keys.length - 1; i++) {
                 current = current[keys[i]];
             }
             current[keys[keys.length - 1]] = value;
-            
             setState(tempState);
         }
         
@@ -963,14 +1075,23 @@
                 ...(section === 'skills' && { name: '', level: 3 }),
                 ...(section === 'languages' && { name: '', level: '' }),
                 ...(section === 'hobbies' && { name: '', icon: 'heart' }),
+                ...(section === 'socials' && { network: 'linkedin', url: '' }),
+                ...(section === 'customSections' && { title: 'Nouvelle Section', content: '' }),
             };
 
             const newCvData = { ...state.cvData, [section]: [...(state.cvData[section] || []), newItem] };
             
-            if (['experiences', 'education', 'projects', 'awards'].includes(section)) {
+            const itemVisibilitySections = ['experiences', 'education', 'projects', 'awards', 'socials'];
+            if (itemVisibilitySections.includes(section)) {
                 const newVisibility = { ...state.visibility, [section]: { ...(state.visibility[section] || {}), [newItem.id]: true } };
                 setState({ cvData: newCvData, visibility: newVisibility });
-            } else {
+            } else if (section === 'customSections') {
+                const blockId = `custom-${newItem.id}`;
+                const newVisibility = { ...state.visibility, [blockId]: true };
+                const newBlockOrder = [...state.blockOrder, blockId];
+                setState({ cvData: newCvData, visibility: newVisibility, blockOrder: newBlockOrder });
+            }
+            else {
                 setState({ cvData: newCvData });
             }
         }
@@ -980,12 +1101,24 @@
             const id = parseInt(e.currentTarget.dataset.id, 10);
             const newCvData = { ...state.cvData, [section]: state.cvData[section].filter(item => item.id !== id) };
             
-            if (['experiences', 'education', 'projects', 'awards'].includes(section)) {
+            const itemVisibilitySections = ['experiences', 'education', 'projects', 'awards', 'socials'];
+            if (itemVisibilitySections.includes(section)) {
                 const newSectionVisibility = { ...state.visibility[section] };
                 delete newSectionVisibility[id];
                 const newVisibility = { ...state.visibility, [section]: newSectionVisibility };
                 setState({ cvData: newCvData, visibility: newVisibility });
-            } else {
+            } else if (section === 'customSections') {
+                const blockId = `custom-${id}`;
+                const newVisibility = { ...state.visibility };
+                delete newVisibility[blockId];
+                const newBlockOrder = state.blockOrder.filter(bId => bId !== blockId);
+                const newColumnAssignment = {
+                    left: state.columnAssignment.left.filter(bId => bId !== blockId),
+                    right: state.columnAssignment.right.filter(bId => bId !== blockId)
+                };
+                setState({ cvData: newCvData, visibility: newVisibility, blockOrder: newBlockOrder, columnAssignment: newColumnAssignment });
+            }
+            else {
                 setState({ cvData: newCvData });
             }
         }
@@ -1000,7 +1133,7 @@
         
         function handleToggleSectionVisibility(e) {
             const section = e.currentTarget.dataset.section;
-            const newVisibility = { ...state.visibility, [section]: !state.visibility[section] };
+            const newVisibility = { ...state.visibility, [section]: !visibilityCheck(section) };
             setState({ visibility: newVisibility });
         }
         
@@ -1008,7 +1141,7 @@
             if (id !== null) {
                 return state.visibility[section] && state.visibility[section][id];
             }
-            return state.visibility[section];
+            return !!state.visibility[section];
         }
         
         function handlePhotoChange(e) {
@@ -1024,29 +1157,68 @@
         function handleRandomizeDesign() {
             const randomChoice = (arr) => arr[Math.floor(Math.random() * arr.length)];
             
-            const randomTemplate = randomChoice(Object.keys(templates));
-            const randomColor = randomChoice(Object.keys(colors));
-            const randomFont = randomChoice(Object.keys(fonts));
-            const randomLayout = randomChoice(Object.keys(layouts));
-            const randomTitleStyle = randomChoice(['border', 'background', 'simple']);
-            const randomSkillStyle = randomChoice(['bars', 'stars']);
-            
             setState({
-                activeTemplate: randomTemplate,
-                activeColor: randomColor,
-                activeFont: randomFont,
-                activeLayout: randomLayout,
-                sectionTitleStyle: randomTitleStyle,
-                skillDisplayStyle: randomSkillStyle,
+                activeTemplate: randomChoice(Object.keys(templates)),
+                activeColor: randomChoice(Object.keys(colors)),
+                activeFont: randomChoice(Object.keys(fonts)),
+                activeLayout: randomChoice(Object.keys(layouts)),
+                sectionTitleStyle: randomChoice(['border', 'background', 'simple']),
+                skillDisplayStyle: randomChoice(['bars', 'stars']),
+                experienceStyle: randomChoice(['default', 'timeline']),
+                headerAlignment: randomChoice(['left', 'center']),
             });
+        }
+
+        async function handleAIGenerate(e) {
+            const button = e.currentTarget;
+            const path = button.dataset.path;
+            const context = button.dataset.context;
+            
+            const keys = path.split('.');
+            let current = state;
+            for (let i = 0; i < keys.length; i++) {
+                current = current[keys[i]];
+            }
+            const originalText = current;
+
+            const prompt = `En tant qu'expert en recrutement, réécris et améliore le texte suivant pour un CV. Sois percutant, utilise des verbes d'action et un ton professionnel. Le contexte est : "${context}". Le texte à améliorer est : "${originalText}". Ne retourne que le texte amélioré, sans introduction ni conclusion.`;
+            
+            button.innerHTML = '<i data-lucide="loader-circle" class="animate-spin w-3 h-3"></i> IA...';
+            lucide.createIcons();
+
+            try {
+                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // Leave empty for Canvas
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
+                    const newText = result.candidates[0].content.parts[0].text.trim();
+                    updateStateFromPath(path, newText);
+                } else {
+                    throw new Error('Invalid AI response format');
+                }
+            } catch(error) {
+                console.error("AI Generation Error:", error);
+                alert("Une erreur est survenue lors de la communication avec l'IA.");
+            } finally {
+                button.innerHTML = '<i data-lucide="sparkles" class="w-3 h-3"></i> Améliorer avec l\'IA';
+                lucide.createIcons();
+            }
         }
 
         async function generatePDF() {
             const element = document.getElementById('cv-preview-container');
             if (!element || state.isDownloadingPdf) return;
             
-            setState({ isDownloadingPdf: true }, false); // Don't re-render yet
-            renderApp(); // Manually re-render to show disabled button
+            setState({ isDownloadingPdf: true }, false);
+            renderApp();
 
             const originalScale = element.style.transform;
             element.style.transform = 'scale(1)';
@@ -1091,29 +1263,71 @@
             }
         }
         
+        function handleExportData() {
+            const dataStr = JSON.stringify(state, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const exportFileDefaultName = 'cv_data.json';
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+
+        function handleImportData(event) {
+            const fileReader = new FileReader();
+            fileReader.onload = (e) => {
+                try {
+                    const importedState = JSON.parse(e.target.result);
+                    // Basic validation
+                    if (importedState.cvData && importedState.activeTemplate) {
+                        setState(importedState);
+                    } else {
+                        alert('Fichier JSON invalide ou corrompu.');
+                    }
+                } catch (error) {
+                    alert('Erreur lors de la lecture du fichier JSON.');
+                    console.error(error);
+                }
+            };
+            fileReader.readAsText(event.target.files[0]);
+            event.target.value = ''; // Reset file input
+        }
+
         // --- INITIALIZATION ---
         function init() {
-            const savedState = localStorage.getItem('cvState_v3');
+            const savedState = localStorage.getItem('cvState_v4');
             let cvData = initialCvData;
             let loadedState = {};
             if (savedState) {
-                loadedState = JSON.parse(savedState);
-                cvData = loadedState.cvData || initialCvData;
+                try {
+                    loadedState = JSON.parse(savedState);
+                    cvData = loadedState.cvData || initialCvData;
+                } catch(e) {
+                    console.error("Could not parse saved state, using defaults.", e);
+                    localStorage.removeItem('cvState_v4');
+                }
             }
             
-            const initialVisibility = {
-                personal: true,
-                experiences: Object.keys(cvData.experiences.reduce((acc, exp) => ({ ...acc, [exp.id]: true }), {})).length > 0 ? cvData.experiences.reduce((acc, exp) => ({ ...acc, [exp.id]: true }), {}) : {},
-                projects: Object.keys((cvData.projects || []).reduce((acc, p) => ({ ...acc, [p.id]: true }), {})).length > 0 ? (cvData.projects || []).reduce((acc, p) => ({ ...acc, [p.id]: true }), {}) : {},
-                education: Object.keys(cvData.education.reduce((acc, edu) => ({ ...acc, [edu.id]: true }), {})).length > 0 ? cvData.education.reduce((acc, edu) => ({ ...acc, [edu.id]: true }), {}) : {},
-                awards: Object.keys((cvData.awards || []).reduce((acc, a) => ({ ...acc, [a.id]: true }), {})).length > 0 ? (cvData.awards || []).reduce((acc, a) => ({ ...acc, [a.id]: true }), {}) : {},
-                skills: true,
-                languages: true,
-                hobbies: true,
-            };
+            const allSectionIds = [
+                'personal', 'socials', 'experiences', 'projects', 'education', 'awards', 'skills', 'languages', 'hobbies',
+                ...(cvData.customSections || []).map(s => `custom-${s.id}`)
+            ];
+
+            const initialVisibility = allSectionIds.reduce((acc, id) => {
+                acc[id] = true;
+                return acc;
+            }, {});
+
+            ['experiences', 'projects', 'education', 'awards', 'socials'].forEach(section => {
+                initialVisibility[section] = {};
+                (cvData[section] || []).forEach(item => {
+                    initialVisibility[section][item.id] = true;
+                });
+            });
 
             const defaultState = {
                 cvData,
+                colors: colors,
                 activeTemplate: 'modern',
                 activeColor: 'indigo',
                 backgroundColor: '#ffffff',
@@ -1127,20 +1341,25 @@
                 photo: null,
                 photoShape: 'round',
                 sectionTitleStyle: 'border',
+                experienceStyle: 'default',
+                headerAlignment: 'center',
                 previewScale: 0.7,
                 baseFontSize: 10,
                 nameFontSize: 28,
-                sectionTitleFontSize: 14,
+                sectionTitleFontSize: 12,
                 lineHeight: 1.5,
                 pagePadding: 1.5,
                 sectionSpacing: 1.25,
                 itemSpacing: 1,
                 skillDisplayStyle: 'bars',
                 visibility: initialVisibility,
-                blockOrder: ['experiences', 'projects', 'education', 'awards', 'skills', 'languages', 'hobbies'],
+                sectionIcons: {
+                    socials: 'link', experiences: 'briefcase', projects: 'projector', education: 'graduation-cap', awards: 'award', skills: 'zap', languages: 'globe', hobbies: 'heart'
+                },
+                blockOrder: ['socials', 'experiences', 'projects', 'education', 'awards', 'skills', 'languages', 'hobbies', ...(cvData.customSections || []).map(s => `custom-${s.id}`)],
                 columnAssignment: {
                     left: ['personal', 'skills', 'languages', 'hobbies'],
-                    right: ['experiences', 'projects', 'education', 'awards']
+                    right: ['socials', 'experiences', 'projects', 'education', 'awards']
                 },
                 openAccordions: {
                     content: true,
@@ -1149,9 +1368,12 @@
                 }
             };
             
-            state = { ...defaultState, ...loadedState, visibility: loadedState.visibility || initialVisibility };
-
-            renderApp();
+            let finalState = { ...defaultState, ...loadedState };
+            finalState.visibility = loadedState.visibility || initialVisibility;
+            finalState.cvData = loadedState.cvData || cvData;
+            finalState.colors = loadedState.colors || colors;
+            
+            setState(finalState, true);
         }
 
         // Start the application
