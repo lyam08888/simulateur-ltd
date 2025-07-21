@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Créateur de CV Pro</title>
+    <title>Créateur de CV Pro Avancé</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -32,19 +32,20 @@
             opacity: 0.5;
             background-color: #eef2ff;
         }
-        .drag-over {
+        .drop-zone.drag-over {
             border-style: solid;
             border-color: #4f46e5;
+            background-color: #f4f4f5;
         }
         /* Simple transition for accordion */
         .accordion-content {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
             opacity: 0;
         }
         .accordion-content.open {
-            max-height: 2000px; /* Adjust as needed */
+            max-height: 4000px; /* Increased max-height */
             opacity: 1;
         }
         .tooltip {
@@ -60,10 +61,10 @@
             border-radius: 6px;
             padding: 5px 8px;
             position: absolute;
-            z-index: 1;
+            z-index: 50;
             bottom: 125%;
             left: 50%;
-            margin-left: -60px;
+            transform: translateX(-50%);
             opacity: 0;
             transition: opacity 0.3s;
             font-size: 0.75rem;
@@ -73,9 +74,26 @@
             visibility: visible;
             opacity: 1;
         }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #4f46e5;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #4f46e5;
+            cursor: pointer;
+            border-radius: 50%;
+        }
     </style>
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-100">
 
     <div id="app" class="min-h-screen p-2 md:p-6"></div>
 
@@ -122,7 +140,7 @@
         };
 
         // --- CONFIGURATIONS ---
-        const templates = { modern: { name: 'Moderne' }, classic: { name: 'Classique' }, creative: { name: 'Créatif' }, minimalist: { name: 'Minimaliste' } };
+        const templates = { modern: { name: 'Moderne' }, classic: { name: 'Classique' }, creative: { name: 'Créatif' }, minimalist: { name: 'Minimaliste' }, tech: { name: 'Tech' } };
         const layouts = { single: { name: 'Une colonne' }, two: { name: 'Deux colonnes' } };
         const fonts = {
             sans: { name: 'Inter (Sans)', family: "'Inter', sans-serif" },
@@ -137,23 +155,26 @@
             red: { primary: '#dc2626', secondary: '#fef2f2', accent: '#b91c1c', textOnPrimary: '#ffffff' },
             gray: { primary: '#4b5563', secondary: '#f9fafb', accent: '#1f2937', textOnPrimary: '#ffffff' }
         };
-        const hobbyIcons = ['code', 'book-open', 'camera', 'music', 'plane', 'dumbbell', 'paintbrush', 'heart', 'star'];
+        const hobbyIcons = ['code', 'book-open', 'camera', 'music', 'plane', 'dumbbell', 'paintbrush', 'heart', 'star', 'lightbulb'];
 
         // --- STATE MANAGEMENT ---
         let state = {};
 
-        function setState(newState) {
+        function setState(newState, render = true) {
             state = { ...state, ...newState };
-            console.log("State updated:", state);
             
             // Save to localStorage
             try {
-                localStorage.setItem('cvData_v2', JSON.stringify(state.cvData));
+                const stateToSave = { ...state };
+                delete stateToSave.photo; // Don't save blob url
+                localStorage.setItem('cvState_v3', JSON.stringify(stateToSave));
             } catch (error) {
                 console.error("Could not save data:", error);
             }
             
-            renderApp();
+            if(render) {
+                renderApp();
+            }
         }
 
         // --- RENDER FUNCTIONS ---
@@ -163,9 +184,9 @@
             appContainer.innerHTML = `
                 <div class="max-w-screen-2xl mx-auto">
                     ${renderHeaderControls()}
-                    <div id="main-content" class="grid ${state.previewMode ? 'grid-cols-1' : 'grid-cols-1 xl:grid-cols-[1fr,1.5fr]'} gap-8 items-start">
-                        ${!state.previewMode ? `<div id="editor-panel" class="space-y-6">${renderEditor()}</div>` : ''}
-                        <div id="preview-panel" class="flex flex-col items-center sticky top-28">
+                    <div id="main-content" class="grid ${state.previewMode ? 'grid-cols-1' : 'grid-cols-1 xl:grid-cols-[minmax(400px,1fr)_1.5fr]'} gap-8 items-start">
+                        ${!state.previewMode ? `<div id="editor-panel" class="space-y-6 bg-white p-4 rounded-lg shadow-sm">${renderEditor()}</div>` : ''}
+                        <div id="preview-panel" class="flex flex-col items-center sticky top-24">
                             ${renderPreviewControls()}
                             <div id="cv-outer-container" class="origin-top shadow-2xl transition-transform duration-300" style="transform: scale(${state.previewScale})">
                                 ${renderCV()}
@@ -181,9 +202,15 @@
 
         function renderHeaderControls() {
             return `
-                <header class="bg-white rounded-xl shadow-md p-4 mb-6 flex flex-wrap justify-between items-center gap-4 sticky top-4 z-20">
-                    <h1 class="text-xl font-bold text-gray-800">Créateur de CV Pro</h1>
+                <header class="bg-white rounded-xl shadow-md p-4 mb-6 flex flex-wrap justify-between items-center gap-4 sticky top-4 z-30">
+                    <h1 class="text-xl font-bold text-gray-800 flex items-center gap-2"><i data-lucide="file-text" class="text-indigo-600"></i>Créateur de CV Pro</h1>
                     <div class="flex items-center flex-wrap gap-2">
+                         <div class="tooltip">
+                            <button id="randomize-design" class="p-2 rounded-lg transition-colors bg-purple-100 text-purple-700 hover:bg-purple-200">
+                                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                            </button>
+                            <span class="tooltip-text">Design Aléatoire (IA)</span>
+                        </div>
                         <div class="tooltip">
                             <button id="toggle-anonymize" class="p-2 rounded-lg transition-colors ${state.isAnonymized ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'}">
                                 <i data-lucide="shield-check" class="w-4 h-4"></i>
@@ -236,13 +263,13 @@
             const getBlockComponent = (blockId) => {
                  switch(blockId) {
                     case 'personal': return renderCvHeader(personalDataForRender);
-                    case 'experiences': return cvData.experiences?.length > 0 && visibilityCheck('experiences') ? renderExperiences() : '';
-                    case 'projects': return cvData.projects?.length > 0 && visibilityCheck('projects') ? renderProjects() : '';
-                    case 'education': return cvData.education?.length > 0 && visibilityCheck('education') ? renderEducation() : '';
-                    case 'awards': return cvData.awards?.length > 0 && visibilityCheck('awards') ? renderAwards() : '';
-                    case 'skills': return cvData.skills?.length > 0 && visibilityCheck('skills') ? renderSkills() : '';
-                    case 'languages': return cvData.languages?.length > 0 && visibilityCheck('languages') ? renderLanguages() : '';
-                    case 'hobbies': return cvData.hobbies?.length > 0 && visibilityCheck('hobbies') ? renderHobbies() : '';
+                    case 'experiences': return cvData.experiences?.length > 0 && visibilityCheck(blockId) ? renderExperiences() : '';
+                    case 'projects': return cvData.projects?.length > 0 && visibilityCheck(blockId) ? renderProjects() : '';
+                    case 'education': return cvData.education?.length > 0 && visibilityCheck(blockId) ? renderEducation() : '';
+                    case 'awards': return cvData.awards?.length > 0 && visibilityCheck(blockId) ? renderAwards() : '';
+                    case 'skills': return cvData.skills?.length > 0 && visibilityCheck(blockId) ? renderSkills() : '';
+                    case 'languages': return cvData.languages?.length > 0 && visibilityCheck(blockId) ? renderLanguages() : '';
+                    case 'hobbies': return cvData.hobbies?.length > 0 && visibilityCheck(blockId) ? renderHobbies() : '';
                     default: return '';
                 }
             };
@@ -278,7 +305,7 @@
                 <div id="cv-preview-container" class="bg-white" style="width: 210mm; min-height: 297mm; box-sizing: border-box; overflow: hidden;">
                     <div id="cv-preview" class="text-gray-800 template-${activeTemplate}" style="font-family: ${fonts[activeFont].family}; background-color: ${backgroundColor}; box-sizing: border-box; width: 100%; height: 100%;">
                         <div class="h-full w-full flex flex-col relative" style="font-size: ${baseFontSize}pt; line-height: ${lineHeight}; padding: ${pagePadding}rem;">
-                            <div class="flex-grow pt-4">${cvContent}</div>
+                            <div class="flex-grow">${cvContent}</div>
                             ${state.showVCardQR && !state.isAnonymized ? '<div id="vcard-qr-code" class="absolute bottom-4 right-4 bg-white p-2 rounded-md shadow-lg"></div>' : ''}
                         </div>
                     </div>
@@ -289,14 +316,14 @@
         function renderCvHeader(personalData) {
             const { sectionSpacing, photo, photoShape, nameFontSize, activeColor } = state;
             return `
-                <div class="cv-header flex flex-col items-center" style="margin-bottom: ${sectionSpacing}rem;">
+                <div class="cv-header flex flex-col items-center text-center" style="margin-bottom: ${sectionSpacing}rem;">
                     ${photo && !state.isAnonymized ? `
                         <img src="${photo}" alt="User" class="mb-4 w-32 h-32 object-cover shadow-lg" style="border-radius: ${photoShape === 'round' ? '50%' : '0.75rem'};">
                     ` : ''}
                     <h1 class="font-bold mb-1 text-gray-900" style="font-size: ${nameFontSize}pt;">
                         ${personalData.firstName} ${personalData.lastName}
                     </h1>
-                    <h2 class="text-xl mb-3" style="color: ${colors[activeColor].primary};">
+                    <h2 class="text-xl mb-3 font-medium" style="color: ${colors[activeColor].primary};">
                         ${personalData.title}
                     </h2>
                     ${!state.isAnonymized ? `
@@ -306,7 +333,7 @@
                             <div class="flex items-center gap-2"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i>${personalData.address}</div>
                         </div>
                     ` : ''}
-                    <p class="text-gray-700 leading-relaxed text-center max-w-3xl mx-auto">
+                    <p class="text-gray-700 leading-relaxed max-w-3xl mx-auto">
                         ${personalData.summary}
                     </p>
                 </div>
@@ -314,7 +341,7 @@
         }
 
         function renderSection(title, content) {
-            const { sectionTitleStyle, activeColor, sectionTitleFontSize, sectionSpacing, itemSpacing } = state;
+            const { sectionTitleStyle, activeColor, sectionTitleFontSize, sectionSpacing } = state;
             const titleStyles = {
                 border: `border-b-2 pb-1`,
                 background: `p-2 rounded-md`,
@@ -325,7 +352,7 @@
 
             return `
                 <div class="cv-section" style="margin-bottom: ${sectionSpacing}rem;">
-                    <h3 class="font-bold mb-3 ${titleStyles[sectionTitleStyle]}" style="color: ${titleColor}; background-color: ${titleBg}; border-color: ${colors[activeColor].primary}; font-size: ${sectionTitleFontSize}pt;">
+                    <h3 class="font-bold mb-3 uppercase tracking-wider ${titleStyles[sectionTitleStyle]}" style="color: ${titleColor}; background-color: ${titleBg}; border-color: ${colors[activeColor].primary}; font-size: ${sectionTitleFontSize}pt;">
                         ${title}
                     </h3>
                     ${content}
@@ -341,8 +368,8 @@
                         <div class="cv-item">
                             <div class="flex justify-between items-start mb-1">
                                 <div>
-                                    <h4 class="font-semibold">${exp.position}</h4>
-                                    <p style="color: ${colors[activeColor].accent};">${exp.company}</p>
+                                    <h4 class="font-semibold text-base">${exp.position}</h4>
+                                    <p class="font-medium" style="color: ${colors[activeColor].accent};">${exp.company}</p>
                                 </div>
                                 <span class="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">${exp.startDate} - ${exp.endDate}</span>
                             </div>
@@ -361,7 +388,7 @@
                     ${(cvData.projects || []).filter(p => visibility.projects[p.id]).map(p => `
                         <div class="cv-item">
                             <div class="flex justify-between items-start mb-1">
-                                <h4 class="font-semibold">${p.name}</h4>
+                                <h4 class="font-semibold text-base">${p.name}</h4>
                                 ${p.url ? `<a href="${p.url}" target="_blank" rel="noopener noreferrer" class="font-mono text-sm" style="color: ${colors[activeColor].primary};">Voir le projet</a>` : ''}
                             </div>
                             <p class="text-gray-600">${p.description}</p>
@@ -380,8 +407,8 @@
                         <div class="cv-item">
                             <div class="flex justify-between items-start mb-1">
                                 <div>
-                                    <h4 class="font-semibold">${edu.degree}</h4>
-                                    <p style="color: ${colors[activeColor].accent};">${edu.institution}</p>
+                                    <h4 class="font-semibold text-base">${edu.degree}</h4>
+                                    <p class="font-medium" style="color: ${colors[activeColor].accent};">${edu.institution}</p>
                                 </div>
                                 <span class="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">${edu.startDate} - ${edu.endDate}</span>
                             </div>
@@ -401,8 +428,8 @@
                         <div class="cv-item">
                             <div class="flex justify-between items-start mb-1">
                                 <div>
-                                    <h4 class="font-semibold">${award.name}</h4>
-                                    <p style="color: ${colors[activeColor].accent};">${award.issuer}</p>
+                                    <h4 class="font-semibold text-base">${award.name}</h4>
+                                    <p class="font-medium" style="color: ${colors[activeColor].accent};">${award.issuer}</p>
                                 </div>
                                 <span class="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">${award.date}</span>
                             </div>
@@ -417,7 +444,7 @@
         function renderSkills() {
             const { cvData, itemSpacing, skillDisplayStyle, activeColor } = state;
             const content = `
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6" style="gap: ${itemSpacing}rem;">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6" style="gap-y: ${itemSpacing/2}rem;">
                     ${cvData.skills.map(skill => `
                         <div>
                             <span class="font-medium">${skill.name}</span>
@@ -428,8 +455,8 @@
                                     `).join('')}
                                 </div>
                             ` : `
-                                <div class="w-full bg-gray-200 rounded-full h-2.5 mt-1">
-                                    <div class="h-2.5 rounded-full" style="width: ${skill.level * 20}%; background-color: ${colors[activeColor].primary};"></div>
+                                <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                                    <div class="h-2 rounded-full" style="width: ${skill.level * 20}%; background-color: ${colors[activeColor].primary};"></div>
                                 </div>
                             `}
                         </div>
@@ -442,7 +469,7 @@
         function renderLanguages() {
             const { cvData, itemSpacing } = state;
             const content = `
-                <div style="display: flex; flex-direction: column; gap: ${itemSpacing / 2}rem;">
+                <div style="display: flex; flex-direction: column; gap: ${itemSpacing / 4}rem;">
                     ${cvData.languages.map(lang => `
                         <div class="flex justify-between py-1">
                             <span class="font-medium">${lang.name}</span>
@@ -457,7 +484,7 @@
         function renderHobbies() {
             const { cvData, itemSpacing, activeColor } = state;
             const content = `
-                <div class="flex flex-wrap" style="gap: ${itemSpacing}rem;">
+                <div class="flex flex-wrap" style="gap: ${itemSpacing/2}rem;">
                     ${cvData.hobbies.map(hobby => `
                         <div class="flex items-center p-2 bg-gray-100 rounded-lg">
                             <i data-lucide="${hobby.icon}" class="w-3.5 h-3.5 mr-2" style="color: ${colors[activeColor].primary};"></i>
@@ -523,6 +550,15 @@
                 </div>
             `;
         }
+        
+        function renderSlider(label, value, dataPath, min, max, step) {
+            return `
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">${label}: <span class="font-mono text-indigo-600">${value}</span></label>
+                    <input type="range" min="${min}" max="${max}" step="${step}" value="${value}" data-path="${dataPath}" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+            `;
+        }
 
         function renderEditor() {
             return `
@@ -531,10 +567,10 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             ${renderInputField('Prénom', state.cvData.personal.firstName, 'cvData.personal.firstName')}
                             ${renderInputField('Nom', state.cvData.personal.lastName, 'cvData.personal.lastName')}
-                            ${renderInputField('Titre du poste', state.cvData.personal.title, 'cvData.personal.title')}
+                            <div class="md:col-span-2">${renderInputField('Titre du poste', state.cvData.personal.title, 'cvData.personal.title')}</div>
                             ${renderInputField('Email', state.cvData.personal.email, 'cvData.personal.email')}
                             ${renderInputField('Téléphone', state.cvData.personal.phone, 'cvData.personal.phone')}
-                            ${renderInputField('Adresse', state.cvData.personal.address, 'cvData.personal.address')}
+                            <div class="md:col-span-2">${renderInputField('Adresse', state.cvData.personal.address, 'cvData.personal.address')}</div>
                             <div class="md:col-span-2">
                                 ${renderTextareaField('Résumé', state.cvData.personal.summary, 'cvData.personal.summary')}
                             </div>
@@ -609,11 +645,11 @@
                     `, false, 'skills')}
                     ${renderAccordion('Langues', 'globe', `
                         ${state.cvData.languages.map((lang, index) => `
-                            <div class="grid grid-cols-3 gap-4 items-center border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
-                                <div class="col-span-2">${renderInputField(`Langue ${index+1}`, lang.name, `cvData.languages.${index}.name`)}</div>
+                            <div class="grid grid-cols-2 gap-4 items-center border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
+                                ${renderInputField(`Langue ${index+1}`, lang.name, `cvData.languages.${index}.name`)}
                                 <div class="flex items-center">
                                     ${renderInputField('Niveau', lang.level, `cvData.languages.${index}.level`)}
-                                    <button class="remove-list-item text-red-500 hover:text-red-700 ml-4" data-section="languages" data-id="${lang.id}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                    <button class="remove-list-item text-red-500 hover:text-red-700 ml-2" data-section="languages" data-id="${lang.id}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                                 </div>
                             </div>
                         `).join('')}
@@ -621,13 +657,13 @@
                     `, false, 'languages')}
                     ${renderAccordion('Centres d\'intérêt', 'heart', `
                         ${state.cvData.hobbies.map((hobby, index) => `
-                            <div class="grid grid-cols-3 gap-4 items-center border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
-                                <div class="col-span-2">${renderInputField(`Hobby ${index+1}`, hobby.name, `cvData.hobbies.${index}.name`)}</div>
+                            <div class="grid grid-cols-2 gap-4 items-center border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
+                                ${renderInputField(`Hobby ${index+1}`, hobby.name, `cvData.hobbies.${index}.name`)}
                                 <div class="flex items-center">
                                     <select data-path="cvData.hobbies.${index}.icon" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
                                         ${hobbyIcons.map(icon => `<option value="${icon}" ${hobby.icon === icon ? 'selected' : ''}>${icon}</option>`).join('')}
                                     </select>
-                                    <button class="remove-list-item text-red-500 hover:text-red-700 ml-4" data-section="hobbies" data-id="${hobby.id}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                    <button class="remove-list-item text-red-500 hover:text-red-700 ml-2" data-section="hobbies" data-id="${hobby.id}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                                 </div>
                             </div>
                         `).join('')}
@@ -635,47 +671,100 @@
                     `, false, 'hobbies')}
                 `, true, 'content')}
                 ${renderAccordion('Design & Mise en Page', 'palette', `
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8">
                         <div>
-                            <h4 class="font-semibold mb-2">Modèle</h4>
+                            <h4 class="font-semibold mb-2 text-gray-700">Modèle</h4>
                             <div class="flex flex-col space-y-2">
                                 ${Object.entries(templates).map(([key, t]) => `
-                                    <button data-control="activeTemplate" data-value="${key}" class="p-2 rounded-lg border-2 text-sm ${state.activeTemplate === key ? 'border-indigo-500 bg-indigo-50 font-semibold' : 'border-gray-200 hover:border-gray-300'}">${t.name}</button>
+                                    <button data-control="activeTemplate" data-value="${key}" class="p-2 rounded-lg border-2 text-sm transition-all ${state.activeTemplate === key ? 'border-indigo-500 bg-indigo-50 font-semibold' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}">${t.name}</button>
                                 `).join('')}
                             </div>
                         </div>
                         <div>
-                            <h4 class="font-semibold mb-2">Mise en page</h4>
+                            <h4 class="font-semibold mb-2 text-gray-700">Mise en page</h4>
                             <div class="flex flex-col space-y-2">
                                 ${Object.entries(layouts).map(([key, l]) => `
-                                    <button data-control="activeLayout" data-value="${key}" class="p-2 rounded-lg border-2 text-sm ${state.activeLayout === key ? 'border-indigo-500 bg-indigo-50 font-semibold' : 'border-gray-200 hover:border-gray-300'}">${l.name}</button>
+                                    <button data-control="activeLayout" data-value="${key}" class="p-2 rounded-lg border-2 text-sm transition-all ${state.activeLayout === key ? 'border-indigo-500 bg-indigo-50 font-semibold' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}">${l.name}</button>
                                 `).join('')}
                             </div>
                         </div>
-                        <div>
-                            <h4 class="font-semibold mb-2">Police</h4>
-                            <div class="flex flex-col space-y-2">
-                                ${Object.entries(fonts).map(([key, f]) => `
-                                    <button data-control="activeFont" data-value="${key}" style="font-family: ${f.family}" class="p-2 rounded-lg border-2 text-sm ${state.activeFont === key ? 'border-indigo-500 bg-indigo-50 font-semibold' : 'border-gray-200 hover:border-gray-300'}">${f.name}</button>
-                                `).join('')}
-                            </div>
-                        </div>
-                        <div class="lg:col-span-3">
-                            <h4 class="font-semibold mb-2">Couleur d'accent</h4>
+                         <div class="md:col-span-2">
+                            <h4 class="font-semibold mb-2 text-gray-700">Couleur d'accent</h4>
                             <div class="flex gap-3 flex-wrap">
                                 ${Object.entries(colors).map(([key, c]) => `
                                     <div class="tooltip">
-                                        <button data-control="activeColor" data-value="${key}" class="w-10 h-10 rounded-full border-4 transition-all ${state.activeColor === key ? 'border-indigo-500 scale-110' : 'border-transparent'}" style="background-color: ${c.primary}"></button>
+                                        <button data-control="activeColor" data-value="${key}" class="w-10 h-10 rounded-full border-4 transition-all ${state.activeColor === key ? 'border-indigo-500 scale-110' : 'border-transparent hover:border-gray-300'}" style="background-color: ${c.primary}"></button>
                                         <span class="tooltip-text">${key.charAt(0).toUpperCase() + key.slice(1)}</span>
                                     </div>
                                 `).join('')}
                             </div>
+                        </div>
+                        <div class="md:col-span-2">
+                            <h4 class="font-semibold mb-2 text-gray-700">Police</h4>
+                            <div class="grid grid-cols-3 gap-2">
+                                ${Object.entries(fonts).map(([key, f]) => `
+                                    <button data-control="activeFont" data-value="${key}" style="font-family: ${f.family}" class="p-2 rounded-lg border-2 text-sm transition-all ${state.activeFont === key ? 'border-indigo-500 bg-indigo-50 font-semibold' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}">${f.name}</button>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-8">
+                           <div>
+                                <h4 class="font-semibold mb-2 text-gray-700">Photo de profil</h4>
+                                <div class="flex items-center gap-2">
+                                    <input type="file" id="photo-upload" class="hidden" accept="image/*">
+                                    <label for="photo-upload" class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-2 cursor-pointer"><i data-lucide="upload-cloud"></i> Charger</label>
+                                    <button id="remove-photo" class="p-2 text-red-500 hover:bg-red-100 rounded-full"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2 text-gray-700">Forme de la photo</h4>
+                                <div class="flex gap-2">
+                                    <button data-control="photoShape" data-value="round" class="p-2 rounded-lg border-2 ${state.photoShape === 'round' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="circle" class="w-5 h-5"></i></button>
+                                    <button data-control="photoShape" data-value="square" class="p-2 rounded-lg border-2 ${state.photoShape === 'square' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="square" class="w-5 h-5"></i></button>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2 text-gray-700">Style des titres</h4>
+                                <div class="flex gap-2">
+                                    <button data-control="sectionTitleStyle" data-value="border" class="p-2 rounded-lg border-2 ${state.sectionTitleStyle === 'border' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}">Bordure</button>
+                                    <button data-control="sectionTitleStyle" data-value="background" class="p-2 rounded-lg border-2 ${state.sectionTitleStyle === 'background' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}">Fond</button>
+                                    <button data-control="sectionTitleStyle" data-value="simple" class="p-2 rounded-lg border-2 ${state.sectionTitleStyle === 'simple' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}">Simple</button>
+                                </div>
+                            </div>
+                             <div>
+                                <h4 class="font-semibold mb-2 text-gray-700">Affichage compétences</h4>
+                                <div class="flex gap-2">
+                                    <button data-control="skillDisplayStyle" data-value="bars" class="p-2 rounded-lg border-2 ${state.skillDisplayStyle === 'bars' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="bar-chart-horizontal" class="w-5 h-5"></i></button>
+                                    <button data-control="skillDisplayStyle" data-value="stars" class="p-2 rounded-lg border-2 ${state.skillDisplayStyle === 'stars' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="star" class="w-5 h-5"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="md:col-span-2 space-y-4">
+                           <h4 class="font-semibold text-gray-700 -mb-2">Tailles & Espacements</h4>
+                           ${renderSlider('Taille police (base)', state.baseFontSize, 'baseFontSize', 8, 14, 0.5)}
+                           ${renderSlider('Taille du nom', state.nameFontSize, 'nameFontSize', 20, 40, 1)}
+                           ${renderSlider('Taille titres sections', state.sectionTitleFontSize, 'sectionTitleFontSize', 10, 18, 0.5)}
+                           ${renderSlider('Hauteur de ligne', state.lineHeight, 'lineHeight', 1.2, 2.0, 0.1)}
+                           ${renderSlider('Marge de page (rem)', state.pagePadding, 'pagePadding', 0.5, 2.5, 0.1)}
+                           ${renderSlider('Espace sections (rem)', state.sectionSpacing, 'sectionSpacing', 0.5, 2.5, 0.1)}
+                           ${renderSlider('Espace items (rem)', state.itemSpacing, 'itemSpacing', 0.5, 2.0, 0.1)}
                         </div>
                     </div>
                 `, true, 'design')}
                 ${renderAccordion('Organisation & Options', 'settings', `
                     <h4 class="font-semibold mb-3">Organisation des sections</h4>
                     ${state.activeLayout === 'two' ? renderTwoColumnLayoutEditor() : renderSingleColumnLayoutEditor()}
+                    <div class="mt-6">
+                        <h4 class="font-semibold mb-2 text-gray-700">Options diverses</h4>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <label for="show-vcard-qr" class="text-sm font-medium text-gray-800">Afficher le QR Code vCard</label>
+                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" id="show-vcard-qr" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" ${state.showVCardQR ? 'checked' : ''}/>
+                                <label for="show-vcard-qr" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                            </div>
+                            <style>.toggle-checkbox:checked { right: 0; border-color: #4f46e5; } .toggle-checkbox:checked + .toggle-label { background-color: #4f46e5; }</style>
+                        </div>
+                    </div>
                 `, false, 'organization')}
             `;
         }
@@ -707,19 +796,29 @@
         function renderTwoColumnLayoutEditor() {
             return `
                 <div class="space-y-4">
-                    <button id="invert-columns" class="w-full px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 flex items-center justify-center gap-2 transition-colors"><i data-lucide="arrow-left-right" class="w-4 h-4"></i> Inverser les colonnes</button>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <h4 class="font-semibold mb-2 text-center">Colonne Gauche</h4>
+                            <h4 class="font-semibold mb-2 text-center text-gray-600">Colonne Gauche</h4>
                             <div class="p-2 space-y-2 bg-gray-50 rounded-lg min-h-[200px] border-2 border-dashed drop-zone" data-column="left">
                                 ${state.columnAssignment.left.map(id => renderDraggableBlock(id, 'left')).join('')}
                             </div>
                         </div>
                         <div>
-                            <h4 class="font-semibold mb-2 text-center">Colonne Droite</h4>
+                            <h4 class="font-semibold mb-2 text-center text-gray-600">Colonne Droite</h4>
                             <div class="p-2 space-y-2 bg-gray-50 rounded-lg min-h-[200px] border-2 border-dashed drop-zone" data-column="right">
                                 ${state.columnAssignment.right.map(id => renderDraggableBlock(id, 'right')).join('')}
                             </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 items-center">
+                        <button id="invert-columns" class="w-full px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 flex items-center justify-center gap-2 transition-colors"><i data-lucide="arrow-left-right" class="w-4 h-4"></i> Inverser</button>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-1">Ratio des colonnes</label>
+                             <select id="column-ratio" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                                <option value="large-right" ${state.columnRatio === 'large-right' ? 'selected' : ''}>Gauche fine / Droite large</option>
+                                <option value="equal" ${state.columnRatio === 'equal' ? 'selected' : ''}>Égales</option>
+                                <option value="large-left" ${state.columnRatio === 'large-left' ? 'selected' : ''}>Gauche large / Droite fine</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -730,6 +829,7 @@
         
         function attachEventListeners() {
             // Header controls
+            document.getElementById('randomize-design')?.addEventListener('click', handleRandomizeDesign);
             document.getElementById('toggle-anonymize')?.addEventListener('click', () => setState({ isAnonymized: !state.isAnonymized }));
             document.getElementById('toggle-preview-mode')?.addEventListener('click', () => setState({ previewMode: !state.previewMode }));
             document.getElementById('generate-pdf')?.addEventListener('click', generatePDF);
@@ -744,7 +844,13 @@
             document.querySelectorAll('input[data-path], textarea[data-path], select[data-path]').forEach(input => {
                 input.addEventListener('input', handleInputChange);
             });
+            document.getElementById('column-ratio')?.addEventListener('change', (e) => setState({ columnRatio: e.target.value }));
+            document.getElementById('show-vcard-qr')?.addEventListener('change', (e) => setState({ showVCardQR: e.target.checked }));
             
+            // Photo upload
+            document.getElementById('photo-upload')?.addEventListener('change', handlePhotoChange);
+            document.getElementById('remove-photo')?.addEventListener('click', () => setState({ photo: null }));
+
             // Editor buttons (add/remove items, etc.)
             document.querySelectorAll('.add-list-item').forEach(btn => btn.addEventListener('click', handleAddListItem));
             document.querySelectorAll('.remove-list-item').forEach(btn => btn.addEventListener('click', handleRemoveListItem));
@@ -904,12 +1010,43 @@
             }
             return state.visibility[section];
         }
+        
+        function handlePhotoChange(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    setState({ photo: event.target.result });
+                }
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        }
+        
+        function handleRandomizeDesign() {
+            const randomChoice = (arr) => arr[Math.floor(Math.random() * arr.length)];
+            
+            const randomTemplate = randomChoice(Object.keys(templates));
+            const randomColor = randomChoice(Object.keys(colors));
+            const randomFont = randomChoice(Object.keys(fonts));
+            const randomLayout = randomChoice(Object.keys(layouts));
+            const randomTitleStyle = randomChoice(['border', 'background', 'simple']);
+            const randomSkillStyle = randomChoice(['bars', 'stars']);
+            
+            setState({
+                activeTemplate: randomTemplate,
+                activeColor: randomColor,
+                activeFont: randomFont,
+                activeLayout: randomLayout,
+                sectionTitleStyle: randomTitleStyle,
+                skillDisplayStyle: randomSkillStyle,
+            });
+        }
 
         async function generatePDF() {
             const element = document.getElementById('cv-preview-container');
             if (!element || state.isDownloadingPdf) return;
             
-            setState({ isDownloadingPdf: true });
+            setState({ isDownloadingPdf: true }, false); // Don't re-render yet
+            renderApp(); // Manually re-render to show disabled button
 
             const originalScale = element.style.transform;
             element.style.transform = 'scale(1)';
@@ -917,7 +1054,7 @@
             try {
                 const opt = {
                     margin: 0,
-                    filename: state.isAnonymized ? 'cv_anonyme.pdf' : `CV_${state.cvData.personal.firstName}${state.cvData.personal.lastName}.pdf`,
+                    filename: state.isAnonymized ? 'cv_anonyme.pdf' : `CV_${state.cvData.personal.firstName}_${state.cvData.personal.lastName}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
                     html2canvas: { scale: 3, useCORS: true, letterRendering: true, scrollY: -window.scrollY },
                     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
@@ -956,23 +1093,26 @@
         
         // --- INITIALIZATION ---
         function init() {
-            // Load data from localStorage or use initial data
-            const savedCvData = localStorage.getItem('cvData_v2');
-            
-            const cvData = savedCvData ? JSON.parse(savedCvData) : initialCvData;
+            const savedState = localStorage.getItem('cvState_v3');
+            let cvData = initialCvData;
+            let loadedState = {};
+            if (savedState) {
+                loadedState = JSON.parse(savedState);
+                cvData = loadedState.cvData || initialCvData;
+            }
             
             const initialVisibility = {
                 personal: true,
-                experiences: cvData.experiences.reduce((acc, exp) => ({ ...acc, [exp.id]: true }), {}),
-                projects: (cvData.projects || []).reduce((acc, p) => ({ ...acc, [p.id]: true }), {}),
-                education: cvData.education.reduce((acc, edu) => ({ ...acc, [edu.id]: true }), {}),
-                awards: (cvData.awards || []).reduce((acc, a) => ({ ...acc, [a.id]: true }), {}),
+                experiences: Object.keys(cvData.experiences.reduce((acc, exp) => ({ ...acc, [exp.id]: true }), {})).length > 0 ? cvData.experiences.reduce((acc, exp) => ({ ...acc, [exp.id]: true }), {}) : {},
+                projects: Object.keys((cvData.projects || []).reduce((acc, p) => ({ ...acc, [p.id]: true }), {})).length > 0 ? (cvData.projects || []).reduce((acc, p) => ({ ...acc, [p.id]: true }), {}) : {},
+                education: Object.keys(cvData.education.reduce((acc, edu) => ({ ...acc, [edu.id]: true }), {})).length > 0 ? cvData.education.reduce((acc, edu) => ({ ...acc, [edu.id]: true }), {}) : {},
+                awards: Object.keys((cvData.awards || []).reduce((acc, a) => ({ ...acc, [a.id]: true }), {})).length > 0 ? (cvData.awards || []).reduce((acc, a) => ({ ...acc, [a.id]: true }), {}) : {},
                 skills: true,
                 languages: true,
                 hobbies: true,
             };
 
-            state = {
+            const defaultState = {
                 cvData,
                 activeTemplate: 'modern',
                 activeColor: 'indigo',
@@ -983,11 +1123,11 @@
                 previewMode: false,
                 isAnonymized: false,
                 isDownloadingPdf: false,
-                showVCardQR: false, // Set to true to show QR code by default
-                photo: null, // No photo by default
+                showVCardQR: false,
+                photo: null,
                 photoShape: 'round',
                 sectionTitleStyle: 'border',
-                previewScale: 0.8,
+                previewScale: 0.7,
                 baseFontSize: 10,
                 nameFontSize: 28,
                 sectionTitleFontSize: 14,
@@ -1008,6 +1148,8 @@
                     design: true
                 }
             };
+            
+            state = { ...defaultState, ...loadedState, visibility: loadedState.visibility || initialVisibility };
 
             renderApp();
         }
