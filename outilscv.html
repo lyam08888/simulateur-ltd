@@ -16,9 +16,10 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- PDF & QR Code Libraries -->
+    <!-- PDF & QR Code & Chart Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         /* Custom styles */
@@ -198,9 +199,15 @@
         const hobbyIcons = ['code', 'book-open', 'camera', 'music', 'plane', 'dumbbell', 'paintbrush', 'heart', 'star', 'lightbulb', 'compass'];
         const socialIcons = { linkedin: 'linkedin', github: 'github', twitter: 'twitter', globe: 'globe', default: 'link' };
         const sectionIcons = ['briefcase', 'projector', 'graduation-cap', 'award', 'zap', 'globe', 'heart', 'user-check', 'star', 'link'];
+        const iconPacks = {
+            professional: { name: 'Professionnel', icons: { socials: 'link', experiences: 'briefcase', projects: 'projector', education: 'graduation-cap', awards: 'award', skills: 'zap', languages: 'globe', hobbies: 'coffee' } },
+            creative: { name: 'Créatif', icons: { socials: 'share-2', experiences: 'feather', projects: 'wand', education: 'book-open', awards: 'sparkles', skills: 'palette', languages: 'message-circle', hobbies: 'music' } },
+            minimalist: { name: 'Minimaliste', icons: { socials: 'arrow-up-right', experiences: 'square', projects: 'triangle', education: 'circle', awards: 'star', skills: 'bar-chart-2', languages: 'chevron-right', hobbies: 'more-horizontal' } }
+        };
 
         // --- STATE MANAGEMENT ---
         let state = {};
+        let chartInstance = null;
 
         function setState(newState, render = true) {
             state = { ...state, ...newState };
@@ -208,7 +215,7 @@
             try {
                 const stateToSave = { ...state };
                 delete stateToSave.photo;
-                localStorage.setItem('cvState_v5', JSON.stringify(stateToSave));
+                localStorage.setItem('cvState_v6', JSON.stringify(stateToSave));
             } catch (error) {
                 console.error("Could not save data:", error);
             }
@@ -239,6 +246,7 @@
             attachEventListeners();
             lucide.createIcons();
             generateVCardQR();
+            renderSkillChart();
         }
 
         function renderHeaderControls() {
@@ -251,6 +259,12 @@
                                 <i data-lucide="sparkles" class="w-4 h-4"></i>
                             </button>
                             <span class="tooltip-text">Design Aléatoire</span>
+                        </div>
+                        <div class="tooltip">
+                            <button id="share-cv" class="p-2 rounded-lg transition-colors bg-blue-100 text-blue-700 hover:bg-blue-200">
+                                <i data-lucide="share-2" class="w-4 h-4"></i>
+                            </button>
+                            <span class="tooltip-text">Partager le CV</span>
                         </div>
                         <div class="tooltip">
                             <button id="toggle-anonymize" class="p-2 rounded-lg transition-colors ${state.isAnonymized ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'}">
@@ -287,9 +301,6 @@
         // --- CV Rendering ---
 
         function renderCV() {
-            // This is a simplified multi-page simulation for the live preview.
-            // The actual PDF generation will handle page breaks more accurately.
-            // For now, we render everything in one continuous block.
             const { cvData, activeTemplate, activeFont, backgroundColor, pagePadding, baseFontSize, lineHeight, activePalette, watermarkText, watermarkOpacity } = state;
             const currentPalette = palettes[activePalette] || state.customPalette;
 
@@ -349,9 +360,9 @@
                     <div class="cv-page relative" style="--primary-color: ${currentPalette.primary};">
                         <div id="cv-preview" class="text-gray-800 template-${activeTemplate}" style="font-family: ${fonts[activeFont].family}; background-color: ${backgroundColor}; box-sizing: border-box; width: 100%; height: 100%;">
                             <div class="h-full w-full flex flex-col" style="font-size: ${baseFontSize}pt; line-height: ${lineHeight};">
-                                <header class="p-4" style="padding: ${pagePadding}rem; padding-bottom: 0;">${state.headerText.replace('{page}', '1')}</header>
+                                <header class="p-4 text-xs text-gray-500" style="padding: ${pagePadding}rem; padding-bottom: 0;">${state.headerText.replace('{page}', '1')}</header>
                                 <div class="flex-grow" style="padding: ${pagePadding}rem; paddingTop: 0; padding-bottom: 0;">${cvContent}</div>
-                                <footer class="p-4" style="padding: ${pagePadding}rem; padding-top: 0;">${state.footerText.replace('{page}', '1')}</footer>
+                                <footer class="p-4 text-xs text-gray-500 text-center" style="padding: ${pagePadding}rem; padding-top: 0;">${state.footerText.replace('{page}', '1')}</footer>
                             </div>
                         </div>
                         ${watermarkText ? `<div class="watermark" style="opacity: ${watermarkOpacity};">${watermarkText}</div>` : ''}
@@ -538,6 +549,9 @@
 
         function renderSkills() {
             const { cvData, itemSpacing, skillDisplayStyle, activePalette } = state;
+            if (skillDisplayStyle === 'radar') {
+                return renderSection('Compétences', '<div class="w-full max-w-md mx-auto"><canvas id="skill-chart"></canvas></div>', state.sectionIcons.skills);
+            }
             const currentPalette = palettes[activePalette] || state.customPalette;
             const groupedSkills = cvData.skills.reduce((acc, skill) => {
                 const category = skill.category || 'Autres';
@@ -680,6 +694,7 @@
 
         function renderEditor() {
             return `
+                ${renderCvScore()}
                 ${renderAccordion('Contenu du CV', 'edit-3', `
                     ${renderAccordion('Informations Personnelles', 'user', `
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -846,6 +861,7 @@
                             <div class="flex gap-2">
                                 <button data-control="skillDisplayStyle" data-value="bars" class="p-2 rounded-lg border-2 ${state.skillDisplayStyle === 'bars' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="bar-chart-horizontal" class="w-5 h-5"></i></button>
                                 <button data-control="skillDisplayStyle" data-value="stars" class="p-2 rounded-lg border-2 ${state.skillDisplayStyle === 'stars' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="star" class="w-5 h-5"></i></button>
+                                <button data-control="skillDisplayStyle" data-value="radar" class="p-2 rounded-lg border-2 ${state.skillDisplayStyle === 'radar' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="radar" class="w-5 h-5"></i></button>
                             </div>
                         </div>
                         <div class="sm:col-span-2">
@@ -863,17 +879,11 @@
                             </div>
                         </div>
                         <div class="sm:col-span-2">
-                            <h4 class="font-semibold mb-2 text-gray-700">Icônes des sections</h4>
-                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                                ${Object.keys(state.sectionIcons).map(sectionKey => `
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-600 mb-1">${sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1)}</label>
-                                        <select data-path="sectionIcons.${sectionKey}" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                                            ${sectionIcons.map(icon => `<option value="${icon}" ${state.sectionIcons[sectionKey] === icon ? 'selected' : ''}>${icon}</option>`).join('')}
-                                        </select>
-                                    </div>
-                                `).join('')}
-                            </div>
+                            <h4 class="font-semibold mb-2 text-gray-700">Pack d'icônes</h4>
+                             <select id="icon-pack-selector" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                <option value="custom" ${state.activeIconPack === 'custom' ? 'selected' : ''}>Personnalisé</option>
+                                ${Object.entries(iconPacks).map(([key, pack]) => `<option value="${key}" ${state.activeIconPack === key ? 'selected' : ''}>${pack.name}</option>`).join('')}
+                            </select>
                         </div>
                     </div>
                 `, false, 'designDetails')}
@@ -929,6 +939,16 @@
                         <textarea id="one-click-apply-output" rows="8" class="w-full p-2 bg-gray-100 border rounded-lg text-xs" readonly>${generateOneClickApplyText()}</textarea>
                     </div>
                     <div class="mt-6">
+                        <h4 class="font-semibold mb-2 text-gray-700">Historique des Versions</h4>
+                        <div class="flex gap-2 mb-2">
+                           <input type="text" id="snapshot-name" placeholder="Nom de la version" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                           <button id="save-snapshot" class="px-4 py-2 bg-green-100 text-green-800 rounded-lg hover:bg-green-200 text-sm">Sauver</button>
+                        </div>
+                        <div id="snapshots-list" class="space-y-1">
+                           ${renderSnapshots()}
+                        </div>
+                    </div>
+                    <div class="mt-6">
                         <h4 class="font-semibold mb-2 text-gray-700">Gestion des données</h4>
                         <div class="flex gap-2">
                             <button id="import-data" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 text-sm flex items-center gap-2"><i data-lucide="upload"></i> Importer JSON</button>
@@ -940,6 +960,36 @@
             `;
         }
         
+        function renderCvScore() {
+            const score = calculateCvScore();
+            const color = score < 40 ? 'bg-red-500' : score < 80 ? 'bg-yellow-500' : 'bg-green-500';
+            return `
+                <div class="mb-4">
+                    <h4 class="font-semibold text-gray-700">Score du CV</h4>
+                    <div class="w-full bg-gray-200 rounded-full h-4 mt-2">
+                        <div class="${color} h-4 rounded-full text-white text-xs flex items-center justify-center" style="width: ${score}%">
+                            ${score}%
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderSnapshots() {
+            return state.snapshots.map(snapshot => `
+                <div class="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+                    <div>
+                        <p class="font-medium text-sm">${snapshot.name}</p>
+                        <p class="text-xs text-gray-500">${new Date(snapshot.date).toLocaleString()}</p>
+                    </div>
+                    <div class="flex gap-1">
+                        <button class="load-snapshot p-2 hover:bg-gray-200 rounded-full" data-id="${snapshot.id}"><i data-lucide="download-cloud" class="w-4 h-4 text-blue-600"></i></button>
+                        <button class="delete-snapshot p-2 hover:bg-gray-200 rounded-full" data-id="${snapshot.id}"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
         function renderCvAdvisor() {
             const { cvData, jobDescription } = state;
             const advice = [];
@@ -1049,6 +1099,7 @@
         function attachEventListeners() {
             // Header controls
             document.getElementById('randomize-design')?.addEventListener('click', handleRandomizeDesign);
+            document.getElementById('share-cv')?.addEventListener('click', handleShare);
             document.getElementById('toggle-anonymize')?.addEventListener('click', () => setState({ isAnonymized: !state.isAnonymized }));
             document.getElementById('toggle-preview-mode')?.addEventListener('click', () => setState({ previewMode: !state.previewMode }));
             document.getElementById('generate-pdf')?.addEventListener('click', generatePDF);
@@ -1102,6 +1153,9 @@
             document.getElementById('import-data')?.addEventListener('click', () => document.getElementById('import-file').click());
             document.getElementById('import-file')?.addEventListener('change', handleImportData);
             document.getElementById('export-data')?.addEventListener('click', handleExportData);
+            document.getElementById('save-snapshot')?.addEventListener('click', handleSaveSnapshot);
+            document.querySelectorAll('.load-snapshot').forEach(btn => btn.addEventListener('click', handleLoadSnapshot));
+            document.querySelectorAll('.delete-snapshot').forEach(btn => btn.addEventListener('click', handleDeleteSnapshot));
 
             // Design controls
             document.querySelectorAll('button[data-control]').forEach(btn => {
@@ -1111,6 +1165,7 @@
                     setState({ [control]: value });
                 });
             });
+            document.getElementById('icon-pack-selector')?.addEventListener('change', handleIconPackChange);
 
             // Accordions
             document.querySelectorAll('.accordion-toggle').forEach(btn => {
@@ -1442,9 +1497,139 @@
             event.target.value = ''; // Reset file input
         }
 
+        function handleSaveSnapshot() {
+            const nameInput = document.getElementById('snapshot-name');
+            const name = nameInput.value.trim() || `Version du ${new Date().toLocaleDateString()}`;
+            const newSnapshot = {
+                id: Date.now(),
+                name: name,
+                date: new Date().toISOString(),
+                state: { ...state }
+            };
+            setState({ snapshots: [...state.snapshots, newSnapshot] });
+            nameInput.value = '';
+        }
+
+        function handleLoadSnapshot(e) {
+            const id = parseInt(e.currentTarget.dataset.id, 10);
+            const snapshot = state.snapshots.find(s => s.id === id);
+            if (snapshot && confirm(`Voulez-vous charger la version "${snapshot.name}" ? Les modifications non sauvegardées seront perdues.`)) {
+                setState(snapshot.state);
+            }
+        }
+
+        function handleDeleteSnapshot(e) {
+            const id = parseInt(e.currentTarget.dataset.id, 10);
+            if (confirm('Voulez-vous vraiment supprimer cette version ?')) {
+                setState({ snapshots: state.snapshots.filter(s => s.id !== id) });
+            }
+        }
+
+        function handleIconPackChange(e) {
+            const packName = e.target.value;
+            if (packName === 'custom') {
+                setState({ activeIconPack: 'custom' });
+            } else {
+                setState({ activeIconPack: packName, sectionIcons: { ...iconPacks[packName].icons } });
+            }
+        }
+
+        function handleShare() {
+            const data = btoa(JSON.stringify(state));
+            const url = `${window.location.href.split('?')[0]}?data=${data}`;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Lien de partage copié dans le presse-papiers !');
+            }, () => {
+                alert('Erreur lors de la copie du lien.');
+            });
+        }
+
+        function calculateCvScore() {
+            let score = 0;
+            const weights = {
+                personal: 20,
+                summary: 15,
+                experiences: 25,
+                skills: 15,
+                education: 10,
+                socials: 5,
+                photo: 10
+            };
+            if (state.cvData.personal.firstName && state.cvData.personal.lastName && state.cvData.personal.title && state.cvData.personal.email) score += weights.personal;
+            if (state.cvData.personal.summary.length > 50) score += weights.summary;
+            if (state.cvData.experiences.length > 0) score += weights.experiences;
+            if (state.cvData.skills.length > 2) score += weights.skills;
+            if (state.cvData.education.length > 0) score += weights.education;
+            if (state.cvData.socials.length > 0) score += weights.socials;
+            if (state.photo) score += weights.photo;
+            return Math.round(score);
+        }
+
+        function renderSkillChart() {
+            const ctx = document.getElementById('skill-chart');
+            if (!ctx) return;
+
+            const { skills } = state.cvData;
+            const currentPalette = palettes[state.activePalette] || state.customPalette;
+
+            const labels = skills.map(s => s.name);
+            const data = skills.map(s => s.level);
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Niveau de Compétence',
+                        data: data,
+                        backgroundColor: `${currentPalette.primary}33`, // with opacity
+                        borderColor: currentPalette.primary,
+                        borderWidth: 2,
+                        pointBackgroundColor: currentPalette.primary,
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: currentPalette.primary
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: '#e5e7eb'
+                            },
+                            grid: {
+                                color: '#e5e7eb'
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 12
+                                },
+                                color: '#374151'
+                            },
+                            ticks: {
+                                beginAtZero: true,
+                                max: 5,
+                                stepSize: 1,
+                                backdropColor: 'rgba(255, 255, 255, 0.75)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
         // --- INITIALIZATION ---
         function init() {
-            const savedState = localStorage.getItem('cvState_v5');
+            const savedState = localStorage.getItem('cvState_v6');
             let cvData = initialCvData;
             let loadedState = {};
             if (savedState) {
@@ -1453,7 +1638,7 @@
                     cvData = loadedState.cvData || initialCvData;
                 } catch(e) {
                     console.error("Could not parse saved state, using defaults.", e);
-                    localStorage.removeItem('cvState_v5');
+                    localStorage.removeItem('cvState_v6');
                 }
             }
             
@@ -1505,6 +1690,7 @@
                 sectionIcons: {
                     socials: 'link', experiences: 'briefcase', projects: 'projector', education: 'graduation-cap', awards: 'award', skills: 'zap', languages: 'globe', hobbies: 'heart'
                 },
+                activeIconPack: 'custom',
                 blockOrder: ['socials', 'experiences', 'projects', 'education', 'awards', 'skills', 'languages', 'hobbies', ...(cvData.customSections || []).map(s => `custom-${s.id}`)],
                 columnAssignment: {
                     left: ['personal', 'skills', 'languages', 'hobbies'],
@@ -1523,12 +1709,24 @@
                 textTransform: 'uppercase',
                 dividerStyle: 'none',
                 showMarginGuides: false,
-                jobDescription: ''
+                jobDescription: '',
+                snapshots: []
             };
             
             let finalState = { ...defaultState, ...loadedState };
             finalState.visibility = loadedState.visibility || initialVisibility;
             finalState.cvData = loadedState.cvData || cvData;
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const dataParam = urlParams.get('data');
+            if (dataParam) {
+                try {
+                    const sharedState = JSON.parse(atob(dataParam));
+                    finalState = { ...finalState, ...sharedState };
+                } catch (e) {
+                    console.error("Failed to parse shared state from URL", e);
+                }
+            }
             
             setState(finalState, true);
         }
