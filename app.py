@@ -36,5 +36,9 @@ def ask_gemini():
     response = model.generate_content(prompt)
     return jsonify({"response": response.text})
 
+import os
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  # Render fournit le port via la variable d’environnement PORT
+    app.run(host="0.0.0.0", port=port)
+
