@@ -21,7 +21,7 @@
             transition: opacity 0.5s ease-in-out;
         }
         #cv-preview {
-            padding: 18mm 15mm;
+            padding: 20mm;
         }
         .hidden-initially {
             display: none;
@@ -39,23 +39,6 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
-        }
-        /* Styles pour le template du CV */
-        .cv-section-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #1e40af; /* blue-800 */
-            border-bottom: 2px solid #93c5fd; /* blue-300 */
-            padding-bottom: 0.25rem;
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .cv-icon {
-            width: 1.2rem;
-            height: 1.2rem;
-            stroke-width: 2;
         }
     </style>
 </head>
@@ -165,7 +148,7 @@
 
                 // --- Étape 2: Structurer le texte brut avec l'API Gemini ---
                 notify("Étape 2/2 : Mise en page professionnelle du CV...", 'info');
-                const structuringPrompt = `Analyse le texte de CV suivant et transforme-le en un objet JSON valide. Le JSON doit avoir cette structure exacte : {"name": "string", "title": "string", "contact": {"email": "string", "phone": "string", "address": "string", "linkedin": "string (URL complète si présente)"}, "summary": "string", "experience": [{"title": "string", "company": "string", "dates": "string", "description": "string (conserve les sauts de ligne)"}], "education": [{"degree": "string", "school": "string", "dates": "string"}], "skills": ["string"]}. Ne renvoie rien d'autre que l'objet JSON. Voici le texte du CV : \n\n${originalRawText}`;
+                const structuringPrompt = `Analyse le texte de CV suivant et transforme-le en un objet JSON valide. La réponse DOIT être UNIQUEMENT l'objet JSON, sans aucun texte explicatif avant ou après. La structure JSON doit être la suivante : {"name": "string", "title": "string", "contact": {"email": "string", "phone": "string", "address": "string", "linkedin": "string"}, "summary": "string", "experience": [{"title": "string", "company": "string", "dates": "string", "description": "string"}], "education": [{"degree": "string", "school": "string", "dates": "string"}], "skills": ["string"]}. Si une information n'est pas trouvée dans le texte (par exemple, pas de LinkedIn ou pas de compétences), utilise une chaîne de caractères vide ("") pour les champs de type string, ou un tableau vide ([]) pour les champs de type array. Le plus important est que la structure JSON soit toujours valide et complète. Voici le texte à analyser : \n\n${originalRawText}`;
                 
                 const chatHistory = [{ role: "user", parts: [{ text: structuringPrompt }] }];
                 const payload = { contents: chatHistory };
@@ -181,20 +164,27 @@
                 
                 const result = await structuredResponse.json();
                 if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
-                    let jsonString = result.candidates[0].content.parts[0].text;
-                    jsonString = jsonString.replace(/```json/g, '').replace(/```/g, '').trim();
-                    const cvData = JSON.parse(jsonString);
-                    renderProfessionalCV(cvData);
-                    notify("CV professionnel généré avec succès !", 'success');
+                    const textResponse = result.candidates[0].content.parts[0].text;
+                    // Regex améliorée pour extraire l'objet JSON de la réponse
+                    const jsonMatch = textResponse.match(/\{[\s\S]*\}/);
+                    if (jsonMatch && jsonMatch[0]) {
+                        const jsonString = jsonMatch[0];
+                        const cvData = JSON.parse(jsonString);
+                        renderProfessionalCV(cvData);
+                        notify("CV professionnel généré avec succès !", 'success');
+                    } else {
+                         throw new Error("Impossible d'extraire un objet JSON de la réponse de l'API de structuration.");
+                    }
                 } else {
                     throw new Error("La réponse de l'API de structuration est malformée.");
                 }
 
             } catch (err) {
                 console.error("Erreur lors de la génération du CV:", err);
-                notify(`Une erreur est survenue: ${err.message}`, 'error');
-                // En cas d'erreur, afficher le texte brut pour ne pas bloquer l'utilisateur
-                if(originalRawText) renderCVAsFallback(originalRawText);
+                notify(`La mise en page pro a échoué. Affichage du texte brut. (${err.message})`, 'error');
+                if(originalRawText) {
+                    renderCVAsFallback(originalRawText);
+                }
             } finally {
                 setLoadingState(false);
             }
@@ -204,84 +194,84 @@
             cvFileName = `CV_${(data.name || 'Candidat').replace(/\s+/g, '_')}.pdf`;
             const { name, title, contact, summary, experience, education, skills } = data;
 
+            const sidebarSectionTitle = "text-sm font-bold text-blue-800 uppercase tracking-wider mb-3";
+            const mainSectionTitle = "text-xl font-bold text-gray-800 tracking-tight mb-4";
+            
             const contactHTML = `
-                <div class="flex flex-col items-center text-center text-sm text-gray-600 space-y-1">
-                    ${contact.phone ? `<div>${contact.phone}</div>` : ''}
-                    ${contact.email ? `<div>${contact.email}</div>` : ''}
-                    ${contact.address ? `<div>${contact.address}</div>` : ''}
-                    ${contact.linkedin ? `<div><a href="${contact.linkedin}" class="text-blue-600 hover:underline">Profil LinkedIn</a></div>` : ''}
-                </div>`;
+                <section class="mb-8">
+                    <h2 class="${sidebarSectionTitle}">Contact</h2>
+                    <div class="space-y-2 text-xs text-gray-600 break-words">
+                        ${contact.email ? `<div class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg><span>${contact.email}</span></div>` : ''}
+                        ${contact.phone ? `<div class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg><span>${contact.phone}</span></div>` : ''}
+                        ${contact.address ? `<div class="flex items-start gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-1 flex-shrink-0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>${contact.address}</span></div>` : ''}
+                        ${contact.linkedin ? `<div class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg><a href="${contact.linkedin}" class="hover:underline">LinkedIn</a></div>` : ''}
+                    </div>
+                </section>`;
 
+            const skillsHTML = skills && skills.length > 0 ? `
+                <section>
+                    <h2 class="${sidebarSectionTitle}">Compétences</h2>
+                    <ul class="space-y-1 text-xs text-gray-700 list-disc list-inside">
+                        ${skills.map(skill => `<li>${skill}</li>`).join('')}
+                    </ul>
+                </section>` : '';
+            
             const summaryHTML = summary ? `
                 <section class="mb-6">
-                    <h2 class="cv-section-title">
-                        <svg class="cv-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                        Profil
-                    </h2>
+                    <h2 class="${mainSectionTitle} border-b pb-2">Profil</h2>
                     <p class="text-sm text-gray-700 leading-relaxed">${summary}</p>
                 </section>` : '';
 
-            const experienceHTML = experience?.length ? `
+            const experienceHTML = experience && experience.length > 0 ? `
                 <section class="mb-6">
-                    <h2 class="cv-section-title">
-                        <svg class="cv-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L8.6 3.3a2 2 0 0 0-1.7-1H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg>
-                        Expérience Professionnelle
-                    </h2>
-                    <div class="space-y-4">
+                    <h2 class="${mainSectionTitle} border-b pb-2">Expérience Professionnelle</h2>
+                    <div class="space-y-5">
                         ${experience.map(exp => `
                             <div class="text-sm">
-                                <h3 class="font-bold text-gray-800">${exp.title}</h3>
-                                <p class="font-semibold text-gray-600">${exp.company} | <span class="font-normal">${exp.dates}</span></p>
-                                <div class="mt-1 text-gray-700 whitespace-pre-wrap">${exp.description}</div>
+                                <h3 class="font-semibold text-base text-gray-800">${exp.title}</h3>
+                                <p class="font-medium text-gray-600">${exp.company} | <span class="font-normal italic">${exp.dates}</span></p>
+                                <div class="mt-2 pl-4 border-l-2 border-gray-200 text-gray-700 whitespace-pre-wrap">${exp.description}</div>
                             </div>
                         `).join('')}
                     </div>
                 </section>` : '';
 
-            const educationHTML = education?.length ? `
-                <section class="mb-6">
-                    <h2 class="cv-section-title">
-                        <svg class="cv-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m4 6 8-4 8 4-8 4-8-4Z"></path><path d="m12 14 8 4-8 4-8-4Z"></path><path d="M4 14v-4c0 1.5.4 2.9 1.2 4"></path><path d="M20 14v-4c0 1.5-.4 2.9-1.2 4"></path></svg>
-                        Formation
-                    </h2>
-                    <div class="space-y-3">
+            const educationHTML = education && education.length > 0 ? `
+                <section>
+                    <h2 class="${mainSectionTitle} border-b pb-2">Formation</h2>
+                    <div class="space-y-4">
                         ${education.map(edu => `
                              <div class="text-sm">
-                                <h3 class="font-bold text-gray-800">${edu.degree}</h3>
-                                <p class="font-semibold text-gray-600">${edu.school} | <span class="font-normal">${edu.dates}</span></p>
+                                <h3 class="font-semibold text-base text-gray-800">${edu.degree}</h3>
+                                <p class="font-medium text-gray-600">${edu.school} | <span class="font-normal italic">${edu.dates}</span></p>
                             </div>
                         `).join('')}
-                    </div>
-                </section>` : '';
-            
-            const skillsHTML = skills?.length ? `
-                <section>
-                    <h2 class="cv-section-title">
-                       <svg class="cv-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                        Compétences
-                    </h2>
-                    <div class="flex flex-wrap gap-2">
-                        ${skills.map(skill => `<span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">${skill}</span>`).join('')}
                     </div>
                 </section>` : '';
 
             cvPreview.innerHTML = `
-                <header class="text-center mb-6">
-                    <h1 class="text-4xl font-bold text-gray-900 tracking-tight">${name || 'Nom du Candidat'}</h1>
-                    <p class="text-xl font-medium text-blue-700 mt-1">${title || 'Titre du Poste'}</p>
-                    <div class="mt-3">${contactHTML}</div>
-                </header>
-                <main>
-                    ${summaryHTML}
-                    ${experienceHTML}
-                    ${educationHTML}
-                    ${skillsHTML}
-                </main>
+                <div class="grid grid-cols-12 gap-x-10">
+                    <!-- Colonne de gauche (Sidebar) -->
+                    <aside class="col-span-4 pr-6 border-r border-gray-200">
+                        <div class="text-center mb-10">
+                            <h1 class="text-3xl font-bold text-gray-900 tracking-tight">${name || 'Nom Candidat'}</h1>
+                            <p class="text-lg font-medium text-blue-700 mt-1">${title || 'Titre du Poste'}</p>
+                        </div>
+                        ${contactHTML}
+                        ${skillsHTML}
+                    </aside>
+
+                    <!-- Colonne de droite (Contenu principal) -->
+                    <main class="col-span-8">
+                        ${summaryHTML}
+                        ${experienceHTML}
+                        ${educationHTML}
+                    </main>
+                </div>
             `;
             showCvContainer();
         }
         
-        // Fonction de secours si la structuration échoue
         function renderCVAsFallback(textContent) {
             cvPreview.innerHTML = `<div class="p-12 text-gray-800 text-sm leading-relaxed whitespace-pre-wrap">${textContent}</div>`;
             showCvContainer();
