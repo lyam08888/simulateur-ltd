@@ -57,7 +57,7 @@
       resultDiv.innerHTML = "⏳ Génération en cours...";
 
       try {
-        const response = await fetch("https://simulateur-ltd.onrender.com", {
+        const response = await fetch("https://simulateur-ltd.onrender.com/api/gemini", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ prompt })
