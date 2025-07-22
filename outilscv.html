@@ -2,44 +2,50 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Générateur de CV IA – LTD</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Générateur de CV IA</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 2em;
-      background-color: #f9f9f9;
+      padding: 20px;
+      background: #f5f7fa;
     }
     h1 {
-      color: #2c3e50;
+      color: #333;
     }
     textarea {
       width: 100%;
       height: 150px;
-      padding: 1em;
-      font-size: 1em;
+      padding: 10px;
+      font-size: 16px;
     }
     button {
-      margin-top: 1em;
-      padding: 1em 2em;
-      background-color: #2980b9;
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #007bff;
       color: white;
       border: none;
       cursor: pointer;
-      font-size: 1em;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #0056b3;
     }
     #result {
-      margin-top: 2em;
-      white-space: pre-wrap;
+      margin-top: 20px;
       background: #fff;
-      border: 1px solid #ccc;
-      padding: 1em;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
     }
   </style>
 </head>
 <body>
-  <h1>Génère ton CV avec l’IA 🤖</h1>
-  <p>Décris ton parcours, ton expérience ou colle un brouillon de CV :</p>
-  <textarea id="prompt" placeholder="Ex. : Je m’appelle Rania Tlili, diplômée en génie civil, avec une expérience en..."></textarea>
+  <h1>🧠 Générateur de CV avec IA Gemini</h1>
+
+  <label for="prompt">Entrez votre demande (ex : "Écris un CV pour un ingénieur VRD diplômé de l’INSA") :</label>
+  <textarea id="prompt" placeholder="Votre demande ici..."></textarea>
+  <br />
   <button onclick="generateCV()">Générer le CV</button>
 
   <div id="result"></div>
@@ -59,7 +65,9 @@
       try {
         const response = await fetch("https://simulateur-ltd.onrender.com/api/gemini", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({ prompt })
         });
 
@@ -70,8 +78,8 @@
         } else {
           resultDiv.innerHTML = `<span style="color:red;">❌ ${data.error}</span>`;
         }
-      } catch (err) {
-        resultDiv.innerHTML = `<span style="color:red;">Erreur serveur ou réseau.</span>`;
+      } catch (error) {
+        resultDiv.innerHTML = `<span style="color:red;">❌ Erreur serveur ou réseau.</span>`;
       }
     }
   </script>
