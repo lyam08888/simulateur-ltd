@@ -49,20 +49,13 @@
             background-color: white;
             border: 2px solid var(--primary-color, #4f46e5);
         }
-        /* Animation fade-in/out simple */
-        .fade-enter {
-            opacity: 0;
+        /* Animation simple pour le loader */
+        .spin {
+            animation: spin 1s linear infinite;
         }
-        .fade-enter-active {
-            opacity: 1;
-            transition: opacity 300ms;
-        }
-        .fade-exit {
-            opacity: 1;
-        }
-        .fade-exit-active {
-            opacity: 0;
-            transition: opacity 300ms;
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -72,7 +65,6 @@
 
     <script type="text/babel">
         // --- Icon Library (Lucide SVGs) ---
-        // Remplacement de lucide-react par des SVGs en ligne pour fonctionner dans le navigateur
         const LucideIcons = {
             Download: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>,
             Eye: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>,
@@ -84,7 +76,7 @@
             Plus: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>,
             Palette: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.668 0-.92-.722-1.667-1.648-1.667-.926 0-1.648-.746-1.648-1.668 0-.92-.722-1.667-1.648-1.667-.926 0-1.648-.746-1.648-1.668 0-.92-.722-1.667-1.648-1.667A4.318 4.318 0 0 1 6.352 8.5c0-.92-.722-1.667-1.648-1.667S3.056 7.58 3.056 8.5A4.318 4.318 0 0 0 7.352 12.833c0 .92.722 1.667 1.648 1.667.926 0 1.648.746 1.648 1.668 0 .92.722 1.667 1.648 1.667.926 0 1.648.746 1.648 1.668 0 .92.722 1.667 1.648 1.667s1.648-.747 1.648-1.667A4.318 4.318 0 0 0 21.648 12c0-5.5-4.5-10-10-10-1.648 0-2.994.39-4.252 1.05" /></svg>,
             Sparkles: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" /><path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" /></svg>,
-            LoaderCircle: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>,
+            LoaderCircle: (props) => <svg {...props} className="spin" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>,
             ShieldCheck: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" /><path d="m9 12 2 2 4-4" /></svg>,
             CheckCircle: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="m9 11 3 3L22 4" /></svg>,
             Trash2: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" /></svg>,
@@ -203,6 +195,7 @@
             const [injectionNotes, setInjectionNotes] = useState('');
             const [isInjecting, setIsInjecting] = useState(false);
             const [activeEditorTab, setActiveEditorTab] = useState('ia');
+            const [connectionStatus, setConnectionStatus] = useState('pending'); // 'pending', 'testing', 'ok', 'error'
             
             const cvPreviewRef = useRef();
             const cvContentRef = useRef();
@@ -238,6 +231,25 @@
             const hobbyIcons = { Code: LucideIcons.Code, BookOpen: LucideIcons.BookOpen, Plane: LucideIcons.Plane, Star: LucideIcons.Star, Heart: LucideIcons.Heart, default: LucideIcons.Heart };
 
             // --- EFFECTS ---
+            const testBackendConnection = async () => {
+                setConnectionStatus('testing');
+                try {
+                    const response = await fetch('https://simulateur-ltd.onrender.com/');
+                    if (response.ok) {
+                        setConnectionStatus('ok');
+                    } else {
+                        setConnectionStatus('error');
+                    }
+                } catch (error) {
+                    console.error("Connection test failed:", error);
+                    setConnectionStatus('error');
+                }
+            };
+
+            useEffect(() => {
+                testBackendConnection();
+            }, []);
+
             useEffect(() => { try { localStorage.setItem('cvData_v8', JSON.stringify(cvData)); localStorage.setItem('recruiterData_v8', JSON.stringify(recruiterData)); } catch (e) { console.error("Could not save data:", e); } }, [cvData, recruiterData]);
             
             useEffect(() => {
@@ -414,11 +426,10 @@
                     return response.json();
                 } catch (error) {
                     console.error("Erreur de l'API:", error);
-                    // This specific error message often indicates a CORS or network issue.
                     if (error instanceof TypeError && error.message === 'Failed to fetch') {
-                        throw new Error("Impossible de joindre le serveur. Vérifiez votre connexion internet ou la configuration CORS du serveur backend.");
+                        throw new Error("Impossible de joindre le serveur. L'état du serveur est 'Hors ligne'. Vérifiez que le service sur Render est bien démarré.");
                     }
-                    throw error; // Re-throw other errors
+                    throw error;
                 }
             };
 
@@ -580,7 +591,7 @@
                         {activeEditorTab === 'ia' && (
                             <div className="space-y-4">
                                 <TextareaField label="Copiez et collez le contenu de votre CV ici" value={aiInput} onChange={(e) => setAiInput(e.target.value)} placeholder={"Ex: Léa Martin\nDéveloppeuse Full-Stack..."} rows={6} Icon={LucideIcons.FileText} />
-                                <button onClick={handleAiGenerate} disabled={isAiLoading} className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center justify-center gap-2 transition-colors disabled:bg-indigo-300"> {isAiLoading ? <LucideIcons.LoaderCircle size={16} className="animate-spin" /> : <LucideIcons.Sparkles size={16} />} {isAiLoading ? 'Analyse...' : 'Remplir le formulaire'} </button>
+                                <button onClick={handleAiGenerate} disabled={isAiLoading} className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center justify-center gap-2 transition-colors disabled:bg-indigo-300"> {isAiLoading ? <LucideIcons.LoaderCircle size={16} /> : <LucideIcons.Sparkles size={16} />} {isAiLoading ? 'Analyse...' : 'Remplir le formulaire'} </button>
                                 {aiError && <p className="text-red-500 text-sm mt-2">{aiError}</p>}
                             </div>
                         )}
@@ -621,9 +632,20 @@
                     <div className="max-w-screen-2xl mx-auto">
                         <header className="bg-white rounded-xl shadow-md p-4 mb-6 flex flex-wrap justify-between items-center gap-4 sticky top-4 z-20">
                             <h1 className="text-xl font-bold text-gray-800">Créateur de CV Pro</h1>
-                            <div className="flex items-center flex-wrap gap-2">
-                                <button onClick={generatePDF} disabled={isDownloadingPdf} className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center justify-center gap-2 transition-colors disabled:bg-indigo-300 w-[180px]"> {isDownloadingPdf ? <LucideIcons.LoaderCircle size={16} className="animate-spin" /> : <LucideIcons.Download size={16} />} {isDownloadingPdf ? 'Téléchargement...' : 'Télécharger PDF'} </button>
-                                <button onClick={generateWord} disabled={isDownloadingWord} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 transition-colors disabled:bg-blue-300 w-[180px]"> {isDownloadingWord ? <LucideIcons.LoaderCircle size={16} className="animate-spin" /> : <LucideIcons.FileText size={16} />} {isDownloadingWord ? 'Génération...' : 'Télécharger Word'} </button>
+                            <div className="flex items-center flex-wrap gap-x-4 gap-y-2">
+                                <div className="flex items-center gap-2 text-sm">
+                                    <span className="font-medium">État du serveur:</span>
+                                    {connectionStatus === 'ok' && <span className="px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">En ligne</span>}
+                                    {connectionStatus === 'error' && <span className="px-2 py-1 text-xs font-medium text-red-800 bg-red-100 rounded-full">Hors ligne / Erreur</span>}
+                                    {(connectionStatus === 'pending' || connectionStatus === 'testing') && <span className="px-2 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">Vérification...</span>}
+                                    <button onClick={testBackendConnection} className="p-1 rounded-full hover:bg-gray-200" title="Tester la connexion au serveur">
+                                        <LucideIcons.RefreshCcw size={14} className={connectionStatus === 'testing' ? 'spin' : ''} />
+                                    </button>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <button onClick={generatePDF} disabled={isDownloadingPdf} className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center justify-center gap-2 transition-colors disabled:bg-indigo-300 w-44"> {isDownloadingPdf ? <LucideIcons.LoaderCircle size={16} /> : <LucideIcons.Download size={16} />} {isDownloadingPdf ? 'Téléchargement...' : 'Télécharger PDF'} </button>
+                                    <button onClick={generateWord} disabled={isDownloadingWord} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 transition-colors disabled:bg-blue-300 w-44"> {isDownloadingWord ? <LucideIcons.LoaderCircle size={16} /> : <LucideIcons.FileText size={16} />} {isDownloadingWord ? 'Génération...' : 'Télécharger Word'} </button>
+                                </div>
                             </div>
                         </header>
                         <div className={`grid ${previewMode ? 'grid-cols-1' : 'grid-cols-1 xl:grid-cols-[1fr,1.5fr]'} gap-8 items-start`}>
