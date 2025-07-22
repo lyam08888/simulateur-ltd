@@ -25,16 +25,17 @@
         
         .draggable { cursor: grab; user-select: none; position: relative; }
         .dragging { opacity: 0.5; }
-        .drag-over { border-top: 2px dashed #3b82f6; }
         
-        [contenteditable]:focus { outline: 1px dashed #3b82f6; background-color: #eff6ff; }
+        [contenteditable]:focus { outline: 2px solid #3b82f6; background-color: #eff6ff; border-radius: 3px; }
         .delete-section-btn {
-            position: absolute; top: 0; right: 0; background-color: #ef4444; color: white;
+            position: absolute; top: 8px; right: 8px; background-color: #ef4444; color: white;
             border-radius: 9999px; width: 20px; height: 20px; font-size: 12px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; opacity: 0; transition: opacity 0.2s;
+            display: none; align-items: center; justify-content: center;
+            cursor: pointer; transition: opacity 0.2s; z-index: 10;
         }
-        .draggable:hover .delete-section-btn { opacity: 1; }
+        .draggable:hover .delete-section-btn { display: flex; }
+        .photo-upload-area { cursor: pointer; }
+        .photo-upload-area:hover { background-color: #e0e0e0 !important; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-start px-4 py-10">
@@ -42,7 +43,7 @@
     <!-- Section de contrôle principale (visible au début) -->
     <div id="main-controls" class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-8 mb-8 transition-all duration-500">
         <div class="flex items-center justify-center gap-3 mb-2">
-            <svg class="h-10 w-10 text-blue-600" xmlns="http://www.w.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22h6a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h6z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M3 15h6"/><path d="M6 12v6"/><path d="M15 18h-2a2 2 0 0 0-2 2v2H9a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h2"/></svg>
+            <svg class="h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22h6a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h6z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M3 15h6"/><path d="M6 12v6"/><path d="M15 18h-2a2 2 0 0 0-2 2v2H9a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h2"/></svg>
             <h1 class="text-4xl font-bold text-center text-gray-800">Studio CV IA</h1>
         </div>
         <p class="text-center text-gray-500 mb-8">Créez un CV professionnel et moderne en quelques secondes.</p>
@@ -50,7 +51,7 @@
         <textarea id="prompt" placeholder="Exemple : Un CV pour une développeuse web full-stack avec 3 ans d'expérience sur React et Node.js, incluant des projets sur GitHub."
                   class="w-full h-32 border border-gray-300 rounded-lg p-4 mb-4 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"></textarea>
         <button id="generate-btn" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-all duration-300 flex items-center justify-center gap-2 shadow-sm hover:shadow-md text-lg">
-            Générer mon CV
+            Lancer le Studio
         </button>
         <div id="notification" class="mt-4 text-center text-sm min-h-[20px]"></div>
     </div>
@@ -64,20 +65,19 @@
                 <div class="space-y-6">
                     <!-- Actions rapides -->
                     <div>
-                        <h3 class="text-md font-semibold text-gray-600 mb-3">Actions Rapides</h3>
+                        <h3 class="text-md font-semibold text-gray-600 mb-3">Actions IA</h3>
                         <div class="grid grid-cols-2 gap-3">
                             <button id="a4-check-btn" class="bg-purple-600 text-white font-semibold py-2 px-3 rounded-lg hover:bg-purple-700 text-sm">Ajuster pour A4</button>
                             <button id="translate-btn" class="bg-orange-500 text-white font-semibold py-2 px-3 rounded-lg hover:bg-orange-600 text-sm">Traduire (EN/FR)</button>
-                            <button id="anonymize-btn" class="bg-slate-600 text-white font-semibold py-2 px-3 rounded-lg hover:bg-slate-700 text-sm">Anonymiser</button>
-                            <button id="restore-btn" class="bg-gray-500 text-white font-semibold py-2 px-3 rounded-lg hover:bg-gray-600 text-sm">Restaurer</button>
                         </div>
                     </div>
                      <!-- Modèles -->
                     <div>
                         <h3 class="text-md font-semibold text-gray-600 mb-3">Modèles</h3>
-                        <div id="design-templates" class="grid grid-cols-2 gap-3">
-                            <img src="https://placehold.co/150x212/1f2937/dbeafe?text=Prestige" data-index="0" class="cursor-pointer rounded border-2 border-blue-500" alt="Modèle Prestige">
-                            <img src="https://placehold.co/150x212/ffffff/60a5fa?text=Moderne" data-index="1" class="cursor-pointer rounded border-2 border-transparent" alt="Modèle Moderne">
+                        <div id="design-templates" class="grid grid-cols-3 gap-2">
+                            <img src="https://placehold.co/100x141/1f2937/dbeafe?text=Prestige" data-index="0" class="cursor-pointer rounded border-2 border-blue-500" alt="Modèle Prestige">
+                            <img src="https://placehold.co/100x141/ffffff/60a5fa?text=Moderne" data-index="1" class="cursor-pointer rounded border-2 border-transparent" alt="Modèle Moderne">
+                            <img src="https://placehold.co/100x141/4f46e5/c7d2fe?text=Créatif" data-index="2" class="cursor-pointer rounded border-2 border-transparent" alt="Modèle Créatif">
                         </div>
                     </div>
                      <!-- Outils de Style -->
@@ -96,7 +96,11 @@
                      <!-- Gestion des sections -->
                     <div>
                         <h3 class="text-md font-semibold text-gray-600 mb-3">Sections</h3>
-                        <button id="add-section-btn" class="w-full bg-gray-200 text-gray-700 font-semibold py-2 px-3 rounded-lg hover:bg-gray-300 text-sm">Ajouter une section</button>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button id="add-section-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-3 rounded-lg hover:bg-gray-300 text-sm">Ajouter Section</button>
+                            <button id="anonymize-btn" class="bg-slate-600 text-white font-semibold py-2 px-3 rounded-lg hover:bg-slate-700 text-sm">Anonymiser</button>
+                            <button id="restore-btn" class="bg-gray-500 text-white font-semibold py-2 px-3 rounded-lg hover:bg-gray-600 text-sm col-span-2">Restaurer l'Original</button>
+                        </div>
                     </div>
                      <!-- Actions finales -->
                      <div>
@@ -113,6 +117,7 @@
             </div>
         </div>
     </div>
+    <input type="file" id="photo-upload" class="hidden" accept="image/*">
 
     <script>
         // --- DOM Elements ---
@@ -135,22 +140,18 @@
             marginSlider: document.getElementById('margin-slider'),
             color1Picker: document.getElementById('color1-picker'),
             color2Picker: document.getElementById('color2-picker'),
+            photoUploadInput: document.getElementById('photo-upload'),
         };
         
         // --- State Management ---
-        let originalCvData = null;
-        let currentCvData = null;
-        let originalRawText = '';
-        let currentDesignIndex = 0;
-        let styleConfig = {};
+        let originalCvData = null, currentCvData = null, originalRawText = '', currentDesignIndex = 0, styleConfig = {}, currentLang = 'fr';
 
         function resetStyleConfig() {
             styleConfig = {
                 titleSize: 24, bodySize: 10, margin: 20,
                 color1: '#1f2937', color2: '#3b82f6',
                 blockOrder: ['summary', 'experience', 'education'],
-                photo: null,
-                customSections: {}
+                photo: null, customSections: {}
             };
             allElements.titleSizeSlider.value = styleConfig.titleSize;
             allElements.bodySizeSlider.value = styleConfig.bodySize;
@@ -175,14 +176,12 @@
                 button.innerHTML = '<div class="loader"></div><span class="ml-2">Chargement...</span>';
             } else {
                 button.disabled = false;
-                if (button.dataset.originalHtml) {
-                    button.innerHTML = button.dataset.originalHtml;
-                }
+                if (button.dataset.originalHtml) button.innerHTML = button.dataset.originalHtml;
             }
         }
         
         function parseCvTextLocally(text) {
-            const cvData = { name: '', title: '', contact: { email: '', phone: '', address: '', linkedin: '' }, summary: '', experience: [], education: [], skills: [], languages: [] };
+            const cvData = { name: '', title: '', contact: { email: '', phone: '', address: '', linkedin: '' }, summary: '', experience: [], education: [], skills: [], languages: [], customSections: {} };
             const lines = text.split('\n').filter(line => line.trim() !== '');
             if (lines.length > 0) cvData.name = lines.shift().replace(/[*#]/g, '').trim();
             if (lines.length > 0 && lines[0].length < 60 && !lines[0].includes(':')) cvData.title = lines.shift().replace(/[*#]/g, '').trim();
@@ -240,6 +239,7 @@
                 const data = await response.json();
                 if (!data.response) throw new Error(data.error || "La réponse de l'API est vide.");
                 originalRawText = data.response;
+                currentLang = 'fr';
                 try {
                     originalCvData = parseCvTextLocally(originalRawText);
                     currentCvData = JSON.parse(JSON.stringify(originalCvData));
@@ -260,9 +260,62 @@
         }
 
         // --- Action Handlers ---
-        async function handleSummarize() { /* ... same as before ... */ }
-        function handleAnonymize() { /* ... same as before ... */ }
-        function handleRestore() { /* ... same as before ... */ }
+        async function handleApiAction(button, prompt) {
+            if (!originalCvData) { notify("Veuillez d'abord générer un CV.", 'error'); return null; }
+            setLoadingState(true, button);
+            try {
+                const response = await fetch("https://simulateur-ltd.onrender.com/api/gemini", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt }) });
+                if (!response.ok) throw new Error(`Erreur de l'API: ${response.status}.`);
+                const data = await response.json();
+                if (!data.response) throw new Error("La réponse de l'API est vide.");
+                return data.response;
+            } catch (err) {
+                notify(`L'action a échoué: ${err.message}`, "error");
+                return null;
+            } finally {
+                setLoadingState(false, button);
+            }
+        }
+        async function handleSummarize() {
+            notify("Synthèse par IA en cours...", 'info');
+            const prompt = `Synthétise le contenu de ce CV en FRANÇAIS. Pour chaque expérience, réduis la description à 2 points essentiels maximum. Garde les autres informations intactes. Voici le texte : \n\n${originalRawText}`;
+            const summarizedText = await handleApiAction(allElements.summarizeBtn, prompt);
+            if (summarizedText) {
+                currentCvData = parseCvTextLocally(summarizedText);
+                renderCV();
+                notify("CV synthétisé avec succès !", "success");
+            }
+        }
+        async function handleTranslate() {
+            const targetLang = currentLang === 'fr' ? 'anglais' : 'français';
+            const targetLangCode = currentLang === 'fr' ? 'en' : 'fr';
+            notify(`Traduction en ${targetLang}...`, 'info');
+            const prompt = `Traduis ce CV en ${targetLang}. Conserve la structure et le formatage. Texte: \n\n${JSON.stringify(currentCvData)}`;
+            const translatedText = await handleApiAction(allElements.translateBtn, prompt);
+            if (translatedText) {
+                currentCvData = parseCvTextLocally(translatedText);
+                currentLang = targetLangCode;
+                renderCV();
+                notify(`CV traduit en ${targetLang} !`, "success");
+            }
+        }
+        function handleAnonymize() {
+            if (!currentCvData) return;
+            const anonymizedData = JSON.parse(JSON.stringify(currentCvData));
+            const nameParts = (anonymizedData.name || '').split(' ');
+            anonymizedData.name = `${nameParts[0]} ${nameParts.length > 1 ? nameParts[nameParts.length - 1].charAt(0) + '.' : ''}`;
+            anonymizedData.contact = { email: 'confidentiel', phone: 'confidentiel', address: 'confidentiel', linkedin: '' };
+            currentCvData = anonymizedData;
+            renderCV();
+            notify("CV anonymisé.", "info");
+        }
+        function handleRestore() {
+            if (!originalCvData) return;
+            currentCvData = JSON.parse(JSON.stringify(originalCvData));
+            resetStyleConfig();
+            renderCV();
+            notify("CV original restauré.", "success");
+        }
         function handleChangeDesign(e) {
             if (!currentCvData || !e.target.closest('[data-index]')) return;
             currentDesignIndex = parseInt(e.target.closest('[data-index]').dataset.index);
@@ -270,12 +323,37 @@
             e.target.closest('[data-index]').classList.replace('border-transparent', 'border-blue-500');
             renderCV();
         }
-        async function handleTranslate() { /* ... new implementation needed ... */ }
-        function handleAddSection() { /* ... new implementation needed ... */ }
-        function handlePhotoUpload(event) { /* ... new implementation needed ... */ }
+        function handleAddSection() {
+            const title = prompt("Titre de la nouvelle section :");
+            if (title && title.trim()) {
+                const key = 'custom_' + Date.now();
+                styleConfig.customSections[key] = { title: title.trim(), content: "Cliquez pour éditer le contenu de cette nouvelle section." };
+                styleConfig.blockOrder.push(key);
+                renderCV();
+            }
+        }
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => { styleConfig.photo = e.target.result; renderCV(); };
+                reader.readAsDataURL(file);
+            }
+        }
+        function handleDeleteSection(key) {
+            if (confirm("Voulez-vous vraiment supprimer cette section ?")) {
+                styleConfig.blockOrder = styleConfig.blockOrder.filter(k => k !== key);
+                if (key.startsWith('custom_')) {
+                    delete styleConfig.customSections[key];
+                } else {
+                    currentCvData[key] = (Array.isArray(currentCvData[key])) ? [] : '';
+                }
+                renderCV();
+            }
+        }
 
         // --- Rendering ---
-        const designTemplates = [renderDesignPrestige, renderDesignModern];
+        const designTemplates = [renderDesignPrestige, renderDesignModern, renderDesignCreative];
         function renderCV() {
             if (!currentCvData) return;
             designTemplates[currentDesignIndex](currentCvData, styleConfig);
@@ -283,32 +361,54 @@
             addDragAndDropHandlers();
             showEditorLayout();
         }
-        function renderDesignPrestige(data, styles) { /* ... same as before, but with contenteditable="true" on text elements ... */ }
-        function renderDesignModern(data, styles) { /* ... same as before, but with contenteditable="true" on text elements ... */ }
+        function renderDesignPrestige(data, styles) { /* ... implementation ... */ }
+        function renderDesignModern(data, styles) { /* ... implementation ... */ }
+        function renderDesignCreative(data, styles) { /* ... implementation ... */ }
         function renderCVAsFallback(textContent) {
             allElements.cvPreview.innerHTML = `<div class="p-12 text-slate-800 text-sm leading-relaxed whitespace-pre-wrap">${textContent}</div>`;
             showEditorLayout();
         }
         function showEditorLayout() {
             allElements.mainControls.style.display = 'none';
-            allElements.editorLayout.style.display = 'block';
+            allElements.editorLayout.style.display = 'flex';
             setTimeout(() => { allElements.editorLayout.style.opacity = 1; }, 10);
         }
 
         // --- Interactivity Logic ---
-        function addEditableHandlers() { /* ... new implementation for contenteditable ... */ }
-        function addDragAndDropHandlers() { /* ... same as before ... */ }
-        function getDragAfterElement(container, y) { /* ... same as before ... */ }
-        function handleDownloadPDF() { /* ... same as before ... */ }
+        function addEditableHandlers() {
+            allElements.cvPreview.querySelectorAll('[data-key]').forEach(el => {
+                el.setAttribute('contenteditable', 'true');
+                el.addEventListener('blur', (e) => {
+                    const keys = e.target.dataset.key.split('.');
+                    let dataRef = keys[0] === 'customSections' ? styleConfig : currentCvData;
+                    for (let i = 0; i < keys.length - 1; i++) {
+                        dataRef = dataRef[keys[i]] = dataRef[keys[i]] || {};
+                    }
+                    dataRef[keys[keys.length - 1]] = e.target.innerHTML.replace(/<br\s*\/?>/gi, '\n').replace(/&nbsp;/g, ' ');
+                });
+            });
+        }
+        function addDragAndDropHandlers() { /* ... implementation ... */ }
+        function getDragAfterElement(container, y) { /* ... implementation ... */ }
+        function handleDownloadPDF() { /* ... implementation ... */ }
 
         // --- Event Listeners ---
         allElements.generateBtn.addEventListener('click', handleGenerateCV);
         allElements.downloadBtn.addEventListener('click', handleDownloadPDF);
         allElements.summarizeBtn.addEventListener('click', handleSummarize);
+        allElements.translateBtn.addEventListener('click', handleTranslate);
         allElements.designBtnContainer.addEventListener('click', handleChangeDesign);
         allElements.anonymizeBtn.addEventListener('click', handleAnonymize);
         allElements.restoreBtn.addEventListener('click', handleRestore);
-        // ... more listeners for new features
+        allElements.addSectionBtn.addEventListener('click', handleAddSection);
+        allElements.photoUploadInput.addEventListener('change', handlePhotoUpload);
+        [allElements.titleSizeSlider, allElements.bodySizeSlider, allElements.marginSlider, allElements.color1Picker, allElements.color2Picker].forEach(el => {
+            el.addEventListener('input', (e) => {
+                const keyMap = { 'title-size-slider': 'titleSize', 'body-size-slider': 'bodySize', 'margin-slider': 'margin', 'color1-picker': 'color1', 'color2-picker': 'color2' };
+                const key = keyMap[e.target.id];
+                if (key) { styleConfig[key] = e.target.value; renderCV(); }
+            });
+        });
         
         resetStyleConfig(); // Initial setup
     </script>
