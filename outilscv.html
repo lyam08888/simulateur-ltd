@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Créateur de CV Pro</title>
+    <title>Créateur de CV Expert</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -13,25 +13,89 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=JetBrains+Mono&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
-    <!-- React & Babel for in-browser JSX transformation -->
-    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- External libraries for export functionalities -->
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- PDF & QR Code & Chart Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
-    <script src="https://unpkg.com/docx@8.5.0/build/index.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    
     <style>
+        /* Custom styles */
         body {
             font-family: 'Inter', sans-serif;
         }
-        /* Styles pour le CV */
+        .cv-page {
+            width: 210mm;
+            min-height: 297mm;
+            page-break-after: always;
+            box-sizing: border-box;
+            position: relative;
+        }
         .cv-section, .cv-item, .cv-header {
             page-break-inside: avoid;
+        }
+        .dragging {
+            opacity: 0.5;
+            background-color: #eef2ff;
+        }
+        .drop-zone.drag-over {
+            border-style: solid;
+            border-color: #4f46e5;
+            background-color: #f4f4f5;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
+            opacity: 0;
+        }
+        .accordion-content.open {
+            max-height: 4000px; /* Increased max-height */
+            opacity: 1;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: max-content;
+            background-color: #1f2937;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 8px;
+            position: absolute;
+            z-index: 50;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.75rem;
+            pointer-events: none;
+        }
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #4f46e5;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #4f46e5;
+            cursor: pointer;
+            border-radius: 50%;
         }
         .timeline {
             position: relative;
@@ -41,7 +105,7 @@
         .timeline-item::before {
             content: '';
             position: absolute;
-            left: -34px; /* Ajusté pour l'alignement */
+            left: -34px;
             top: 4px;
             width: 12px;
             height: 12px;
@@ -49,612 +113,2078 @@
             background-color: white;
             border: 2px solid var(--primary-color, #4f46e5);
         }
-        /* Animation fade-in/out simple */
-        .fade-enter {
-            opacity: 0;
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 80px;
+            font-weight: bold;
+            color: rgba(0, 0, 0, 0.1);
+            pointer-events: none;
+            white-space: nowrap;
         }
-        .fade-enter-active {
-            opacity: 1;
-            transition: opacity 300ms;
+        .highlight {
+            background-color: #fef08a; /* yellow-200 */
         }
-        .fade-exit {
-            opacity: 1;
+        /* Modal styles */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
         }
-        .fade-exit-active {
-            opacity: 0;
-            transition: opacity 300ms;
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        /* Tab styles */
+        .tab-btn {
+            padding: 0.75rem 1rem;
+            border-bottom: 2px solid transparent;
+            color: #6b7280;
+            transition: all 0.2s ease-in-out;
+        }
+        .tab-btn:hover {
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        .tab-btn.active {
+            color: #4f46e5;
+            border-color: #4f46e5;
+            font-weight: 600;
         }
     </style>
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-100">
 
-    <div id="root"></div>
+    <div id="app" class="min-h-screen p-2 md:p-6"></div>
+    <div id="modal-container"></div>
 
-    <script type="text/babel">
-        // --- Icon Library (Lucide SVGs) ---
-        // Remplacement de lucide-react par des SVGs en ligne pour fonctionner dans le navigateur
-        const LucideIcons = {
-            Download: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>,
-            Eye: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>,
-            User: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>,
-            Briefcase: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></svg>,
-            Mail: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>,
-            Phone: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg>,
-            MapPin: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>,
-            Plus: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>,
-            Palette: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.668 0-.92-.722-1.667-1.648-1.667-.926 0-1.648-.746-1.648-1.668 0-.92-.722-1.667-1.648-1.667-.926 0-1.648-.746-1.648-1.668 0-.92-.722-1.667-1.648-1.667A4.318 4.318 0 0 1 6.352 8.5c0-.92-.722-1.667-1.648-1.667S3.056 7.58 3.056 8.5A4.318 4.318 0 0 0 7.352 12.833c0 .92.722 1.667 1.648 1.667.926 0 1.648.746 1.648 1.668 0 .92.722 1.667 1.648 1.667.926 0 1.648.746 1.648 1.668 0 .92.722 1.667 1.648 1.667s1.648-.747 1.648-1.667A4.318 4.318 0 0 0 21.648 12c0-5.5-4.5-10-10-10-1.648 0-2.994.39-4.252 1.05" /></svg>,
-            Sparkles: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" /><path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" /></svg>,
-            LoaderCircle: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>,
-            ShieldCheck: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" /><path d="m9 12 2 2 4-4" /></svg>,
-            CheckCircle: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="m9 11 3 3L22 4" /></svg>,
-            Trash2: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" /></svg>,
-            FileText: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /><line x1="16" x2="8" y1="13" y2="13" /><line x1="16" x2="8" y1="17" y2="17" /><line x1="10" x2="8" y1="9" y2="9" /></svg>,
-            Wand: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 4V2" /><path d="M15 16v-2" /><path d="M8 9h2" /><path d="M20 9h2" /><path d="M17.8 11.8 19 13" /><path d="M15 9h.01" /><path d="M17.8 6.2 19 5" /><path d="M6.2 6.2 5 5" /><path d="M6.2 11.8 5 13" /><path d="m3 21 9-9" /><path d="M12.2 6.2 11 5" /></svg>,
-            Edit3: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>,
-            Settings: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2.12l-.15.1a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1 0-2.12l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></svg>,
-            Info: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>,
-            RefreshCcw: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 2v6h6" /><path d="M21 12A9 9 0 0 0 6 5.3L3 8" /><path d="M21 22v-6h-6" /><path d="M3 12a9 9 0 0 0 15 6.7l3-2.7" /></svg>,
-            AlertTriangle: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><path d="M12 9v4" /><path d="M12 17h.01" /></svg>,
-            ZoomOut: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" x2="16.65" y1="21" y2="16.65" /><line x1="8" x2="14" y1="11" y2="11" /></svg>,
-            ZoomIn: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" x2="16.65" y1="21" y2="16.65" /><line x1="11" x2="11" y1="8" y2="14" /><line x1="8" x2="14" y1="11" y2="11" /></svg>,
-            RotateCw: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /></svg>,
-            Copy: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg>,
-            Calendar: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /></svg>,
-            Map: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" /><line x1="9" x2="9" y1="3" y2="18" /><line x1="15" x2="15" y1="6" y2="21" /></svg>,
-            Euro: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 10h12" /><path d="M4 14h12" /><path d="M19 6a7.7 7.7 0 0 0-5.2-2A7.9 7.9 0 0 0 6 12c0 4.4 3.5 8 7.8 8 2.5 0 4.8-.9 6.2-2.7" /></svg>,
-            Text: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 6.1H7" /><path d="M21 12.1H3" /><path d="M15 18.1H9" /></svg>,
-            ChevronDown: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>,
-            ArrowLeftRight: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3 4 7l4 4" /><path d="M4 7h16" /><path d="m16 21 4-4-4-4" /><path d="M20 17H4" /></svg>,
-            Move: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="5 9 2 12 5 15" /><polyline points="9 5 12 2 15 5" /><polyline points="15 19 12 22 9 19" /><polyline points="19 9 22 12 19 15" /><line x1="2" x2="22" y1="12" y2="12" /><line x1="12" x2="12" y1="2" y2="22" /></svg>,
-            EyeOff: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" /><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" /><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" /><line x1="2" x2="22" y1="2" y2="22" /></svg>,
-            Camera: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" /><circle cx="12" cy="13" r="3" /></svg>,
-            Circle: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /></svg>,
-            Square: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" /></svg>,
-            Star: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>,
-            LinkIcon: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72" /></svg>,
-            Github: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" /><path d="M9 18c-4.51 2-5-2-7-2" /></svg>,
-            Twitter: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 1.4 3.3 4.4 3.3 4.4s-1.4 1.4-2.1 1.4H18s-1.4-1.4-2.1-2.8c0 0-4.1 5.6-8.2 5.6s-5.6-3.3-5.6-3.3c0 0 2.1 1.4 5.6 0 3.5-1.4 8.2-9.6 8.2-9.6s1.4-2.1 2.8-2.1c0 0 .7 1.4 2.1 2.8Z" /></svg>,
-            Globe: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /><path d="M2 12h20" /></svg>,
-            Heart: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>,
-            Code: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>,
-            BookOpen: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></svg>,
-            Plane: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1.5-1.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" /></svg>,
-            default: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72" /></svg>
-        };
-
-        const { useState, useEffect, useRef } = React;
-
-        // --- DATA INITIALE & EXEMPLES (déplacé ici pour corriger l'erreur de scope) ---
-        const emptyCvData = {
-            personal: { firstName: '', lastName: '', title: '', email: '', phone: '', address: '', summary: '', onlineProfileUrl: '', availability: '', salaryExpectations: '', location: '' },
-            experiences: [], projects: [], education: [], skills: [], awards: [], languages: [], hobbies: [], socials: [], customSections: []
-        };
-
-        const exampleData = {
-            dev: { 
-                personal: { firstName: 'Léa', lastName: 'Martin', title: 'Développeuse Full-Stack', email: 'lea.martin@email.dev', phone: '+33 7 11 22 33 44', address: 'Paris, France', summary: 'Développeuse passionnée avec 5 ans d\'expérience en React et Node.js. Adepte du code propre et des tests unitaires, je cherche à construire des applications performantes et scalables.', availability: 'Immédiate', salaryExpectations: '55-65k€', location: 'Paris ou télétravail' }, 
-                experiences: [{ id: 1, company: 'Tech Startup', position: 'Développeuse Senior', startDate: '2020', endDate: 'Présent', description: 'Développement de nouvelles fonctionnalités, maintenance de l\'application principale et mentorat des développeurs juniors.' }, { id: 2, company: 'Web Agency', position: 'Développeuse Junior', startDate: '2018', endDate: '2020', description: 'Intégration de maquettes et développement de sites vitrines.' }],
-                projects: [{ id: 1, name: 'Portfolio Interactif', url: 'lea-martin.dev', description: 'Création d\'un site personnel en Next.js avec des animations Three.js.' }],
-                education: [{ id: 1, institution: 'École 42', degree: 'Architecte en Technologies du Numérique', startDate: '2017', endDate: '2020', description: 'Formation par projets en peer-learning.' }],
-                skills: [{id: 1, category: 'Frontend', name: 'React', level: 5, icon: 'code'}, {id: 2, category: 'Backend', name: 'Node.js', level: 5, icon: 'code'}, {id: 3, category: 'Langages', name: 'TypeScript', level: 4, icon: 'code'}, {id: 4, category: 'API', name: 'GraphQL', level: 4, icon: 'code'}],
-                awards: [],
-                languages: [ { id: 1, name: 'Français', level: 'Natif' }, { id: 2, name: 'Anglais', level: 'Technique' } ],
-                hobbies: [ { id: 1, name: 'Jeux de stratégie', icon: 'Star' }, { id: 2, name: 'Open Source', icon: 'Code' } ],
-                socials: [{ id: 1, network: 'github', url: 'https://github.com/leamartin' }],
-                customSections: []
+    <script type="module">
+        // --- INITIAL DATA ---
+        const initialCvData = {
+            personal: {
+                firstName: '',
+                lastName: '',
+                title: '',
+                email: '',
+                phone: '',
+                address: '',
+                summary: '',
             },
-            manager: { 
-                personal: { firstName: 'Julien', lastName: 'Petit', title: 'Product Manager', email: 'j.petit@email.pro', phone: '+33 6 55 66 77 88', address: 'Bordeaux, France', summary: 'Product Manager avec 10 ans d\'expérience dans la définition de stratégies produit et la gestion de roadmaps. Je fais le pont entre les équipes techniques, le design et le business pour livrer des produits qui ravissent les utilisateurs.', availability: 'Sous 1 mois', salaryExpectations: '70k€+', location: 'Bordeaux' }, 
-                experiences: [{ id: 1, company: 'SaaS Company', position: 'Head of Product', startDate: '2018', endDate: 'Présent', description: 'Définition de la vision produit, gestion d\'une équipe de 5 Product Owners et analyse des KPIs pour orienter les décisions stratégiques.' }],
-                projects: [],
-                education: [{ id: 1, institution: 'Kedge Business School', degree: 'Master in Management', startDate: '2008', endDate: '2012', description: 'Spécialisation Marketing & Stratégie.' }],
-                skills: [{id: 1, category: 'Stratégie', name: 'Product Strategy', level: 5, icon: 'lightbulb'}, {id: 2, category: 'Planning', name: 'Roadmap Planning', level: 5, icon: 'map'}, {id: 3, category: 'Recherche', name: 'User Research', level: 5, icon: 'users'}, {id: 4, category: 'Analyse', name: 'Data Analysis', level: 4, icon: 'bar-chart-2'}],
-                awards: [],
-                languages: [ { id: 1, name: 'Français', level: 'Natif' }, { id: 2, name: 'Anglais', level: 'Bilingue' } ],
-                hobbies: [ { id: 1, name: 'Économie', icon: 'BookOpen' }, { id: 2, name: 'Voyages', icon: 'Plane' } ],
-                socials: [{ id: 1, network: 'linkedin', url: 'https://linkedin.com/in/julienpetit' }],
-                customSections: []
-            },
+            experiences: [],
+            projects: [],
+            education: [],
+            skills: [],
+            softSkills: [],
+            awards: [],
+            languages: [],
+            hobbies: [],
+            socials: [],
+            customSections: []
         };
 
-        const initialRecruiterData = { name: 'Lyes AMARA', title: 'Responsable Recrutement BTP', company: 'LTD Recrutement', phone: '01 56 02 12 25', mobile: '06 34 25 32 96', email: 'l.amara@ltd-international.com' };
+        // --- CONFIGURATIONS ---
+        const themes = {
+            professional: { name: 'Professionnel', settings: { activeTemplate: 'classic', activePalette: 'indigo', activeFont: 'serif', headerAlignment: 'left' } },
+            creative: { name: 'Créatif', settings: { activeTemplate: 'creative', activePalette: 'sunset', activeFont: 'sans', headerAlignment: 'center', experienceStyle: 'timeline' } },
+            academic: { name: 'Académique', settings: { activeTemplate: 'classic', activePalette: 'monochrome', activeFont: 'serif', activeLayout: 'single' } },
+            startup: { name: 'Startup', settings: { activeTemplate: 'tech', activePalette: 'ocean', activeFont: 'mono', skillDisplayStyle: 'radar' } }
+        };
+        const templates = { modern: { name: 'Moderne' }, classic: { name: 'Classique' }, creative: { name: 'Créatif' }, minimalist: { name: 'Minimaliste' }, tech: { name: 'Tech' } };
+        const layouts = { single: { name: 'Une colonne' }, two: { name: 'Deux colonnes' } };
+        const fonts = {
+            sans: { name: 'Inter (Sans)', family: "'Inter', sans-serif" },
+            serif: { name: 'Lora (Serif)', family: "'Lora', serif" },
+            mono: { name: 'JetBrains Mono', family: "'JetBrains Mono', monospace" },
+        };
+        const palettes = {
+            indigo: { name: 'Indigo', primary: '#4f46e5', secondary: '#eef2ff', accent: '#3730a3', textOnPrimary: '#ffffff' },
+            ocean: { name: 'Océan', primary: '#0891b2', secondary: '#ecfeff', accent: '#164e63', textOnPrimary: '#ffffff' },
+            forest: { name: 'Forêt', primary: '#166534', secondary: '#f0fdf4', accent: '#14532d', textOnPrimary: '#ffffff' },
+            sunset: { name: 'Crépuscule', primary: '#ea580c', secondary: '#fff7ed', accent: '#c2410c', textOnPrimary: '#ffffff' },
+            monochrome: { name: 'Monochrome', primary: '#1f2937', secondary: '#f9fafb', accent: '#111827', textOnPrimary: '#ffffff' }
+        };
+        const hobbyIcons = ['code', 'book-open', 'camera', 'music', 'plane', 'dumbbell', 'paintbrush', 'heart', 'star', 'lightbulb', 'compass'];
+        const socialIcons = { linkedin: 'linkedin', github: 'github', twitter: 'twitter', globe: 'globe', default: 'link' };
+        const sectionIcons = ['briefcase', 'projector', 'graduation-cap', 'award', 'zap', 'globe', 'heart', 'user-check', 'star', 'link', 'users'];
+        const iconPacks = {
+            professional: { name: 'Professionnel', icons: { socials: 'link', experiences: 'briefcase', projects: 'projector', education: 'graduation-cap', awards: 'award', skills: 'zap', languages: 'globe', hobbies: 'coffee', softSkills: 'users' } },
+            creative: { name: 'Créatif', icons: { socials: 'share-2', experiences: 'feather', projects: 'wand', education: 'book-open', awards: 'sparkles', skills: 'palette', languages: 'message-circle', hobbies: 'music', softSkills: 'heart' } },
+            minimalist: { name: 'Minimaliste', icons: { socials: 'arrow-up-right', experiences: 'square', projects: 'triangle', education: 'circle', awards: 'star', skills: 'bar-chart-2', languages: 'chevron-right', hobbies: 'more-horizontal', softSkills: 'dot' } }
+        };
 
-        // --- COMPOSANT PRINCIPAL ---
-        const CVGenerator = () => {
-            // --- STATE MANAGEMENT ---
-            const [cvData, setCvData] = useState(() => { try { const d = localStorage.getItem('cvData_v8'); return d ? JSON.parse(d) : emptyCvData; } catch (e) { return emptyCvData; } });
-            const [recruiterData, setRecruiterData] = useState(() => { try { const d = localStorage.getItem('recruiterData_v8'); return d ? JSON.parse(d) : initialRecruiterData; } catch (e) { return initialRecruiterData; } });
+        // --- STATE MANAGEMENT ---
+        let state = {};
+        let chartInstance = null;
 
-            const [activeTemplate, setActiveTemplate] = useState('modern');
-            const [activePalette, setActivePalette] = useState('indigo');
-            const [activeLayout, setActiveLayout] = useState('two');
-            const [columnRatio, setColumnRatio] = useState('large-right');
-            const [activeFont, setActiveFont] = useState('sans');
-            const [previewMode, setPreviewMode] = useState(false);
-            const [isAnonymized, setIsAnonymized] = useState(false);
-            const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
-            const [isDownloadingWord, setIsDownloadingWord] = useState(false);
-            const [showRecruiterBanner, setShowRecruiterBanner] = useState(true);
-            const [showVCardQR, setShowVCardQR] = useState(false);
-            const [photo, setPhoto] = useState(null);
-            const [photoShape, setPhotoShape] = useState('round');
-            const [sectionTitleStyle, setSectionTitleStyle] = useState('border');
-            const [experienceStyle, setExperienceStyle] = useState('default');
-            const [headerAlignment, setHeaderAlignment] = useState('center');
-            const [previewScale, setPreviewScale] = useState(0.8);
-            const [baseFontSize, setBaseFontSize] = useState(10);
-            const [nameFontSize, setNameFontSize] = useState(28);
-            const [sectionTitleFontSize, setSectionTitleFontSize] = useState(12);
-            const [lineHeight, setLineHeight] = useState(1.5);
-            const [pagePadding, setPagePadding] = useState(1.5);
-            const [sectionSpacing, setSectionSpacing] = useState(1.25);
-            const [itemSpacing, setItemSpacing] = useState(1);
-            const [skillDisplayStyle, setSkillDisplayStyle] = useState('bars');
-            const [draggedBlock, setDraggedBlock] = useState(null);
-            const [aiInput, setAiInput] = useState('');
-            const [isAiLoading, setIsAiLoading] = useState(false);
-            const [isAiSynthesizing, setIsAiSynthesizing] = useState(false);
-            const [aiError, setAiError] = useState('');
-            const [isOverflowing, setIsOverflowing] = useState(false);
-            const [isSimplified, setIsSimplified] = useState(false);
-            const [salesEmail, setSalesEmail] = useState('');
-            const [isGeneratingEmail, setIsGeneratingEmail] = useState(false);
-            const [copied, setCopied] = useState(false);
-            const [injectionNotes, setInjectionNotes] = useState('');
-            const [isInjecting, setIsInjecting] = useState(false);
-            const [activeEditorTab, setActiveEditorTab] = useState('ia');
-            
-            const cvPreviewRef = useRef();
-            const cvContentRef = useRef();
-            const vCardQrCodeRef = useRef();
-            const chartRef = useRef(null);
-            const skillChartCanvasRef = useRef(null);
-            const [visibility, setVisibility] = useState({ personal: true, skills: true, languages: true, hobbies: true, experiences: {}, projects: {}, education: {}, awards: {}, socials: {} });
+        /**
+         * Utility functions for deep merging objects.
+         */
+        const isObject = (item) => {
+            return (item && typeof item === 'object' && !Array.isArray(item));
+        }
 
-            const [blockOrder, setBlockOrder] = useState(['socials', 'experiences', 'projects', 'education', 'awards', 'skills', 'languages', 'hobbies']);
-            const [columnAssignment, setColumnAssignment] = useState({ left: ['personal', 'skills', 'languages', 'hobbies'], right: ['socials', 'experiences', 'projects', 'education', 'awards'] });
-            
-            // --- CONFIGURATIONS ---
-            const templates = { modern: { name: 'Moderne' }, classic: { name: 'Classique' }, creative: { name: 'Créatif' }, minimalist: { name: 'Minimaliste' }, tech: { name: 'Tech' } };
-            const layouts = { single: { name: 'Une colonne' }, two: { name: 'Deux colonnes' } };
-            const fonts = { sans: { name: 'Inter (Sans)', family: "'Inter', sans-serif" }, serif: { name: 'Lora (Serif)', family: "'Lora', serif" }, mono: { name: 'JetBrains Mono', family: "'JetBrains Mono', monospace" } };
-            const palettes = {
-                indigo: { name: 'Indigo', primary: '#4f46e5', secondary: '#eef2ff', accent: '#3730a3', textOnPrimary: '#ffffff' },
-                ocean: { name: 'Océan', primary: '#0891b2', secondary: '#ecfeff', accent: '#164e63', textOnPrimary: '#ffffff' },
-                forest: { name: 'Forêt', primary: '#166534', secondary: '#f0fdf4', accent: '#14532d', textOnPrimary: '#ffffff' },
-                sunset: { name: 'Crépuscule', primary: '#ea580c', secondary: '#fff7ed', accent: '#c2410c', textOnPrimary: '#ffffff' },
-                monochrome: { name: 'Monochrome', primary: '#1f2937', secondary: '#f9fafb', accent: '#111827', textOnPrimary: '#ffffff' }
-            };
-            const socialIcons = { linkedin: LucideIcons.LinkIcon, github: LucideIcons.Github, twitter: LucideIcons.Twitter, globe: LucideIcons.Globe, default: LucideIcons.LinkIcon };
-            const editorTabs = [
-                { id: 'ia', label: 'Assistant IA', icon: LucideIcons.Sparkles },
-                { id: 'personalisation', label: 'Personnalisation IA', icon: LucideIcons.Wand },
-                { id: 'vente', label: 'Email de Vente IA', icon: LucideIcons.Mail },
-                { id: 'contenu', label: 'Contenu du CV', icon: LucideIcons.Edit3 },
-                { id: 'design', label: 'Design & Mise en Page', icon: LucideIcons.Palette },
-                { id: 'options', label: 'Options Avancées', icon: LucideIcons.Settings },
-            ];
-            
-            const hobbyIcons = { Code: LucideIcons.Code, BookOpen: LucideIcons.BookOpen, Plane: LucideIcons.Plane, Star: LucideIcons.Star, Heart: LucideIcons.Heart, default: LucideIcons.Heart };
-
-            // --- EFFECTS ---
-            useEffect(() => { try { localStorage.setItem('cvData_v8', JSON.stringify(cvData)); localStorage.setItem('recruiterData_v8', JSON.stringify(recruiterData)); } catch (e) { console.error("Could not save data:", e); } }, [cvData, recruiterData]);
-            
-            useEffect(() => {
-                if (showVCardQR && window.qrcode) {
-                    try {
-                        const { firstName, lastName, email, phone } = cvData.personal;
-                        const vCardData = `BEGIN:VCARD\nVERSION:3.0\nN:${lastName};${firstName}\nFN:${firstName} ${lastName}\nEMAIL:${email}\nTEL:${phone}\nEND:VCARD`;
-                        const qr = window.qrcode(0, 'M'); qr.addData(vCardData); qr.make();
-                        if (vCardQrCodeRef.current) { vCardQrCodeRef.current.innerHTML = qr.createImgTag(4, 8); }
-                    } catch (e) { console.error("vCard QR Code generation failed:", e); }
-                }
-            }, [showVCardQR, cvData.personal]);
-
-            useEffect(() => {
-                setVisibility(prev => {
-                    const newVisibility = { ...prev };
-                    ['experiences', 'projects', 'education', 'awards', 'socials'].forEach(section => {
-                        const sectionVisibility = { ...(newVisibility[section] || {}) };
-                        (cvData[section] || []).forEach(item => {
-                            if (sectionVisibility[item.id] === undefined) {
-                                sectionVisibility[item.id] = true;
-                            }
-                        });
-                        newVisibility[section] = sectionVisibility;
-                    });
-                    return newVisibility;
-                });
-            }, [cvData]);
-
-            useEffect(() => {
-                const checkOverflow = () => {
-                    const contentElement = cvContentRef.current;
-                    if (contentElement) {
-                        const a4HeightInPx = 297 * (96 / 25.4); 
-                        setIsOverflowing(contentElement.scrollHeight > a4HeightInPx + 5);
+        function deepMerge(target, source) {
+            let output = { ...target };
+            if (isObject(target) && isObject(source)) {
+                Object.keys(source).forEach(key => {
+                    if (isObject(source[key])) {
+                        if (!(key in target)) {
+                            Object.assign(output, { [key]: source[key] });
+                        } else {
+                            output[key] = deepMerge(target[key], source[key]);
+                        }
+                    } else {
+                        Object.assign(output, { [key]: source[key] });
                     }
-                };
-                const timeoutId = setTimeout(checkOverflow, 150);
-                return () => clearTimeout(timeoutId);
-            }, [cvData, activeLayout, columnRatio, activeFont, baseFontSize, nameFontSize, sectionTitleFontSize, lineHeight, pagePadding, sectionSpacing, itemSpacing, photo, showRecruiterBanner]);
-
-            useEffect(() => {
-                if (skillDisplayStyle === 'radar' && skillChartCanvasRef.current) {
-                    if (chartRef.current) chartRef.current.destroy();
-                    const ctx = skillChartCanvasRef.current.getContext('2d');
-                    const currentPalette = palettes[activePalette] || {primary: '#4f46e5'};
-                    chartRef.current = new Chart(ctx, {
-                        type: 'radar',
-                        data: {
-                            labels: cvData.skills.map(s => s.name),
-                            datasets: [{
-                                label: 'Niveau de Compétence',
-                                data: cvData.skills.map(s => s.level),
-                                backgroundColor: `${currentPalette.primary}33`,
-                                borderColor: currentPalette.primary,
-                                borderWidth: 2,
-                            }]
-                        },
-                        options: { scales: { r: { beginAtZero: true, max: 5, stepSize: 1 } }, plugins: { legend: { display: false } } }
-                    });
-                }
-                return () => { if (chartRef.current) chartRef.current.destroy(); };
-            }, [skillDisplayStyle, cvData.skills, activePalette]);
-
-            // --- HANDLERS ---
-            const handleCvDataChange = (section, field, value) => setCvData(p => ({ ...p, [section]: { ...p[section], [field]: value } }));
-            const handleRecruiterDataChange = (field, value) => setRecruiterData(p => ({ ...p, [field]: value }));
-            const handleListItemChange = (section, id, field, value) => setCvData(p => ({ ...p, [section]: p[section].map(i => i.id === id ? { ...i, [field]: value } : i) }));
-            
-            const addListItem = (section) => {
-                const newItem = { id: Date.now(), ...(section === 'experiences' && { company: '', position: '', startDate: '', endDate: '', description: '' }), ...(section === 'projects' && { name: '', url: '', description: '' }), ...(section === 'education' && { institution: '', degree: '', startDate: '', endDate: '', description: '' }), ...(section === 'awards' && { name: '', issuer: '', date: '', description: '' }), ...(section === 'skills' && { category: 'Nouvelle Catégorie', name: '', level: 3, icon: '' }), ...(section === 'languages' && { name: '', level: '' }), ...(section === 'hobbies' && { name: '', icon: 'Heart' }), ...(section === 'socials' && { network: 'linkedin', url: '' }), ...(section === 'customSections' && { title: 'Nouvelle Section', content: '' }) };
-                setCvData(prev => ({ ...prev, [section]: [...(prev[section] || []), newItem] }));
-            };
-            const removeListItem = (section, id) => {
-                setCvData(prev => ({ ...prev, [section]: prev[section].filter(item => item.id !== id) }));
-            };
-            const handlePhotoChange = (e) => { if (e.target.files && e.target.files[0]) { setPhoto(URL.createObjectURL(e.target.files[0])); } };
-            const toggleSectionVisibility = (section) => setVisibility(p => ({ ...p, [section]: !p[section] }));
-            const toggleItemVisibility = (section, id) => setVisibility(p => ({ ...p, [section]: { ...p[section], [id]: !p[section][id] } }));
-            const handleRandomizeDesign = () => {
-                const randomChoice = (arr) => arr[Math.floor(Math.random() * arr.length)];
-                setActiveTemplate(randomChoice(Object.keys(templates)));
-                setActivePalette(randomChoice(Object.keys(palettes)));
-                setActiveFont(randomChoice(Object.keys(fonts)));
-                setActiveLayout(randomChoice(Object.keys(layouts)));
-                setSectionTitleStyle(randomChoice(['border', 'background', 'simple']));
-                setSkillDisplayStyle(randomChoice(['bars', 'stars']));
-                setExperienceStyle(randomChoice(['default', 'timeline']));
-                setHeaderAlignment(randomChoice(['left', 'center']));
-            };
-            
-            // --- DRAG & DROP ---
-            const handleDragStart = (e, blockId) => { setDraggedBlock(blockId); e.dataTransfer.effectAllowed = 'move'; };
-            const handleDragOver = (e) => e.preventDefault();
-            const handleDrop = (e, targetBlockId, targetColumn) => {
-                e.preventDefault(); if (!draggedBlock) return;
-                if (activeLayout === 'two') {
-                    setColumnAssignment(prev => {
-                        const newA = { left: prev.left.filter(id => id !== draggedBlock), right: prev.right.filter(id => id !== draggedBlock) };
-                        const targetList = newA[targetColumn]; const dropIndex = targetBlockId ? targetList.indexOf(targetBlockId) : targetList.length;
-                        targetList.splice(dropIndex, 0, draggedBlock); return newA;
-                    });
-                } else { setBlockOrder(prev => { const newO = prev.filter(id => id !== draggedBlock); const dropIndex = newO.indexOf(targetBlockId); newO.splice(dropIndex, 0, draggedBlock); return newO; }); }
-                setDraggedBlock(null);
-            };
-            const handleDropOnColumn = (e, column) => { e.preventDefault(); if (!columnAssignment[column].length) { handleDrop(e, null, column); } };
-            const invertColumns = () => setColumnAssignment(p => ({ left: p.right, right: p.left }));
-
-            // --- AI & PDF & WORD ---
-            const generatePDF = async () => {
-                if (isDownloadingPdf || typeof html2pdf === 'undefined') return;
-                setIsDownloadingPdf(true);
-                const element = document.getElementById('cv-preview-container');
-                const opt = {
-                    margin: 0,
-                    filename: isAnonymized ? 'cv_anonyme.pdf' : `CV_${cvData.personal.firstName || 'CV'}_${cvData.personal.lastName || 'Pro'}.pdf`,
-                    image: { type: 'jpeg', quality: 1.0 },
-                    html2canvas: { scale: 4, useCORS: true, letterRendering: true },
-                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                };
-                await html2pdf().from(element).set(opt).save();
-                setIsDownloadingPdf(false);
-            };
-            
-            const generateWord = () => {
-                if (typeof docx === 'undefined' || typeof saveAs === 'undefined') return;
-                setIsDownloadingWord(true);
-                const { Packer, Document, Paragraph, TextRun, HeadingLevel } = docx;
-                const { personal, experiences, education, skills } = cvData;
-                const doc = new Document({
-                    sections: [{
-                        children: [
-                            new Paragraph({ text: `${personal.firstName} ${personal.lastName}`, heading: HeadingLevel.TITLE }),
-                            new Paragraph({ text: personal.title, style: "IntenseQuote" }),
-                            new Paragraph({ text: `Email: ${personal.email} | Tel: ${personal.phone} | Adresse: ${personal.address}` }),
-                            new Paragraph({ text: "" }),
-                            new Paragraph({ text: "Résumé", heading: HeadingLevel.HEADING_1 }),
-                            new Paragraph(personal.summary),
-                            new Paragraph({ text: "" }),
-                            new Paragraph({ text: "Expérience Professionnelle", heading: HeadingLevel.HEADING_1 }),
-                            ...experiences.flatMap(exp => [
-                                new Paragraph({ children: [new TextRun({ text: exp.position, bold: true })] }),
-                                new Paragraph(`${exp.company} | ${exp.startDate} - ${exp.endDate}`),
-                                new Paragraph({ text: exp.description, bullet: { level: 0 } }),
-                                new Paragraph(""),
-                            ]),
-                            new Paragraph({ text: "Formation", heading: HeadingLevel.HEADING_1 }),
-                            ...education.flatMap(edu => [
-                                new Paragraph({ children: [new TextRun({ text: edu.degree, bold: true })] }),
-                                new Paragraph(`${edu.institution} | ${edu.startDate} - ${edu.endDate}`),
-                                new Paragraph({ text: edu.description, bullet: { level: 0 } }),
-                                new Paragraph(""),
-                            ]),
-                            new Paragraph({ text: "Compétences", heading: HeadingLevel.HEADING_1 }),
-                            new Paragraph(skills.map(s => s.name).join(', ')),
-                        ],
-                    }],
                 });
-                Packer.toBlob(doc).then(blob => {
-                    saveAs(blob, `CV_${personal.firstName}_${personal.lastName}.docx`);
-                }).finally(() => setIsDownloadingWord(false));
-            };
+            }
+            return output;
+        }
 
-            const jsonSchemaForAI = { type: "OBJECT", properties: { personal: { type: "OBJECT", properties: { firstName: { type: "STRING" }, lastName: { type: "STRING" }, title: { type: "STRING" }, email: { type: "STRING" }, phone: { type: "STRING" }, address: { type: "STRING" }, summary: { type: "STRING" }, availability: { type: "STRING" }, salaryExpectations: { type: "STRING" }, location: { type: "STRING" } } }, experiences: { type: "ARRAY", items: { type: "OBJECT", properties: { company: { type: "STRING" }, position: { type: "STRING" }, startDate: { type: "STRING" }, endDate: { type: "STRING" }, description: { type: "STRING" } } } }, education: { type: "ARRAY", items: { type: "OBJECT", properties: { institution: { type: "STRING" }, degree: { type: "STRING" }, startDate: { type: "STRING" }, endDate: { type: "STRING" }, description: { type: "STRING" } } } }, projects: { type: "ARRAY", items: { type: "OBJECT", properties: { name: { type: "STRING" }, url: { type: "STRING" }, description: { type: "STRING" } } } }, awards: { type: "ARRAY", items: { type: "OBJECT", properties: { name: { type: "STRING" }, issuer: { type: "STRING" }, date: { type: "STRING" }, description: { type: "STRING" } } } }, skills: { type: "ARRAY", items: { type: "STRING" } }, languages: { type: "ARRAY", items: { type: "OBJECT", properties: { name: { type: "STRING" }, level: { type: "STRING" } } } }, hobbies: { type: "ARRAY", items: { type: "STRING" } } } };
+        function setState(newState, render = true) {
+            state = { ...state, ...newState };
             
-            const callApi = async (payload) => {
-                const apiUrl = 'https://simulateur-ltd.onrender.com/api/gemini';
-                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if (!response.ok) {
-                    const errorBody = await response.text();
-                    throw new Error(`API request failed with status ${response.status}: ${errorBody}`);
-                }
-                return response.json();
-            };
+            try {
+                const stateToSave = { ...state };
+                delete stateToSave.photo; // Don't save photo in localStorage
+                localStorage.setItem('cvState_v7', JSON.stringify(stateToSave));
+            } catch (error) {
+                console.error("Could not save data:", error);
+            }
+            
+            if(render) {
+                renderApp();
+            }
+        }
 
-            const handleAiGenerate = async () => {
-                if (!aiInput.trim()) { setAiError("Veuillez copier-coller le contenu de votre CV."); return; }
-                setIsAiLoading(true); setAiError('');
-                const prompt = `You are an expert CV parsing system. Your task is to meticulously analyze the following text and extract structured information to populate a CV. The user's text is: "${aiInput}". Please extract the following sections: Personal Information (first name, last name, job title, email, phone, address, summary, availability, salary expectations, location), Professional Experiences (for each job: company, position, dates, description), Projects (name, url, description), Education (for each degree: institution, degree name, dates, description), Awards (name, issuer, date, description), a list of Skills, a list of Languages with their levels, and a list of Hobbies. You must adhere to the provided JSON schema. If information is not present, leave the field as an empty string or array. Do not invent information. Return ONLY the raw JSON object, without any surrounding text or markdown.`;
-                try {
-                    const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", responseSchema: jsonSchemaForAI } };
-                    const result = await callApi(payload);
-                    if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0].text) {
-                        const parsedJson = JSON.parse(result.candidates[0].content.parts[0].text);
-                        setCvData(prev => ({ ...prev, personal: { ...prev.personal, ...parsedJson.personal }, experiences: (parsedJson.experiences || []).map((exp, i) => ({ id: Date.now() + i, ...exp })), projects: (parsedJson.projects || []).map((p, i) => ({ id: Date.now() + i, ...p })), education: (parsedJson.education || []).map((edu, i) => ({ id: Date.now() + i, ...edu })), awards: (parsedJson.awards || []).map((a, i) => ({ id: Date.now() + i, ...a })), skills: (parsedJson.skills || []).map((skill, i) => ({ id: Date.now() + i, name: skill, level: 3, category: 'Général' })), languages: (parsedJson.languages || []).map((lang, i) => ({ id: Date.now() + i, ...lang })), hobbies: (parsedJson.hobbies || []).map((hobby, i) => ({ id: Date.now() + i, name: hobby, icon: 'Heart' })) }));
-                    } else { throw new Error("Invalid response structure from AI."); }
-                } catch (e) { console.error("AI Generation Error:", e); setAiError("Le service IA est momentanément indisponible. " + e.message); } finally { setIsAiLoading(false); }
-            };
+        // --- RENDER FUNCTIONS ---
+        
+        function renderApp() {
+            const appContainer = document.getElementById('app');
+            const mainContentClass = state.focusMode ? 'grid-cols-1 justify-center' : 'grid-cols-1 xl:grid-cols-[minmax(450px,1fr)_1.5fr]';
+            appContainer.innerHTML = `
+                <div class="max-w-screen-2xl mx-auto">
+                    ${renderHeaderControls()}
+                    <div id="main-content" class="grid ${mainContentClass} gap-8 items-start">
+                        <div id="editor-panel" class="bg-white rounded-lg shadow-sm overflow-hidden">${renderEditor()}</div>
+                        ${!state.focusMode ? `
+                        <div id="preview-panel" class="flex flex-col items-center sticky top-24">
+                            ${renderPreviewControls()}
+                            <div id="cv-outer-container" class="origin-top shadow-2xl transition-transform duration-300" style="transform: scale(${state.previewScale})">
+                                ${renderCV()}
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            attachEventListeners();
+            lucide.createIcons();
+            generateVCardQR();
+            renderSkillChart();
+        }
 
-            const handleAiInjection = async () => {
-                if (!injectionNotes.trim()) { setAiError("Veuillez entrer des notes à injecter."); return; }
-                setIsInjecting(true); setAiError('');
-                const prompt = `En tant qu'expert en recrutement, analyse les données de CV existantes et les notes supplémentaires, puis fusionne-les intelligemment. Met à jour les champs existants (comme la disponibilité ou le salaire) ou ajoute de nouvelles entrées (comme une expérience manquante) si nécessaire. Voici les données actuelles du CV au format JSON : ${JSON.stringify(cvData)}. Voici les notes à injecter : "${injectionNotes}". Renvoie l'intégralité des données du CV mises à jour, en respectant exactement le même format JSON. Ne renvoie que l'objet JSON brut.`;
-                try {
-                    const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", responseSchema: jsonSchemaForAI } };
-                    const result = await callApi(payload);
-                    if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0].text) {
-                        const updatedJson = JSON.parse(result.candidates[0].content.parts[0].text);
-                        // Merge intelligently to keep IDs
-                        const mergedData = {
-                            ...cvData,
-                            ...updatedJson,
-                            experiences: updatedJson.experiences.map((exp, i) => ({...cvData.experiences[i], ...exp, id: cvData.experiences[i]?.id || Date.now() + i})),
-                            // ... add similar logic for other arrays to preserve IDs
-                        };
-                        setCvData(mergedData);
-                        await handleGenerateSalesEmail(mergedData);
-                    } else { throw new Error("Invalid response structure from AI."); }
-                } catch (e) { console.error("AI Injection Error:", e); setAiError("Erreur lors de la mise à jour par l'IA. " + e.message); } finally { setIsInjecting(false); }
-            };
-            
-            const handleGenerateSalesEmail = async (currentCvData = cvData) => {
-                setIsGeneratingEmail(true); setAiError('');
-                const prompt = `En tant qu'expert en recrutement, rédige un email de vente concis et percutant pour présenter le profil suivant à un potentiel employeur. Mets en avant les points forts du candidat en te basant sur son résumé, sa dernière expérience, et ses compétences clés. L'email doit être professionnel et inclure un appel à l'action clair. Ne mentionne PAS le nom de famille du candidat. Ne termine PAS par une formule de politesse ou une signature (ex: "Cordialement,"). Voici les données du CV : ${JSON.stringify(currentCvData)}. Ne renvoie que le texte brut du corps de l'email, sans la ligne "Objet:" ou "Subject:".`;
-                try {
-                    const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
-                    const result = await callApi(payload);
-                    if (result.candidates && result.candidates[0].content.parts[0].text) {
-                        setSalesEmail(result.candidates[0].content.parts[0].text);
-                    } else { throw new Error("Invalid response structure from AI."); }
-                } catch (e) { console.error("AI Email Generation Error:", e); setAiError("Erreur lors de la génération de l'email. " + e.message); } finally { setIsGeneratingEmail(false); }
-            };
-            
-            const copyToClipboard = (text) => {
-                navigator.clipboard.writeText(text).then(() => {
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 2000);
-                }).catch(err => console.error('Failed to copy: ', err));
-            };
-            
-            // --- RENDER FUNCTIONS ---
-            const IconComponent = ({ name, ...props }) => { const Icon = hobbyIcons[name] || hobbyIcons.default; return <Icon {...props} />; };
-            const Tooltip = ({ text, children }) => ( <div className="relative group flex items-center"> {children} <div className="absolute bottom-full mb-2 w-max bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30"> {text} </div> </div> );
-            const Accordion = ({ title, icon: Icon, children, defaultOpen = false }) => {
-                const [isOpen, setIsOpen] = useState(defaultOpen);
-                return (
-                    <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
-                        <header>
-                            <button onClick={() => setIsOpen(!isOpen)} className="w-full flex justify-between items-center p-4 font-bold text-gray-800 hover:bg-gray-50 transition-colors">
-                                <div className="flex items-center"> {Icon && <Icon className="mr-3 text-indigo-600" size={20} />} <span className="text-md">{title}</span> </div>
-                                <LucideIcons.ChevronDown size={20} className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+        function renderHeaderControls() {
+            return `
+                <header class="bg-white rounded-xl shadow-md p-4 mb-6 flex flex-wrap justify-between items-center gap-4 sticky top-4 z-30">
+                    <h1 class="text-xl font-bold text-gray-800 flex items-center gap-2"><i data-lucide="file-text" class="text-indigo-600"></i>Créateur de CV Expert</h1>
+                    <div class="flex items-center flex-wrap gap-2">
+                         <div class="tooltip">
+                            <button id="toggle-focus-mode" class="p-2 rounded-lg transition-colors ${state.focusMode ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'}">
+                                <i data-lucide="pen-square" class="w-4 h-4"></i>
                             </button>
-                        </header>
-                        {isOpen && ( <section className="overflow-hidden"> <div className="p-5 border-t border-gray-200">{children}</div> </section> )}
-                    </div>
-                );
-            };
-            const InputField = ({ label, value, onChange, placeholder, Icon, type = 'text' }) => (
-                <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1 flex items-center"> {Icon && <Icon size={14} className="mr-2" />} {label} </label>
-                    <input type={type} value={value} onChange={onChange} placeholder={placeholder} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
-                </div>
-            );
-            const TextareaField = ({ label, value, onChange, placeholder, Icon, rows = 3, children }) => (
-                <div>
-                    <div className="flex justify-between items-center mb-1">
-                        <label className="block text-sm font-medium text-gray-600 flex items-center"> {Icon && <Icon size={14} className="mr-2" />} {label} </label>
-                        <div className="flex items-center gap-2">{children}</div>
-                    </div>
-                    <textarea value={value} onChange={onChange} placeholder={placeholder} rows={rows} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
-                </div>
-            );
-
-            const renderCV = () => {
-                const pData = isAnonymized ? { ...cvData.personal, lastName: `${cvData.personal.lastName.charAt(0)}.`, email: '', phone: '', address: '' } : cvData.personal;
-                const getBlock = (id) => {
-                    const sectionMap = {
-                        personal: () => renderHeader(pData),
-                        socials: () => cvData.socials?.length > 0 && visibility.socials ? renderSocials() : null,
-                        experiences: () => cvData.experiences?.length > 0 ? renderExperiences() : null,
-                        projects: () => cvData.projects?.length > 0 ? renderProjects() : null,
-                        education: () => cvData.education?.length > 0 ? renderEducation() : null,
-                        awards: () => cvData.awards?.length > 0 ? renderAwards() : null,
-                        skills: () => cvData.skills?.length > 0 && visibility.skills ? renderSkills() : null,
-                        languages: () => cvData.languages?.length > 0 && visibility.languages ? renderLanguages() : null,
-                        hobbies: () => cvData.hobbies?.length > 0 && visibility.hobbies ? renderHobbies() : null,
-                    };
-                    if (id.startsWith('custom-')) {
-                        const section = cvData.customSections.find(s => `custom-${s.id}` === id);
-                        return section ? renderCustomSection(section) : null;
-                    }
-                    return sectionMap[id] ? sectionMap[id]() : null;
-                };
-
-                const renderHeader = (personalData) => ( <div className={`cv-header flex flex-col ${headerAlignment === 'center' ? 'items-center text-center' : 'items-start text-left'}`} style={{ marginBottom: `${sectionSpacing}rem` }}> {photo && !isAnonymized && ( <img src={photo} alt="User" className={`mb-4 w-32 h-32 object-cover shadow-lg`} style={{ borderRadius: photoShape === 'round' ? '50%' : '0.75rem' }} /> )} <h1 className="font-bold mb-1 text-gray-900" style={{ fontSize: `${nameFontSize}pt` }}> {personalData.firstName} {personalData.lastName} </h1> <h2 className="text-xl mb-3 font-medium" style={{ color: (palettes[activePalette] || {}).primary }}> {personalData.title} </h2> {!isAnonymized && ( <div className={`flex flex-wrap ${headerAlignment === 'center' ? 'justify-center' : ''} gap-x-6 gap-y-2 text-gray-600 mb-4 text-sm`}> <div className="flex items-center gap-2"><LucideIcons.Mail size={14} />{personalData.email}</div> <div className="flex items-center gap-2"><LucideIcons.Phone size={14} />{personalData.phone}</div> <div className="flex items-center gap-2"><LucideIcons.MapPin size={14} />{personalData.address}</div> </div> )} <div className={`flex flex-wrap ${headerAlignment === 'center' ? 'justify-center' : ''} gap-x-6 gap-y-2 text-gray-600 mb-4 text-sm`}> {(personalData.availability) && <div className="flex items-center gap-2"><LucideIcons.Calendar size={14} />{personalData.availability}</div>} {(personalData.location) && <div className="flex items-center gap-2"><LucideIcons.Map size={14} />{personalData.location}</div>} {(personalData.salaryExpectations) && <div className="flex items-center gap-2"><LucideIcons.Euro size={14} />{personalData.salaryExpectations}</div>} </div> {personalData.summary && <p className="text-gray-700 leading-relaxed max-w-3xl"> {personalData.summary} </p>} </div> );
-                const renderSection = (title, content, Icon = LucideIcons.Star) => ( <div className="cv-section" style={{ marginBottom: `${sectionSpacing}rem` }}> <h3 className={`font-bold mb-3 tracking-wider flex items-center gap-2 border-b-2 pb-1`} style={{ color: (palettes[activePalette] || {}).primary, borderColor: (palettes[activePalette] || {}).primary, fontSize: `${sectionTitleFontSize}pt`, textTransform: 'uppercase' }}> <Icon size={16}/> <span>{title}</span> </h3> {content} </div> );
-                const renderExperiences = () => renderSection('Expérience Professionnelle', <div className={`space-y-4 ${experienceStyle === 'timeline' ? 'timeline' : ''}`}> {cvData.experiences.filter(e => visibility.experiences[e.id]).map(e => ( <div key={e.id} className={`cv-item relative ${experienceStyle === 'timeline' ? 'timeline-item pb-4' : ''}`}> <div className="flex justify-between items-start mb-1"> <div> <h4 className="font-semibold text-base">{e.position}</h4> <p className="font-medium" style={{ color: (palettes[activePalette] || {}).accent }}>{e.company}</p> </div> <span className="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">{e.startDate} - {e.endDate}</span> </div> {e.description && <p className="text-gray-600">{e.description}</p>} </div> ))} </div>, LucideIcons.Briefcase );
-                const renderSkills = () => renderSection('Compétences', <div> {Object.entries(cvData.skills.reduce((acc, skill) => { (acc[skill.category] = acc[skill.category] || []).push(skill); return acc; }, {})).map(([category, skills]) => ( <div key={category} className="mb-3"> <h5 className="font-bold text-sm mb-2 text-gray-600">{category}</h5> <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6" style={{ gapY: `${itemSpacing / 2}rem` }}> {skills.map(skill => ( <div key={skill.id}> <div className="flex items-center gap-2"><span className="font-medium">{skill.name}</span></div> <div className="w-full bg-gray-200 rounded-full h-2 mt-1"><div className="h-2 rounded-full" style={{ width: `${skill.level * 20}%`, backgroundColor: (palettes[activePalette] || {}).primary }}></div></div> </div> ))} </div> </div> ))} </div>, LucideIcons.Code);
-                // ... other render functions (projects, education, etc.) can be defined similarly
-                const renderProjects = () => renderSection('Projets', <div>{/* ... */}</div>);
-                const renderEducation = () => renderSection('Formation', <div>{/* ... */}</div>);
-                const renderAwards = () => renderSection('Récompenses', <div>{/* ... */}</div>);
-                const renderLanguages = () => renderSection('Langues', <div>{/* ... */}</div>);
-                const renderHobbies = () => renderSection('Centres d\'intérêt', <div>{/* ... */}</div>);
-                const renderSocials = () => renderSection('Réseaux & Liens', <div>{/* ... */}</div>);
-                const renderCustomSection = (section) => renderSection(section.title, <p>{section.content}</p>);
-
-                const { left: leftCol, right: rightCol } = { 'large-right': { left: 'w-1/3', right: 'w-2/3' }, 'equal': { left: 'w-1/2', right: 'w-1/2' }, 'large-left': { left: 'w-2/3', right: 'w-1/3' } }[columnRatio];
-                const content = activeLayout === 'two' ? ( <div className="flex h-full" style={{ gap: `${pagePadding}rem` }}> <div className={`${leftCol} flex flex-col`}>{columnAssignment.left.map(id => <React.Fragment key={id}>{getBlock(id)}</React.Fragment>)}</div> <div className={`${rightCol} flex flex-col`}>{columnAssignment.right.map(id => <React.Fragment key={id}>{getBlock(id)}</React.Fragment>)}</div> </div> ) : ( <React.Fragment> {getBlock('personal')} <div className="flex flex-col">{blockOrder.map(id => <React.Fragment key={id}>{getBlock(id)}</React.Fragment>)}</div> </React.Fragment> );
-                
-                return (
-                    <div id="cv-preview-container" className="bg-white" style={{ width: '210mm', height: '297mm', boxSizing: 'border-box', overflow: 'hidden' }}>
-                        <div id="cv-preview" className={`text-gray-800`} style={{ fontFamily: fonts[activeFont].family, backgroundColor: '#ffffff', boxSizing: 'border-box', width: '100%', height: '100%', '--primary-color': (palettes[activePalette] || {}).primary }}>
-                            <div ref={cvContentRef} className="h-full w-full flex flex-col relative" style={{ fontSize: `${baseFontSize}pt`, lineHeight: lineHeight }}>
-                                {showRecruiterBanner && <div className="flex justify-between items-center p-4 border-b-2" style={{ borderColor: (palettes[activePalette] || {}).primary }}> <div className="text-2xl font-bold" style={{ color: (palettes[activePalette] || {}).accent }}>{recruiterData.company}</div> <div className="text-right text-xs"> <p className="font-bold">{recruiterData.name}</p> <p>{recruiterData.title}</p> <p>Fixe: {recruiterData.phone} / Mobile: {recruiterData.mobile}</p> <p>Mail: {recruiterData.email}</p> </div> </div>}
-                                <div className="flex-grow" style={{padding: `${pagePadding}rem`}}>{content}</div>
-                                {showVCardQR && !isAnonymized && <div ref={vCardQrCodeRef} className="absolute bottom-4 right-4 bg-white p-2 rounded-md shadow-lg"></div>}
+                            <span class="tooltip-text">Mode Focus</span>
+                        </div>
+                        <div class="tooltip">
+                            <button id="randomize-design" class="p-2 rounded-lg transition-colors bg-purple-100 text-purple-700 hover:bg-purple-200">
+                                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                            </button>
+                            <span class="tooltip-text">Design Aléatoire</span>
+                        </div>
+                        <div class="tooltip">
+                            <button id="share-cv" class="p-2 rounded-lg transition-colors bg-blue-100 text-blue-700 hover:bg-blue-200">
+                                <i data-lucide="share-2" class="w-4 h-4"></i>
+                            </button>
+                            <span class="tooltip-text">Partager le CV</span>
+                        </div>
+                         <div class="tooltip">
+                            <button id="summarize-cv-btn" class="p-2 rounded-lg transition-colors bg-yellow-100 text-yellow-700 hover:bg-yellow-200">
+                                <i data-lucide="file-text" class="w-4 h-4"></i>
+                            </button>
+                            <span class="tooltip-text">Synthétiser le CV</span>
+                        </div>
+                        <div class="tooltip">
+                            <button id="toggle-anonymize" class="p-2 rounded-lg transition-colors ${state.isAnonymized ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'}">
+                                <i data-lucide="shield-check" class="w-4 h-4"></i>
+                            </button>
+                            <span class="tooltip-text">${state.isAnonymized ? "Désanonymiser" : "Anonymiser"}</span>
+                        </div>
+                        <div class="relative inline-block">
+                            <button id="export-dropdown-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center justify-center gap-2 transition-colors w-[180px]">
+                                <i data-lucide="download" class="w-4 h-4"></i> Télécharger <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                            </button>
+                            <div id="export-options" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-20">
+                                <a href="#" id="generate-pdf" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">PDF</a>
+                                <a href="#" id="export-txt" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Fichier Texte (.txt)</a>
+                                <a href="#" id="export-md" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Markdown (.md)</a>
                             </div>
                         </div>
                     </div>
-                );
-            };
-            
-            // --- RENDER EDITOR ---
-            const isCvEmpty = !cvData.personal.firstName && !cvData.personal.lastName && cvData.experiences.length === 0;
-            
-            const renderEditor = () => (
-                <div className="bg-white rounded-xl shadow-sm">
-                    <div className="border-b border-gray-200">
-                        <nav className="-mb-px flex space-x-1 overflow-x-auto p-2" aria-label="Tabs">
-                            {editorTabs.map(tab => (
-                                <button key={tab.id} onClick={() => setActiveEditorTab(tab.id)} className={`whitespace-nowrap flex items-center py-3 px-4 font-medium text-sm rounded-lg transition-colors ${activeEditorTab === tab.id ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}>
-                                    <tab.icon className="mr-2 h-5 w-5" />
-                                    {tab.label}
-                                </button>
-                            ))}
-                        </nav>
-                    </div>
+                </header>
+            `;
+        }
 
-                    <div className="p-6">
-                        {activeEditorTab === 'ia' && (
-                            <div className="space-y-4">
-                                <TextareaField label="Copiez et collez le contenu de votre CV ici" value={aiInput} onChange={(e) => setAiInput(e.target.value)} placeholder={"Ex: Léa Martin\nDéveloppeuse Full-Stack..."} rows={6} Icon={LucideIcons.FileText} />
-                                <button onClick={handleAiGenerate} disabled={isAiLoading} className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center justify-center gap-2 transition-colors disabled:bg-indigo-300"> {isAiLoading ? <LucideIcons.LoaderCircle size={16} className="animate-spin" /> : <LucideIcons.Sparkles size={16} />} {isAiLoading ? 'Analyse...' : 'Remplir le formulaire'} </button>
-                                {aiError && <p className="text-red-500 text-sm mt-2">{aiError}</p>}
+        function renderPreviewControls() {
+            return `
+                <div class="w-full flex justify-center items-center gap-2 mb-4 bg-white p-2 rounded-lg shadow-sm">
+                    <div class="tooltip"><button id="zoom-out" class="p-2 rounded-full hover:bg-gray-100"><i data-lucide="zoom-out" class="w-4 h-4"></i></button><span class="tooltip-text">Zoom arrière</span></div>
+                    <input type="range" id="zoom-slider" min="0.3" max="1.5" step="0.01" value="${state.previewScale}" class="w-32">
+                    <div class="tooltip"><button id="zoom-in" class="p-2 rounded-full hover:bg-gray-100"><i data-lucide="zoom-in" class="w-4 h-4"></i></button><span class="tooltip-text">Zoom avant</span></div>
+                    <div class="tooltip"><button id="zoom-reset" class="p-2 rounded-full hover:bg-gray-100"><i data-lucide="rotate-cw" class="w-4 h-4"></i></button><span class="tooltip-text">Réinitialiser</span></div>
+                    <span class="text-sm font-mono text-gray-500">${Math.round(state.previewScale * 100)}%</span>
+                </div>
+            `;
+        }
+
+        // --- CV Rendering ---
+
+        function renderCV() {
+            const { cvData, activeTemplate, activeFont, backgroundColor, pagePadding, baseFontSize, lineHeight, activePalette, watermarkText, watermarkOpacity } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
+
+            const personalDataForRender = state.isAnonymized
+                ? { ...cvData.personal, lastName: `${cvData.personal.lastName.charAt(0)}.`, email: '', phone: '', address: '' }
+                : cvData.personal;
+
+            const getBlockComponent = (blockId) => {
+                 switch(blockId) {
+                    case 'personal': return renderCvHeader(personalDataForRender);
+                    case 'socials': return cvData.socials?.length > 0 && visibilityCheck(blockId) ? renderSocials() : '';
+                    case 'experiences': return cvData.experiences?.length > 0 && visibilityCheck(blockId) ? renderExperiences() : '';
+                    case 'projects': return cvData.projects?.length > 0 && visibilityCheck(blockId) ? renderProjects() : '';
+                    case 'education': return cvData.education?.length > 0 && visibilityCheck(blockId) ? renderEducation() : '';
+                    case 'awards': return cvData.awards?.length > 0 && visibilityCheck(blockId) ? renderAwards() : '';
+                    case 'skills': return cvData.skills?.length > 0 && visibilityCheck(blockId) ? renderSkills() : '';
+                    case 'softSkills': return cvData.softSkills?.length > 0 && visibilityCheck(blockId) ? renderSoftSkills() : '';
+                    case 'languages': return cvData.languages?.length > 0 && visibilityCheck(blockId) ? renderLanguages() : '';
+                    case 'hobbies': return cvData.hobbies?.length > 0 && visibilityCheck(blockId) ? renderHobbies() : '';
+                    default: 
+                        if (blockId.startsWith('custom-')) {
+                            const section = cvData.customSections.find(s => `custom-${s.id}` === blockId);
+                            return section && visibilityCheck(blockId) ? renderCustomSection(section) : '';
+                        }
+                        return '';
+                }
+            };
+
+            const { left: leftColClass, right: rightColClass } = {
+                'large-right': { left: 'w-1/3', right: 'w-2/3' },
+                'equal': { left: 'w-1/2', right: 'w-1/2' },
+                'large-left': { left: 'w-2/3', right: 'w-1/3' },
+            }[state.columnRatio];
+
+            let cvContent;
+            if (state.activeLayout === 'two') {
+                cvContent = `
+                    <div class="flex h-full" style="gap: ${pagePadding}rem">
+                        <div class="${leftColClass} flex flex-col">
+                            ${state.columnAssignment.left.map(blockId => getBlockComponent(blockId)).join('')}
+                        </div>
+                        <div class="${rightColClass} flex flex-col">
+                            ${state.columnAssignment.right.map(blockId => getBlockComponent(blockId)).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                cvContent = `
+                    ${getBlockComponent('personal')}
+                    <div class="flex flex-col">
+                        ${state.blockOrder.map(blockId => getBlockComponent(blockId)).join('')}
+                    </div>
+                `;
+            }
+
+            return `
+                <div id="cv-preview-container" class="bg-white">
+                    <div class="cv-page relative" style="--primary-color: ${currentPalette.primary};">
+                        <div id="cv-preview" class="text-gray-800 template-${activeTemplate}" style="font-family: ${fonts[activeFont].family}; background-color: ${backgroundColor}; box-sizing: border-box; width: 100%; height: 100%;">
+                            <div class="h-full w-full flex flex-col" style="font-size: ${baseFontSize}pt; line-height: ${lineHeight};">
+                                <header class="p-4 text-xs text-gray-500" style="padding: ${pagePadding}rem; padding-bottom: 0;">${state.headerText.replace('{page}', '1')}</header>
+                                <div class="flex-grow" style="padding: ${pagePadding}rem; paddingTop: 0; padding-bottom: 0;">${cvContent}</div>
+                                <footer class="p-4 text-xs text-gray-500 text-center" style="padding: ${pagePadding}rem; padding-top: 0;">${state.footerText.replace('{page}', '1')}</footer>
                             </div>
-                        )}
-                        {activeEditorTab === 'contenu' && (
-                            <div className="space-y-4">
-                                <Accordion title="Informations Personnelles" icon={LucideIcons.User} defaultOpen>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <InputField label="Prénom" value={cvData.personal.firstName} onChange={(e) => handleCvDataChange('personal', 'firstName', e.target.value)} Icon={LucideIcons.User} />
-                                        <InputField label="Nom" value={cvData.personal.lastName} onChange={(e) => handleCvDataChange('personal', 'lastName', e.target.value)} Icon={LucideIcons.User} />
-                                        {/* ... More fields ... */}
+                        </div>
+                        ${watermarkText ? `<div class="watermark" style="opacity: ${watermarkOpacity};">${watermarkText}</div>` : ''}
+                        ${state.showMarginGuides ? `
+                            <div class="absolute top-0 left-0 bottom-0 bg-indigo-500/10" style="width: ${pagePadding}rem;"></div>
+                            <div class="absolute top-0 right-0 bottom-0 bg-indigo-500/10" style="width: ${pagePadding}rem;"></div>
+                            <div class="absolute top-0 left-0 right-0 bg-indigo-500/10" style="height: ${pagePadding}rem;"></div>
+                            <div class="absolute bottom-0 left-0 right-0 bg-indigo-500/10" style="height: ${pagePadding}rem;"></div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderCvHeader(personalData) {
+            const { sectionSpacing, photo, photoShape, nameFontSize, activePalette, headerAlignment, visibility } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
+            const alignClasses = {
+                left: 'items-start text-left',
+                center: 'items-center text-center'
+            };
+            return `
+                <div class="cv-header flex flex-col ${alignClasses[headerAlignment]}" style="margin-bottom: ${sectionSpacing}rem;">
+                    ${photo && !state.isAnonymized ? `
+                        <img src="${photo}" alt="User" class="mb-4 w-32 h-32 object-cover shadow-lg" style="border-radius: ${photoShape === 'round' ? '50%' : '0.75rem'};">
+                    ` : ''}
+                    <h1 class="font-bold mb-1 text-gray-900" style="font-size: ${nameFontSize}pt;">
+                        ${visibility.personal.firstName ? personalData.firstName : ''} ${visibility.personal.lastName ? personalData.lastName : ''}
+                    </h1>
+                    ${visibility.personal.title ? `<h2 class="text-xl mb-3 font-medium" style="color: ${currentPalette.primary};">${personalData.title}</h2>` : ''}
+                    ${!state.isAnonymized ? `
+                        <div class="flex flex-wrap ${headerAlignment === 'center' ? 'justify-center' : ''} gap-x-6 gap-y-2 text-gray-600 mb-4 text-sm">
+                            ${visibility.personal.email ? `<div class="flex items-center gap-2"><i data-lucide="mail" class="w-3.5 h-3.5"></i>${personalData.email}</div>` : ''}
+                            ${visibility.personal.phone ? `<div class="flex items-center gap-2"><i data-lucide="phone" class="w-3.5 h-3.5"></i>${personalData.phone}</div>` : ''}
+                            ${visibility.personal.address ? `<div class="flex items-center gap-2"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i>${personalData.address}</div>` : ''}
+                        </div>
+                    ` : ''}
+                    ${visibility.personal.summary ? `<p class="text-gray-700 leading-relaxed max-w-3xl">${personalData.summary}</p>` : ''}
+                </div>
+            `;
+        }
+
+        function renderSection(title, content, iconName = 'briefcase') {
+            const { sectionTitleStyle, activePalette, sectionTitleFontSize, sectionSpacing, textTransform, letterSpacing, dividerStyle } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
+            const titleStyles = {
+                border: `border-b-2 pb-1`,
+                background: `p-2 rounded-md`,
+                simple: ``,
+            };
+            const titleColor = sectionTitleStyle === 'background' ? currentPalette.textOnPrimary : currentPalette.primary;
+            const titleBg = sectionTitleStyle === 'background' ? currentPalette.primary : 'transparent';
+            const dividerHtml = {
+                solid: '<hr class="my-2 border-gray-200">',
+                dotted: '<hr class="my-2 border-dotted border-gray-300">',
+                none: ''
+            }[dividerStyle] || '';
+
+            return `
+                <div class="cv-section" style="margin-bottom: ${sectionSpacing}rem;">
+                    <h3 class="font-bold mb-3 tracking-wider flex items-center gap-2 ${titleStyles[sectionTitleStyle]}" style="color: ${titleColor}; background-color: ${titleBg}; border-color: ${currentPalette.primary}; font-size: ${sectionTitleFontSize}pt; text-transform: ${textTransform}; letter-spacing: ${letterSpacing}px;">
+                        <i data-lucide="${iconName}" class="w-4 h-4"></i>
+                        <span>${title}</span>
+                    </h3>
+                    ${content}
+                    ${dividerHtml}
+                </div>
+            `;
+        }
+
+        function renderExperiences() {
+            const { cvData, itemSpacing, activePalette, visibility, experienceStyle } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
+            
+            const items = cvData.experiences.filter(exp => visibility.experiences[exp.id]).map(exp => `
+                <div class="cv-item relative ${experienceStyle === 'timeline' ? 'timeline-item pb-4' : ''}">
+                    <div class="flex justify-between items-start mb-1">
+                        <div>
+                            <h4 class="font-semibold text-base">${exp.position}</h4>
+                            <p class="font-medium" style="color: ${currentPalette.accent};">${exp.company}</p>
+                        </div>
+                        <span class="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">${exp.startDate} - ${exp.endDate}</span>
+                    </div>
+                    <p class="text-gray-600">${exp.description}</p>
+                </div>
+            `).join('');
+
+            const content = `
+                <div style="display: flex; flex-direction: column; gap: ${itemSpacing}rem;" class="${experienceStyle === 'timeline' ? 'timeline' : ''}">
+                    ${items}
+                </div>
+            `;
+            return renderSection('Expérience Professionnelle', content, state.sectionIcons.experiences);
+        }
+        
+        function renderEducation() {
+            const { cvData, itemSpacing, activePalette, visibility, experienceStyle } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
+
+             const items = cvData.education.filter(edu => visibility.education[edu.id]).map(edu => `
+                <div class="cv-item relative ${experienceStyle === 'timeline' ? 'timeline-item pb-4' : ''}">
+                    <div class="flex justify-between items-start mb-1">
+                        <div>
+                            <h4 class="font-semibold text-base">${edu.degree}</h4>
+                            <p class="font-medium" style="color: ${currentPalette.accent};">${edu.institution}</p>
+                        </div>
+                        <span class="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">${edu.startDate} - ${edu.endDate}</span>
+                    </div>
+                    <p class="text-gray-600">${edu.description}</p>
+                </div>
+            `).join('');
+
+            const content = `
+                <div style="display: flex; flex-direction: column; gap: ${itemSpacing}rem;" class="${experienceStyle === 'timeline' ? 'timeline' : ''}">
+                   ${items}
+                </div>
+            `;
+            return renderSection('Formation', content, state.sectionIcons.education);
+        }
+
+        function renderSocials() {
+            const { cvData, visibility } = state;
+            const content = `
+                <div class="flex flex-wrap gap-4">
+                    ${cvData.socials.filter(s => visibility.socials[s.id]).map(social => `
+                        <a href="${social.url}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 text-gray-700 hover:text-[var(--primary-color)] transition-colors">
+                            <i data-lucide="${socialIcons[social.network] || socialIcons.default}" class="w-4 h-4"></i>
+                            <span class="text-sm">${social.url.replace(/^(https?:\/\/)?(www\.)?/, '')}</span>
+                        </a>
+                    `).join('')}
+                </div>
+            `;
+            return renderSection('Réseaux & Liens', content, state.sectionIcons.socials);
+        }
+
+        function renderCustomSection(section) {
+            return renderSection(section.title, `<p class="text-gray-600">${section.content}</p>`, state.sectionIcons[`custom-${section.id}`] || 'star');
+        }
+
+        function renderProjects() {
+            const { cvData, itemSpacing, activePalette, visibility } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
+            const content = `
+                <div style="display: flex; flex-direction: column; gap: ${itemSpacing}rem;">
+                    ${(cvData.projects || []).filter(p => visibility.projects[p.id]).map(p => `
+                        <div class="cv-item">
+                            <div class="flex justify-between items-start mb-1">
+                                <h4 class="font-semibold text-base">${p.name}</h4>
+                                ${p.url ? `<a href="${p.url}" target="_blank" rel="noopener noreferrer" class="font-mono text-sm" style="color: ${currentPalette.primary};">Voir le projet</a>` : ''}
+                            </div>
+                            <p class="text-gray-600">${p.description}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            return renderSection('Projets', content, state.sectionIcons.projects);
+        }
+
+        function renderAwards() {
+            const { cvData, itemSpacing, activePalette, visibility } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
+            const content = `
+                <div style="display: flex; flex-direction: column; gap: ${itemSpacing}rem;">
+                    ${(cvData.awards || []).filter(a => visibility.awards[a.id]).map(award => `
+                        <div class="cv-item">
+                            <div class="flex justify-between items-start mb-1">
+                                <div>
+                                    <h4 class="font-semibold text-base">${award.name}</h4>
+                                    <p class="font-medium" style="color: ${currentPalette.accent};">${award.issuer}</p>
+                                </div>
+                                <span class="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">${award.date}</span>
+                            </div>
+                            <p class="text-gray-600">${award.description}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            return renderSection('Récompenses', content, state.sectionIcons.awards);
+        }
+
+        function renderSkills() {
+            const { cvData, itemSpacing, skillDisplayStyle, activePalette } = state;
+            if (skillDisplayStyle === 'radar') {
+                return renderSection('Compétences', '<div class="w-full max-w-md mx-auto"><canvas id="skill-chart"></canvas></div>', state.sectionIcons.skills);
+            }
+            const currentPalette = palettes[activePalette] || state.customPalette;
+            const groupedSkills = cvData.skills.reduce((acc, skill) => {
+                const category = skill.category || 'Autres';
+                if (!acc[category]) {
+                    acc[category] = [];
+                }
+                acc[category].push(skill);
+                return acc;
+            }, {});
+
+            const content = Object.keys(groupedSkills).map(category => `
+                <div class="mb-3">
+                    <h5 class="font-bold text-sm mb-2 text-gray-600">${category}</h5>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6" style="gap-y: ${itemSpacing/2}rem;">
+                        ${groupedSkills[category].map(skill => `
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    ${skill.icon ? `<i data-lucide="${skill.icon}" class="w-3.5 h-3.5 text-gray-500"></i>` : ''}
+                                    <span class="font-medium">${skill.name}</span>
+                                </div>
+                                ${skillDisplayStyle === 'stars' ? `
+                                    <div class="flex items-center mt-1">
+                                        ${[...Array(5)].map((_, i) => `
+                                            <i data-lucide="star" class="w-4 h-4 ${i < skill.level ? 'fill-current' : ''}" style="color: ${i < skill.level ? currentPalette.primary : '#e0e0e0'};"></i>
+                                        `).join('')}
                                     </div>
-                                </Accordion>
-                                <Accordion title="Expériences" icon={LucideIcons.Briefcase}>
-                                    <div className="space-y-4">
-                                        {cvData.experiences.map((exp, index) => (
-                                            <div key={exp.id} className="p-4 border rounded-lg bg-gray-50 space-y-3 relative">
-                                                <div className="flex justify-between items-center">
-                                                    <h4 className="font-semibold">Expérience #{index + 1}</h4>
-                                                    <button onClick={() => removeListItem('experiences', exp.id)} className="p-1 text-red-500 hover:bg-red-100 rounded-full"><LucideIcons.Trash2 size={16} /></button>
-                                                </div>
-                                                {/* ... Experience fields ... */}
-                                            </div>
-                                        ))}
-                                        <button onClick={() => addListItem('experiences')} className="w-full px-4 py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 flex items-center justify-center gap-2 transition-colors">
-                                            <LucideIcons.Plus size={16} /> Ajouter une expérience
+                                ` : `
+                                    <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                                        <div class="h-2 rounded-full" style="width: ${skill.level * 20}%; background-color: ${currentPalette.primary};"></div>
+                                    </div>
+                                `}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+            
+            return renderSection('Compétences', content, state.sectionIcons.skills);
+        }
+
+        function renderSoftSkills() {
+            const { cvData, itemSpacing, activePalette } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
+            const content = `
+                <div class="flex flex-wrap gap-2">
+                    ${(cvData.softSkills || []).map(skill => `
+                        <div class="flex items-center gap-2 p-2 rounded-lg" style="background-color: ${currentPalette.secondary}; color: ${currentPalette.accent};">
+                            <i data-lucide="check-circle" class="w-4 h-4"></i>
+                            <span class="text-sm font-medium">${skill.name}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            return renderSection('Qualités Humaines', content, state.sectionIcons.softSkills);
+        }
+
+        function renderLanguages() {
+            const { cvData, itemSpacing } = state;
+            const content = `
+                <div style="display: flex; flex-direction: column; gap: ${itemSpacing / 4}rem;">
+                    ${cvData.languages.map(lang => `
+                        <div class="flex justify-between py-1">
+                            <span class="font-medium">${lang.name}</span>
+                            <span class="text-gray-600">${lang.level}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            return renderSection('Langues', content, state.sectionIcons.languages);
+        }
+
+        function renderHobbies() {
+            const { cvData, itemSpacing, activePalette } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
+            const content = `
+                <div class="flex flex-wrap" style="gap: ${itemSpacing/2}rem;">
+                    ${cvData.hobbies.map(hobby => `
+                        <div class="flex items-center p-2 bg-gray-100 rounded-lg">
+                            <i data-lucide="${hobby.icon}" class="w-3.5 h-3.5 mr-2" style="color: ${currentPalette.primary};"></i>
+                            <span>${hobby.name}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            return renderSection('Centres d\'intérêt', content, state.sectionIcons.hobbies);
+        }
+        
+        // --- Editor Rendering ---
+
+        function renderAccordion(title, icon, content, defaultOpen = false, id) {
+            const isOpen = state.openAccordions[id];
+            return `
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden border my-4">
+                    <button data-accordion-id="${id}" class="accordion-toggle w-full flex justify-between items-center p-4 font-bold text-gray-800 hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center">
+                            <i data-lucide="${icon}" class="mr-3 text-indigo-600 w-5 h-5"></i>
+                            <span class="text-md">${title}</span>
+                        </div>
+                        <i data-lucide="chevron-down" class="transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''} w-5 h-5"></i>
+                    </button>
+                    <div class="accordion-content ${isOpen ? 'open' : ''} border-t border-gray-200">
+                        <div class="p-5">${content}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderInputField(label, value, dataPath, placeholder, icon, type = 'text') {
+            const visibilityPath = dataPath.replace('cvData.', '');
+            const isVisible = getValueFromPath(state.visibility, visibilityPath);
+            return `
+                <div class="mb-4">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-sm font-medium text-gray-600 flex items-center">
+                            ${icon ? `<i data-lucide="${icon}" class="w-3.5 h-3.5 mr-2"></i>` : ''}
+                            ${label}
+                        </label>
+                        <button class="toggle-field-visibility p-1" data-path="${visibilityPath}">
+                             <i data-lucide="${isVisible ? 'eye' : 'eye-off'}" class="w-4 h-4 text-gray-400 hover:text-gray-600"></i>
+                        </button>
+                    </div>
+                    <input
+                        type="${type}"
+                        value="${value || ''}"
+                        data-path="${dataPath}"
+                        placeholder="${placeholder || label}"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                    />
+                </div>
+            `;
+        }
+
+        function renderTextareaField(label, value, dataPath, placeholder, icon, rows = 3, aiContext = '') {
+             const visibilityPath = dataPath.replace('cvData.', '');
+            const isVisible = getValueFromPath(state.visibility, visibilityPath);
+            return `
+                <div class="mb-4">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-sm font-medium text-gray-600 flex items-center">
+                            ${icon ? `<i data-lucide="${icon}" class="w-3.5 h-3.5 mr-2"></i>` : ''}
+                            ${label}
+                        </label>
+                        <div class="flex items-center gap-2">
+                             <button class="generate-ai-text text-xs text-purple-600 hover:text-purple-800 flex items-center gap-1" data-path="${dataPath}" data-context="${aiContext}">
+                                <i data-lucide="sparkles" class="w-3 h-3"></i> IA
+                            </button>
+                            <button class="toggle-field-visibility p-1" data-path="${visibilityPath}">
+                                 <i data-lucide="${isVisible ? 'eye' : 'eye-off'}" class="w-4 h-4 text-gray-400 hover:text-gray-600"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <textarea
+                        data-path="${dataPath}"
+                        placeholder="${placeholder || label}"
+                        rows="${rows}"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                    >${value || ''}</textarea>
+                </div>
+            `;
+        }
+        
+        function renderSlider(label, value, dataPath, min, max, step) {
+            return `
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">${label}: <span class="font-mono text-indigo-600">${value}</span></label>
+                    <input type="range" min="${min}" max="${max}" step="${step}" value="${value}" data-path="${dataPath}" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+            `;
+        }
+
+        function renderEditorTabs() {
+            const tabs = [
+                { id: 'content', label: 'Contenu', icon: 'file-text' },
+                { id: 'design', label: 'Design', icon: 'palette' },
+                { id: 'layout', label: 'Mise en page', icon: 'layout-template' },
+                { id: 'tools', label: 'Outils', icon: 'wrench' }
+            ];
+
+            return `
+                <div class="flex border-b border-gray-200 flex-wrap">
+                    ${tabs.map(tab => `
+                        <button data-tab-id="${tab.id}" class="tab-btn flex items-center gap-2 ${state.activeEditorTab === tab.id ? 'active' : ''}">
+                            <i data-lucide="${tab.icon}" class="w-4 h-4"></i>
+                            <span>${tab.label}</span>
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function renderActiveTabContent() {
+            switch(state.activeEditorTab) {
+                case 'content':
+                    return `
+                        ${renderAccordion('Informations Personnelles', 'user', `
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                ${renderInputField('Prénom', state.cvData.personal.firstName, 'cvData.personal.firstName')}
+                                ${renderInputField('Nom', state.cvData.personal.lastName, 'cvData.personal.lastName')}
+                                <div class="md:col-span-2">${renderInputField('Titre du poste', state.cvData.personal.title, 'cvData.personal.title')}</div>
+                                ${renderInputField('Email', state.cvData.personal.email, 'cvData.personal.email')}
+                                ${renderInputField('Téléphone', state.cvData.personal.phone, 'cvData.personal.phone')}
+                                <div class="md:col-span-2">${renderInputField('Adresse', state.cvData.personal.address, 'cvData.personal.address')}</div>
+                                <div class="md:col-span-2">
+                                    ${renderTextareaField('Résumé', state.cvData.personal.summary, 'cvData.personal.summary', '', 'align-left', 4, `Pour un poste de ${state.cvData.personal.title}`)}
+                                </div>
+                            </div>
+                        `, true, 'personalInfo')}
+                        ${renderAccordion('Réseaux & Liens', 'link', `
+                            ${(state.cvData.socials || []).map((social, index) => `
+                                <div class="grid grid-cols-[1fr,2fr,auto] gap-2 items-center border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
+                                    <select data-path="cvData.socials.${index}.network" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                        ${Object.keys(socialIcons).map(net => `<option value="${net}" ${social.network === net ? 'selected' : ''}>${net.charAt(0).toUpperCase() + net.slice(1)}</option>`).join('')}
+                                    </select>
+                                    ${renderInputField('URL', social.url, `cvData.socials.${index}.url`)}
+                                    <button class="remove-list-item text-red-500 hover:text-red-700 p-2" data-section="socials" data-id="${social.id}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                </div>
+                            `).join('')}
+                            <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="socials"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter un lien</button>
+                        `, false, 'socials')}
+                        ${renderAccordion('Expériences', 'briefcase', `
+                            ${state.cvData.experiences.map((exp, index) => `
+                                <div class="border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
+                                    <div class="flex justify-end -mb-2">
+                                        <button class="toggle-item-visibility flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900" data-section="experiences" data-id="${exp.id}">
+                                            <i data-lucide="${state.visibility.experiences[exp.id] ? 'eye' : 'eye-off'}" class="w-4 h-4"></i>
+                                            <span>${state.visibility.experiences[exp.id] ? "Visible" : "Caché"}</span>
                                         </button>
                                     </div>
-                                </Accordion>
-                            </div>
-                        )}
-                        {/* ... Other tabs ... */}
-                    </div>
-                </div>
-            );
-
-            return (
-                <div className="min-h-screen bg-gray-50 p-2 md:p-6">
-                    <div className="max-w-screen-2xl mx-auto">
-                        <header className="bg-white rounded-xl shadow-md p-4 mb-6 flex flex-wrap justify-between items-center gap-4 sticky top-4 z-20">
-                            <h1 className="text-xl font-bold text-gray-800">Créateur de CV Pro</h1>
-                            <div className="flex items-center flex-wrap gap-2">
-                                <button onClick={generatePDF} disabled={isDownloadingPdf} className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center justify-center gap-2 transition-colors disabled:bg-indigo-300 w-[180px]"> {isDownloadingPdf ? <LucideIcons.LoaderCircle size={16} className="animate-spin" /> : <LucideIcons.Download size={16} />} {isDownloadingPdf ? 'Téléchargement...' : 'Télécharger PDF'} </button>
-                                <button onClick={generateWord} disabled={isDownloadingWord} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 transition-colors disabled:bg-blue-300 w-[180px]"> {isDownloadingWord ? <LucideIcons.LoaderCircle size={16} className="animate-spin" /> : <LucideIcons.FileText size={16} />} {isDownloadingWord ? 'Génération...' : 'Télécharger Word'} </button>
-                            </div>
-                        </header>
-                        <div className={`grid ${previewMode ? 'grid-cols-1' : 'grid-cols-1 xl:grid-cols-[1fr,1.5fr]'} gap-8 items-start`}>
-                            {!previewMode && ( <div className="space-y-6"> {renderEditor()} </div> )}
-                            <div className="flex flex-col items-center sticky top-28">
-                                {isOverflowing && !isCvEmpty && (
-                                    <div className="w-full flex items-center gap-3 bg-red-100 border border-red-400 text-red-800 px-4 py-2 rounded-lg mb-4">
-                                        <LucideIcons.AlertTriangle size={24} />
-                                        <div>
-                                            <h4 className="font-bold">Le contenu dépasse la page !</h4>
-                                            <p className="text-sm">Votre CV est trop long. Pensez à réduire le texte.</p>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        ${renderInputField(`Poste ${index+1}`, exp.position, `cvData.experiences.${index}.position`)}
+                                        ${renderInputField('Entreprise', exp.company, `cvData.experiences.${index}.company`)}
+                                        ${renderInputField('Date de début', exp.startDate, `cvData.experiences.${index}.startDate`)}
+                                        ${renderInputField('Date de fin', exp.endDate, `cvData.experiences.${index}.endDate`)}
+                                        <div class="md:col-span-2">${renderTextareaField('Description', exp.description, `cvData.experiences.${index}.description`, '', 'align-left', 4, `Description de mission pour le poste de ${exp.position} chez ${exp.company}`)}</div>
+                                        <div class="md:col-span-2 flex justify-end">
+                                            <button class="remove-list-item text-red-500 hover:text-red-700 text-sm flex items-center gap-1" data-section="experiences" data-id="${exp.id}"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Supprimer</button>
                                         </div>
                                     </div>
-                                )}
-                                <div className="w-full flex justify-center items-center gap-2 mb-4 bg-white p-2 rounded-lg shadow-sm">
-                                    <input type="range" min="0.3" max="1.5" step="0.01" value={previewScale} onChange={e => setPreviewScale(parseFloat(e.target.value))} className="w-32" />
-                                    <span className="text-sm font-mono text-gray-500">{Math.round(previewScale * 100)}%</span>
                                 </div>
-                                
-                                {isCvEmpty ? (
-                                    <div className="flex flex-col items-center justify-center text-center text-gray-500 bg-gray-100 rounded-lg p-10 w-[210mm]" style={{transform: `scale(${previewScale})`, height: '297mm'}}>
-                                        <LucideIcons.FileText size={48} className="mb-4" />
-                                        <h3 className="text-xl font-semibold text-gray-700">Votre CV est vide</h3>
-                                        <p className="mt-2 max-w-sm">Utilisez l'assistant IA ou remplissez les sections pour commencer.</p>
+                            `).join('')}
+                            <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="experiences"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter une expérience</button>
+                        `, false, 'experiences')}
+                         ${renderAccordion('Compétences', 'zap', `
+                            ${state.cvData.skills.map((skill, index) => `
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
+                                    ${renderInputField(`Catégorie`, skill.category, `cvData.skills.${index}.category`)}
+                                    ${renderInputField(`Compétence`, skill.name, `cvData.skills.${index}.name`)}
+                                    ${renderInputField(`Icône (Lucide)`, skill.icon, `cvData.skills.${index}.icon`)}
+                                    <div class="flex items-center">
+                                        <input type="range" min="1" max="5" value="${skill.level}" data-path="cvData.skills.${index}.level" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                        <button class="remove-list-item text-red-500 hover:text-red-700 ml-4" data-section="skills" data-id="${skill.id}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                                     </div>
-                                ) : (
-                                    <div ref={cvPreviewRef} className="origin-top shadow-2xl transition-transform duration-300" style={{ transform: `scale(${previewScale})` }}> 
-                                        {renderCV()} 
+                                </div>
+                            `).join('')}
+                            <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="skills"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter une compétence</button>
+                        `, false, 'skills')}
+                        ${renderAccordion('Sections Personnalisées', 'plus-square', `
+                            ${(state.cvData.customSections || []).map((section, index) => `
+                                 <div class="border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
+                                    ${renderInputField(`Titre de la section`, section.title, `cvData.customSections.${index}.title`)}
+                                    ${renderTextareaField('Contenu', section.content, `cvData.customSections.${index}.content`)}
+                                    <div class="flex justify-end">
+                                        <button class="remove-list-item text-red-500 hover:text-red-700 text-sm flex items-center gap-1" data-section="customSections" data-id="${section.id}"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Supprimer la section</button>
                                     </div>
-                                )}
+                                </div>
+                            `).join('')}
+                            <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="customSections"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter une section</button>
+                        `, false, 'customSections')}
+                    `;
+                case 'design':
+                    return `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8">
+                            <div>
+                                <h4 class="font-semibold mb-2 text-gray-700">Thèmes</h4>
+                                <div class="flex flex-col space-y-2">
+                                    ${Object.entries(themes).map(([key, t]) => `
+                                        <button data-theme="${key}" class="theme-btn p-2 rounded-lg border-2 text-sm transition-all ${state.activeTheme === key ? 'border-indigo-500 bg-indigo-50 font-semibold' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}">${t.name}</button>
+                                    `).join('')}
+                                </div>
                             </div>
+                            <div>
+                                <h4 class="font-semibold mb-2 text-gray-700">Mise en page</h4>
+                                <div class="flex flex-col space-y-2">
+                                    ${Object.entries(layouts).map(([key, l]) => `
+                                        <button data-control="activeLayout" data-value="${key}" class="p-2 rounded-lg border-2 text-sm transition-all ${state.activeLayout === key ? 'border-indigo-500 bg-indigo-50 font-semibold' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}">${l.name}</button>
+                                    `).join('')}
+                                </div>
+                            </div>
+                             <div class="md:col-span-2">
+                                <h4 class="font-semibold mb-2 text-gray-700">Palette de couleurs</h4>
+                                <div class="flex gap-3 flex-wrap items-center">
+                                    ${Object.entries(palettes).map(([key, p]) => `
+                                        <div class="tooltip">
+                                            <button data-control="activePalette" data-value="${key}" class="w-8 h-8 rounded-full border-4 transition-all ${state.activePalette === key ? 'border-indigo-500 scale-110' : 'border-transparent hover:border-gray-300'}" style="background-color: ${p.primary}"></button>
+                                            <span class="tooltip-text">${p.name}</span>
+                                        </div>
+                                    `).join('')}
+                                    <input type="color" id="custom-color-picker" value="${(palettes[state.activePalette] || state.customPalette).primary}" class="w-8 h-8 p-0 border-none rounded-full cursor-pointer">
+                                </div>
+                            </div>
+                            <div class="md:col-span-2">
+                                <h4 class="font-semibold mb-2 text-gray-700">Police</h4>
+                                <div class="grid grid-cols-3 gap-2">
+                                    ${Object.entries(fonts).map(([key, f]) => `
+                                        <button data-control="activeFont" data-value="${key}" style="font-family: ${f.family}" class="p-2 rounded-lg border-2 text-sm transition-all ${state.activeFont === key ? 'border-indigo-500 bg-indigo-50 font-semibold' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}">${f.name}</button>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div class="md:col-span-2 space-y-4">
+                               <h4 class="font-semibold text-gray-700 -mb-2">Tailles & Espacements</h4>
+                               ${renderSlider('Taille police (base)', state.baseFontSize, 'baseFontSize', 8, 14, 0.5)}
+                               ${renderSlider('Taille du nom', state.nameFontSize, 'nameFontSize', 20, 40, 1)}
+                               ${renderSlider('Taille titres sections', state.sectionTitleFontSize, 'sectionTitleFontSize', 10, 18, 0.5)}
+                               ${renderSlider('Hauteur de ligne', state.lineHeight, 'lineHeight', 1.2, 2.0, 0.1)}
+                               ${renderSlider('Marge de page (rem)', state.pagePadding, 'pagePadding', 0.5, 2.5, 0.1)}
+                               ${renderSlider('Espace sections (rem)', state.sectionSpacing, 'sectionSpacing', 0.5, 2.5, 0.1)}
+                               ${renderSlider('Espace items (rem)', state.itemSpacing, 'itemSpacing', 0.5, 2.0, 0.1)}
+                            </div>
+                        </div>
+                    `;
+                case 'layout':
+                     return `
+                        <div class="space-y-6">
+                             <div>
+                                <h4 class="font-semibold mb-3">Organisation des sections</h4>
+                                ${state.activeLayout === 'two' ? renderTwoColumnLayoutEditor() : renderSingleColumnLayoutEditor()}
+                            </div>
+                            <div class="space-y-4">
+                                <h4 class="font-semibold text-gray-700">Détails du Design</h4>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-8">
+                                    <div>
+                                        <h4 class="font-semibold mb-2 text-gray-700">Photo de profil</h4>
+                                        <div class="flex items-center gap-2">
+                                            <input type="file" id="photo-upload" class="hidden" accept="image/*">
+                                            <label for="photo-upload" class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-2 cursor-pointer"><i data-lucide="upload-cloud"></i> Charger</label>
+                                            <button id="remove-photo" class="p-2 text-red-500 hover:bg-red-100 rounded-full"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold mb-2 text-gray-700">Forme de la photo</h4>
+                                        <div class="flex gap-2">
+                                            <button data-control="photoShape" data-value="round" class="p-2 rounded-lg border-2 ${state.photoShape === 'round' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="circle" class="w-5 h-5"></i></button>
+                                            <button data-control="photoShape" data-value="square" class="p-2 rounded-lg border-2 ${state.photoShape === 'square' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="square" class="w-5 h-5"></i></button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold mb-2 text-gray-700">Alignement de l'en-tête</h4>
+                                        <div class="flex gap-2">
+                                            <button data-control="headerAlignment" data-value="left" class="p-2 rounded-lg border-2 ${state.headerAlignment === 'left' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="align-left" class="w-5 h-5"></i></button>
+                                            <button data-control="headerAlignment" data-value="center" class="p-2 rounded-lg border-2 ${state.headerAlignment === 'center' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="align-center" class="w-5 h-5"></i></button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold mb-2 text-gray-700">Style des titres</h4>
+                                        <div class="flex gap-2">
+                                            <button data-control="sectionTitleStyle" data-value="border" class="p-2 rounded-lg border-2 ${state.sectionTitleStyle === 'border' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}">Bordure</button>
+                                            <button data-control="sectionTitleStyle" data-value="background" class="p-2 rounded-lg border-2 ${state.sectionTitleStyle === 'background' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}">Fond</button>
+                                            <button data-control="sectionTitleStyle" data-value="simple" class="p-2 rounded-lg border-2 ${state.sectionTitleStyle === 'simple' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}">Simple</button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold mb-2 text-gray-700">Style Expériences</h4>
+                                        <div class="flex gap-2">
+                                            <button data-control="experienceStyle" data-value="default" class="p-2 rounded-lg border-2 ${state.experienceStyle === 'default' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="list" class="w-5 h-5"></i></button>
+                                            <button data-control="experienceStyle" data-value="timeline" class="p-2 rounded-lg border-2 ${state.experienceStyle === 'timeline' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="git-commit-vertical" class="w-5 h-5"></i></button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold mb-2 text-gray-700">Affichage compétences</h4>
+                                        <div class="flex gap-2">
+                                            <button data-control="skillDisplayStyle" data-value="bars" class="p-2 rounded-lg border-2 ${state.skillDisplayStyle === 'bars' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="bar-chart-horizontal" class="w-5 h-5"></i></button>
+                                            <button data-control="skillDisplayStyle" data-value="stars" class="p-2 rounded-lg border-2 ${state.skillDisplayStyle === 'stars' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="star" class="w-5 h-5"></i></button>
+                                            <button data-control="skillDisplayStyle" data-value="radar" class="p-2 rounded-lg border-2 ${state.skillDisplayStyle === 'radar' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="radar" class="w-5 h-5"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="sm:col-span-2">
+                                        <h4 class="font-semibold mb-2 text-gray-700">Typographie des titres</h4>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            ${renderSlider('Espacement lettres (px)', state.letterSpacing, 'letterSpacing', -1, 3, 0.1)}
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-600 mb-1">Casse</label>
+                                                <select data-path="textTransform" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                                    <option value="uppercase" ${state.textTransform === 'uppercase' ? 'selected' : ''}>Majuscules</option>
+                                                    <option value="capitalize" ${state.textTransform === 'capitalize' ? 'selected' : ''}>Capitalize</option>
+                                                    <option value="none" ${state.textTransform === 'none' ? 'selected' : ''}>Aucune</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="sm:col-span-2">
+                                        <h4 class="font-semibold mb-2 text-gray-700">Pack d'icônes</h4>
+                                         <select id="icon-pack-selector" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                            <option value="custom" ${state.activeIconPack === 'custom' ? 'selected' : ''}>Personnalisé</option>
+                                            ${Object.entries(iconPacks).map(([key, pack]) => `<option value="${key}" ${state.activeIconPack === key ? 'selected' : ''}>${pack.name}</option>`).join('')}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                case 'tools':
+                    return `
+                        ${renderCvAdvisor()}
+                        <div class="mt-6">
+                            <h4 class="font-semibold mb-2 text-gray-700">Analyseur de Mots-clés (ATS)</h4>
+                            <textarea id="job-description-input" placeholder="Collez la description du poste ici..." rows="5" class="w-full px-3 py-2 border border-gray-300 rounded-lg">${state.jobDescription}</textarea>
+                            <button id="analyze-job-match" class="mt-2 px-4 py-2 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 text-sm flex items-center gap-2"><i data-lucide="search"></i> Analyser l'Adéquation</button>
+                        </div>
+                        <div class="mt-6">
+                            <h4 class="font-semibold mb-2 text-gray-700">Adaptation du CV par l'IA</h4>
+                            <textarea id="ai-adapt-input" placeholder="Collez une offre d'emploi ou un texte cible ici..." rows="5" class="w-full px-3 py-2 border border-gray-300 rounded-lg">${state.jobAdaptationText}</textarea>
+                            <button id="ai-adapt-cv-btn" class="mt-2 px-4 py-2 bg-purple-100 text-purple-800 rounded-lg hover:bg-purple-200 text-sm flex items-center gap-2"><i data-lucide="wand-2"></i> Adapter mon CV avec l'IA</button>
+                        </div>
+                        <div class="mt-6">
+                            <h4 class="font-semibold mb-2 text-gray-700">Préparation "Postuler en 1 Clic"</h4>
+                            <p class="text-xs text-gray-500 mb-2">Copiez ce texte pour le coller facilement dans les formulaires de candidature en ligne.</p>
+                            <textarea id="one-click-apply-output" rows="8" class="w-full p-2 bg-gray-100 border rounded-lg text-xs" readonly>${generateOneClickApplyText()}</textarea>
+                        </div>
+                        <div class="mt-6">
+                            <h4 class="font-semibold mb-2 text-gray-700">Historique des Versions</h4>
+                            <div class="flex gap-2 mb-2">
+                               <input type="text" id="snapshot-name" placeholder="Nom de la version" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                               <button id="save-snapshot" class="px-4 py-2 bg-green-100 text-green-800 rounded-lg hover:bg-green-200 text-sm">Sauver</button>
+                            </div>
+                            <div id="snapshots-list" class="space-y-1">
+                                ${renderSnapshots()}
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <h4 class="font-semibold mb-2 text-gray-700">Gestion des données</h4>
+                            <div class="flex gap-2">
+                                <button id="import-data" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 text-sm flex items-center gap-2"><i data-lucide="upload"></i> Importer JSON</button>
+                                <input type="file" id="import-file" class="hidden" accept="application/json">
+                                <button id="export-data" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 text-sm flex items-center gap-2"><i data-lucide="download"></i> Exporter JSON</button>
+                            </div>
+                        </div>
+                        ${renderCvScore()}
+                    `;
+                default:
+                    return '';
+            }
+        }
+
+        function renderEditor() {
+            return `
+                ${renderEditorTabs()}
+                <div class="p-5">
+                     ${renderActiveTabContent()}
+                </div>
+            `;
+        }
+        
+        function renderCvScore() {
+            const score = calculateCvScore();
+            const color = score < 40 ? 'bg-red-500' : score < 80 ? 'bg-yellow-500' : 'bg-green-500';
+            return `
+                <div class="mt-6">
+                    <h4 class="font-semibold text-gray-700">Score du CV</h4>
+                    <div class="w-full bg-gray-200 rounded-full h-4 mt-2">
+                        <div class="${color} h-4 rounded-full text-white text-xs flex items-center justify-center" style="width: ${score}%">
+                            ${score}%
                         </div>
                     </div>
                 </div>
-            );
-        };
+            `;
+        }
+        
+        function renderSnapshots() {
+            return state.snapshots.map(snapshot => `
+                <div class="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+                    <div>
+                        <p class="font-medium text-sm">${snapshot.name}</p>
+                        <p class="text-xs text-gray-500">${new Date(snapshot.date).toLocaleString()}</p>
+                    </div>
+                    <div class="flex gap-1">
+                        <button class="load-snapshot p-2 hover:bg-gray-200 rounded-full" data-id="${snapshot.id}"><i data-lucide="download-cloud" class="w-4 h-4 text-blue-600"></i></button>
+                        <button class="delete-snapshot p-2 hover:bg-gray-200 rounded-full" data-id="${snapshot.id}"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
 
-        ReactDOM.render(<CVGenerator />, document.getElementById('root'));
+        function renderCvAdvisor() {
+            const { cvData, jobDescription } = state;
+            const advice = [];
+            if (cvData.personal.summary.length < 150) {
+                advice.push({ text: 'Votre résumé est un peu court. Essayez de le développer pour mieux accrocher le recruteur.', icon: 'info' });
+            }
+            if (cvData.experiences.length < 2) {
+                advice.push({ text: 'Pensez à ajouter au moins deux expériences professionnelles pertinentes.', icon: 'alert-triangle' });
+            }
+            const hasActionVerbs = cvData.experiences.some(exp => /(géré|optimisé|développé|créé|piloté)/i.test(exp.description));
+            if (!hasActionVerbs) {
+                 advice.push({ text: 'Utilisez des verbes d\'action (ex: "géré", "optimisé") pour décrire vos missions.', icon: 'check-circle' });
+            }
+            if (cvData.skills.length < 5) {
+                 advice.push({ text: 'Listez au moins 5 compétences clés pour valoriser votre profil.', icon: 'info' });
+            }
+            
+            // ATS Keyword check
+            if (jobDescription) {
+                const cvText = JSON.stringify(cvData).toLowerCase();
+                const keywords = jobDescription.toLowerCase().match(/\b(\w{4,})\b/g) || [];
+                const uniqueKeywords = [...new Set(keywords)];
+                const missingKeywords = uniqueKeywords.filter(kw => !cvText.includes(kw));
+                if (missingKeywords.length > 5) {
+                       advice.push({ text: `Il semble manquer des mots-clés de l'offre, comme : ${missingKeywords.slice(0,3).join(', ')}...`, icon: 'search' });
+                }
+            }
+
+            return `
+                <div>
+                    <h4 class="font-semibold mb-2 text-gray-700">Conseiller CV</h4>
+                    <div class="space-y-2">
+                        ${advice.map(item => `
+                            <div class="flex items-start gap-2 text-sm p-2 rounded-lg ${item.icon === 'alert-triangle' ? 'bg-yellow-50 text-yellow-800' : 'bg-green-50 text-green-800'}">
+                                <i data-lucide="${item.icon}" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
+                                <span>${item.text}</span>
+                            </div>
+                        `).join('')}
+                        ${advice.length === 0 ? `<div class="text-sm text-gray-500">Votre CV semble bien parti !</div>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderDraggableBlock(blockId, column) {
+            const blockNames = {personal: 'Infos Personnelles', socials: 'Réseaux & Liens', experiences: 'Expériences', projects: 'Projets', education: 'Formation', awards: 'Récompenses', skills: 'Compétences', languages: 'Langues', hobbies: 'Centres d\'intérêt'};
+            const name = blockId.startsWith('custom-') 
+                ? state.cvData.customSections.find(s => `custom-${s.id}` === blockId)?.title || 'Section perso.'
+                : blockNames[blockId];
+
+            return `
+                <div draggable="true" data-block-id="${blockId}" class="draggable-block p-3 bg-gray-100 border border-gray-200 rounded-lg cursor-move hover:bg-indigo-50 hover:border-indigo-200 transition-colors flex items-center gap-2">
+                    <i data-lucide="move" class="w-4 h-4 text-gray-500"></i>
+                    <span class="font-medium text-sm flex-grow">${name}</span>
+                    <div class="tooltip">
+                        <button class="toggle-section-visibility p-1 hover:bg-gray-300 rounded-full" data-section="${blockId}">
+                            <i data-lucide="${visibilityCheck(blockId) ? 'eye' : 'eye-off'}" class="w-4 h-4 ${visibilityCheck(blockId) ? 'text-gray-600' : 'text-gray-400'}"></i>
+                        </button>
+                        <span class="tooltip-text">${visibilityCheck(blockId) ? "Cacher" : "Afficher"}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSingleColumnLayoutEditor() {
+            return `
+                <div class="space-y-2 drop-zone" data-column="main">
+                    ${state.blockOrder.map(id => renderDraggableBlock(id, 'main')).join('')}
+                </div>
+            `;
+        }
+
+        function renderTwoColumnLayoutEditor() {
+            return `
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <h4 class="font-semibold mb-2 text-center text-gray-600">Colonne Gauche</h4>
+                            <div class="p-2 space-y-2 bg-gray-50 rounded-lg min-h-[200px] border-2 border-dashed drop-zone" data-column="left">
+                                ${state.columnAssignment.left.map(id => renderDraggableBlock(id, 'left')).join('')}
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2 text-center text-gray-600">Colonne Droite</h4>
+                            <div class="p-2 space-y-2 bg-gray-50 rounded-lg min-h-[200px] border-2 border-dashed drop-zone" data-column="right">
+                                ${state.columnAssignment.right.map(id => renderDraggableBlock(id, 'right')).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 items-center">
+                        <button id="invert-columns" class="w-full px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 flex items-center justify-center gap-2 transition-colors"><i data-lucide="arrow-left-right" class="w-4 h-4"></i> Inverser</button>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-1">Ratio des colonnes</label>
+                             <select id="column-ratio" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                                <option value="large-right" ${state.columnRatio === 'large-right' ? 'selected' : ''}>Gauche fine / Droite large</option>
+                                <option value="equal" ${state.columnRatio === 'equal' ? 'selected' : ''}>Égales</option>
+                                <option value="large-left" ${state.columnRatio === 'large-left' ? 'selected' : ''}>Gauche large / Droite fine</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- EVENT HANDLERS & LOGIC ---
+        
+        function attachEventListeners() {
+            // Header controls
+            document.getElementById('toggle-focus-mode')?.addEventListener('click', () => setState({ focusMode: !state.focusMode }));
+            document.getElementById('randomize-design')?.addEventListener('click', handleRandomizeDesign);
+            document.getElementById('share-cv')?.addEventListener('click', handleShare);
+            document.getElementById('summarize-cv-btn')?.addEventListener('click', handleSummarizeCv);
+            document.getElementById('toggle-anonymize')?.addEventListener('click', () => setState({ isAnonymized: !state.isAnonymized }));
+            document.getElementById('export-dropdown-btn')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.getElementById('export-options').classList.toggle('hidden');
+            });
+            document.addEventListener('click', () => document.getElementById('export-options')?.classList.add('hidden'));
+
+            document.getElementById('generate-pdf')?.addEventListener('click', generatePDF);
+            document.getElementById('export-txt')?.addEventListener('click', (e) => handleExport('txt'));
+            document.getElementById('export-md')?.addEventListener('click', (e) => handleExport('md'));
+
+            // Preview controls
+            document.getElementById('zoom-in')?.addEventListener('click', () => setState({ previewScale: Math.min(1.5, state.previewScale + 0.1) }));
+            document.getElementById('zoom-out')?.addEventListener('click', () => setState({ previewScale: Math.max(0.3, state.previewScale - 0.1) }));
+            document.getElementById('zoom-reset')?.addEventListener('click', () => setState({ previewScale: state.previewMode ? 1 : 0.7 }));
+            document.getElementById('zoom-slider')?.addEventListener('input', (e) => setState({ previewScale: parseFloat(e.target.value) }));
+
+            // Editor inputs
+            document.querySelectorAll('input[data-path], textarea[data-path], select[data-path]').forEach(input => {
+                input.addEventListener('input', handleInputChange);
+            });
+            document.getElementById('column-ratio')?.addEventListener('change', (e) => setState({ columnRatio: e.target.value }));
+            document.getElementById('show-vcard-qr')?.addEventListener('change', (e) => setState({ showVCardQR: e.target.checked }));
+            document.getElementById('show-margin-guides')?.addEventListener('change', (e) => setState({ showMarginGuides: e.target.checked }));
+            document.getElementById('custom-color-picker')?.addEventListener('input', (e) => {
+                const primary = e.target.value;
+                const getContrastYIQ = (hexcolor) => {
+                    hexcolor = hexcolor.replace("#", "");
+                    const r = parseInt(hexcolor.substr(0, 2), 16);
+                    const g = parseInt(hexcolor.substr(2, 2), 16);
+                    const b = parseInt(hexcolor.substr(4, 2), 16);
+                    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+                    return (yiq >= 128) ? '#1f2937' : '#ffffff';
+                }
+                const newCustomPalette = {
+                    name: 'Personnalisée',
+                    primary: primary,
+                    secondary: '#f4f4f5',
+                    accent: primary,
+                    textOnPrimary: getContrastYIQ(primary)
+                };
+                setState({ customPalette: newCustomPalette, activePalette: 'custom' });
+            });
+            
+            // Photo upload
+            document.getElementById('photo-upload')?.addEventListener('change', handlePhotoChange);
+            document.getElementById('remove-photo')?.addEventListener('click', () => setState({ photo: null }));
+
+            // Editor buttons
+            document.querySelectorAll('.add-list-item').forEach(btn => btn.addEventListener('click', handleAddListItem));
+            document.querySelectorAll('.remove-list-item').forEach(btn => btn.addEventListener('click', handleRemoveListItem));
+            document.querySelectorAll('.toggle-item-visibility').forEach(btn => btn.addEventListener('click', handleToggleItemVisibility));
+            document.querySelectorAll('.toggle-field-visibility').forEach(btn => btn.addEventListener('click', handleToggleFieldVisibility));
+            document.querySelectorAll('.toggle-section-visibility').forEach(btn => btn.addEventListener('click', handleToggleSectionVisibility));
+            document.querySelectorAll('.generate-ai-text').forEach(btn => btn.addEventListener('click', handleAIGenerate));
+            
+            // Tools
+            document.getElementById('job-description-input')?.addEventListener('input', (e) => setState({ jobDescription: e.target.value }));
+            document.getElementById('ai-adapt-input')?.addEventListener('input', (e) => setState({ jobAdaptationText: e.target.value }));
+            document.getElementById('ai-adapt-cv-btn')?.addEventListener('click', handleAdaptCvWithAI);
+            document.getElementById('analyze-job-match')?.addEventListener('click', handleAnalyzeJobMatch);
+            document.getElementById('import-data')?.addEventListener('click', () => document.getElementById('import-file').click());
+            document.getElementById('import-file')?.addEventListener('change', handleImportData);
+            document.getElementById('export-data')?.addEventListener('click', handleExportData);
+            document.getElementById('save-snapshot')?.addEventListener('click', handleSaveSnapshot);
+            document.querySelectorAll('.load-snapshot').forEach(btn => btn.addEventListener('click', handleLoadSnapshot));
+            document.querySelectorAll('.delete-snapshot').forEach(btn => btn.addEventListener('click', handleDeleteSnapshot));
+
+            // Design controls
+            document.querySelectorAll('button[data-control]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const control = e.currentTarget.dataset.control;
+                    const value = e.currentTarget.dataset.value;
+                    setState({ [control]: value, activeTheme: 'custom' });
+                });
+            });
+            document.querySelectorAll('.theme-btn').forEach(btn => btn.addEventListener('click', handleThemeChange));
+            document.getElementById('icon-pack-selector')?.addEventListener('change', handleIconPackChange);
+
+            // Accordions
+            document.querySelectorAll('.accordion-toggle').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.currentTarget.dataset.accordionId;
+                    const newAccordionsState = { ...state.openAccordions, [id]: !state.openAccordions[id] };
+                    setState({ openAccordions: newAccordionsState });
+                });
+            });
+            
+            // Tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const tabId = e.currentTarget.dataset.tabId;
+                    setState({ activeEditorTab: tabId });
+                });
+            });
+
+            // Drag and Drop
+            attachDragDropListeners();
+            
+            // Invert columns
+            document.getElementById('invert-columns')?.addEventListener('click', () => {
+                setState({ columnAssignment: { left: state.columnAssignment.right, right: state.columnAssignment.left }});
+            });
+        }
+        
+        let draggedBlock = null;
+
+        function attachDragDropListeners() {
+            document.querySelectorAll('.draggable-block').forEach(item => {
+                item.addEventListener('dragstart', e => {
+                    draggedBlock = e.target.closest('.draggable-block').dataset.blockId;
+                    e.target.closest('.draggable-block').classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+                item.addEventListener('dragend', e => {
+                    e.target.closest('.draggable-block').classList.remove('dragging');
+                    draggedBlock = null;
+                });
+            });
+
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    zone.classList.add('drag-over');
+                });
+                 zone.addEventListener('dragleave', e => {
+                    zone.classList.remove('drag-over');
+                });
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
+                    if (!draggedBlock) return;
+
+                    const targetBlockEl = e.target.closest('.draggable-block');
+                    const targetBlockId = targetBlockEl ? targetBlockEl.dataset.blockId : null;
+                    const targetColumn = zone.dataset.column;
+
+                    if (state.activeLayout === 'two') {
+                        const newAssignment = {
+                            left: state.columnAssignment.left.filter(id => id !== draggedBlock),
+                            right: state.columnAssignment.right.filter(id => id !== draggedBlock)
+                        };
+                        const targetList = newAssignment[targetColumn];
+                        const dropIndex = targetBlockId ? targetList.indexOf(targetBlockId) : targetList.length;
+                        targetList.splice(dropIndex, 0, draggedBlock);
+                        setState({ columnAssignment: newAssignment });
+                    } else {
+                        const newOrder = [...state.blockOrder].filter(id => id !== draggedBlock);
+                        const dropIndex = targetBlockId ? newOrder.indexOf(targetBlockId) : newOrder.length;
+                        newOrder.splice(dropIndex, 0, draggedBlock);
+                        setState({ blockOrder: newOrder });
+                    }
+                    draggedBlock = null;
+                });
+            });
+        }
+
+        function handleInputChange(e) {
+            const path = e.target.dataset.path;
+            const value = e.target.type === 'range' ? parseFloat(e.target.value) : e.target.value;
+            updateStateFromPath(path, value);
+            setState({ activeTheme: 'custom' });
+        }
+
+        function updateStateFromPath(path, value) {
+            const keys = path.split('.');
+            let tempState = JSON.parse(JSON.stringify(state));
+            let current = tempState;
+            for (let i = 0; i < keys.length - 1; i++) {
+                if (current[keys[i]] === undefined) {
+                    current[keys[i]] = {};
+                }
+                current = current[keys[i]];
+            }
+            current[keys[keys.length - 1]] = value;
+            setState(tempState);
+        }
+        
+        function getValueFromPath(obj, path) {
+            return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+        }
+        
+        function handleAddListItem(e) {
+            const section = e.currentTarget.dataset.section;
+            const newItem = {
+                id: Date.now(),
+                ...(section === 'experiences' && { company: '', position: '', startDate: '', endDate: '', description: '' }),
+                ...(section === 'projects' && { name: '', url: '', description: '' }),
+                ...(section === 'education' && { institution: '', degree: '', startDate: '', endDate: '', description: '' }),
+                ...(section === 'awards' && { name: '', issuer: '', date: '', description: '' }),
+                ...(section === 'skills' && { category: 'Nouvelle Catégorie', name: '', level: 3, icon: '' }),
+                ...(section === 'softSkills' && { name: '' }),
+                ...(section === 'languages' && { name: '', level: '' }),
+                ...(section === 'hobbies' && { name: '', icon: 'heart' }),
+                ...(section === 'socials' && { network: 'linkedin', url: '' }),
+                ...(section === 'customSections' && { title: 'Nouvelle Section', content: '' }),
+            };
+
+            const newCvData = { ...state.cvData, [section]: [...(state.cvData[section] || []), newItem] };
+            
+            const itemVisibilitySections = ['experiences', 'education', 'projects', 'awards', 'socials', 'softSkills'];
+            if (itemVisibilitySections.includes(section)) {
+                const newVisibility = { ...state.visibility, [section]: { ...(state.visibility[section] || {}), [newItem.id]: true } };
+                setState({ cvData: newCvData, visibility: newVisibility });
+            } else if (section === 'customSections') {
+                const blockId = `custom-${newItem.id}`;
+                const newVisibility = { ...state.visibility, [blockId]: true };
+                const newBlockOrder = [...state.blockOrder, blockId];
+                setState({ cvData: newCvData, visibility: newVisibility, blockOrder: newBlockOrder });
+            }
+            else {
+                setState({ cvData: newCvData });
+            }
+        }
+
+        function handleRemoveListItem(e) {
+            const section = e.currentTarget.dataset.section;
+            const id = parseInt(e.currentTarget.dataset.id, 10);
+            const newCvData = { ...state.cvData, [section]: state.cvData[section].filter(item => item.id !== id) };
+            
+            const itemVisibilitySections = ['experiences', 'education', 'projects', 'awards', 'socials', 'softSkills'];
+            if (itemVisibilitySections.includes(section)) {
+                const newSectionVisibility = { ...state.visibility[section] };
+                delete newSectionVisibility[id];
+                const newVisibility = { ...state.visibility, [section]: newSectionVisibility };
+                setState({ cvData: newCvData, visibility: newVisibility });
+            } else if (section === 'customSections') {
+                const blockId = `custom-${id}`;
+                const newVisibility = { ...state.visibility };
+                delete newVisibility[blockId];
+                const newBlockOrder = state.blockOrder.filter(bId => bId !== blockId);
+                const newColumnAssignment = {
+                    left: state.columnAssignment.left.filter(bId => bId !== blockId),
+                    right: state.columnAssignment.right.filter(bId => bId !== blockId)
+                };
+                setState({ cvData: newCvData, visibility: newVisibility, blockOrder: newBlockOrder, columnAssignment: newColumnAssignment });
+            }
+            else {
+                setState({ cvData: newCvData });
+            }
+        }
+        
+        function handleToggleItemVisibility(e) {
+            const section = e.currentTarget.dataset.section;
+            const id = parseInt(e.currentTarget.dataset.id, 10);
+            const newVisibility = { ...state.visibility };
+            newVisibility[section][id] = !newVisibility[section][id];
+            setState({ visibility: newVisibility });
+        }
+        
+        function handleToggleFieldVisibility(e) {
+            const path = e.currentTarget.dataset.path;
+            const fullPath = `visibility.${path}`;
+            const currentValue = getValueFromPath(state, fullPath);
+            updateStateFromPath(fullPath, !currentValue);
+        }
+        
+        function handleToggleSectionVisibility(e) {
+            const section = e.currentTarget.dataset.section;
+            const newVisibility = { ...state.visibility, [section]: !visibilityCheck(section) };
+            setState({ visibility: newVisibility });
+        }
+        
+        function visibilityCheck(section, id = null) {
+            if (id !== null) {
+                return state.visibility[section] && state.visibility[section][id];
+            }
+            return !!state.visibility[section];
+        }
+        
+        function handlePhotoChange(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    setState({ photo: event.target.result });
+                }
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        }
+        
+        function handleRandomizeDesign() {
+            const randomChoice = (arr) => arr[Math.floor(Math.random() * arr.length)];
+            
+            setState({
+                activeTemplate: randomChoice(Object.keys(templates)),
+                activePalette: randomChoice(Object.keys(palettes)),
+                activeFont: randomChoice(Object.keys(fonts)),
+                activeLayout: randomChoice(Object.keys(layouts)),
+                sectionTitleStyle: randomChoice(['border', 'background', 'simple']),
+                skillDisplayStyle: randomChoice(['bars', 'stars']),
+                experienceStyle: randomChoice(['default', 'timeline']),
+                headerAlignment: randomChoice(['left', 'center']),
+                activeTheme: 'custom'
+            });
+        }
+
+        async function callAI(prompt) {
+            // This function now calls the Google Generative Language API directly
+            const apiKey = ""; // The environment will provide the key
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            
+            const payload = {
+                contents: [{
+                    role: "user",
+                    parts: [{ text: prompt }]
+                }]
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorBody = await response.text();
+                console.error("AI API Error Body:", errorBody);
+                throw new Error(`AI API request failed with status ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
+                return result.candidates[0].content.parts[0].text;
+            } else {
+                console.error("Invalid AI response format:", result);
+                throw new Error('Invalid AI response format from Google API');
+            }
+        }
+
+        async function handleAIGenerate(e) {
+            const button = e.currentTarget;
+            const path = button.dataset.path;
+            const context = button.dataset.context;
+            
+            const originalText = getValueFromPath(state, path);
+
+            const prompt = `En tant qu'expert en recrutement, réécris et améliore le texte suivant pour un CV. Sois percutant, utilise des verbes d'action et un ton professionnel. Le contexte est : "${context}". Le texte à améliorer est : "${originalText}". Ne retourne que le texte amélioré, sans introduction ni conclusion.`;
+            
+            button.innerHTML = '<i data-lucide="loader-circle" class="animate-spin w-3 h-3"></i> IA...';
+            lucide.createIcons();
+
+            try {
+                const newText = await callAI(prompt);
+                updateStateFromPath(path, newText.trim());
+            } catch(error) {
+                console.error("AI Generation Error:", error);
+                await showModal("Erreur IA", "Une erreur est survenue lors de la communication avec l'IA.");
+            } finally {
+                button.innerHTML = '<i data-lucide="sparkles" class="w-3 h-3"></i> Améliorer avec l\'IA';
+                lucide.createIcons();
+            }
+        }
+        
+        async function handleAdaptCvWithAI() {
+            const button = document.getElementById('ai-adapt-cv-btn');
+            const targetText = state.jobAdaptationText;
+
+            if (!targetText) {
+                await showModal('Texte Manquant', "Veuillez coller une offre d'emploi ou un texte cible avant d'adapter le CV.");
+                return;
+            }
+
+            const confirmation = await showModal(
+                "Confirmer l'Adaptation IA",
+                "Êtes-vous sûr de vouloir que l'IA adapte l'ensemble de votre CV ? Cela remplacera le contenu actuel des sections principales.",
+                [
+                    { text: 'Annuler', class: 'bg-gray-200' },
+                    { text: 'Confirmer', class: 'bg-indigo-600 text-white' }
+                ]
+            );
+
+            if (confirmation !== '1') { // '1' is the index of the "Confirmer" button
+                return;
+            }
+
+            const cvDataString = JSON.stringify(state.cvData);
+            const prompt = `En tant qu'expert en création de CV, analyse le texte cible fourni et génère un NOUVEL objet JSON complet pour un CV. Extrais toutes les informations pertinentes : nom, prénom, titre, résumé, expériences professionnelles (entreprise, poste, dates, description), formations, compétences, etc. Le résultat doit être UNIQUEMENT un objet JSON valide avec exactement la même structure que l'objet CV original fourni en exemple. Remplace TOUT le contenu du CV original par les nouvelles informations extraites du texte cible.
+
+            **CV Original (JSON pour la structure):**
+            ${cvDataString}
+
+            **Texte Cible (à analyser pour le contenu):**
+            ${targetText}`;
+
+            button.innerHTML = '<i data-lucide="loader-circle" class="animate-spin w-4 h-4"></i> Adaptation en cours...';
+            lucide.createIcons();
+
+            try {
+                let aiResponseText = await callAI(prompt);
+                aiResponseText = aiResponseText.replace(/```json/g, '').replace(/```/g, '').trim();
+                
+                const newCvData = JSON.parse(aiResponseText);
+                
+                if (newCvData.personal && newCvData.experiences) {
+                    const newVisibility = { ...state.visibility };
+                    
+                    ['experiences', 'projects', 'education', 'awards', 'socials', 'softSkills'].forEach(section => {
+                        newVisibility[section] = {};
+                        (newCvData[section] || []).forEach(item => {
+                            newVisibility[section][item.id] = true;
+                        });
+                    });
+
+                    setState({ cvData: newCvData, visibility: newVisibility });
+                    await showModal("Succès", "Votre CV a été adapté avec succès !");
+                } else {
+                    throw new Error('AI response is not a valid CV object.');
+                }
+            } catch (error) {
+                console.error("AI Adaptation Error:", error);
+                await showModal("Erreur d'Adaptation", "Une erreur est survenue lors de l'adaptation par l'IA. La réponse n'était peut-être pas un JSON valide.");
+            } finally {
+                button.innerHTML = '<i data-lucide="wand-2"></i> Adapter mon CV avec l\'IA';
+                lucide.createIcons();
+            }
+        }
+
+        async function generatePDF() {
+            const exportButton = document.getElementById('export-dropdown-btn');
+            if (!exportButton || state.isDownloadingPdf) return;
+
+            const originalButtonContent = exportButton.innerHTML;
+            setState({ isDownloadingPdf: true }, false);
+            exportButton.innerHTML = '<i data-lucide="loader-circle" class="animate-spin w-4 h-4"></i> Génération...';
+            lucide.createIcons();
+            exportButton.disabled = true;
+
+            const originalElement = document.getElementById('cv-preview-container');
+            if (!originalElement) {
+                console.error("L'élément du CV à imprimer n'a pas été trouvé.");
+                return;
+            }
+            const clone = originalElement.cloneNode(true);
+
+            const printContainer = document.createElement('div');
+            printContainer.style.position = 'absolute';
+            printContainer.style.left = '-9999px';
+            printContainer.style.top = '0';
+            document.body.appendChild(printContainer);
+            printContainer.appendChild(clone);
+
+            const chartCanvas = clone.querySelector('#skill-chart');
+            if (chartCanvas && state.skillDisplayStyle === 'radar' && chartInstance) {
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 100)); 
+                    const chartImg = document.createElement('img');
+                    chartImg.src = chartInstance.toBase64Image('image/png', 1.0);
+                    chartImg.style.display = 'block';
+                    chartImg.style.maxWidth = '448px';
+                    chartImg.style.width = '100%';
+                    chartImg.style.margin = '0 auto';
+                    chartCanvas.parentNode.replaceChild(chartImg, chartCanvas);
+                } catch (e) {
+                    console.error("Impossible de convertir le graphique en image pour le PDF", e);
+                }
+            }
+
+            try {
+                const elementToPrint = clone.querySelector('.cv-page');
+                const opt = {
+                    margin: 0,
+                    filename: generateCvFilename('pdf'),
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 3, useCORS: true, letterRendering: true, scrollY: 0 },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                if (window.html2pdf) {
+                    await html2pdf().from(elementToPrint).set(opt).save();
+                } else {
+                    throw new Error("La librairie html2pdf.js n'est pas chargée.");
+                }
+            } catch (error) {
+                console.error("Erreur de génération PDF:", error);
+                await showModal("Erreur PDF", "Une erreur est survenue lors de la création du PDF.");
+            } finally {
+                document.body.removeChild(printContainer);
+                exportButton.innerHTML = originalButtonContent;
+                lucide.createIcons();
+                exportButton.disabled = false;
+                setState({ isDownloadingPdf: false }, false);
+            }
+        }
+        
+        function generateVCardQR() {
+            const qrContainer = document.getElementById('vcard-qr-code');
+            if (state.showVCardQR && !state.isAnonymized && window.qrcode && qrContainer) {
+                try {
+                    const { firstName, lastName, email, phone } = state.cvData.personal;
+                    const vCardData = `BEGIN:VCARD\nVERSION:3.0\nN:${lastName};${firstName}\nFN:${firstName} ${lastName}\nEMAIL:${email}\nTEL:${phone}\nEND:VCARD`;
+                    const qr = window.qrcode(0, 'M');
+                    qr.addData(vCardData);
+                    qr.make();
+                    qrContainer.innerHTML = qr.createImgTag(4, 8);
+                } catch (error) {
+                    console.error("vCard QR Code generation failed:", error);
+                    qrContainer.innerHTML = 'Error';
+                }
+            }
+        }
+
+        /**
+         * Utility function to generate a clean and valid filename.
+         */
+        function generateCvFilename(extension) {
+            const personalInfo = state.cvData && state.cvData.personal ? state.cvData.personal : {};
+            
+            const firstName = personalInfo.firstName || 'SansNom';
+            const lastName = personalInfo.lastName || 'CV';
+
+            if (state.isAnonymized) {
+                return `cv_anonyme.${extension}`;
+            }
+
+            const cleanFirstName = String(firstName).replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            const cleanLastName = String(lastName).replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            
+            return `CV_${cleanFirstName}_${cleanLastName}.${extension}`;
+        }
+        
+        /**
+         * Made more robust to avoid errors if parts of the CV are missing.
+         */
+        function generateOneClickApplyText() {
+            const cvData = state.cvData || {};
+            const personalInfo = cvData.personal || {};
+            const experiences = cvData.experiences || [];
+            const skills = cvData.skills || [];
+
+            let text = `**${personalInfo.firstName || ''} ${personalInfo.lastName || ''}**\n${personalInfo.title || ''}\n\n**Résumé**\n${personalInfo.summary || ''}\n\n`;
+            text += `**Expériences**\n`;
+            experiences.forEach(exp => {
+                text += `- ${exp.position || ''} chez ${exp.company || ''} (${exp.startDate || ''} - ${exp.endDate || ''})\n  ${exp.description || ''}\n`;
+            });
+            text += `\n**Compétences**\n`;
+            skills.forEach(skill => {
+                text += `- ${skill.category || ''}: ${skill.name || ''}\n`;
+            });
+            return text;
+        }
+        
+        function handleExport(format) {
+            let content = '';
+            let filename = generateCvFilename(format);
+            let mimeType = 'text/plain';
+
+            if (format === 'txt') {
+                content = generateOneClickApplyText().replace(/\*\*/g, '');
+            } else if (format === 'md') {
+                content = generateOneClickApplyText();
+                mimeType = 'text/markdown';
+            }
+
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function handleExportData() {
+            const dataStr = JSON.stringify(state, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const exportFileDefaultName = 'cv_data.json';
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+
+        function handleImportData(event) {
+            const fileReader = new FileReader();
+            fileReader.onload = async (e) => {
+                try {
+                    const importedState = JSON.parse(e.target.result);
+                    if (importedState.cvData && importedState.activeTemplate) {
+                        setState(importedState);
+                    } else {
+                        await showModal('Erreur', 'Fichier JSON invalide ou corrompu.');
+                    }
+                } catch (error) {
+                    await showModal('Erreur', 'Erreur lors de la lecture du fichier JSON.');
+                    console.error(error);
+                }
+            };
+            fileReader.readAsText(event.target.files[0]);
+            event.target.value = '';
+        }
+
+        async function handleSaveSnapshot() {
+            const nameInput = document.getElementById('snapshot-name');
+            const name = nameInput.value.trim() || `Version du ${new Date().toLocaleDateString()}`;
+            const newSnapshot = {
+                id: Date.now(),
+                name: name,
+                date: new Date().toISOString(),
+                state: { ...state }
+            };
+            setState({ snapshots: [...state.snapshots, newSnapshot] });
+            nameInput.value = '';
+        }
+
+        async function handleLoadSnapshot(e) {
+            const id = parseInt(e.currentTarget.dataset.id, 10);
+            const snapshot = state.snapshots.find(s => s.id === id);
+            if (snapshot) {
+                const confirmation = await showModal(
+                    'Charger une version',
+                    `Voulez-vous charger la version "${snapshot.name}" ? Les modifications non sauvegardées seront perdues.`,
+                    [{ text: 'Annuler', class: 'bg-gray-200' }, { text: 'Charger', class: 'bg-blue-600 text-white' }]
+                );
+                if (confirmation === '1') {
+                    setState(snapshot.state);
+                }
+            }
+        }
+
+        async function handleDeleteSnapshot(e) {
+            const id = parseInt(e.currentTarget.dataset.id, 10);
+            const confirmation = await showModal(
+                'Supprimer la version',
+                'Voulez-vous vraiment supprimer cette version ?',
+                [{ text: 'Annuler', class: 'bg-gray-200' }, { text: 'Supprimer', class: 'bg-red-600 text-white' }]
+            );
+            if (confirmation === '1') {
+                setState({ snapshots: state.snapshots.filter(s => s.id !== id) });
+            }
+        }
+
+        function handleIconPackChange(e) {
+            const packName = e.target.value;
+            if (packName === 'custom') {
+                setState({ activeIconPack: 'custom' });
+            } else {
+                setState({ activeIconPack: packName, sectionIcons: { ...iconPacks[packName].icons } });
+            }
+        }
+        
+        function handleThemeChange(e) {
+            const themeName = e.currentTarget.dataset.theme;
+            if (themes[themeName]) {
+                setState({ ...themes[themeName].settings, activeTheme: themeName });
+            }
+        }
+
+        async function handleShare() {
+            const data = btoa(JSON.stringify(state));
+            const url = `${window.location.href.split('?')[0]}?data=${data}`;
+            
+            await showModal(
+                'Partager votre CV',
+                `<p class="text-sm text-gray-600 mb-2">Copiez ce lien pour partager une version en ligne de votre CV. Les modifications que vous ferez après la création de ce lien n'apparaîtront pas.</p>
+                 <input type="text" readonly value="${url}" class="w-full p-2 border rounded bg-gray-100 mb-4">
+                 <button id="show-analytics-btn" class="text-sm text-blue-600 hover:underline">Voir le tableau de bord (simulation)</button>`,
+                [{ text: 'Fermer', class: 'bg-gray-200' }]
+            );
+            document.getElementById('show-analytics-btn')?.addEventListener('click', showAnalyticsDashboard);
+        }
+        
+        function showAnalyticsDashboard() {
+             const modalContent = `
+                <div class="modal-backdrop">
+                    <div class="modal-content w-full max-w-3xl">
+                        <h3 class="text-xl font-bold mb-4">Tableau de Bord Analytique (Simulation)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center mb-6">
+                            <div class="p-4 bg-blue-50 rounded-lg"><p class="text-3xl font-bold">${Math.floor(Math.random() * 100) + 10}</p><p class="text-sm text-gray-600">Vues totales</p></div>
+                            <div class="p-4 bg-green-50 rounded-lg"><p class="text-3xl font-bold">${Math.floor(Math.random() * 120) + 30}s</p><p class="text-sm text-gray-600">Temps moyen</p></div>
+                            <div class="p-4 bg-yellow-50 rounded-lg"><p class="text-3xl font-bold">${Math.floor(Math.random() * 5) + 1}</p><p class="text-sm text-gray-600">Téléchargements</p></div>
+                        </div>
+                        <div><canvas id="analytics-chart"></canvas></div>
+                        <div class="text-right mt-4">
+                            <button id="close-modal-btn" class="px-4 py-2 bg-gray-200 rounded-lg">Fermer</button>
+                        </div>
+                    </div>
+                </div>`;
+            document.getElementById('modal-container').innerHTML = modalContent;
+            lucide.createIcons();
+            document.getElementById('close-modal-btn').onclick = () => document.getElementById('modal-container').innerHTML = '';
+
+            const ctx = document.getElementById('analytics-chart');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    datasets: [{
+                        label: 'Vues par jour',
+                        data: Array.from({length: 7}, () => Math.floor(Math.random() * 15)),
+                        borderColor: '#4f46e5',
+                        tension: 0.1
+                    }]
+                }
+            });
+        }
+        
+        async function handleAnalyzeJobMatch() {
+            const button = document.getElementById('analyze-job-match');
+            if (!state.jobDescription) {
+                await showModal('Texte Manquant', "Veuillez coller une description de poste d'abord.");
+                return;
+            }
+            
+            const cvText = generateOneClickApplyText();
+            const prompt = `En tant qu'expert en recrutement, analyse l'adéquation entre le CV suivant et la description de poste. Fournis une réponse structurée en Markdown avec : 1. Un score de compatibilité sur 100. 2. Une section "Points Forts" listant les éléments du CV qui correspondent bien. 3. Une section "Axes d'Amélioration" suggérant des modifications ou des ajouts au CV pour mieux correspondre à l'offre. \n\n**CV :**\n${cvText}\n\n**DESCRIPTION DE POSTE :**\n${state.jobDescription}`;
+            
+            button.innerHTML = '<i data-lucide="loader-circle" class="animate-spin w-4 h-4"></i> Analyse en cours...';
+            lucide.createIcons();
+            
+            try {
+                const analysis = await callAI(prompt);
+                showAnalysisModal(analysis);
+            } catch (error) {
+                 console.error("AI Analysis Error:", error);
+                await showModal("Erreur IA", "Une erreur est survenue lors de l'analyse IA.");
+            } finally {
+                button.innerHTML = '<i data-lucide="search"></i> Analyser l\'Adéquation';
+                lucide.createIcons();
+            }
+        }
+        
+        async function handleSummarizeCv() {
+            const cvText = generateOneClickApplyText();
+            const prompt = `En tant qu'expert en recrutement, lis le CV suivant et écris un résumé percutant de 3-4 phrases qui met en valeur les points forts du candidat. Ce résumé est destiné à être utilisé dans une lettre de motivation ou un profil LinkedIn. \n\n**CV:**\n${cvText}`;
+            
+            showModal("Synthèse IA", '<p class="text-center">L\'IA est en train de synthétiser votre CV...</p>', []);
+
+            try {
+                const summary = await callAI(prompt);
+                const newCvData = { ...state.cvData, personal: { ...state.cvData.personal, summary: summary } };
+                setState({ cvData: newCvData });
+                await showModal("Succès", "Le résumé de votre CV a été mis à jour avec la synthèse de l'IA.");
+            } catch (error) {
+                console.error("AI Summary Error:", error);
+                await showModal("Erreur IA", "Une erreur est survenue lors de la synthèse.");
+            }
+        }
+        
+        function showAnalysisModal(analysis) {
+             const modalContent = `
+                <div class="modal-backdrop">
+                    <div class="modal-content w-full max-w-2xl prose">
+                        <h3 class="text-xl font-bold mb-4">Analyse d'Adéquation IA</h3>
+                        <div>${analysis.replace(/\n/g, '<br>')}</div>
+                        <div class="text-right mt-4">
+                            <button id="close-modal-btn" class="px-4 py-2 bg-gray-200 rounded-lg">Fermer</button>
+                        </div>
+                    </div>
+                </div>`;
+            document.getElementById('modal-container').innerHTML = modalContent;
+            document.getElementById('close-modal-btn').onclick = () => document.getElementById('modal-container').innerHTML = '';
+        }
+        
+        function showModal(title, content, buttons = [{ text: 'OK', class: 'bg-indigo-600 text-white' }]) {
+            return new Promise((resolve) => {
+                const modalContainer = document.getElementById('modal-container');
+                const buttonHtml = buttons.map((btn, index) => 
+                    `<button data-index="${index}" class="modal-btn px-4 py-2 rounded-lg ${btn.class}">${btn.text}</button>`
+                ).join('');
+
+                modalContainer.innerHTML = `
+                    <div class="modal-backdrop">
+                        <div class="modal-content w-full max-w-lg">
+                            <h3 class="text-xl font-bold mb-4">${title}</h3>
+                            <div class="text-gray-700 mb-6">${content}</div>
+                            <div class="flex justify-end gap-2">
+                                ${buttonHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                modalContainer.querySelectorAll('.modal-btn').forEach(btn => {
+                    btn.onclick = () => {
+                        modalContainer.innerHTML = '';
+                        resolve(btn.dataset.index);
+                    };
+                });
+            });
+        }
+
+        function calculateCvScore() {
+            let score = 0;
+            const weights = {
+                personal: 20,
+                summary: 15,
+                experiences: 25,
+                skills: 15,
+                education: 10,
+                socials: 5,
+                photo: 10
+            };
+            if (state.cvData.personal.firstName && state.cvData.personal.lastName && state.cvData.personal.title && state.cvData.personal.email) score += weights.personal;
+            if (state.cvData.personal.summary.length > 50) score += weights.summary;
+            if (state.cvData.experiences.length > 0) score += weights.experiences;
+            if (state.cvData.skills.length > 2) score += weights.skills;
+            if (state.cvData.education.length > 0) score += weights.education;
+            if (state.cvData.socials.length > 0) score += weights.socials;
+            if (state.photo) score += weights.photo;
+            return Math.round(score);
+        }
+
+        function renderSkillChart() {
+            const ctx = document.getElementById('skill-chart');
+            if (!ctx) return;
+
+            const { skills } = state.cvData;
+            const currentPalette = palettes[state.activePalette] || state.customPalette;
+
+            const labels = skills.map(s => s.name);
+            const data = skills.map(s => s.level);
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Niveau de Compétence',
+                        data: data,
+                        backgroundColor: `${currentPalette.primary}33`, // with opacity
+                        borderColor: currentPalette.primary,
+                        borderWidth: 2,
+                        pointBackgroundColor: currentPalette.primary,
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: currentPalette.primary
+                    }]
+                },
+                options: {
+                    animation: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: '#e5e7eb'
+                            },
+                            grid: {
+                                color: '#e5e7eb'
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 12
+                                },
+                                color: '#374151'
+                            },
+                            ticks: {
+                                beginAtZero: true,
+                                max: 5,
+                                stepSize: 1,
+                                backdropColor: 'rgba(255, 255, 255, 0.75)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- INITIALIZATION ---
+        function init() {
+            const savedState = localStorage.getItem('cvState_v7');
+            let cvData = initialCvData;
+            let loadedState = {};
+            if (savedState) {
+                try {
+                    loadedState = JSON.parse(savedState);
+                    cvData = loadedState.cvData || initialCvData;
+                } catch(e) {
+                    console.error("Could not parse saved state, using defaults.", e);
+                    localStorage.removeItem('cvState_v7');
+                }
+            }
+            
+            const allSectionIds = [
+                'personal', 'socials', 'experiences', 'projects', 'education', 'awards', 'skills', 'softSkills', 'languages', 'hobbies',
+                ...(cvData.customSections || []).map(s => `custom-${s.id}`)
+            ];
+
+            const initialVisibility = {
+                personal: {
+                    firstName: true, lastName: true, title: true, email: true, phone: true, address: true, summary: true
+                }
+            };
+
+            allSectionIds.forEach(id => {
+                if (id !== 'personal') initialVisibility[id] = true;
+            });
+
+            ['experiences', 'projects', 'education', 'awards', 'socials', 'softSkills'].forEach(section => {
+                initialVisibility[section] = {};
+                (cvData[section] || []).forEach(item => {
+                    initialVisibility[section][item.id] = true;
+                });
+            });
+
+            const defaultState = {
+                cvData,
+                activeTemplate: 'modern',
+                activePalette: 'indigo',
+                activeTheme: 'custom',
+                customPalette: { primary: '#4f46e5', secondary: '#eef2ff', accent: '#3730a3', textOnPrimary: '#ffffff' },
+                backgroundColor: '#ffffff',
+                activeLayout: 'two',
+                columnRatio: 'large-right',
+                activeFont: 'sans',
+                previewMode: false,
+                isAnonymized: false,
+                isDownloadingPdf: false,
+                showVCardQR: false,
+                photo: null,
+                photoShape: 'round',
+                sectionTitleStyle: 'border',
+                experienceStyle: 'default',
+                headerAlignment: 'center',
+                previewScale: 0.7,
+                baseFontSize: 10,
+                nameFontSize: 28,
+                sectionTitleFontSize: 12,
+                lineHeight: 1.5,
+                pagePadding: 1.5,
+                sectionSpacing: 1.25,
+                itemSpacing: 1,
+                skillDisplayStyle: 'bars',
+                visibility: initialVisibility,
+                sectionIcons: {
+                    socials: 'link', experiences: 'briefcase', projects: 'projector', education: 'graduation-cap', awards: 'award', skills: 'zap', softSkills: 'users', languages: 'globe', hobbies: 'heart'
+                },
+                activeIconPack: 'custom',
+                blockOrder: ['socials', 'experiences', 'projects', 'education', 'awards', 'skills', 'softSkills', 'languages', 'hobbies', ...(cvData.customSections || []).map(s => `custom-${s.id}`)],
+                columnAssignment: {
+                    left: ['personal', 'skills', 'languages', 'hobbies'],
+                    right: ['socials', 'experiences', 'projects', 'education', 'awards', 'softSkills']
+                },
+                openAccordions: {
+                    personalInfo: true,
+                },
+                activeEditorTab: 'content', // Default active tab
+                headerText: '',
+                footerText: '{page}',
+                watermarkText: '',
+                watermarkOpacity: 0.1,
+                letterSpacing: 0,
+                textTransform: 'uppercase',
+                dividerStyle: 'none',
+                showMarginGuides: false,
+                jobDescription: '',
+                snapshots: [],
+                focusMode: false,
+                jobAdaptationText: ''
+            };
+            
+            // Use deep merge to prevent loaded state from breaking the structure
+            let finalState = deepMerge(defaultState, loadedState);
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const dataParam = urlParams.get('data');
+            if (dataParam) {
+                try {
+                    const sharedState = JSON.parse(atob(dataParam));
+                    finalState = deepMerge(finalState, sharedState);
+                } catch (e) {
+                    console.error("Failed to parse shared state from URL", e);
+                }
+            }
+            
+            setState(finalState, true);
+        }
+
+        // Start the application
+        init();
 
     </script>
-
 </body>
 </html>
