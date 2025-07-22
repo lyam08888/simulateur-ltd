@@ -214,10 +214,10 @@
         let chartInstance = null;
 
         /**
-         * [CORRECTIF DÉFINITIF] Fonctions utilitaires pour une fusion en profondeur des objets.
-         * Cela garantit que l'état chargé depuis localStorage ne peut pas écraser
-         * des parties de la structure de l'état par défaut avec des objets vides,
-         * ce qui est la cause première des erreurs "undefined".
+         * Utility functions for deep merging objects.
+         * This ensures that state loaded from localStorage cannot overwrite
+         * parts of the default state structure with empty objects,
+         * which is the root cause of "undefined" errors.
          */
         const isObject = (item) => {
             return (item && typeof item === 'object' && !Array.isArray(item));
@@ -1099,7 +1099,7 @@
                 const uniqueKeywords = [...new Set(keywords)];
                 const missingKeywords = uniqueKeywords.filter(kw => !cvText.includes(kw));
                 if (missingKeywords.length > 5) {
-                     advice.push({ text: `Il semble manquer des mots-clés de l'offre, comme : ${missingKeywords.slice(0,3).join(', ')}...`, icon: 'search' });
+                       advice.push({ text: `Il semble manquer des mots-clés de l'offre, comme : ${missingKeywords.slice(0,3).join(', ')}...`, icon: 'search' });
                 }
             }
 
@@ -1475,17 +1475,31 @@
             });
         }
 
+        async function callAI(prompt) {
+            const apiUrl = "https://simulateur-ltd.onrender.com/api/gemini";
+            const response = await fetch(apiUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prompt })
+            });
+
+            if (!response.ok) {
+                throw new Error(`AI API request failed with status ${response.status}`);
+            }
+
+            const data = await response.json();
+            if (!data.response) {
+                 throw new Error('Invalid AI response format from backend');
+            }
+            return data.response;
+        }
+
         async function handleAIGenerate(e) {
             const button = e.currentTarget;
             const path = button.dataset.path;
             const context = button.dataset.context;
             
-            const keys = path.split('.');
-            let current = state;
-            for (let i = 0; i < keys.length; i++) {
-                current = current[keys[i]];
-            }
-            const originalText = current;
+            const originalText = getValueFromPath(state, path);
 
             const prompt = `En tant qu'expert en recrutement, réécris et améliore le texte suivant pour un CV. Sois percutant, utilise des verbes d'action et un ton professionnel. Le contexte est : "${context}". Le texte à améliorer est : "${originalText}". Ne retourne que le texte amélioré, sans introduction ni conclusion.`;
             
@@ -1493,23 +1507,8 @@
             lucide.createIcons();
 
             try {
-                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                const payload = { contents: chatHistory };
-                const apiKey = ""; // Leave empty for Canvas
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
-                
-                if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
-                    const newText = result.candidates[0].content.parts[0].text.trim();
-                    updateStateFromPath(path, newText);
-                } else {
-                    throw new Error('Invalid AI response format');
-                }
+                const newText = await callAI(prompt);
+                updateStateFromPath(path, newText.trim());
             } catch(error) {
                 console.error("AI Generation Error:", error);
                 await showModal("Erreur IA", "Une erreur est survenue lors de la communication avec l'IA.");
@@ -1542,7 +1541,7 @@
             }
 
             const cvDataString = JSON.stringify(state.cvData);
-            const prompt = `En tant qu'expert en création de CV, analyse le texte cible fourni (qui peut être un profil LinkedIn, un CV en texte brut, etc.) et génère un NOUVEL objet JSON complet pour un CV. Extrais toutes les informations pertinentes : nom, prénom, titre, résumé, expériences professionnelles (entreprise, poste, dates, description), formations, compétences, etc. Le résultat doit être UNIQUEMENT un objet JSON valide avec exactement la même structure que l'objet CV original fourni en exemple. Remplace TOUT le contenu du CV original par les nouvelles informations extraites du texte cible.
+            const prompt = `En tant qu'expert en création de CV, analyse le texte cible fourni et génère un NOUVEL objet JSON complet pour un CV. Extrais toutes les informations pertinentes : nom, prénom, titre, résumé, expériences professionnelles (entreprise, poste, dates, description), formations, compétences, etc. Le résultat doit être UNIQUEMENT un objet JSON valide avec exactement la même structure que l'objet CV original fourni en exemple. Remplace TOUT le contenu du CV original par les nouvelles informations extraites du texte cible.
 
             **CV Original (JSON pour la structure):**
             ${cvDataString}
@@ -1554,40 +1553,25 @@
             lucide.createIcons();
 
             try {
-                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                const payload = { contents: chatHistory };
-                const apiKey = ""; // Leave empty
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
+                let aiResponseText = await callAI(prompt);
+                aiResponseText = aiResponseText.replace(/```json/g, '').replace(/```/g, '').trim();
                 
-                if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
-                    let aiResponseText = result.candidates[0].content.parts[0].text;
-                    aiResponseText = aiResponseText.replace(/```json/g, '').replace(/```/g, '').trim();
+                const newCvData = JSON.parse(aiResponseText);
+                
+                if (newCvData.personal && newCvData.experiences) {
+                    const newVisibility = { ...state.visibility };
                     
-                    const newCvData = JSON.parse(aiResponseText);
-                    
-                    if (newCvData.personal && newCvData.experiences) {
-                        const newVisibility = { ...state.visibility };
-                        
-                        ['experiences', 'projects', 'education', 'awards', 'socials', 'softSkills'].forEach(section => {
-                            newVisibility[section] = {};
-                            (newCvData[section] || []).forEach(item => {
-                                newVisibility[section][item.id] = true;
-                            });
+                    ['experiences', 'projects', 'education', 'awards', 'socials', 'softSkills'].forEach(section => {
+                        newVisibility[section] = {};
+                        (newCvData[section] || []).forEach(item => {
+                            newVisibility[section][item.id] = true;
                         });
+                    });
 
-                        setState({ cvData: newCvData, visibility: newVisibility });
-                        await showModal("Succès", "Votre CV a été adapté avec succès !");
-                    } else {
-                        throw new Error('AI response is not a valid CV object.');
-                    }
+                    setState({ cvData: newCvData, visibility: newVisibility });
+                    await showModal("Succès", "Votre CV a été adapté avec succès !");
                 } else {
-                    throw new Error('Invalid AI response format');
+                    throw new Error('AI response is not a valid CV object.');
                 }
             } catch (error) {
                 console.error("AI Adaptation Error:", error);
@@ -1683,9 +1667,9 @@
         }
 
         /**
-         * [CORRECTIF DÉFINITIF] Fonction utilitaire pour générer un nom de fichier propre et valide.
-         * Elle gère les cas où le prénom ou le nom sont vides pour éviter "undefined",
-         * et nettoie les caractères spéciaux.
+         * Utility function to generate a clean and valid filename.
+         * It handles cases where first or last name are empty to avoid "undefined",
+         * and cleans special characters.
          */
         function generateCvFilename(extension) {
             const personalInfo = state.cvData && state.cvData.personal ? state.cvData.personal : {};
@@ -1704,7 +1688,7 @@
         }
         
         /**
-         * [CORRECTIF] Rendue plus robuste pour éviter les erreurs si des parties du CV sont manquantes.
+         * Made more robust to avoid errors if parts of the CV are missing.
          */
         function generateOneClickApplyText() {
             const cvData = state.cvData || {};
@@ -1895,23 +1879,8 @@
             lucide.createIcons();
             
             try {
-                 let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                const payload = { contents: chatHistory };
-                const apiKey = ""; // Leave empty
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
-                
-                if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
-                    const analysis = result.candidates[0].content.parts[0].text;
-                    showAnalysisModal(analysis);
-                } else {
-                    throw new Error('Invalid AI response format');
-                }
+                const analysis = await callAI(prompt);
+                showAnalysisModal(analysis);
             } catch (error) {
                  console.error("AI Analysis Error:", error);
                 await showModal("Erreur IA", "Une erreur est survenue lors de l'analyse IA.");
@@ -1928,25 +1897,10 @@
             showModal("Synthèse IA", '<p class="text-center">L\'IA est en train de synthétiser votre CV...</p>', []);
 
             try {
-                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                const payload = { contents: chatHistory };
-                const apiKey = ""; // Leave empty
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
-
-                if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
-                    const summary = result.candidates[0].content.parts[0].text;
-                    const newCvData = { ...state.cvData, personal: { ...state.cvData.personal, summary: summary } };
-                    setState({ cvData: newCvData });
-                    await showModal("Succès", "Le résumé de votre CV a été mis à jour avec la synthèse de l'IA.");
-                } else {
-                    throw new Error('Invalid AI response format');
-                }
+                const summary = await callAI(prompt);
+                const newCvData = { ...state.cvData, personal: { ...state.cvData.personal, summary: summary } };
+                setState({ cvData: newCvData });
+                await showModal("Succès", "Le résumé de votre CV a été mis à jour avec la synthèse de l'IA.");
             } catch (error) {
                 console.error("AI Summary Error:", error);
                 await showModal("Erreur IA", "Une erreur est survenue lors de la synthèse.");
@@ -2174,7 +2128,7 @@
                 jobAdaptationText: ''
             };
             
-            // [CORRECTIF DÉFINITIF] Utilisation de la fusion en profondeur
+            // Use deep merge to prevent loaded state from breaking the structure
             let finalState = deepMerge(defaultState, loadedState);
             
             const urlParams = new URLSearchParams(window.location.search);
