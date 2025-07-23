@@ -447,7 +447,21 @@
     </main>
     
     <div id="email-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <!-- This modal is now handled by the simulation script -->
+        <div class="bg-white rounded-lg shadow-xl p-6 max-w-2xl w-full">
+            <h3 class="text-xl font-bold mb-4">Envoyer le rapport par e-mail</h3>
+            <p class="mb-4 text-gray-700">Le corps de l'e-mail a été préparé. Veuillez suivre ces étapes :</p>
+            <ol class="list-decimal list-inside mb-4 space-y-2">
+                <li>Cliquez sur le bouton "Copier le rapport" ci-dessous.</li>
+                <li>Cliquez ensuite sur "Ouvrir la messagerie".</li>
+                <li>Collez le rapport dans le corps du nouvel e-mail.</li>
+            </ol>
+            <textarea id="email-body-textarea" class="w-full h-40 border border-gray-300 rounded-md p-2 text-sm bg-gray-50" readonly></textarea>
+            <div class="mt-4 flex flex-col sm:flex-row gap-2">
+                <button id="copy-email-btn" class="flex-1 bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-700">Copier le rapport</button>
+                <a id="open-mailer-btn" href="#" target="_blank" class="flex-1 text-center bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700">Ouvrir la messagerie</a>
+            </div>
+            <button id="close-modal-btn" class="mt-4 w-full bg-gray-500 text-white font-bold py-2 px-4 rounded-md hover:bg-gray-600">Fermer</button>
+        </div>
     </div>
 
     <script>
@@ -1006,7 +1020,6 @@
     emailBtn.addEventListener('click', prepareEmail);
     closeModalBtn.addEventListener('click', () => emailModal.classList.add('hidden'));
     
-    // The copy function is no longer used for the main email flow but kept for the modal if needed
     function copyEmailBody() {
         emailBodyTextarea.select();
         try {
@@ -1020,4 +1033,3 @@
     </script>
 </body>
 </html>
-
