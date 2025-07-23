@@ -613,7 +613,7 @@
 
         <section class="hero animate-in">
             <h1>Évaluez Vos Compétences</h1>
-            <p>Découvrez vos points forts et vos axes d'amélioration avec nos tests conçus pour le secteur du BTP.</p>
+            <p>Découvrez vos points forts et vos axes d'amélioration avec nos tests conçus pour les secteurs du BTP et de l'IT.</p>
         </section>
         
         <!-- Tests Grid Section -->
@@ -627,7 +627,7 @@
                     <div class="test-card-content">
                         <div class="test-icon"><i class="fas fa-compass"></i></div>
                         <h3>Test d'Orientation</h3>
-                        <p>Quel métier du BTP est fait pour vous ? Découvrez votre voie idéale en quelques questions.</p>
+                        <p>Quel métier est fait pour vous ? Découvrez votre voie idéale en quelques questions.</p>
                         <button class="launch-button" onclick="launchTest('test-orientation.html')">Commencer</button>
                     </div>
                 </div>
@@ -643,39 +643,57 @@
                         <button class="launch-button" onclick="launchTest('testperso.html')">Commencer</button>
                     </div>
                 </div>
-                 <!-- Card 3: Test Technique -->
+                 <!-- Card 3: Test Technique BTP -->
                 <div class="test-card">
                     <div class="test-card-image">
                         <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g stroke="var(--primary-light)" opacity="0.7"><path d="M 60 20 l 80 0 l 20 20 l 0 65 l -100 0 l -20 -20 z"/><path d="M 60 20 l 20 20 h 60"/><path d="M 80 20 v 20"/></g><g stroke="var(--secondary)" stroke-width="1.5"><path d="M 70 60 h 60 m -60 15 h 60 m -60 15 h 30"/></g></svg>
                     </div>
                     <div class="test-card-content">
-                        <div class="test-icon"><i class="fas fa-cogs"></i></div>
-                        <h3>Test Technique</h3>
-                        <p>Validez vos connaissances sur des sujets techniques spécifiques à votre métier.</p>
+                        <div class="test-icon"><i class="fas fa-hard-hat"></i></div>
+                        <h3>Test Technique BTP</h3>
+                        <p>Validez vos connaissances sur des sujets techniques spécifiques aux métiers du BTP.</p>
                         <button class="launch-button" onclick="launchTest('test-technique.html')">Commencer</button>
                     </div>
                 </div>
-                <!-- Card 4: Test Informatique (NOUVEAU) -->
+                <!-- Card 4: Test Informatique (Situationnel) -->
                 <div class="test-card">
                     <div class="test-card-image">
                         <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <g stroke="var(--primary)" opacity="0.7">
-                                <!-- Écran d'ordinateur portable -->
                                 <rect x="30" y="25" width="140" height="80" rx="8"></rect>
-                                <!-- Lignes de code simulées -->
                                 <path d="M 50 45 L 80 45"></path>
                                 <path d="M 50 60 L 110 60"></path>
                                 <path d="M 50 75 L 90 75"></path>
-                                <!-- Chevron/prompt de code -->
-                                <path d="M 120 45 L 130 55 L 120 65"></path>
+                                <path d="M 120 50 l 10 5 l -10 5"></path>
+                                <circle cx="145" cy="85" r="5"></circle>
                             </g>
                         </svg>
                     </div>
                     <div class="test-card-content">
                         <div class="test-icon"><i class="fas fa-laptop-code"></i></div>
-                        <h3>Test Informatique</h3>
-                        <p>Mesurez vos compétences en développement, réseau et systèmes. Idéal pour les techniciens et ingénieurs IT.</p>
-                        <button class="launch-button" onclick="launchTest('testinfo.html')">Commencer</button>
+                        <h3>Test Informatique (Situationnel)</h3>
+                        <p>Évaluez votre capacité à résoudre des problèmes IT à travers des scénarios professionnels concrets.</p>
+                        <button class="launch-button" onclick="launchTest('testinfo-situationnel.html')">Commencer</button>
+                    </div>
+                </div>
+                <!-- Card 5: Test Informatique (Pratique) -->
+                <div class="test-card">
+                    <div class="test-card-image">
+                        <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <g stroke="var(--accent)" opacity="0.7">
+                                <rect x="25" y="20" width="150" height="85" rx="5"></rect>
+                                <path d="M 40 45 l 5 5 l -5 5"></path>
+                                <path d="M 50 50 h 40"></path>
+                                <path d="M 95 45 v 10" stroke-width="4"></path>
+                                <path d="M 40 70 h 100"></path>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="test-card-content">
+                        <div class="test-icon"><i class="fas fa-terminal"></i></div>
+                        <h3>Test Informatique (Pratique)</h3>
+                        <p>Mettez vos compétences à l'épreuve avec des exercices de codage et de configuration système.</p>
+                        <button class="launch-button" onclick="launchTest('testinfo-pratique.html')">Commencer</button>
                     </div>
                 </div>
             </div>
