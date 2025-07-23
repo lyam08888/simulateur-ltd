@@ -10,6 +10,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- jsPDF and html2canvas for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             /* Colors */
@@ -444,9 +447,14 @@
                             <input type="email" id="email" name="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Ex: jean.dupont@email.com">
                         </div>
                     </div>
-                    <button id="start-btn" class="mt-6 w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        Démarrer le test
-                    </button>
+                    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button id="start-btn" class="w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Démarrer le test pratique
+                        </button>
+                        <a href="situational-test.html" class="w-full text-center bg-gray-600 text-white font-bold py-2 px-4 rounded-md hover:bg-gray-700 flex items-center justify-center">
+                            Aller au test situationnel
+                        </a>
+                    </div>
                     <p id="form-error" class="text-red-500 text-sm mt-2 hidden">Veuillez remplir tous les champs.</p>
                 </div>
 
@@ -493,14 +501,36 @@
                              <div id="correction-wrapper"></div>
                         </div>
                     </div>
-                    <div id="action-buttons" class="mt-8 text-center">
-                         <button id="restart-btn" class="bg-gray-600 text-white font-bold py-2 px-4 rounded-md hover:bg-gray-700">Recommencer le test</button>
+                    <div id="action-buttons" class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button id="pdf-btn" class="w-full bg-red-600 text-white font-bold py-2 px-4 rounded-md hover:bg-red-700 flex items-center justify-center"><i class="fas fa-file-pdf mr-2"></i>Télécharger le rapport</button>
+                        <button id="email-btn" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 flex items-center justify-center"><i class="fas fa-envelope mr-2"></i>Envoyer par E-mail</button>
+                        <button id="restart-btn" class="w-full bg-gray-600 text-white font-bold py-2 px-4 rounded-md hover:bg-gray-700 flex items-center justify-center"><i class="fas fa-redo mr-2"></i>Recommencer ce test</button>
+                        <a href="testinfo.html" class="w-full text-center bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-700 flex items-center justify-center"><i class="fas fa-tasks mr-2"></i>Essayer le test situationnel</a>
                     </div>
                 </div>
             </div>
             <!-- END OF SIMULATION COMPONENT -->
         </div>
     </main>
+
+    <!-- Email Modal -->
+    <div id="email-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg shadow-xl p-6 max-w-2xl w-full text-gray-800">
+            <h3 class="text-xl font-bold mb-4">Envoyer le rapport par e-mail</h3>
+            <p class="mb-4 text-gray-700">Le corps de l'e-mail a été préparé. Veuillez suivre ces étapes :</p>
+            <ol class="list-decimal list-inside mb-4 space-y-2">
+                <li>Cliquez sur le bouton "Copier le rapport" ci-dessous.</li>
+                <li>Cliquez ensuite sur "Ouvrir la messagerie".</li>
+                <li>Collez le rapport dans le corps du nouvel e-mail et joignez le PDF que vous avez téléchargé.</li>
+            </ol>
+            <textarea id="email-body-textarea" class="w-full h-40 border border-gray-300 rounded-md p-2 text-sm bg-gray-50" readonly></textarea>
+            <div class="mt-4 flex flex-col sm:flex-row gap-2">
+                <button id="copy-email-btn" class="flex-1 bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-700">Copier le rapport</button>
+                <a id="open-mailer-btn" href="#" target="_blank" class="flex-1 text-center bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700">Ouvrir la messagerie</a>
+            </div>
+            <button id="close-modal-btn" class="mt-4 w-full bg-gray-500 text-white font-bold py-2 px-4 rounded-md hover:bg-gray-600">Fermer</button>
+        </div>
+    </div>
     
     <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -739,6 +769,14 @@
         const feedbackText = document.getElementById('feedback-text');
         const correctionWrapper = document.getElementById('correction-wrapper');
         const restartBtn = document.getElementById('restart-btn');
+        const pdfBtn = document.getElementById('pdf-btn');
+        const emailBtn = document.getElementById('email-btn');
+        const emailModal = document.getElementById('email-modal');
+        const emailBodyTextarea = document.getElementById('email-body-textarea');
+        const copyEmailBtn = document.getElementById('copy-email-btn');
+        const openMailerBtn = document.getElementById('open-mailer-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+
 
         function startSimulation() {
             if (fullnameInput.value.trim() === '' || document.getElementById('email').value.trim() === '') {
@@ -1481,6 +1519,68 @@
             correctionWrapper.innerHTML = correctionHTML;
         }
 
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const pdfContent = document.getElementById('pdf-content');
+            const actionButtons = document.getElementById('action-buttons');
+            actionButtons.style.display = 'none'; // Hide buttons from PDF
+            
+            html2canvas(pdfContent, { scale: 2 }).then(canvas => {
+                actionButtons.style.display = 'grid'; // Show buttons again
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                const imgProps = pdf.getImageProperties(imgData);
+                const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                let heightLeft = imgHeight;
+                let position = 0;
+                const margin = 10;
+
+                pdf.addImage(imgData, 'PNG', margin, position, pdfWidth - (margin * 2), imgHeight);
+                heightLeft -= pdfHeight;
+
+                while (heightLeft > 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', margin, position, pdfWidth - (margin * 2), imgHeight);
+                    heightLeft -= pdfHeight;
+                }
+                pdf.save(`Rapport_Simulation_${fullnameInput.value.replace(/ /g, '_')}.pdf`);
+            });
+        }
+
+        function prepareEmail() {
+            const recipient = 'l.amara@ltd-international.com';
+            const subject = `Rapport de simulation pratique - ${fullnameInput.value}`;
+            const scoreText = scoreEl.textContent.trim();
+            
+            let body = `Bonjour,\n\n`;
+            body += `Voici le résumé de la simulation de journée de travail pour le candidat ${fullnameInput.value}.\n\n`;
+            body += `--- RAPPORT SOMMAIRE ---\n`;
+            body += `Candidat : ${fullnameInput.value}\n`;
+            body += `Score de performance : ${scoreText}\n`;
+            body += `Analyse : ${feedbackText.textContent}\n\n`;
+            body += `Le rapport détaillé est disponible en pièce jointe (PDF).\n\n`;
+            body += `Cordialement.`;
+
+            emailBodyTextarea.value = body;
+            openMailerBtn.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}`;
+            emailModal.classList.remove('hidden');
+        }
+
+        function copyEmailBody() {
+            emailBodyTextarea.select();
+            try {
+                document.execCommand('copy');
+                copyEmailBtn.textContent = 'Copié !';
+                setTimeout(() => { copyEmailBtn.textContent = 'Copier le rapport'; }, 2000);
+            } catch (err) {
+                console.error('La copie a échoué', err);
+                copyEmailBtn.textContent = 'Erreur de copie';
+            }
+        }
+
         startBtn.addEventListener('click', startSimulation);
         nextEventBtn.addEventListener('click', loadNextEvent);
         skipEventBtn.addEventListener('click', skipQuestion);
@@ -1488,7 +1588,11 @@
             resultsContainer.classList.add('hidden');
             candidateForm.classList.remove('hidden');
         });
+        pdfBtn.addEventListener('click', generatePDF);
+        emailBtn.addEventListener('click', prepareEmail);
+        closeModalBtn.addEventListener('click', () => emailModal.classList.add('hidden'));
+        copyEmailBtn.addEventListener('click', copyEmailBody);
     });
     </script>
 </body>
-</html>
+</ht
