@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -432,8 +431,8 @@
             <!-- START OF SIMULATION COMPONENT -->
             <div id="simulation-main-container" class="container mx-auto p-4 sm:p-6 md:p-8 max-w-5xl">
                 <header class="text-center mb-8">
-                    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Test Pratique Interactif</h1>
-                    <p class="text-lg text-gray-600 mt-2">Poste : Technicien(ne) Systèmes et Réseaux</p>
+                    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Simulation de Journée de travail (test pratique)</h1>
+                    <p class="text-lg text-gray-600 mt-2">Poste : informaticien(ne) systèmes et réseaux</p>
                 </header>
 
                 <div id="candidate-form" class="bg-white p-6 rounded-lg shadow-md mb-8">
@@ -506,7 +505,7 @@
                         <button id="pdf-btn" class="w-full bg-red-600 text-white font-bold py-2 px-4 rounded-md hover:bg-red-700 flex items-center justify-center"><i class="fas fa-file-pdf mr-2"></i>Télécharger le rapport</button>
                         <button id="email-btn" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 flex items-center justify-center"><i class="fas fa-envelope mr-2"></i>Envoyer par E-mail</button>
                         <button id="restart-btn" class="w-full bg-gray-600 text-white font-bold py-2 px-4 rounded-md hover:bg-gray-700 flex items-center justify-center"><i class="fas fa-redo mr-2"></i>Recommencer ce test</button>
-                        <a href="testinfo.html" class="w-full text-center bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-700 flex items-center justify-center"><i class="fas fa-tasks mr-2"></i>Essayer le test situationnel</a>
+                        <a href="situational-test.html" class="w-full text-center bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-700 flex items-center justify-center"><i class="fas fa-tasks mr-2"></i>Essayer le test situationnel</a>
                     </div>
                 </div>
             </div>
@@ -597,12 +596,26 @@
                 },
                 explanation: "La première étape est de vérifier la configuration IP locale avec `ipconfig`. Ensuite, `ping` permet de tester la connectivité vers une destination. Ici, le ping échoue, indiquant un problème réseau plus large (routage, pare-feu)."
             },
+             {
+                time: "09:35", type: "Ticket GLPI", from: "Utilisateur", title: "Outlook ne démarre plus",
+                description: "Mon Outlook plante systématiquement au démarrage, même après un redémarrage du PC.",
+                gameType: 'outlookSafe',
+                data: { correctCommand: 'outlook /safe' },
+                explanation: "Lancer une application Office avec le commutateur '/safe' la démarre en mode sans échec, sans charger les compléments. C'est la première étape pour diagnostiquer un plantage au démarrage causé par un add-in corrompu."
+            },
             {
                 time: "09:45", type: "Ticket GLPI", from: "Nouveau Stagiaire", title: "Accès dossier Marketing",
                 description: "Bonjour, je suis le nouveau stagiaire au marketing et je n'ai pas accès au dossier partagé `\\\\SRV-FICHIERS\\Marketing`. Mon manager a validé cet accès.",
                 gameType: 'ntfs',
                 data: { user: 'stagiaire-mkt', folder: 'Marketing' },
                 explanation: "La bonne pratique est de donner les droits 'Lecture & Exécution' et 'Écriture' à un utilisateur standard. Donner le 'Contrôle total' est un risque de sécurité."
+            },
+            {
+                time: "10:00", type: "Alerte Antivirus", from: "Console ESET", title: "Activité suspecte",
+                description: "L'antivirus a mis en quarantaine 'C:\\Program Files\\OutilCompta\\export.exe' sur le PC de Mme Martin, le qualifiant de 'PUA' (Application Potentiellement Indésirable). Elle dit en avoir besoin pour son travail.",
+                gameType: 'antivirus',
+                data: { correctAction: 'create_exception' },
+                explanation: "Face à une alerte sur un outil métier légitime, il s'agit d'un faux positif. La procédure correcte est de créer une exception ciblée dans la console d'administration de l'antivirus pour autoriser ce fichier spécifique, après avoir confirmé sa légitimité."
             },
             {
                 time: "10:15", type: "Email", from: "Directeur Commercial", title: "Fichier corrompu !",
@@ -673,6 +686,20 @@
                     fault: 'RAM'
                 },
                 explanation: "Les bips au démarrage sont des codes d'erreur. Pour un PC Dell, 2 bips indiquent généralement un problème de RAM non détectée ou défaillante."
+            },
+             {
+                time: "13:30", type: "Ticket GLPI", from: "Chef de projet", title: "Création site projet",
+                description: "J'ai besoin d'un espace collaboratif pour le nouveau projet 'Titan'. Nous avons besoin de stocker des documents, d'un calendrier partagé et d'une liste de tâches.",
+                gameType: 'sharepoint',
+                data: { correctSite: 'team_site' },
+                explanation: "Pour un travail collaboratif au sein d'une équipe, un 'Site d'équipe' SharePoint est le choix approprié. Il est adossé à un groupe Microsoft 365 et inclut nativement une bibliothèque de documents, un calendrier, etc. Un site de communication sert à diffuser de l'information à un large public."
+            },
+            {
+                time: "13:50", type: "Email", from: "Utilisateur", title: "Dossier entier disparu !",
+                description: "Tout le dossier 'Projets 2024' sur le partage commun a disparu ! Je pense que je l'ai supprimé par erreur il y a quelques minutes.",
+                gameType: 'veeamRestore',
+                data: { correctPath: '\\\\SRV-FICHIERS\\Commun\\Projets 2024' },
+                explanation: "Pour une suppression accidentelle récente, la restauration depuis une sauvegarde est la solution. Il faut naviguer dans la console de sauvegarde (ici, Veeam), trouver le bon point de restauration (celui de la nuit précédente), localiser le dossier et le restaurer à son emplacement d'origine."
             },
             // Afternoon Session
             {
@@ -789,6 +816,12 @@
             resultsContainer.classList.add('hidden');
             simulationContainer.classList.remove('hidden');
             
+            // Shuffle events to make each run unique
+            for (let i = eventsData.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [eventsData[i], eventsData[j]] = [eventsData[j], eventsData[i]];
+            }
+
             currentEventIndex = 0;
             score = 0;
             userResponses.length = 0;
@@ -842,6 +875,10 @@
                 case 'services': renderServicesGame(event); break;
                 case 'dhcp': renderDhcpGame(event); break;
                 case 'beep': renderBeepGame(event); break;
+                 case 'outlookSafe': renderOutlookSafeGame(event); break;
+                case 'antivirus': renderAntivirusGame(event); break;
+                case 'veeamRestore': renderVeeamRestoreGame(event); break;
+                case 'sharepoint': renderSharepointGame(event); break;
                 // Afternoon
                 case 'gpo': renderGpoGame(event); break;
                 case 'dns': renderDnsGame(event); break;
@@ -1478,6 +1515,109 @@
                 submitAnswer('offboarding', points, { selected: orderedActions, correct: event.data.correctOrder });
             });
         }
+        
+         function renderOutlookSafeGame(event) {
+            gameAreaEl.innerHTML = `
+                <h4 class="font-bold mb-2">Exécuter (Win + R)</h4>
+                <p class="text-sm mb-4">Entrez la commande pour lancer Outlook en mode sans échec.</p>
+                <div class="flex items-center">
+                    <label for="run-command" class="font-semibold mr-2">Ouvrir:</label>
+                    <input id="run-command" type="text" class="w-full border-gray-300 rounded-md">
+                </div>
+                <button id="run-submit" class="mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700">OK</button>
+            `;
+            document.getElementById('run-submit').addEventListener('click', () => {
+                const command = document.getElementById('run-command').value.trim().toLowerCase();
+                let points = (command === event.data.correctCommand) ? 10 : 0;
+                submitAnswer('outlookSafe', points, { typed: command, correct: event.data.correctCommand });
+            });
+        }
+
+        function renderAntivirusGame(event) {
+            const actions = [
+                { id: 'delete', text: 'Supprimer définitivement le fichier de la quarantaine.' },
+                { id: 'restore', text: 'Restaurer le fichier sur le poste de l\'utilisateur.' },
+                { id: 'create_exception', text: 'Restaurer le fichier et créer une exception pour ne plus le détecter.' },
+                { id: 'isolate_host', text: 'Isoler le poste du réseau pour investigation.' }
+            ];
+            let actionsHtml = '';
+            actions.forEach(action => {
+                actionsHtml += `<button data-action="${action.id}" class="w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-indigo-100">${action.text}</button>`;
+            });
+            gameAreaEl.innerHTML = `
+                <h4 class="font-bold mb-2">Console Antivirus - Alerte PUA</h4>
+                <p class="text-sm mb-4">L'application 'export.exe' est un outil comptable légitime. Quelle action prenez-vous ?</p>
+                <div class="space-y-2">${actionsHtml}</div>
+            `;
+            gameAreaEl.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const selectedAction = btn.dataset.action;
+                    let points = (selectedAction === event.data.correctAction) ? 10 : 0;
+                    submitAnswer('antivirus', points, { selected: selectedAction, correct: event.data.correctAction });
+                });
+            });
+        }
+
+        function renderVeeamRestoreGame(event) {
+            gameAreaEl.innerHTML = `
+                <h4 class="font-bold mb-2">Veeam - Restauration de fichiers</h4>
+                <p class="text-sm mb-4">Naviguez et sélectionnez le dossier à restaurer depuis la sauvegarde de 'Hier, 22:00'.</p>
+                <div class="p-2 border rounded-md bg-white h-48 overflow-y-auto">
+                    <ul>
+                        <li><i class="fas fa-server mr-2"></i>SRV-FICHIERS
+                            <ul>
+                                <li class="ml-4"><i class="fas fa-hdd mr-2"></i>C:</li>
+                                <li class="ml-4"><i class="fas fa-hdd mr-2"></i>D:
+                                    <ul>
+                                        <li class="ml-8"><i class="fas fa-folder mr-2"></i>Utilisateurs</li>
+                                        <li data-path="\\\\SRV-FICHIERS\\Commun\\Projets 2024" class="ml-8 cursor-pointer hover:bg-blue-100 p-1 rounded"><i class="fas fa-folder-open mr-2"></i>Commun</li>
+                                        <li class="ml-8"><i class="fas fa-folder mr-2"></i>Scans</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <p class="mt-2 text-sm">Sélection: <span id="restore-path" class="font-mono"></span></p>
+                <button id="restore-submit" class="mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700">Restaurer à l'emplacement d'origine</button>
+            `;
+            let selectedPath = '';
+            gameAreaEl.querySelectorAll('[data-path]').forEach(el => {
+                el.addEventListener('click', () => {
+                    selectedPath = el.dataset.path;
+                    document.getElementById('restore-path').textContent = selectedPath;
+                    gameAreaEl.querySelectorAll('[data-path]').forEach(e => e.classList.remove('bg-blue-200'));
+                    el.classList.add('bg-blue-200');
+                });
+            });
+            document.getElementById('restore-submit').addEventListener('click', () => {
+                let points = (selectedPath === event.data.correctPath) ? 10 : 0;
+                submitAnswer('veeamRestore', points, { selected: selectedPath, correct: event.data.correctPath });
+            });
+        }
+
+        function renderSharepointGame(event) {
+            const siteTypes = [
+                { id: 'team_site', text: 'Site d\'équipe (pour la collaboration)' },
+                { id: 'comm_site', text: 'Site de communication (pour la diffusion d\'information)' }
+            ];
+            let typesHtml = '';
+            siteTypes.forEach(type => {
+                typesHtml += `<label class="block p-3 bg-gray-100 rounded-lg hover:bg-indigo-100"><input type="radio" name="site_type" value="${type.id}" class="mr-2">${type.text}</label>`;
+            });
+            gameAreaEl.innerHTML = `
+                <h4 class="font-bold mb-2">Création d'un site SharePoint</h4>
+                <p class="text-sm mb-4">Quel type de site est le plus approprié pour un projet collaboratif ?</p>
+                <div class="space-y-2">${typesHtml}</div>
+                <button id="sp-submit" class="mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700">Créer le site</button>
+            `;
+            document.getElementById('sp-submit').addEventListener('click', () => {
+                const selectedType = document.querySelector('input[name="site_type"]:checked')?.value;
+                let points = (selectedType === event.data.correctSite) ? 10 : 0;
+                submitAnswer('sharepoint', points, { selected: selectedType, correct: event.data.correctSite });
+            });
+        }
+
 
         // --- END OF SIMULATION LOGIC ---
 
@@ -1596,4 +1736,4 @@
     });
     </script>
 </body>
-</ht
+</html>
