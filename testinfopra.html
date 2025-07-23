@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tests et évaluations de compétences pour les métiers du BTP et de l'informatique.">
+    <title>LTD Simulator - Tests Pratiques Interactifs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            /* Colors */
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --secondary: #10b981;
+            --secondary-dark: #059669;
+            --accent: #f59e0b;
+            --accent-dark: #d97706;
+            
+            /* Surfaces */
+            --background: #0f172a;
+            --surface: #1e293b;
+            --surface-elevated: #334155;
+            --surface-hover: #475569;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            
+            /* Text */
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            --shadow-glow: 0 0 15px 0px rgba(16, 185, 129, 0.3);
+
+            /* Animation */
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Spacing */
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            
+            /* Borders */
+            --radius-sm: 0.375rem;
+            --radius: 0.5rem;
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.5rem;
+            --radius-full: 9999px;
+        }
+
+        /* Light mode */
+        body.light-mode {
+            --background: #f1f5f9;
+            --surface: #ffffff;
+            --surface-elevated: #e2e8f0;
+            --surface-hover: #cbd5e1;
+            --glass: rgba(0, 0, 0, 0.05);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --shadow-glow: 0 0 15px 0px rgba(16, 185, 129, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: var(--transition-slow);
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 50% 85%, rgba(245, 158, 11, 0.1) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+            animation: background-pan 30s linear infinite;
+        }
+        
+        @keyframes background-pan {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        [onclick], .nav-link, .launch-button, .theme-toggle, .mobile-toggle, .search-button, button {
+            cursor: pointer;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px) saturate(180%);
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid var(--glass-border);
+            transition: var(--transition);
+        }
+
+        body.light-mode .header {
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-sm); 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 4.5rem;
+            gap: var(--spacing-md);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 800;
+            font-size: 1.2rem; 
+            transition: var(--transition);
+        }
+        .logo:hover {
+            transform: scale(1.05);
+            text-shadow: 0 0 10px var(--primary-light);
+        }
+
+        .logo-icon {
+            height: 1.8rem;
+            width: auto;
+            vertical-align: -0.4rem;
+        }
+        
+        .logo-text-extended {
+            display: none;
+        }
+
+        .nav-desktop { display: none; } 
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            list-style: none;
+        }
+
+        .nav-item { position: relative; }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: var(--radius);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+            background: var(--glass);
+        }
+
+        .nav-link.active {
+            color: var(--text-primary);
+            background: linear-gradient(45deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.2));
+            font-weight: 600;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            color: var(--text-secondary);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .theme-toggle:hover {
+            background: var(--surface-elevated);
+            color: var(--text-primary);
+            transform: rotate(15deg);
+        }
+
+        .mobile-toggle {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+        
+        .hamburger { position: relative; width: 1.25rem; height: 1rem; }
+        .hamburger span { position: absolute; left: 0; width: 100%; height: 2px; background: var(--text-primary); border-radius: 1px; transition: var(--transition); }
+        .hamburger span:nth-child(1) { top: 0; }
+        .hamburger span:nth-child(2) { top: 50%; transform: translateY(-50%); }
+        .hamburger span:nth-child(3) { bottom: 0; }
+        .mobile-toggle.active .hamburger span:nth-child(1) { top: 50%; transform: translateY(-50%) rotate(45deg); }
+        .mobile-toggle.active .hamburger span:nth-child(2) { opacity: 0; }
+        .mobile-toggle.active .hamburger span:nth-child(3) { bottom: 50%; transform: translateY(50%) rotate(-45deg); }
+        
+        .mobile-menu { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--background); z-index: 999; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: var(--transition-slow); }
+        .mobile-menu.active { opacity: 1; visibility: visible; }
+        .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--spacing-sm); height: 4.5rem; border-bottom: 1px solid var(--glass-border); }
+        .mobile-menu-close { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-primary); }
+        .mobile-menu-content { flex: 1; padding: var(--spacing-lg) var(--spacing-sm); overflow-y: auto; }
+        
+        .main-content { 
+            margin-top: 4.5rem; 
+            padding: var(--spacing-lg) var(--spacing-sm); 
+            max-width: 1400px; 
+            margin-left: auto; 
+            margin-right: auto; 
+        }
+
+        /* Styles for the simulation component */
+        .simulation-wrapper {
+            background-color: #f8fafc; /* Light background for the test */
+            color: #0f172a; /* Dark text for the test */
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-sm);
+            box-shadow: var(--shadow-xl);
+        }
+        body.light-mode .simulation-wrapper {
+            background-color: #ffffff;
+        }
+        
+        #simulation-container, #results-container {
+            color: #0f172a; /* Ensure text inside is dark */
+        }
+        
+        .animate-in {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .animate-in.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-desktop { display: none; }
+            .mobile-toggle { display: flex; }
+        }
+        @media (min-width: 1024px) {
+            .mobile-toggle { display: none; }
+            .nav-desktop { display: flex; align-items: center; flex-grow: 1; justify-content: flex-end; gap: var(--spacing-sm); }
+            .nav-menu { gap: var(--spacing-xs); }
+        }
+        @media (min-width: 1280px) {
+            .logo-text-extended { display: inline; }
+        }
+
+        /* --- Mini-Game Specific Styles --- */
+        #game-area {
+            min-height: 350px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        .game-feedback {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+        }
+        .feedback-success { background-color: #dcfce7; color: #166534; border-left: 4px solid #22c55e; }
+        .feedback-fail { background-color: #fee2e2; color: #991b1b; border-left: 4px solid #ef4444; }
+        .feedback-skipped { background-color: #fef3c7; color: #92400e; border-left: 4px solid #f59e0b; }
+
+
+        /* CMD Game */
+        .terminal {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            height: 300px;
+            overflow-y: auto;
+        }
+        .terminal-input {
+            background: transparent;
+            border: none;
+            color: #e2e8f0;
+            width: calc(100% - 2rem);
+            outline: none;
+        }
+        .terminal-output {
+            white-space: pre-wrap;
+        }
+
+        /* Patching Game */
+        .patch-panel, .switch-panel { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 0.5rem; }
+        .port {
+            border: 2px solid #94a3b8;
+            border-radius: 0.25rem;
+            padding: 0.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .port:hover { background-color: #e0e7ff; }
+        .port.selected { background-color: #6366f1; color: white; border-color: #4338ca; }
+        .port.correct { background-color: #22c55e; color: white; }
+        .port.incorrect { background-color: #ef4444; color: white; }
+
+        /* Phishing Game */
+        .phishing-email { position: relative; }
+        .phishing-hotspot {
+            position: absolute;
+            border: 2px dashed rgba(239, 68, 68, 0);
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .phishing-hotspot:hover { background-color: rgba(251, 191, 36, 0.3); border-color: rgba(251, 191, 36, 1); }
+        .phishing-hotspot.found { background-color: rgba(34, 197, 94, 0.3); border-color: rgba(34, 197, 94, 1); }
+        
+        /* NTFS Game */
+        .permission-checkbox { margin-right: 0.5rem; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+    
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav-container">
+            <a href="#" class="logo">
+                <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
+                    <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
+                    <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+                </svg>
+                <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
+            </a>
+            <div class="nav-desktop">
+                 <ul class="nav-menu">
+                    <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link active"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
+                 </ul>
+                 <div class="nav-actions">
+                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
+                         <i class="fas fa-moon" id="themeIcon"></i>
+                     </button>
+                 </div>
+            </div>
+            <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
+                <span class="hamburger"><span></span><span></span><span></span></span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <!-- Mobile menu content will be generated by JS -->
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="simulation-wrapper animate-in">
+            <!-- START OF SIMULATION COMPONENT -->
+            <div id="simulation-main-container" class="container mx-auto p-4 sm:p-6 md:p-8 max-w-5xl">
+                <header class="text-center mb-8">
+                    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Test Pratique Interactif</h1>
+                    <p class="text-lg text-gray-600 mt-2">Poste : Technicien(ne) Systèmes et Réseaux</p>
+                </header>
+
+                <div id="candidate-form" class="bg-white p-6 rounded-lg shadow-md mb-8">
+                    <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Informations du Candidat</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="fullname" class="block text-sm font-medium text-gray-700">Nom et Prénom</label>
+                            <input type="text" id="fullname" name="fullname" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Ex: Jean Dupont">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700">Adresse E-mail</label>
+                            <input type="email" id="email" name="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Ex: jean.dupont@email.com">
+                        </div>
+                    </div>
+                    <button id="start-btn" class="mt-6 w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Démarrer le test
+                    </button>
+                    <p id="form-error" class="text-red-500 text-sm mt-2 hidden">Veuillez remplir tous les champs.</p>
+                </div>
+
+                <div id="simulation-container" class="hidden">
+                    <div class="bg-gray-800 text-white p-3 rounded-t-lg flex justify-between items-center">
+                        <h2 class="font-bold text-xl">Tableau de Bord</h2>
+                        <div class="flex items-center space-x-4">
+                             <div class="text-lg">
+                                <span id="progress-display"></span>
+                            </div>
+                            <div class="text-lg">
+                                <span id="clock">09:00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="event-container" class="bg-white p-6 rounded-b-lg shadow-lg flex flex-col justify-between">
+                        <div id="event-content"></div>
+                        <div id="game-area"></div>
+                        <div id="game-feedback-container"></div>
+                    </div>
+                    <div class="mt-4 flex justify-between items-center">
+                        <button id="skip-event-btn" class="bg-amber-500 text-white font-bold py-2 px-4 rounded-md hover:bg-amber-600">
+                            Passer <i class="fas fa-forward ml-2"></i>
+                        </button>
+                        <button id="next-event-btn" class="hidden bg-indigo-600 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-700">
+                            Événement Suivant <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="results-container" class="hidden bg-white p-6 sm:p-8 rounded-lg shadow-lg">
+                    <div id="pdf-content">
+                        <div id="results-summary" class="text-center">
+                            <h2 class="text-3xl font-bold mb-4">Fin de la Journée - Rapport de Performance</h2>
+                            <p class="text-lg mb-2">Candidat : <span id="candidate-name-result" class="font-semibold"></span></p>
+                            <p class="text-lg mb-4">Score de performance : <span id="score" class="font-bold text-2xl text-indigo-600"></span></p>
+                            <div id="feedback" class="mt-6 p-4 bg-gray-50 rounded-md">
+                                <h3 class="font-semibold text-xl mb-2">Analyse de la performance</h3>
+                                <p id="feedback-text" class="text-gray-700"></p>
+                            </div>
+                        </div>
+                        <div id="correction-details" class="mt-10 pt-6 border-t border-gray-200">
+                             <h3 class="text-2xl font-bold text-center mb-6">Revue des Mini-Jeux</h3>
+                             <div id="correction-wrapper"></div>
+                        </div>
+                    </div>
+                    <div id="action-buttons" class="mt-8 text-center">
+                         <button id="restart-btn" class="bg-gray-600 text-white font-bold py-2 px-4 rounded-md hover:bg-gray-700">Recommencer le test</button>
+                    </div>
+                </div>
+            </div>
+            <!-- END OF SIMULATION COMPONENT -->
+        </div>
+    </main>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- WEBSITE UI SCRIPT ---
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+
+        function updateThemeUI() {
+            const themeIcon = document.getElementById('themeIcon');
+            if (!themeIcon) return;
+            document.body.classList.toggle('light-mode', currentTheme === 'light');
+            themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+
+        window.toggleTheme = function() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            updateThemeUI();
+        }
+        
+        window.toggleMobileMenu = function() {
+            const mobileToggle = document.getElementById('mobileToggle');
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileToggle.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        }
+
+        const observer = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    obs.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.animate-in').forEach(el => {
+            observer.observe(el);
+        });
+        
+        updateThemeUI();
+
+        // --- SIMULATION SCRIPT ---
+
+        // --- DATA FOR MINI-GAMES ---
+        const eventsData = [
+            // Morning Session
+            {
+                time: "09:05", type: "Ticket GLPI", from: "Service RH", title: "Activation Prise Réseau",
+                description: "Un nouvel employé, M. Leblanc, s'est installé au bureau A-12. Sa prise murale est la 2B-15. Veuillez l'activer en la brassant sur le port 15 du switch et l'assigner au VLAN 'Ventes' (ID 20).",
+                gameType: 'patching',
+                data: { patchPanelPort: '2B-15', correctSwitchPort: '15', vlan: 20 },
+                explanation: "La tâche consistait à identifier la bonne prise sur le panneau de brassage et de la relier au port correspondant sur le switch. L'oubli de configuration du VLAN est une erreur fréquente."
+            },
+            {
+                time: "09:20", type: "Appel", from: "Céline D.", title: "Diagnostic Connectivité",
+                description: "Je n'arrive pas à accéder à l'intranet 'intranet.corp' (10.1.1.5). Pouvez-vous vérifier ma connexion ?",
+                gameType: 'cmd',
+                data: {
+                    ip: '10.1.10.124',
+                    gateway: '10.1.10.1',
+                    serverIp: '10.1.1.5'
+                },
+                explanation: "La première étape est de vérifier la configuration IP locale avec `ipconfig`. Ensuite, `ping` permet de tester la connectivité vers une destination. Ici, le ping échoue, indiquant un problème réseau plus large (routage, pare-feu)."
+            },
+            {
+                time: "09:45", type: "Ticket GLPI", from: "Nouveau Stagiaire", title: "Accès dossier Marketing",
+                description: "Bonjour, je suis le nouveau stagiaire au marketing et je n'ai pas accès au dossier partagé `\\\\SRV-FICHIERS\\Marketing`. Mon manager a validé cet accès.",
+                gameType: 'ntfs',
+                data: { user: 'stagiaire-mkt', folder: 'Marketing' },
+                explanation: "La bonne pratique est de donner les droits 'Lecture & Exécution' et 'Écriture' à un utilisateur standard. Donner le 'Contrôle total' est un risque de sécurité."
+            },
+            {
+                time: "10:15", type: "Email", from: "Directeur Commercial", title: "Fichier corrompu !",
+                description: "Le fichier de prospection `prospects_T3.xlsx` sur le lecteur commun ne s'ouvre plus. La dernière version fonctionnelle était celle d'hier soir. C'est urgent !",
+                gameType: 'shadowCopy',
+                data: {
+                    correctVersion: 'Hier, 17:30'
+                },
+                explanation: "Les clichés instantanés (Shadow Copy) sont la méthode la plus rapide pour restaurer une version précédente d'un fichier sur un partage réseau."
+            },
+            {
+                time: "10:40", type: "Ticket GLPI", from: "Développeur", title: "Ouverture de flux",
+                description: "Pour la nouvelle application, le serveur de DEV (192.168.10.5) doit pouvoir contacter le serveur de BDD (192.168.20.8) sur le port SQL (TCP 1433).",
+                gameType: 'firewall',
+                data: {
+                    source: '192.168.10.5',
+                    destination: '192.168.20.8',
+                    port: '1433',
+                    protocol: 'TCP'
+                },
+                explanation: "Une règle de pare-feu doit être la plus spécifique possible : définir la source, la destination, le port et le protocole. Ouvrir des flux en 'Any' est une faille de sécurité majeure."
+            },
+            {
+                time: "11:00", type: "Email", from: "RH", title: "Arrivée nouvelle collaboratrice",
+                description: "Mme Durand arrive lundi. Elle sera commerciale. Préparez son compte. Elle aura besoin des accès standards et de l'accès au CRM.",
+                gameType: 'ad',
+                data: {
+                    name: 'Sophie Durand',
+                    login: 'sdurand',
+                    groups: ['Domain Users', 'Commercial', 'VPN Access', 'CRM Users']
+                },
+                explanation: "La création d'un utilisateur implique de l'ajouter aux bons groupes de sécurité pour qu'il hérite automatiquement des droits nécessaires."
+            },
+            {
+                time: "11:30", type: "Email", from: "Un utilisateur", title: "Fwd: Vous avez gagné un iPhone !",
+                description: "J'ai reçu cet email, est-ce une campagne officielle ? Je n'ai pas cliqué.",
+                gameType: 'phishing',
+                data: {
+                    hotspots: 4
+                },
+                explanation: "Les signes d'un phishing sont : une adresse d'expéditeur suspecte, une salutation générique, un sentiment d'urgence, et un lien qui ne correspond pas au texte affiché."
+            },
+            {
+                time: "11:50", type: "Ticket GLPI", from: "Comptabilité", title: "Problème d'impression général",
+                description: "Personne au service compta n'arrive à imprimer. Les imprimantes semblent en ligne mais rien ne sort.",
+                gameType: 'services',
+                data: {
+                    service: 'Spouleur d\'impression'
+                },
+                explanation: "Quand un service entier est impacté, le problème est souvent côté serveur. Le service 'Spouleur d'impression' gère les files d'attente. Le redémarrer est souvent la solution."
+            },
+            {
+                time: "12:10", type: "Alerte Système", from: "Serveur DHCP", title: "Étendue presque pleine",
+                description: "L'étendue DHCP pour le réseau des invités (172.16.10.0/24) a utilisé 95% de ses adresses.",
+                gameType: 'dhcp',
+                data: {
+                    correctAction: 'reduce_lease'
+                },
+                explanation: "Face à un épuisement d'adresses sur un réseau d'invités, la première action est de réduire la durée des baux pour libérer les adresses plus vite."
+            },
+            {
+                time: "12:30", type: "Appel", from: "Utilisateur paniqué", title: "Mon PC bippe et ne démarre pas !",
+                description: "Mon PC de bureau (un Dell OptiPlex) ne démarre plus. L'écran reste noir et j'entends 2 bips, une pause, puis 2 bips...",
+                gameType: 'beep',
+                data: {
+                    manufacturer: 'Dell',
+                    beeps: '2, 2',
+                    fault: 'RAM'
+                },
+                explanation: "Les bips au démarrage sont des codes d'erreur. Pour un PC Dell, 2 bips indiquent généralement un problème de RAM non détectée ou défaillante."
+            },
+            // Afternoon Session
+            {
+                time: "14:00", type: "Email", from: "Responsable SI", title: "Sécurisation des postes",
+                description: "Veuillez créer une GPO nommée 'SEC_Verrouillage_Session' qui verrouille la session après 10 minutes d'inactivité, et liez-la à l'OU 'Postes de travail'.",
+                gameType: 'gpo',
+                data: { correctOU: 'Postes de travail' },
+                explanation: "Une GPO doit être liée à l'Unité d'Organisation (OU) correcte pour s'appliquer aux bons objets (ici, les ordinateurs). La lier à la racine du domaine ou à une OU d'utilisateurs serait incorrect."
+            },
+            {
+                time: "14:25", type: "Ticket GLPI", from: "Utilisateur", title: "Accès impossible site interne",
+                description: "Je n'arrive pas à accéder au site 'portail-rh.corp', mais j'arrive à pinguer son IP (10.2.5.10).",
+                gameType: 'dns',
+                data: { server: 'dc1.corp.local', name: 'portail-rh.corp' },
+                explanation: "Si une ressource est accessible par IP mais pas par son nom, c'est un problème DNS. `nslookup` permet d'interroger le serveur DNS pour vérifier si l'enregistrement existe et est correct."
+            },
+            {
+                time: "14:50", type: "Alerte Veeam", from: "Serveur de Sauvegarde", title: "Échec de sauvegarde",
+                description: "Le job de sauvegarde de la VM 'SRV-WEB' a échoué avec l'erreur : 'Error: VSS: L'enregistreur a rencontré une erreur non temporaire. Pensez à vérifier l'observateur d'événements sur la VM invitée.'",
+                gameType: 'veeam',
+                data: { correctAction: 'check_vm_logs' },
+                explanation: "L'erreur VSS (Volume Shadow Copy Service) indique un problème à l'intérieur de la machine virtuelle, pas sur le serveur de sauvegarde. La première action est donc de se connecter à la VM et de consulter ses journaux d'événements."
+            },
+            {
+                time: "15:15", type: "Ticket GLPI", from: "RH", title: "Création boîte partagée",
+                description: "Pouvez-vous créer une boîte mail partagée 'candidatures@entreprise.fr' et donner l'accès total à 'Celine RH' et 'Marc RH' ?",
+                gameType: 'mailbox',
+                data: { name: 'candidatures', users: ['Celine RH', 'Marc RH'], permission: 'FullAccess' },
+                explanation: "Pour une boîte partagée, il faut créer une 'Shared Mailbox' (sans licence) et déléguer les permissions 'Full Access' (pour ouvrir la boîte) et 'Send As' (pour envoyer en son nom)."
+            },
+            {
+                time: "15:40", type: "Appel", from: "Utilisateur", title: "Wi-Fi très lent en salle de pause",
+                description: "Le Wi-Fi est inutilisable dans la salle de pause, alors qu'il est parfait dans les bureaux. Que peut-on faire ?",
+                gameType: 'wifi',
+                data: { correctAction: 'move_ap' },
+                explanation: "La borne Wi-Fi (AP) est trop éloignée et le signal est obstrué par un mur porteur. La solution la plus efficace est de déplacer la borne ou d'en ajouter une nouvelle pour mieux couvrir la zone."
+            },
+            {
+                time: "16:05", type: "Alerte Azure", from: "Azure AD Connect", title: "Erreur de synchronisation",
+                description: "Une erreur de synchronisation 'AttributeValueMustBeUnique' est signalée. L'attribut 'proxyAddresses' de l'utilisateur 'jdupont' est en conflit avec un autre objet.",
+                gameType: 'azureSync',
+                data: { correctAction: 'check_ad_attribute' },
+                explanation: "Cette erreur signifie que l'adresse e-mail (proxyAddress) que l'on essaie de synchroniser existe déjà sur un autre objet dans Azure AD. Il faut utiliser l'éditeur d'attributs dans l'AD local pour trouver et corriger le doublon."
+            },
+            {
+                time: "16:25", type: "Email", from: "Responsable SI", title: "Nettoyage AD",
+                description: "J'ai besoin d'un script PowerShell simple pour trouver les comptes utilisateurs inactifs depuis plus de 90 jours.",
+                gameType: 'powershell',
+                data: { correctCommand: 'Search-ADAccount -AccountInactive -TimeSpan 90.00:00:00 -UsersOnly' },
+                explanation: "La cmdlet `Search-ADAccount` est l'outil moderne et efficace pour ce type de recherche. L'utilisation de `Get-ADUser` avec un filtre complexe est possible mais moins directe."
+            },
+            {
+                time: "16:45", type: "Ticket GLPI", from: "Marketing", title: "Demande Adobe Photoshop",
+                description: "J'ai besoin d'installer Adobe Photoshop pour un projet urgent. Pouvez-vous me donner les droits admin pour que je l'installe ?",
+                gameType: 'softwareRequest',
+                data: { correctAction: 'validate_and_quote' },
+                explanation: "Ne jamais donner les droits admin. Pour un logiciel coûteux et non standard, la procédure est de faire valider le besoin par le manager, puis de demander un devis au service achat avant toute installation."
+            },
+            {
+                time: "17:05", type: "Appel", from: "Technicien terrain", title: "Configuration port switch",
+                description: "Je viens de brancher un PC et un téléphone VoIP sur le port 22 du switch. Peux-tu configurer le port correctement ? Le VLAN data est le 10 et le VLAN voix est le 30.",
+                gameType: 'vlan',
+                data: { access: '10', voice: '30' },
+                explanation: "Pour un port connectant un PC et un téléphone, il faut configurer un VLAN d'accès (untagged) pour les données du PC, et un VLAN voix (tagged) pour le trafic du téléphone."
+            },
+            {
+                time: "17:25", type: "Ticket GLPI", from: "RH", title: "Départ de M. Martin",
+                description: "M. Martin quitte l'entreprise ce soir. Veuillez procéder à la sécurisation de son compte.",
+                gameType: 'offboarding',
+                data: { correctOrder: ['disable_ad', 'revoke_sessions', 'archive_data'] },
+                explanation: "L'ordre est crucial : 1. Désactiver le compte AD pour couper tous les accès. 2. Forcer la déconnexion de toutes ses sessions actives (M365, etc.). 3. Archiver ses données (OneDrive, Mailbox) pour le manager. Supprimer le compte se fait bien plus tard."
+            }
+        ];
+
+        let currentEventIndex = 0;
+        let score = 0;
+        const maxScore = eventsData.length * 10; // 10 points per game
+        const userResponses = [];
+
+        const candidateForm = document.getElementById('candidate-form');
+        const startBtn = document.getElementById('start-btn');
+        const formError = document.getElementById('form-error');
+        const fullnameInput = document.getElementById('fullname');
+        const simulationContainer = document.getElementById('simulation-container');
+        const clockEl = document.getElementById('clock');
+        const progressDisplayEl = document.getElementById('progress-display');
+        const eventContentEl = document.getElementById('event-content');
+        const gameAreaEl = document.getElementById('game-area');
+        const gameFeedbackContainerEl = document.getElementById('game-feedback-container');
+        const nextEventBtn = document.getElementById('next-event-btn');
+        const skipEventBtn = document.getElementById('skip-event-btn');
+        const resultsContainer = document.getElementById('results-container');
+        const candidateNameResult = document.getElementById('candidate-name-result');
+        const scoreEl = document.getElementById('score');
+        const feedbackText = document.getElementById('feedback-text');
+        const correctionWrapper = document.getElementById('correction-wrapper');
+        const restartBtn = document.getElementById('restart-btn');
+
+        function startSimulation() {
+            if (fullnameInput.value.trim() === '' || document.getElementById('email').value.trim() === '') {
+                formError.classList.remove('hidden');
+                return;
+            }
+            formError.classList.add('hidden');
+            candidateForm.classList.add('hidden');
+            resultsContainer.classList.add('hidden');
+            simulationContainer.classList.remove('hidden');
+            
+            currentEventIndex = 0;
+            score = 0;
+            userResponses.length = 0;
+
+            displayEvent();
+        }
+
+        function displayEvent() {
+            if (currentEventIndex >= eventsData.length) {
+                endSimulation();
+                return;
+            }
+
+            gameFeedbackContainerEl.innerHTML = '';
+            nextEventBtn.classList.add('hidden');
+            skipEventBtn.classList.remove('hidden');
+
+            const event = eventsData[currentEventIndex];
+            clockEl.textContent = event.time;
+            progressDisplayEl.textContent = `Progrès : ${currentEventIndex + 1} / ${eventsData.length}`;
+            
+            let icon = event.type.includes('Ticket') ? '🎫' : event.type.includes('Email') ? '📧' : event.type.includes('Appel') ? '📞' : '⚠️';
+            
+            eventContentEl.innerHTML = `
+                <div class="flex items-start space-x-4">
+                    <div class="text-3xl">${icon}</div>
+                    <div>
+                        <div class="flex justify-between items-baseline">
+                            <h3 class="text-xl font-bold text-gray-900">${event.title}</h3>
+                            <span class="text-sm font-medium text-gray-500">${event.type}</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">De : ${event.from}</p>
+                        <p class="text-gray-700 whitespace-pre-wrap">${event.description}</p>
+                    </div>
+                </div>`;
+
+            renderGame(event);
+        }
+
+        function renderGame(event) {
+            gameAreaEl.innerHTML = '';
+            switch (event.gameType) {
+                // Morning
+                case 'patching': renderPatchingGame(event); break;
+                case 'cmd': renderCmdGame(event); break;
+                case 'ntfs': renderNtfsGame(event); break;
+                case 'shadowCopy': renderShadowCopyGame(event); break;
+                case 'firewall': renderFirewallGame(event); break;
+                case 'ad': renderAdGame(event); break;
+                case 'phishing': renderPhishingGame(event); break;
+                case 'services': renderServicesGame(event); break;
+                case 'dhcp': renderDhcpGame(event); break;
+                case 'beep': renderBeepGame(event); break;
+                // Afternoon
+                case 'gpo': renderGpoGame(event); break;
+                case 'dns': renderDnsGame(event); break;
+                case 'veeam': renderVeeamGame(event); break;
+                case 'mailbox': renderMailboxGame(event); break;
+                case 'wifi': renderWifiGame(event); break;
+                case 'azureSync': renderAzureSyncGame(event); break;
+                case 'powershell': renderPowershellGame(event); break;
+                case 'softwareRequest': renderSoftwareRequestGame(event); break;
+                case 'vlan': renderVlanGame(event); break;
+                case 'offboarding': renderOffboardingGame(event); break;
+            }
+        }
+        
+        function submitAnswer(gameType, points, details) {
+            score += points;
+            userResponses.push({
+                event: eventsData[currentEventIndex],
+                points,
+                details
+            });
+            
+            skipEventBtn.classList.add('hidden');
+            nextEventBtn.classList.remove('hidden');
+
+            let feedbackClass, feedbackMessage;
+
+            if (details.skipped) {
+                feedbackClass = 'feedback-skipped';
+                feedbackMessage = 'Question passée.';
+            } else {
+                feedbackClass = points > 5 ? 'feedback-success' : 'feedback-fail';
+                feedbackMessage = points > 5 ? 'Action réussie !' : 'Action incorrecte ou incomplète.';
+            }
+            
+            gameFeedbackContainerEl.innerHTML = `<div class="game-feedback ${feedbackClass}">${feedbackMessage} ${eventsData[currentEventIndex].explanation}</div>`;
+            
+            // Disable game controls
+            Array.from(gameAreaEl.getElementsByTagName('button')).forEach(b => b.disabled = true);
+            Array.from(gameAreaEl.getElementsByTagName('input')).forEach(i => i.disabled = true);
+            Array.from(gameAreaEl.getElementsByTagName('select')).forEach(s => s.disabled = true);
+            gameAreaEl.querySelectorAll('.draggable').forEach(d => d.setAttribute('draggable', 'false'));
+        }
+
+        function skipQuestion() {
+            const event = eventsData[currentEventIndex];
+            submitAnswer(event.gameType, 0, { skipped: true });
+        }
+
+        // --- RENDER FUNCTIONS FOR EACH GAME ---
+
+        function renderPatchingGame(event) {
+            let panelHtml = '<div><h4 class="font-bold mb-2">Panneau de Brassage</h4><div class="patch-panel">';
+            for (let i = 1; i <= 24; i++) {
+                panelHtml += `<div class="port" data-type="panel" data-port="2B-${i}">2B-${i}</div>`;
+            }
+            panelHtml += '</div></div>';
+
+            let switchHtml = '<div><h4 class="font-bold mb-2">Switch Core</h4><div class="switch-panel">';
+            for (let i = 1; i <= 24; i++) {
+                switchHtml += `<div class="port" data-type="switch" data-port="${i}">${i}</div>`;
+            }
+            switchHtml += '</div></div>';
+
+            gameAreaEl.innerHTML = `
+                <p class="text-sm text-gray-600 mb-4">1. Cliquez sur la prise de départ. 2. Cliquez sur le port d'arrivée.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">${panelHtml}${switchHtml}</div>
+                <div class="mt-4">
+                    <label for="vlan-input" class="font-bold">VLAN ID:</label>
+                    <input type="number" id="vlan-input" class="border-gray-300 rounded-md shadow-sm w-24 ml-2">
+                </div>
+                <button id="patch-submit" class="mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700">Valider le brassage</button>
+            `;
+
+            let selectedPanel = null, selectedSwitch = null;
+            gameAreaEl.querySelectorAll('.port').forEach(p => {
+                p.addEventListener('click', () => {
+                    if (p.dataset.type === 'panel') {
+                        gameAreaEl.querySelectorAll('[data-type="panel"]').forEach(sp => sp.classList.remove('selected'));
+                        p.classList.add('selected');
+                        selectedPanel = p.dataset.port;
+                    } else {
+                        gameAreaEl.querySelectorAll('[data-type="switch"]').forEach(sp => sp.classList.remove('selected'));
+                        p.classList.add('selected');
+                        selectedSwitch = p.dataset.port;
+                    }
+                });
+            });
+
+            document.getElementById('patch-submit').addEventListener('click', () => {
+                const vlanInput = document.getElementById('vlan-input').value;
+                let points = 0;
+                if (selectedPanel === event.data.patchPanelPort) points += 4;
+                if (selectedSwitch === event.data.correctSwitchPort) points += 4;
+                if (parseInt(vlanInput) === event.data.vlan) points += 2;
+                submitAnswer('patching', points, {
+                    selectedPanel, selectedSwitch, vlanInput,
+                    correct: { panel: event.data.patchPanelPort, switch: event.data.correctSwitchPort, vlan: event.data.vlan }
+                });
+            });
+        }
+
+        function renderCmdGame(event) {
+            gameAreaEl.innerHTML = `
+                <div class="terminal" id="terminal">
+                    <div id="terminal-output">Microsoft Windows [version 10.0.19045.2364]<br>(c) Microsoft Corporation. Tous droits réservés.<br><br></div>
+                    <div class="flex">
+                        <span>C:\\Users\\Technicien></span>
+                        <input type="text" id="terminal-input" class="terminal-input ml-2" autofocus>
+                    </div>
+                </div>
+            `;
+            const termInput = document.getElementById('terminal-input');
+            const termOutput = document.getElementById('terminal-output');
+
+            const commands = {
+                'ipconfig': `\nConfiguration IP de Windows\n\n   Adresse IPv4. . . . . . . . . . . : ${event.data.ip}\n   Masque de sous-réseau . . . . . . : 255.255.255.0\n   Passerelle par défaut. . . . . . . : ${event.data.gateway}\n`,
+                'ping 10.1.1.5': `\nEnvoi d’une requête 'ping' sur ${event.data.serverIp} avec 32 octets de données:\nDélai d’attente de la demande dépassé.\n\nStatistiques Ping pour ${event.data.serverIp}:\n    Paquets : envoyés = 2, reçus = 0, perdus = 2 (perte 100%)\n`,
+                'nslookup portail-rh.corp': `\nServeur :   dc1.corp.local\nAddress:  10.0.0.1\n\nNom :    portail-rh.corp\nAddress:  10.2.5.10\n`,
+                'help': `\nCommandes disponibles:\n  ipconfig, ping <ip>, nslookup <name>, submit\n`,
+                'submit': ''
+            };
+            let ipconfigDone = false;
+            let pingDone = false;
+            let nslookupDone = false;
+
+            termInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const command = termInput.value.trim().toLowerCase();
+                    termOutput.innerHTML += `C:\\Users\\Technicien>${command}\n`;
+                    if (commands[command]) {
+                        termOutput.innerHTML += commands[command];
+                        if (command === 'ipconfig') ipconfigDone = true;
+                        if (command === `ping ${event.data.serverIp}`) pingDone = true;
+                        if (command === `nslookup ${event.data.name}`) nslookupDone = true;
+
+                        if (command === 'submit') {
+                            let points = 0;
+                            let details = {};
+                            if(event.gameType === 'cmd') {
+                                if (ipconfigDone) points += 5;
+                                if (pingDone) points += 5;
+                                details = { ipconfigDone, pingDone };
+                            }
+                            if(event.gameType === 'dns') {
+                                if (nslookupDone) points += 10;
+                                details = { nslookupDone };
+                            }
+                            submitAnswer(event.gameType, points, details);
+                        }
+                    } else {
+                        termOutput.innerHTML += `'${command}' n’est pas reconnu en tant que commande interne ou externe, un programme exécutable ou un fichier de commandes.\n`;
+                    }
+                    termInput.value = '';
+                    document.getElementById('terminal').scrollTop = document.getElementById('terminal').scrollHeight;
+                }
+            });
+        }
+
+        function renderNtfsGame(event) {
+            gameAreaEl.innerHTML = `
+                <h4 class="font-bold mb-2">Propriétés de : ${event.data.folder}</h4>
+                <p class="text-sm mb-4">Ajoutez l'utilisateur '${event.data.user}' et donnez-lui les permissions adéquates.</p>
+                <div class="border p-4 rounded-md">
+                    <h5 class="font-semibold">Permissions pour ${event.data.user}</h5>
+                    <div class="mt-2">
+                        <label><input type="checkbox" class="permission-checkbox" data-perm="read"> Lecture & exécution</label><br>
+                        <label><input type="checkbox" class="permission-checkbox" data-perm="write"> Écriture</label><br>
+                        <label><input type="checkbox" class="permission-checkbox" data-perm="modify"> Modification</label><br>
+                        <label><input type="checkbox" class="permission-checkbox" data-perm="full"> Contrôle total</label>
+                    </div>
+                </div>
+                <button id="ntfs-submit" class="mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700">Appliquer</button>
+            `;
+
+            document.getElementById('ntfs-submit').addEventListener('click', () => {
+                const read = document.querySelector('[data-perm="read"]').checked;
+                const write = document.querySelector('[data-perm="write"]').checked;
+                const modify = document.querySelector('[data-perm="modify"]').checked;
+                const full = document.querySelector('[data-perm="full"]').checked;
+                let points = 0;
+                if(read && write && !modify && !full) {
+                    points = 10;
+                } else if (read && write) {
+                    points = 5; // Partial credit
+                } else if (full) {
+                    points = 2; // Bad practice
+                }
+                submitAnswer('ntfs', points, {read, write, modify, full});
+            });
+        }
+        
+        function renderShadowCopyGame(event) {
+            const versions = ['Aujourd\'hui, 09:30', 'Hier, 17:30', 'Hier, 12:00', 'Avant-hier, 16:00'];
+            let versionsHtml = '';
+            versions.forEach(v => {
+                versionsHtml += `<option value="${v}">${v}</option>`;
+            });
+
+            gameAreaEl.innerHTML = `
+                <h4 class="font-bold mb-2">Versions précédentes de: prospects_T3.xlsx</h4>
+                <p class="text-sm mb-4">Sélectionnez la version du fichier à restaurer.</p>
+                <select id="version-select" class="p-2 border rounded-md w-full">${versionsHtml}</select>
+                <button id="restore-submit" class="mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700">Restaurer</button>
+            `;
+
+            document.getElementById('restore-submit').addEventListener('click', () => {
+                const selectedVersion = document.getElementById('version-select').value;
+                let points = (selectedVersion === event.data.correctVersion) ? 10 : 0;
+                submitAnswer('shadowCopy', points, { selected: selectedVersion, correct: event.data.correctVersion });
+            });
+        }
+        
+        function renderFirewallGame(event) {
+             gameAreaEl.innerHTML = `
+                <h4 class="font-bold mb-2">Nouvelle règle de Pare-feu</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label class="block">Source IP:</label><input id="fw-source" type="text" class="w-full border-gray-300 rounded-md"></div>
+                    <div><label class="block">Destination IP:</label><input id="fw-dest" type="text" class="w-full border-gray-300 rounded-md"></div>
+                    <div><label class="block">Protocole:</label><select id="fw-proto" class="w-full border-gray-300 rounded-md"><option>TCP</option><option>UDP</option><option>Any</option></select></div>
+                    <div><label class="block">Port Destination:</label><input id="fw-port" type="text" class="w-full border-gray-300 rounded-md"></div>
+                </div>
+                <button id="fw-submit" class="mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700">Créer la règle</button>
+            `;
+
+            document.getElementById('fw-submit').addEventListener('click', () => {
+                const source = document.getElementById('fw-source').value;
+                const dest = document.getElementById('fw-dest').value;
+                const proto = document.getElementById('fw-proto').value;
+                const port = document.getElementById('fw-port').value;
+                let points = 0;
+                if (source === event.data.source) points += 2.5;
+                if (dest === event.data.destination) points += 2.5;
+                if (proto === event.data.protocol) points += 2.5;
+                if (port === event.data.port) points += 2.5;
+                submitAnswer('firewall', points, { source, dest, proto, port, correct: event.data });
+            });
+        }
+
+        function renderAdGame(event) {
+            const allGroups = ['Domain Users', 'Commercial', 'Comptabilité', 'Direction', 'VPN Access', 'CRM Users'];
+            let groupsHtml = '';
+            allGroups.forEach(g => {
+                groupsHtml += `<label class="block"><input type="checkbox" value="${g}" class="mr-2">${g}</label>`;
+            });
+
+            gameAreaEl.innerHTML = `
+                <h4 class="font-bold mb-2">Création d'un utilisateur Active Directory</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block">Nom complet:</label><input type="text" value="${event.data.name}" class="w-full bg-gray-200 rounded-md" readonly>
+                        <label class="block mt-2">Login:</label><input type="text" value="${event.data.login}" class="w-full bg-gray-200 rounded-md" readonly>
+                    </div>
+                    <div>
+                        <h5 class="font-semibold">Membre des groupes:</h5>
+                        <div id="ad-groups" class="border p-2 rounded-md mt-1">${groupsHtml}</div>
+                    </div>
+                </div>
+                <button id="ad-submit" class="mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700">Créer l'utilisateur</button>
+            `;
+
+            document.getElementById('ad-submit').addEventListener('click', () => {
+                const selectedGroups = Array.from(document.querySelectorAll('#ad-groups input:checked')).map(cb => cb.value);
+                let correctSelections = 0;
+                event.data.groups.forEach(g => {
+                    if (selectedGroups.includes(g)) {
+                        correctSelections++;
+                    }
+                });
+                let points = (correctSelections / event.data.groups.length) * 10;
+                submitAnswer('ad', points, { selected: selectedGroups, correct: event.data.groups });
+            });
+        }
+
+        function renderPhishingGame(event) {
+            gameAreaEl.innerHTML = `
+                <h4 class="font-bold mb-2">Analyse de Phishing</h4>
+                <p class="text-sm mb-2">Cliquez sur les 4 éléments suspects dans l'email ci-dessous.</p>
+                <div class="phishing-email border rounded-md p-4 bg-white relative">
+                    <div class="phishing-hotspot" style="top: 10px; left: 60px; width: 200px; height: 20px;" data-id="1"></div>
+                    <div class="phishing-hotspot" style="top: 55px; left: 10px; width: 150px; height: 20px;" data-id="2"></div>
+                    <div class="phishing-hotspot" style="top: 100px; left: 10px; width: 450px; height: 40px;" data-id="3"></div>
+                    <div class="phishing-hotspot" style="top: 150px; left: 10px; width: 180px; height: 25px;" data-id="4"></div>
+                    <p class="text-sm"><strong>De:</strong> Service Client <span class="text-gray-500">&lt;secure-update-account@1t-online-service.com&gt;</span></p>
+                    <p class="text-sm"><strong>Sujet:</strong> [URGENT] Votre compte sera suspendu</p>
+                    <hr class="my-2">
+                    <p>Cher Client,</p>
+                    <br>
+                    <p>Nous avons détecté une activité inhabituelle. Pour votre sécurité, veuillez cliquer sur le lien ci-dessous pour vérifier votre compte immédiatement. L'échec de la vérification entraînera la fermeture du compte.</p>
+                    <br>
+                    <a href="#" class="text-blue-600 underline">http://microsoft.security.com/verify-account</a>
+                    <br><br>
+                    <p>Merci,</p>
+                    <p>L'équipe de sécurité</p>
+                </div>
+                <p class="mt-2 text-sm">Indices trouvés: <span id="phishing-counter">0</span> / ${event.data.hotspots}</p>
+            `;
+            let foundCount = 0;
+            const counterEl = document.getElementById('phishing-counter');
+            document.querySelectorAll('.phishing-hotspot').forEach(spot => {
+                spot.addEventListener('click', () => {
+                    if (!spot.classList.contains('found')) {
+                        spot.classList.add('found');
+                        foundCount++;
+                        counterEl.textContent = foundCount;
+                        if (foundCount === event.data.hotspots) {
+                            submitAnswer('phishing', 10, { found: foundCount });
+                        }
+                    }
+                }, { once: true });
+            });
+        }
+        
+        function renderServicesGame(event) {
+            const services = ['Agent de topologie de la couche de liaison', 'Client DHCP', 'Client DNS', 'Spouleur d\'impression', 'Service de temps Windows'];
+            let servicesHtml = '<ul class="list-disc list-inside">';
+            services.forEach(s => {
+                const status = (s === event.data.service) ? 'Arrêté' : 'En cours d\'exécution';
+                const color = (s === event.data.service) ? 'text-red-600' : 'text-green-600';
+                servicesHtml += `<li class="p-2 border-b"><span>${s}</span> - <span class="font-bold ${color}">${status}</span> <button data-service="${s}" class="float-right text-xs bg-gray-200 px-2 py-1 rounded">Démarrer</button></li>`;
+            });
+            servicesHtml += '</ul>';
+
+            gameAreaEl.innerHTML = `
+                <h4 class="font-bold mb-2">Services (services.msc)</h4>
+                <p class="text-sm mb-4">Identifiez le service en cause et redémarrez-le.</p>
+                ${servicesHtml}
+            `;
+
+            gameAreaEl.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const serviceName = btn.dataset.service;
+                    let points = (serviceName === event.data.service) ? 10 : 0;
+                    submitAnswer('services', points, { clicked: serviceName, correct: event.data.service });
+                });
+            });
+        }
+        
+        function renderDhcpGame(event) {
+            gameAreaEl.innerHTML = `
+                <h4 class="font-bold mb-2">Console DHCP - Étendue Invités</h4>
+                 <div class="bg-gray-100 p-4 rounded-md">
+                    <p><strong>Nom de l'étendue:</strong> 172.16.10.0 Invites</p>
+                    <p><strong>Plage d'adresses:</strong> 172.16.10.10 - 172.16.10.254</p>
+                    <p><strong>Adresses utilisées:</strong> 232 sur 245 (95%)</p>
+                    <p><strong>Durée du bail:</strong> 8 jours</p>
+                </div>
+                <h5 class="font-semibold mt-4 mb-2">Quelle action corrective immédiate prenez-vous ?</h5>
+                <select id="dhcp-action" class="w-full p-2 border rounded-md">
+                    <option value="nothing">Ne rien faire, ça va passer</option>
+                    <option value="reduce_lease">Réduire la durée du bail à 4 heures</option>
+                    <option value="expand_scope">Agrandir la plage d'adresses (passer en /23)</option>
+                    <option value="restart_service">Redémarrer le service DHCP</option>
+                </select>
+                <button id="dhcp-submit" class="mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700">Appliquer</button>
+            `;
+            document.getElementById('dhcp-submit').addEventListener('click', () => {
+                const selectedAction = document.getElementById('dhcp-action').value;
+                let points = (selectedAction === event.data.correctAction) ? 10 : 0;
+                submitAnswer('dhcp', points, { selected: selectedAction, correct: event.data.correctAction });
+            });
+        }
+        
+        function renderBeepGame(event) {
+            const options = ['CPU', 'RAM', 'Carte graphique', 'Carte mère', 'Alimentation'];
+            let optionsHtml = '';
+            options.forEach(opt => {
+                optionsHtml += `<option value="${opt}">${opt}</option>`;
+            });
+
+            gameAreaEl.innerHTML = `
+                <h4 class="font-bold mb-2">Diagnostic de Démarrage (POST)</h4>
+                <p class="text-sm mb-4">Le PC est un ${event.data.manufacturer}. Vous entendez une séquence de ${event.data.beeps.replace(',', ' puis ')} bips. Quel composant est probablement défaillant ?</p>
+                <select id="beep-select" class="w-full p-2 border rounded-md">${optionsHtml}</select>
+                <button id="beep-submit" class="mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700">Valider le diagnostic</button>
+            `;
+            document.getElementById('beep-submit').addEventListener('click', () => {
+                const selectedComponent = document.getElementById('beep-select').value;
+                let points = (selectedComponent === event.data.fault) ? 10 : 0;
+                submitAnswer('beep', points, { selected: selectedComponent, correct: event.data.fault });
+            });
+        }
+        
+        // --- AFTERNOON GAMES ---
+        
+        function renderGpoGame(event) {
+            const ous = ['Utilisateurs', 'Serveurs', 'Postes de travail', 'Direction', 'Domain Controllers'];
+            let ousHtml = '';
+            ous.forEach(ou => {
+                ousHtml += `<option value="${ou}">${ou}</option>`;
+            });
+            gameAreaEl.innerHTML = `
+                <h4 class="font-bold mb-2">Éditeur de gestion des stratégies de groupe</h4>
+                <p class="text-sm mb-4">Sélectionnez l'OU à laquelle lier la GPO 'SEC_Verrouillage_Session'.</p>
+                <label for="gpo-ou-select" class="font-semibold">Lier à l'OU :</label>
+                <select id="gpo-ou-select" class="w-full p-2 border rounded-md mt-1">${ousHtml}</select>
+                <button id="gpo-submit" class="mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700">Appliquer la liaison</button>
+            `;
+            document.getElementById('gpo-submit').addEventListener('click', () => {
+                const selectedOU = document.getElementById('gpo-ou-select').value;
+                let points = (selectedOU === event.data.correctOU) ? 10 : 0;
+                submitAnswer('gpo', points, { selected: selectedOU, correct: event.data.correctOU });
+            });
+        }
+
+        function renderDnsGame(event) {
+            // This reuses the CMD game renderer
+            renderCmdGame(event);
+        }
+
+        function renderVeeamGame(event) {
+            const actions = [
+                { id: 'retry_job', text: 'Relancer le job de sauvegarde immédiatement.' },
+                { id: 'check_vm_logs', text: 'Consulter l\'observateur d\'événements sur la VM \'SRV-WEB\'.' },
+                { id: 'check_veeam_server', text: 'Vérifier l\'espace disque sur le serveur de sauvegarde.' },
+                { id: 'reboot_veeam_server', text: 'Redémarrer le serveur de sauvegarde Veeam.' }
+            ];
+            let actionsHtml = '';
+            actions.forEach(action => {
+                actionsHtml += `<button data-action="${action.id}" class="w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-indigo-100">${action.text}</button>`;
+            });
+            gameAreaEl.innerHTML = `
+                <h4 class="font-bold mb-2">Console Veeam Backup & Replication</h4>
+                <p class="text-sm mb-4">Face à l'erreur VSS, quelle est votre première action de diagnostic ?</p>
+                <div class="space-y-2">${actionsHtml}</div>
+            `;
+            gameAreaEl.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const selectedAction = btn.dataset.action;
+                    let points = (selectedAction === event.data.correctAction) ? 10 : 0;
+                    submitAnswer('veeam', points, { selected: selectedAction, correct: event.data.correctAction });
+                });
+            });
+        }
+        
+        function renderMailboxGame(event) {
+            gameAreaEl.innerHTML = `
+                <h4 class="font-bold mb-2">Centre d'administration Exchange</h4>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block font-semibold">Nom de la boîte partagée:</label>
+                        <input id="mbx-name" type="text" class="w-full border-gray-300 rounded-md" placeholder="ex: candidatures">
+                    </div>
+                    <div>
+                        <label class="block font-semibold">Utilisateurs avec accès total (séparés par une virgule):</label>
+                        <input id="mbx-users" type="text" class="w-full border-gray-300 rounded-md" placeholder="ex: Celine RH, Marc RH">
+                    </div>
+                    <div>
+                        <label class="block font-semibold">Permission d'envoi:</label>
+                        <select id="mbx-perm" class="w-full border-gray-300 rounded-md">
+                            <option value="SendAs">Envoyer en tant que (Send As)</option>
+                            <option value="SendOnBehalf">Envoyer de la part de (Send on Behalf)</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="mbx-submit" class="mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700">Créer</button>
+            `;
+            document.getElementById('mbx-submit').addEventListener('click', () => {
+                const name = document.getElementById('mbx-name').value.trim();
+                const users = document.getElementById('mbx-users').value.split(',').map(u => u.trim()).sort();
+                const perm = document.getElementById('mbx-perm').value;
+                let points = 0;
+                if (name === event.data.name) points += 4;
+                if (JSON.stringify(users) === JSON.stringify(event.data.users.sort())) points += 4;
+                if (perm === 'SendAs') points += 2; // Send As is usually required with FullAccess
+                submitAnswer('mailbox', points, { name, users, perm });
+            });
+        }
+
+        function renderWifiGame(event) {
+            gameAreaEl.innerHTML = `
+                <h4 class="font-bold mb-2">Analyse Wi-Fi</h4>
+                <p class="text-sm mb-4">Le plan ci-dessous montre les bureaux et la salle de pause. La borne (AP) est mal placée. Quelle est la meilleure solution ?</p>
+                <div class="relative bg-gray-200 h-64 w-full rounded-md p-2 border-2">
+                    <div class="absolute bg-blue-200 border border-blue-400 text-center p-2" style="top: 20px; left: 20px; width: 150px; height: 180px;">Bureaux</div>
+                    <div class="absolute bg-green-200 border border-green-400 text-center p-2" style="top: 80px; right: 20px; width: 100px; height: 80px;">Salle de Pause</div>
+                    <div class="absolute bg-gray-600" style="top: 0; left: 180px; width: 10px; height: 100%;"></div>
+                    <div class="absolute text-2xl" style="top: 110px; left: 60px;">📡<span class="text-xs">AP</span></div>
+                </div>
+                <div id="wifi-options" class="mt-4 space-y-2">
+                    <button data-action="increase_power" class="w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-indigo-100">Augmenter la puissance de la borne</button>
+                    <button data-action="move_ap" class="w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-indigo-100">Déplacer la borne dans le couloir central</button>
+                    <button data-action="change_channel" class="w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-indigo-100">Changer de canal Wi-Fi</button>
+                </div>
+            `;
+            gameAreaEl.querySelectorAll('#wifi-options button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const selectedAction = btn.dataset.action;
+                    let points = (selectedAction === event.data.correctAction) ? 10 : 0;
+                    submitAnswer('wifi', points, { selected: selectedAction, correct: event.data.correctAction });
+                });
+            });
+        }
+
+        function renderAzureSyncGame(event) {
+            const actions = [
+                { id: 'delete_user_azure', text: 'Supprimer l\'utilisateur dans Azure AD et forcer une synchro.' },
+                { id: 'check_ad_attribute', text: 'Utiliser l\'éditeur d\'attributs dans l\'AD local pour trouver et corriger le doublon sur l\'attribut proxyAddresses.' },
+                { id: 'run_idfix', text: 'Lancer l\'outil IdFix pour scanner tout l\'annuaire.' },
+                { id: 'reinstall_adconnect', text: 'Réinstaller Azure AD Connect.' }
+            ];
+            let actionsHtml = '';
+            actions.forEach(action => {
+                actionsHtml += `<button data-action="${action.id}" class="w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-indigo-100">${action.text}</button>`;
+            });
+            gameAreaEl.innerHTML = `
+                <h4 class="font-bold mb-2">Portail Azure - AD Connect Health</h4>
+                <p class="text-sm mb-4">Face à l'erreur 'AttributeValueMustBeUnique', quelle est l'action de correction la plus directe ?</p>
+                <div class="space-y-2">${actionsHtml}</div>
+            `;
+            gameAreaEl.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const selectedAction = btn.dataset.action;
+                    let points = (selectedAction === event.data.correctAction) ? 10 : 0;
+                    submitAnswer('azureSync', points, { selected: selectedAction, correct: event.data.correctAction });
+                });
+            });
+        }
+
+        function renderPowershellGame(event) {
+            gameAreaEl.innerHTML = `
+                <h4 class="font-bold mb-2">Console PowerShell</h4>
+                <p class="text-sm mb-4">Complétez la commande suivante pour trouver les comptes utilisateurs inactifs depuis 90 jours.</p>
+                <div class="terminal p-4">
+                    <span class="text-cyan-300">Search-ADAccount</span> <span class="text-yellow-300">-AccountInactive</span> <span class="text-yellow-300">-TimeSpan</span> <input id="ps-input" type="text" class="terminal-input w-48" placeholder="90.00:00:00"> <span class="text-yellow-300">-UsersOnly</span>
+                </div>
+                <button id="ps-submit" class="mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700">Exécuter</button>
+            `;
+            document.getElementById('ps-submit').addEventListener('click', () => {
+                const command = `Search-ADAccount -AccountInactive -TimeSpan ${document.getElementById('ps-input').value.trim()} -UsersOnly`;
+                let points = (command.toLowerCase() === event.data.correctCommand.toLowerCase()) ? 10 : 0;
+                submitAnswer('powershell', points, { typed: command, correct: event.data.correctCommand });
+            });
+        }
+
+        function renderSoftwareRequestGame(event) {
+            const actions = [
+                { id: 'give_admin', text: 'Donner les droits admin local à l\'utilisateur.' },
+                { id: 'install_for_user', text: 'Prendre la main et installer le logiciel pour l\'utilisateur.' },
+                { id: 'validate_and_quote', text: 'Demander une validation managériale et un devis au service achat.' },
+                { id: 'refuse', text: 'Refuser car le logiciel n\'est pas dans le catalogue standard.' }
+            ];
+            let actionsHtml = '';
+            actions.forEach(action => {
+                actionsHtml += `<button data-action="${action.id}" class="w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-indigo-100">${action.text}</button>`;
+            });
+            gameAreaEl.innerHTML = `
+                <h4 class="font-bold mb-2">Gestion des demandes logicielles</h4>
+                <p class="text-sm mb-4">Comment traitez-vous cette demande pour Adobe Photoshop ?</p>
+                <div class="space-y-2">${actionsHtml}</div>
+            `;
+            gameAreaEl.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const selectedAction = btn.dataset.action;
+                    let points = (selectedAction === event.data.correctAction) ? 10 : 0;
+                    submitAnswer('softwareRequest', points, { selected: selectedAction, correct: event.data.correctAction });
+                });
+            });
+        }
+
+        function renderVlanGame(event) {
+            gameAreaEl.innerHTML = `
+                <h4 class="font-bold mb-2">Configuration Port Switch 22</h4>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block font-semibold">VLAN d'accès (untagged):</label>
+                        <input id="vlan-access" type="number" class="w-full border-gray-300 rounded-md" placeholder="ID du VLAN pour le PC">
+                    </div>
+                    <div>
+                        <label class="block font-semibold">VLAN voix (tagged):</label>
+                        <input id="vlan-voice" type="number" class="w-full border-gray-300 rounded-md" placeholder="ID du VLAN pour le téléphone">
+                    </div>
+                </div>
+                <button id="vlan-submit" class="mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700">Configurer</button>
+            `;
+            document.getElementById('vlan-submit').addEventListener('click', () => {
+                const access = document.getElementById('vlan-access').value;
+                const voice = document.getElementById('vlan-voice').value;
+                let points = 0;
+                if(access === event.data.access) points += 5;
+                if(voice === event.data.voice) points += 5;
+                submitAnswer('vlan', points, { access, voice, correct: event.data });
+            });
+        }
+
+        function renderOffboardingGame(event) {
+            gameAreaEl.innerHTML = `
+                <h4 class="font-bold mb-2">Procédure de départ d'un collaborateur</h4>
+                <p class="text-sm mb-4">Glissez-déposez les actions dans le bon ordre de priorité.</p>
+                <div id="offboarding-dropzone" class="p-4 bg-gray-200 rounded-md min-h-[150px] space-y-2"></div>
+                <div id="offboarding-options" class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-2">
+                    <div id="opt-revoke_sessions" draggable="true" class="draggable p-2 bg-indigo-200 border border-indigo-400 rounded cursor-move">Révoquer les sessions M365</div>
+                    <div id="opt-archive_data" draggable="true" class="draggable p-2 bg-indigo-200 border border-indigo-400 rounded cursor-move">Archiver les données</div>
+                    <div id="opt-disable_ad" draggable="true" class="draggable p-2 bg-indigo-200 border border-indigo-400 rounded cursor-move">Désactiver le compte AD</div>
+                </div>
+                <button id="offboarding-submit" class="mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700">Valider la procédure</button>
+            `;
+
+            const draggables = gameAreaEl.querySelectorAll('.draggable');
+            const dropzone = gameAreaEl.querySelector('#offboarding-dropzone');
+            
+            draggables.forEach(draggable => {
+                draggable.addEventListener('dragstart', () => draggable.classList.add('opacity-50'));
+                draggable.addEventListener('dragend', () => draggable.classList.remove('opacity-50'));
+            });
+
+            dropzone.addEventListener('dragover', e => {
+                e.preventDefault();
+                const afterElement = getDragAfterElement(dropzone, e.clientY);
+                const draggable = document.querySelector('.opacity-50');
+                if (afterElement == null) {
+                    dropzone.appendChild(draggable);
+                } else {
+                    dropzone.insertBefore(draggable, afterElement);
+                }
+            });
+
+            function getDragAfterElement(container, y) {
+                const draggableElements = [...container.querySelectorAll('.draggable:not(.opacity-50)')];
+                return draggableElements.reduce((closest, child) => {
+                    const box = child.getBoundingClientRect();
+                    const offset = y - box.top - box.height / 2;
+                    if (offset < 0 && offset > closest.offset) {
+                        return { offset: offset, element: child };
+                    } else {
+                        return closest;
+                    }
+                }, { offset: Number.NEGATIVE_INFINITY }).element;
+            }
+
+            document.getElementById('offboarding-submit').addEventListener('click', () => {
+                const orderedActions = Array.from(dropzone.children).map(child => child.id.replace('opt-', ''));
+                let points = (JSON.stringify(orderedActions) === JSON.stringify(event.data.correctOrder)) ? 10 : 0;
+                submitAnswer('offboarding', points, { selected: orderedActions, correct: event.data.correctOrder });
+            });
+        }
+
+        // --- END OF SIMULATION LOGIC ---
+
+        function loadNextEvent() {
+            currentEventIndex++;
+            displayEvent();
+        }
+
+        function endSimulation() {
+            simulationContainer.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+            const percentage = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
+            candidateNameResult.textContent = fullnameInput.value;
+            scoreEl.textContent = `${percentage}% (${score} / ${maxScore} points)`;
+            
+            if (percentage >= 85) feedbackText.textContent = "Excellente performance ! Vous avez démontré une très bonne maîtrise technique et une excellente capacité à résoudre les problèmes concrets. Votre profil est très prometteur.";
+            else if (percentage >= 65) feedbackText.textContent = "Bonne performance. Vous avez géré la plupart des situations correctement. Quelques actions pourraient être affinées, mais les compétences fondamentales sont solides.";
+            else if (percentage >= 40) feedbackText.textContent = "Performance moyenne. Certaines simulations critiques ont révélé des lacunes. Une révision de certaines procédures techniques serait bénéfique.";
+            else feedbackText.textContent = "Performance insuffisante. Des lacunes importantes ont été observées dans les diagnostics et les actions techniques de base.";
+            
+            renderCorrection();
+        }
+
+        function renderCorrection() {
+            let correctionHTML = '';
+            userResponses.forEach((resp, index) => {
+                const { event, points, details } = resp;
+                let scoreHTML = `<p class="text-sm mb-3">Votre score : <span class="font-bold ${points > 5 ? 'text-green-600' : 'text-red-600'}">${points} / 10 points</span></p>`;
+                if (details.skipped) {
+                    scoreHTML = `<p class="text-sm mb-3">Résultat : <span class="font-bold text-amber-600">Question Passée (0 / 10 points)</span></p>`;
+                }
+
+                correctionHTML += `
+                    <div class="mb-6 p-4 border rounded-lg">
+                        <p class="font-semibold mb-1">${index + 1}. [${event.time}] ${event.title}</p>
+                        ${scoreHTML}
+                        <div class="text-sm mt-2 p-2 bg-gray-50 rounded-md"><strong>Justification :</strong> ${event.explanation}</div>
+                    </div>`;
+            });
+            correctionWrapper.innerHTML = correctionHTML;
+        }
+
+        startBtn.addEventListener('click', startSimulation);
+        nextEventBtn.addEventListener('click', loadNextEvent);
+        skipEventBtn.addEventListener('click', skipQuestion);
+        restartBtn.addEventListener('click', () => {
+            resultsContainer.classList.add('hidden');
+            candidateForm.classList.remove('hidden');
+        });
+    });
+    </script>
+</body>
+</html>
