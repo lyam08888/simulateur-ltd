@@ -20,6 +20,7 @@
             --secondary-dark: #059669;
             --accent: #f59e0b;
             --accent-dark: #d97706;
+            --error: #ef4444;
             
             /* Surfaces */
             --background: #0f172a;
@@ -293,7 +294,7 @@
             transform: rotate(15deg);
         }
 
-        /* --- Mega Menu (MODIFIÉ) --- */
+        /* --- Mega Menu --- */
         .nav-item.has-mega-menu > .nav-link::after {
             content: '\f078'; /* Font Awesome chevron-down */
             font-family: 'Font Awesome 6 Free';
@@ -406,6 +407,185 @@
         
         .mega-menu-item:hover .mega-menu-item-text h4 {
             color: var(--primary-light);
+        }
+
+        /* --- NOUVEAU : Menu de Notifications --- */
+        .notification-bell-wrapper {
+            position: relative;
+        }
+        .notification-bell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            color: var(--text-secondary);
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+        .notification-bell:hover {
+            background: var(--surface-elevated);
+            color: var(--text-primary);
+        }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--error);
+            color: white;
+            border-radius: var(--radius-full);
+            width: 1.25rem;
+            height: 1.25rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--surface);
+            transform: scale(0);
+            transition: var(--transition-slow);
+        }
+        .notification-badge.show {
+            transform: scale(1);
+        }
+        
+        .notification-panel {
+            position: absolute;
+            top: calc(100% + 15px);
+            right: 0;
+            width: clamp(320px, 90vw, 400px);
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            pointer-events: none;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+        }
+        .notification-panel.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        body.light-mode .notification-panel {
+            background: rgba(241, 245, 249, 0.9);
+        }
+
+        .notification-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-bottom: 1px solid var(--glass-border);
+            flex-shrink: 0;
+        }
+        .notification-panel-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .notification-panel-header button {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .notification-panel-header button:hover {
+            text-decoration: underline;
+        }
+
+        .notification-list {
+            max-height: 400px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        /* Custom scrollbar for notification list */
+        .notification-list::-webkit-scrollbar { width: 6px; }
+        .notification-list::-webkit-scrollbar-track { background: transparent; }
+        .notification-list::-webkit-scrollbar-thumb { background: var(--surface-hover); border-radius: 3px; }
+        .notification-list::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        .notification-item {
+            display: flex;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-bottom: 1px solid var(--glass-border);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        .notification-item:hover {
+            background: var(--glass);
+        }
+        .notification-item.unread::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 6px;
+            border-radius: var(--radius-full);
+            background-color: var(--primary);
+        }
+        
+        .notification-item-icon {
+            width: 2.25rem;
+            height: 2.25rem;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--glass);
+            border-radius: var(--radius-full);
+            color: var(--text-secondary);
+        }
+        .notification-item.success .notification-item-icon { color: var(--secondary); }
+        .notification-item.warning .notification-item-icon { color: var(--accent); }
+        .notification-item.error .notification-item-icon { color: var(--error); }
+
+        .notification-item-content {
+            flex-grow: 1;
+        }
+        .notification-item-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin: 0 0 0.25rem 0;
+        }
+        .notification-item.unread .notification-item-text {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        .notification-item-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .notification-list-empty {
+            padding: var(--spacing-xl) var(--spacing-md);
+            text-align: center;
+            color: var(--text-muted);
+        }
+        .notification-list-empty i {
+            font-size: 2rem;
+            margin-bottom: var(--spacing-sm);
         }
 
 
@@ -625,15 +805,15 @@
             transform: translateY(0);
         }
         
-        .notification { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-xl); transform: translateX(calc(100% + var(--spacing-lg))); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1100; backdrop-filter: blur(20px); max-width: 350px; }
-        .notification.show { transform: translateX(0); }
-        .notification-content { display: flex; align-items: flex-start; gap: var(--spacing-sm); }
-        .notification-icon { font-size: 1.25rem; color: var(--primary); margin-top: 2px; }
-        .notification-text { color: var(--text-primary); font-weight: 500; flex: 1; }
-        .notification-close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0; font-size: 1rem; }
-        .notification.success .notification-icon { color: var(--secondary); }
-        .notification.warning .notification-icon { color: var(--accent); }
-        .notification.error .notification-icon { color: #ef4444; }
+        .toast-notification { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-xl); transform: translateX(calc(100% + var(--spacing-lg))); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1100; backdrop-filter: blur(20px); max-width: 350px; }
+        .toast-notification.show { transform: translateX(0); }
+        .toast-notification-content { display: flex; align-items: flex-start; gap: var(--spacing-sm); }
+        .toast-notification-icon { font-size: 1.25rem; color: var(--primary); margin-top: 2px; }
+        .toast-notification-text { color: var(--text-primary); font-weight: 500; flex: 1; }
+        .toast-notification-close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0; font-size: 1rem; }
+        .toast-notification.success .toast-notification-icon { color: var(--secondary); }
+        .toast-notification.warning .toast-notification-icon { color: var(--accent); }
+        .toast-notification.error .toast-notification-icon { color: var(--error); }
 
         .progress-bar { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: transparent; z-index: 1001; opacity: 0; transition: opacity 0.3s ease; }
         .progress-bar.show { opacity: 1; }
@@ -836,7 +1016,7 @@
                 <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
             </a>
             
-            <!-- Navigation pour ordinateur MODIFIÉE -->
+            <!-- Navigation pour ordinateur -->
             <div class="nav-desktop">
                  <form action="recherche.html" method="GET" class="header-search">
                      <i class="fas fa-search"></i>
@@ -885,7 +1065,7 @@
                                          <div class="mega-menu-item-text"><h4>Nos offres d'emploi</h4></div>
                                      </a>
                                  </div>
-                                  <!-- Colonne 4 -->
+                                 <!-- Colonne 4 -->
                                  <div class="mega-menu-column">
                                      <h3 class="mega-menu-heading">Culture</h3>
                                      <a href="histoire.html" class="mega-menu-item" onclick="event.preventDefault(); navigateTo('histoire.html')">
@@ -898,6 +1078,22 @@
                      </li>
                  </ul>
                  <div class="nav-actions">
+                     <div class="notification-bell-wrapper">
+                         <button class="notification-bell" id="notificationBell" title="Notifications">
+                             <i class="fas fa-bell"></i>
+                             <span class="notification-badge" id="notificationBadge"></span>
+                         </button>
+                         <!-- Panneau de notifications -->
+                         <div class="notification-panel" id="notificationPanel">
+                            <div class="notification-panel-header">
+                                <h3>Notifications</h3>
+                                <button id="markAllReadBtn">Tout marquer comme lu</button>
+                            </div>
+                            <div class="notification-list" id="notificationList">
+                                <!-- Les notifications seront injectées ici par JavaScript -->
+                            </div>
+                         </div>
+                     </div>
                      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
                          <i class="fas fa-moon" id="themeIcon"></i>
                      </button>
@@ -1048,11 +1244,11 @@
 
     </main>
     
-    <div class="notification" id="notification">
-        <div class="notification-content">
-            <i class="fas fa-info-circle notification-icon" id="notificationIcon"></i>
-            <span class="notification-text" id="notificationText"></span>
-            <button class="notification-close" onclick="this.parentElement.parentElement.classList.remove('show')"><i class="fas fa-times"></i></button>
+    <div class="toast-notification" id="toastNotification">
+        <div class="toast-notification-content">
+            <i class="fas fa-info-circle toast-notification-icon" id="toastNotificationIcon"></i>
+            <span class="toast-notification-text" id="toastNotificationText"></span>
+            <button class="toast-notification-close" onclick="this.parentElement.parentElement.classList.remove('show')"><i class="fas fa-times"></i></button>
         </div>
     </div>
 
@@ -1061,6 +1257,14 @@
 
         // Variable globale pour le thème, initialisée depuis le localStorage
         let currentTheme = localStorage.getItem('theme') || 'dark';
+
+        // NOUVEAU : Données et état des notifications
+        let notificationsData = [
+            { id: 1, icon: 'fa-trophy', text: 'Nouveau challenge "Ingénieur Prix" disponible !', time: 'il y a 5 minutes', unread: true, type: 'info' },
+            { id: 2, icon: 'fa-check-circle', text: 'Votre CV a été téléchargé avec succès.', time: 'il y a 1 heure', unread: true, type: 'success' },
+            { id: 3, icon: 'fa-user-plus', text: 'Jean Dupont vous a envoyé une invitation.', time: 'hier', unread: true, type: 'info' },
+            { id: 4, icon: 'fa-triangle-exclamation', text: 'Votre session expirera bientôt.', time: 'hier', unread: false, type: 'warning' },
+        ];
 
         /**
          * Affiche et anime la barre de progression en haut de la page.
@@ -1091,19 +1295,19 @@
         }
 
         /**
-         * Affiche une notification en bas à droite de l'écran.
+         * Affiche une notification toast en bas à droite de l'écran.
          * @param {string} message Le texte à afficher.
          * @param {string} type Le type de notification ('info', 'success', 'warning', 'error').
          * @param {number} duration La durée d'affichage en millisecondes.
          */
-        function showNotification(message, type = 'info', duration = 3000) {
-            const notification = document.getElementById('notification');
-            const notificationText = document.getElementById('notificationText');
-            const notificationIcon = document.getElementById('notificationIcon');
+        function showToastNotification(message, type = 'info', duration = 3000) {
+            const notification = document.getElementById('toastNotification');
+            const notificationText = document.getElementById('toastNotificationText');
+            const notificationIcon = document.getElementById('toastNotificationIcon');
             if (!notification || !notificationText || !notificationIcon) return;
             
-            notification.classList.remove('success', 'warning', 'error');
-            notificationIcon.className = 'notification-icon fas'; // Réinitialise les classes de l'icône
+            notification.className = 'toast-notification'; // Reset classes
+            notificationIcon.className = 'toast-notification-icon fas'; // Reset icon classes
 
             switch(type) {
                 case 'success':
@@ -1208,7 +1412,7 @@
         }
 
         /**
-         * Remplit le menu de navigation mobile en se basant sur la structure du menu de bureau (y compris le méga menu).
+         * Remplit le menu de navigation mobile en se basant sur la structure du menu de bureau.
          */
         function populateMobileNav() {
             const desktopNav = document.querySelector('.nav-desktop .nav-menu');
@@ -1217,31 +1421,49 @@
 
             mobileNavContainer.innerHTML = ''; 
 
+            // Gérer les actions (Notifications, Thème)
+            const actionsHeader = document.createElement('h3');
+            actionsHeader.className = 'mobile-nav-section-title';
+            actionsHeader.textContent = 'Actions';
+            mobileNavContainer.appendChild(actionsHeader);
+
+            // Bouton Notifications
+            const notifItem = document.createElement('a');
+            notifItem.href = '#';
+            notifItem.className = 'mobile-nav-item';
+            notifItem.onclick = (e) => {
+                e.preventDefault();
+                toggleMobileMenu();
+                document.getElementById('notificationBell').click();
+            };
+            notifItem.innerHTML = `<div class="mobile-nav-item-icon"><i class="fas fa-bell"></i></div><h4>Notifications</h4>`;
+            mobileNavContainer.appendChild(notifItem);
+
+            // Bouton Thème
+            const themeItem = document.createElement('a');
+            themeItem.href = '#';
+            themeItem.className = 'mobile-nav-item';
+            themeItem.onclick = (e) => {
+                e.preventDefault();
+                toggleTheme();
+            };
+            themeItem.innerHTML = `<div class="mobile-nav-item-icon"><i class="fas fa-sun"></i></div><h4>Changer de thème</h4>`;
+            mobileNavContainer.appendChild(themeItem);
+
+            // Gérer les liens de navigation
             const navItems = desktopNav.querySelectorAll('.nav-menu > .nav-item');
 
-            // Lien Accueil
             const homeLink = desktopNav.querySelector('a[href="index.html"]');
             if (homeLink) {
                  const newNavItem = document.createElement('a');
-                newNavItem.href = homeLink.href;
-                newNavItem.className = 'mobile-nav-item';
-                newNavItem.onclick = homeLink.onclick;
-
-                const iconDiv = document.createElement('div');
-                iconDiv.className = 'mobile-nav-item-icon';
-                iconDiv.innerHTML = homeLink.querySelector('i').outerHTML;
-                
-                const textNode = document.createElement('h4');
-                textNode.textContent = "Accueil";
-                
-                newNavItem.appendChild(iconDiv);
-                newNavItem.appendChild(textNode);
-                mobileNavContainer.appendChild(newNavItem);
+                 newNavItem.href = homeLink.href;
+                 newNavItem.className = 'mobile-nav-item';
+                 newNavItem.onclick = (e) => { e.preventDefault(); toggleMobileMenu(); navigateTo(homeLink.getAttribute('href')); };
+                 newNavItem.innerHTML = `<div class="mobile-nav-item-icon">${homeLink.querySelector('i').outerHTML}</div><h4>Accueil</h4>`;
+                 mobileNavContainer.appendChild(newNavItem);
             }
 
-
             navItems.forEach(item => {
-                // Si c'est un item de méga menu, on traite ses colonnes
                 if (item.classList.contains('has-mega-menu')) {
                     const columns = item.querySelectorAll('.mega-menu-column');
                     columns.forEach(column => {
@@ -1257,17 +1479,8 @@
                             const newNavItem = document.createElement('a');
                             newNavItem.href = link.href;
                             newNavItem.className = 'mobile-nav-item';
-                            newNavItem.onclick = link.onclick;
-
-                            const iconDiv = document.createElement('div');
-                            iconDiv.className = 'mobile-nav-item-icon';
-                            iconDiv.innerHTML = link.querySelector('.item-icon').innerHTML;
-                            
-                            const textNode = document.createElement('h4');
-                            textNode.textContent = link.querySelector('h4').textContent;
-                            
-                            newNavItem.appendChild(iconDiv);
-                            newNavItem.appendChild(textNode);
+                            newNavItem.onclick = (e) => { e.preventDefault(); toggleMobileMenu(); navigateTo(link.getAttribute('href')); };
+                            newNavItem.innerHTML = `<div class="mobile-nav-item-icon">${link.querySelector('.item-icon').innerHTML}</div><h4>${link.querySelector('h4').textContent}</h4>`;
                             mobileNavContainer.appendChild(newNavItem);
                         });
                     });
@@ -1275,6 +1488,87 @@
             });
         }
 
+        /**
+         * NOUVEAU : Gère le système de notifications (panneau, badge, etc.).
+         */
+        function setupNotifications() {
+            const bell = document.getElementById('notificationBell');
+            const panel = document.getElementById('notificationPanel');
+            const list = document.getElementById('notificationList');
+            const badge = document.getElementById('notificationBadge');
+            const markAllReadBtn = document.getElementById('markAllReadBtn');
+
+            if (!bell || !panel || !list || !badge || !markAllReadBtn) return;
+
+            function updateBadge() {
+                const unreadCount = notificationsData.filter(n => n.unread).length;
+                badge.textContent = unreadCount;
+                if (unreadCount > 0) {
+                    badge.classList.add('show');
+                } else {
+                    badge.classList.remove('show');
+                }
+            }
+
+            function renderNotifications() {
+                list.innerHTML = '';
+                if (notificationsData.length === 0) {
+                    list.innerHTML = `
+                        <div class="notification-list-empty">
+                            <i class="fas fa-inbox"></i>
+                            <p>Vous n'avez aucune notification</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                notificationsData.forEach(notif => {
+                    const item = document.createElement('div');
+                    item.className = `notification-item ${notif.type}`;
+                    if (notif.unread) {
+                        item.classList.add('unread');
+                    }
+                    item.dataset.id = notif.id;
+                    item.innerHTML = `
+                        <div class="notification-item-icon"><i class="fas ${notif.icon}"></i></div>
+                        <div class="notification-item-content">
+                            <p class="notification-item-text">${notif.text}</p>
+                            <span class="notification-item-time">${notif.time}</span>
+                        </div>
+                    `;
+                    item.addEventListener('click', () => {
+                        const clickedNotif = notificationsData.find(n => n.id == notif.id);
+                        if (clickedNotif) {
+                            clickedNotif.unread = false;
+                            renderNotifications();
+                            updateBadge();
+                        }
+                    });
+                    list.appendChild(item);
+                });
+            }
+
+            bell.addEventListener('click', (e) => {
+                e.stopPropagation();
+                panel.classList.toggle('show');
+            });
+
+            markAllReadBtn.addEventListener('click', () => {
+                notificationsData.forEach(n => n.unread = false);
+                renderNotifications();
+                updateBadge();
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!panel.contains(e.target) && !bell.contains(e.target)) {
+                    panel.classList.remove('show');
+                }
+            });
+
+            // Initial render
+            renderNotifications();
+            updateBadge();
+        }
 
         /**
          * Initialise les animations au défilement pour les éléments avec la classe 'animate-in'.
@@ -1335,7 +1629,7 @@
             const popupOverlay = document.getElementById('newsPopupOverlay');
             if(popupOverlay) popupOverlay.classList.remove('show');
 
-            showNotification(`Chargement de la page...`, 'info');
+            showToastNotification(`Chargement de la page...`, 'info');
             if (window.location.href.endsWith(pageFile)) {
                  setTimeout(() => {
                      const progressBar = document.getElementById('progressBar');
@@ -1352,7 +1646,7 @@
             currentTheme = currentTheme === 'light' ? 'dark' : 'light';
             localStorage.setItem('theme', currentTheme);
             updateThemeUI();
-            showNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
+            showToastNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
         }
         
         window.toggleMobileMenu = function() {
@@ -1373,6 +1667,7 @@
             populateMobileNav();
             setupSlider();
             handleNewsPopup();
+            setupNotifications(); // NOUVEAU : Initialisation du système de notifications
         });
     </script>
 </body>
