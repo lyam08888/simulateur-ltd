@@ -409,7 +409,7 @@
             color: var(--primary-light);
         }
 
-        /* --- NOUVEAU : Menu de Notifications --- */
+        /* --- Menu de Notifications --- */
         .notification-bell-wrapper {
             position: relative;
         }
@@ -513,7 +513,6 @@
             overflow-y: auto;
             flex-grow: 1;
         }
-        /* Custom scrollbar for notification list */
         .notification-list::-webkit-scrollbar { width: 6px; }
         .notification-list::-webkit-scrollbar-track { background: transparent; }
         .notification-list::-webkit-scrollbar-thumb { background: var(--surface-hover); border-radius: 3px; }
@@ -727,10 +726,10 @@
             box-shadow: 0 0 10px var(--primary-light);
         }
 
-        /* --- Grilles de contenu --- */
+        /* --- Grilles de contenu (MODIFIÉ) --- */
         .quick-actions-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: var(--spacing-lg);
             margin: 4rem 0;
         }
@@ -793,6 +792,8 @@
         }
         .quick-action-card .btn-secondary { background: var(--secondary); }
         .quick-action-card .btn-accent { background: var(--accent); }
+        .quick-action-card .btn-primary-light { background: var(--primary-light); color: var(--primary-dark); }
+
 
         /* --- Animations & Utilitaires --- */
         .animate-in {
@@ -910,12 +911,6 @@
 
         /* --- Media Queries pour la réactivité --- */
 
-        @media (min-width: 640px) {
-            .quick-actions-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
         @media (min-width: 768px) {
             .nav-container {
                 padding: 0 var(--spacing-md);
@@ -964,9 +959,6 @@
             }
             .nav-actions {
                 margin-left: auto;
-            }
-            .quick-actions-grid {
-                grid-template-columns: repeat(3, 1fr);
             }
         }
 
@@ -1175,7 +1167,9 @@
             <p>Formez-vous aux métiers d'avenir du BTP avec nos simulateurs professionnels. Le secteur recrute massivement : préparez votre carrière dès maintenant !</p>
         </section>
 
+        <!-- Grille d'actions rapides (MODIFIÉE) -->
         <section class="quick-actions-grid animate-in">
+            <!-- Carte Simulateurs -->
             <a href="simulateur.html" onclick="event.preventDefault(); navigateTo('simulateur.html')" class="quick-action-card">
                 <div class="card-image-top">
                     <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1199,35 +1193,80 @@
                     <div class="btn">Lancer</div>
                 </div>
             </a>
-            <a href="test.html" onclick="event.preventDefault(); navigateTo('test.html')" class="quick-action-card">
+            <!-- Carte Outils -->
+            <a href="outils.html" onclick="event.preventDefault(); navigateTo('outils.html')" class="quick-action-card">
                 <div class="card-image-top">
                     <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <g stroke="var(--secondary)" opacity="0.8">
-                            <path d="M 50 25 h 100 v 80 h -20 l -10 -10 h -40 l -10 10 h -20 z" stroke-width="3" fill="var(--secondary)" fill-opacity="0.1"/>
+                            <circle cx="85" cy="65" r="20" stroke-width="3" fill="var(--secondary)" fill-opacity="0.1"/>
+                            <path d="M 85 45 l 0 40 M 65 65 l 40 0 M 72 52 l 26 26 M 72 78 l 26 -26" stroke-width="1"/>
+                            <path d="M 135 45 a 10 10 0 0 1 0 15 l -20 20 a 10 10 0 0 1 -15 0 l -5 -5 a 10 10 0 0 1 0 -15 l 20 -20 a 10 10 0 0 1 15 0 z" stroke-width="3" fill="var(--secondary)" fill-opacity="0.1"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="quick-action-card-content">
+                    <div>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Outils Pratiques</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Des utilitaires pour vous assister au quotidien.</p>
+                    </div>
+                    <div class="btn btn-secondary">Découvrir</div>
+                </div>
+            </a>
+            <!-- Carte Tests -->
+            <a href="test.html" onclick="event.preventDefault(); navigateTo('test.html')" class="quick-action-card">
+                <div class="card-image-top">
+                    <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--primary-light)" opacity="0.8">
+                            <path d="M 50 25 h 100 v 80 h -20 l -10 -10 h -40 l -10 10 h -20 z" stroke-width="3" fill="var(--primary-light)" fill-opacity="0.1"/>
                             <path d="M 70 50 h 60 M 70 65 h 60 M 70 80 h 30"/>
                         </g>
-                        <g stroke="var(--secondary-dark)" opacity="0.9">
+                        <g stroke="var(--primary-dark)" opacity="0.9">
                             <path d="M 120 80 l -5 5 l 5 -5 l -5 -5 l 5 5" stroke-width="3"/>
                         </g>
                     </svg>
                 </div>
                 <div class="quick-action-card-content">
                     <div>
-                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Tests & Évaluation</h3>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Tests & Évaluations</h3>
                         <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Évaluez vos soft-skills et connaissances techniques.</p>
                     </div>
-                    <div class="btn btn-secondary">Commencer</div>
+                    <div class="btn btn-primary-light">Commencer</div>
                 </div>
             </a>
-            <a href="challenges.html" onclick="event.preventDefault(); navigateTo('challenges.html')" class="quick-action-card">
+            <!-- Carte Quiz -->
+            <a href="quiz.html" onclick="event.preventDefault(); navigateTo('quiz.html')" class="quick-action-card">
                 <div class="card-image-top">
                     <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                         <g stroke="var(--accent)" opacity="0.8">
+                            <path d="M 80 50 a 20 20 0 1 1 40 0 c 0 15 -20 15 -20 30" />
+                            <circle cx="100" cy="100" r="3" fill="var(--accent)"/>
+                        </g>
+                        <g stroke="var(--accent-dark)" opacity="0.6">
+                             <path d="M 140 60 a 10 10 0 1 1 20 0 c 0 7.5 -10 7.5 -10 15" stroke-width="2"/>
+                            <circle cx="150" cy="85" r="2" fill="var(--accent-dark)"/>
+                            <path d="M 40 60 a 10 10 0 1 1 20 0 c 0 7.5 -10 7.5 -10 15" stroke-width="2"/>
+                            <circle cx="50" cy="85" r="2" fill="var(--accent-dark)"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="quick-action-card-content">
+                    <div>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Quiz Thématiques</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Testez vos connaissances sur des sujets précis du BTP.</p>
+                    </div>
+                    <div class="btn btn-accent">Jouer</div>
+                </div>
+            </a>
+            <!-- Carte Challenges -->
+            <a href="challenges.html" onclick="event.preventDefault(); navigateTo('challenges.html')" class="quick-action-card">
+                <div class="card-image-top">
+                    <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--primary)" opacity="0.8">
                             <path d="M 70 100 v -20 a 30 30 0 1 1 60 0 v 20" />
                             <path d="M 60 40 h 80" stroke-width="4"/>
-                            <path d="M 80 40 a 20 20 0 0 1 40 0" fill="var(--accent)" fill-opacity="0.2"/>
+                            <path d="M 80 40 a 20 20 0 0 1 40 0" fill="var(--primary)" fill-opacity="0.2"/>
                         </g>
-                        <g stroke="var(--accent-dark)" opacity="0.9">
+                        <g stroke="var(--primary-dark)" opacity="0.9">
                             <path d="M 100 20 v 20" />
                         </g>
                     </svg>
@@ -1237,7 +1276,47 @@
                         <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Challenges Recrutement</h3>
                         <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Candidatez différemment et montrez vos compétences.</p>
                     </div>
-                    <div class="btn btn-accent">Participer</div>
+                    <div class="btn">Participer</div>
+                </div>
+            </a>
+            <!-- Carte Offres d'emploi -->
+            <a href="emploi.html" onclick="event.preventDefault(); navigateTo('emploi.html')" class="quick-action-card">
+                <div class="card-image-top">
+                     <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--secondary)" opacity="0.8">
+                            <rect x="40" y="45" width="120" height="60" rx="8" fill="var(--secondary)" fill-opacity="0.1"/>
+                            <path d="M 80 45 v -15 a 20 20 0 0 1 40 0 v 15" />
+                            <path d="M 40 65 h 120" stroke-width="2"/>
+                            <path d="M 90 75 h 20" stroke-width="2"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="quick-action-card-content">
+                    <div>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Offres d'Emploi</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Trouvez votre prochain poste dans le secteur du BTP.</p>
+                    </div>
+                    <div class="btn btn-secondary">Consulter</div>
+                </div>
+            </a>
+             <!-- Carte Histoire du BTP -->
+            <a href="histoire.html" onclick="event.preventDefault(); navigateTo('histoire.html')" class="quick-action-card">
+                <div class="card-image-top">
+                     <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--primary-light)" opacity="0.8">
+                            <path d="M 60 25 h 80 v 80 h -80 z" fill="var(--surface-elevated)"/>
+                            <path d="M 60 25 a 10 10 0 0 0 -10 10 v 60 a 10 10 0 0 0 10 10" stroke-width="3"/>
+                            <path d="M 140 25 a 10 10 0 0 1 10 10 v 60 a 10 10 0 0 1 -10 10" stroke-width="3"/>
+                            <path d="M 75 50 h 50 M 75 65 h 50 M 75 80 h 30" stroke="var(--text-muted)"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="quick-action-card-content">
+                    <div>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Histoire du BTP</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Voyagez dans le temps et découvrez la construction.</p>
+                    </div>
+                    <div class="btn btn-primary-light">Explorer</div>
                 </div>
             </a>
         </section>
@@ -1258,7 +1337,7 @@
         // Variable globale pour le thème, initialisée depuis le localStorage
         let currentTheme = localStorage.getItem('theme') || 'dark';
 
-        // NOUVEAU : Données et état des notifications
+        // Données et état des notifications
         let notificationsData = [
             { id: 1, icon: 'fa-trophy', text: 'Nouveau challenge "Ingénieur Prix" disponible !', time: 'il y a 5 minutes', unread: true, type: 'info' },
             { id: 2, icon: 'fa-check-circle', text: 'Votre CV a été téléchargé avec succès.', time: 'il y a 1 heure', unread: true, type: 'success' },
@@ -1284,7 +1363,6 @@
                     clearInterval(interval);
                     setTimeout(() => {
                         progressBar.classList.remove('show');
-                        // Réinitialiser la largeur après la disparition pour la prochaine utilisation
                         setTimeout(() => {
                             progressFill.style.width = '0%';
                         }, 300);
@@ -1296,9 +1374,6 @@
 
         /**
          * Affiche une notification toast en bas à droite de l'écran.
-         * @param {string} message Le texte à afficher.
-         * @param {string} type Le type de notification ('info', 'success', 'warning', 'error').
-         * @param {number} duration La durée d'affichage en millisecondes.
          */
         function showToastNotification(message, type = 'info', duration = 3000) {
             const notification = document.getElementById('toastNotification');
@@ -1368,7 +1443,6 @@
                 return;
             }
 
-            // Créer les points de navigation
             slides.forEach((_, index) => {
                 const dot = document.createElement('div');
                 dot.classList.add('slider-dot');
@@ -1421,13 +1495,11 @@
 
             mobileNavContainer.innerHTML = ''; 
 
-            // Gérer les actions (Notifications, Thème)
             const actionsHeader = document.createElement('h3');
             actionsHeader.className = 'mobile-nav-section-title';
             actionsHeader.textContent = 'Actions';
             mobileNavContainer.appendChild(actionsHeader);
 
-            // Bouton Notifications
             const notifItem = document.createElement('a');
             notifItem.href = '#';
             notifItem.className = 'mobile-nav-item';
@@ -1439,7 +1511,6 @@
             notifItem.innerHTML = `<div class="mobile-nav-item-icon"><i class="fas fa-bell"></i></div><h4>Notifications</h4>`;
             mobileNavContainer.appendChild(notifItem);
 
-            // Bouton Thème
             const themeItem = document.createElement('a');
             themeItem.href = '#';
             themeItem.className = 'mobile-nav-item';
@@ -1450,7 +1521,6 @@
             themeItem.innerHTML = `<div class="mobile-nav-item-icon"><i class="fas fa-sun"></i></div><h4>Changer de thème</h4>`;
             mobileNavContainer.appendChild(themeItem);
 
-            // Gérer les liens de navigation
             const navItems = desktopNav.querySelectorAll('.nav-menu > .nav-item');
 
             const homeLink = desktopNav.querySelector('a[href="index.html"]');
@@ -1489,7 +1559,7 @@
         }
 
         /**
-         * NOUVEAU : Gère le système de notifications (panneau, badge, etc.).
+         * Gère le système de notifications (panneau, badge, etc.).
          */
         function setupNotifications() {
             const bell = document.getElementById('notificationBell');
@@ -1565,13 +1635,12 @@
                 }
             });
 
-            // Initial render
             renderNotifications();
             updateBadge();
         }
 
         /**
-         * Initialise les animations au défilement pour les éléments avec la classe 'animate-in'.
+         * Initialise les animations au défilement.
          */
         function initAnimations() {
             const observer = new IntersectionObserver((entries, obs) => {
@@ -1589,7 +1658,7 @@
         }
 
         /**
-         * Gère le pop-up des nouveautés qui s'affiche au chargement.
+         * Gère le pop-up des nouveautés.
          */
         function handleNewsPopup() {
             const popupOverlay = document.getElementById('newsPopupOverlay');
@@ -1623,7 +1692,7 @@
             }, 1000);
         }
 
-        // Exposer les fonctions nécessaires globalement pour qu'elles soient accessibles depuis le HTML (onclick)
+        // --- Fonctions globales ---
         window.navigateTo = function(pageFile) {
             showProgress();
             const popupOverlay = document.getElementById('newsPopupOverlay');
@@ -1660,14 +1729,14 @@
         }
 
 
-        // Écouteur d'événement principal qui se déclenche lorsque le DOM est prêt
+        // --- Initialisation au chargement du DOM ---
         document.addEventListener('DOMContentLoaded', () => {
             updateThemeUI();
             initAnimations();
             populateMobileNav();
             setupSlider();
             handleNewsPopup();
-            setupNotifications(); // NOUVEAU : Initialisation du système de notifications
+            setupNotifications();
         });
     </script>
 </body>
