@@ -160,6 +160,7 @@
             font-weight: 800;
             font-size: 1.2rem; 
             transition: var(--transition);
+            flex-shrink: 0;
         }
         .logo:hover {
             transform: scale(1.05);
@@ -199,6 +200,7 @@
             transition: var(--transition);
             position: relative;
             overflow: hidden;
+            white-space: nowrap;
         }
 
         .nav-link:hover {
@@ -260,9 +262,9 @@
         .mobile-toggle.active .hamburger span:nth-child(2) { opacity: 0; }
         .mobile-toggle.active .hamburger span:nth-child(3) { bottom: 50%; transform: translateY(50%) rotate(-45deg); }
         
-        .mobile-menu { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--background); z-index: 999; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: var(--transition-slow); }
-        .mobile-menu.active { opacity: 1; visibility: visible; }
-        .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--spacing-sm); height: 4.5rem; border-bottom: 1px solid var(--glass-border); }
+        .mobile-menu { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--background); z-index: 999; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: var(--transition-slow); transform: translateX(-100%); }
+        .mobile-menu.active { opacity: 1; visibility: visible; transform: translateX(0); }
+        .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--spacing-sm); height: 4.5rem; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
         .mobile-menu-close { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-primary); }
         .mobile-menu-content { flex: 1; padding: var(--spacing-lg) var(--spacing-sm); overflow-y: auto; }
         
@@ -272,6 +274,34 @@
             max-width: 1400px; 
             margin-left: auto; 
             margin-right: auto; 
+        }
+
+        .header-search {
+            position: relative;
+            display: flex;
+            align-items: center;
+            color: var(--text-muted);
+        }
+        .header-search i {
+            position: absolute;
+            left: 0.75rem;
+            pointer-events: none;
+        }
+        .header-search input {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 0.5rem 0.75rem 0.5rem 2.25rem; /* left padding for icon */
+            color: var(--text-primary);
+            transition: var(--transition);
+            width: 100%;
+            max-width: 250px;
+        }
+        .header-search input:focus {
+            background: var(--surface);
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 2px var(--primary-light);
         }
 
         /* Styles for the simulation component */
@@ -301,13 +331,13 @@
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
+        @media (max-width: 1023px) {
             .nav-desktop { display: none; }
             .mobile-toggle { display: flex; }
         }
         @media (min-width: 1024px) {
             .mobile-toggle { display: none; }
-            .nav-desktop { display: flex; align-items: center; flex-grow: 1; justify-content: flex-end; gap: var(--spacing-sm); }
+            .nav-desktop { display: flex; align-items: center; flex-grow: 1; justify-content: space-between; gap: var(--spacing-sm); }
             .nav-menu { gap: var(--spacing-xs); }
         }
         @media (min-width: 1280px) {
@@ -391,9 +421,9 @@
 <body oncontextmenu="return false;">
     
     <!-- Header -->
-     <header class="header" id="header">
+    <header class="header" id="header">
         <nav class="nav-container">
-            <a href="index.html" class="logo" onclick="event.preventDefault(); navigateTo('index.html');">
+            <a href="index.html" class="logo">
                 <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
                     <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
                     <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
@@ -405,21 +435,21 @@
                     <i class="fas fa-search"></i>
                     <input type="search" name="query" placeholder="Rechercher..." aria-label="Rechercher">
                 </form>
-                 <ul class="nav-menu">
-                     <li class="nav-item"><a href="index.html" class="nav-link" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
-                     <li class="nav-item"><a href="simulateur.html" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
-                     <li class="nav-item"><a href="test.html" class="nav-link active" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
-                     <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
-                     <li class="nav-item"><a href="emploi.html" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
-                     <li class="nav-item"><a href="histoire.html" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
-                     <li class="nav-item"><a href="quiz.html" class="nav-link" onclick="event.preventDefault(); navigateTo('quiz.html')"><i class="fas fa-question-circle"></i>&nbsp;Quiz</a></li>
-                     <li class="nav-item"><a href="outils.html" class="nav-link" onclick="event.preventDefault(); navigateTo('outils.html')"><i class="fas fa-wrench"></i>&nbsp;Outils</a></li>
-                 </ul>
-                 <div class="nav-actions">
-                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
-                         <i class="fas fa-moon" id="themeIcon"></i>
-                     </button>
-                 </div>
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="index.html" class="nav-link"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
+                    <li class="nav-item"><a href="simulateur.html" class="nav-link"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
+                    <li class="nav-item"><a href="test.html" class="nav-link active"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
+                    <li class="nav-item"><a href="challenges.html" class="nav-link"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
+                    <li class="nav-item"><a href="emploi.html" class="nav-link"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
+                    <li class="nav-item"><a href="histoire.html" class="nav-link"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
+                    <li class="nav-item"><a href="quiz.html" class="nav-link"><i class="fas fa-question-circle"></i>&nbsp;Quiz</a></li>
+                    <li class="nav-item"><a href="outils.html" class="nav-link"><i class="fas fa-wrench"></i>&nbsp;Outils</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
+                </div>
             </div>
             <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
                 <span class="hamburger"><span></span><span></span><span></span></span>
@@ -454,24 +484,25 @@
                             <input type="email" id="email" name="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Ex: jean.dupont@email.com">
                         </div>
                     </div>
-                        <button id="start-btn" class="mt-6 w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <button id="start-btn" class="mt-6 w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         Démarrer la simulation
-                        </button>
-                        <p id="form-error" class="text-red-500 text-sm mt-2 hidden">Veuillez remplir tous les champs.</p>
-                        <a href="testinfo.html" class="mt-4 block text-center text-sm text-indigo-600 hover:text-indigo-500 font-semibold">Passer au simulateur situationnel <i class="fas fa-arrow-right ml-1"></i></a>
-                    </div>
+                    </button>
                     <p id="form-error" class="text-red-500 text-sm mt-2 hidden">Veuillez remplir tous les champs.</p>
+                    <a href="testinfo.html" class="mt-4 block text-center text-sm text-indigo-600 hover:text-indigo-500 font-semibold">Passer au simulateur situationnel <i class="fas fa-arrow-right ml-1"></i></a>
                 </div>
 
                 <div id="simulation-container" class="hidden">
                     <div class="bg-gray-800 text-white p-3 rounded-t-lg flex justify-between items-center">
-                        <h2 class="font-bold text-xl">Tableau de Bord</h2>
-                        <div class="flex items-center space-x-4">
-                             <div class="text-lg">
-                                <span id="progress-display"></span>
-                            </div>
+                        <h2 class="font-bold text-xl flex-1">Tableau de Bord</h2>
+                        <div class="text-lg font-semibold flex-1 text-center">
+                            <span id="progress-display"></span>
+                        </div>
+                        <div class="flex items-center space-x-4 flex-1 justify-end">
                             <div class="text-lg">
                                 <span id="clock">09:00</span>
+                            </div>
+                            <div id="timer-container" class="text-lg font-mono bg-red-600 px-2 py-1 rounded">
+                                <i class="fas fa-stopwatch mr-1"></i><span id="timer">60</span>
                             </div>
                         </div>
                     </div>
@@ -502,8 +533,8 @@
                             </div>
                         </div>
                         <div id="correction-details" class="mt-10 pt-6 border-t border-gray-200">
-                             <h3 class="text-2xl font-bold text-center mb-6">Revue des Mini-Jeux</h3>
-                             <div id="correction-wrapper"></div>
+                            <h3 class="text-2xl font-bold text-center mb-6">Revue des Mini-Jeux</h3>
+                            <div id="correction-wrapper"></div>
                         </div>
                     </div>
                     <div id="action-buttons" class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -546,7 +577,7 @@
             const themeIcon = document.getElementById('themeIcon');
             if (!themeIcon) return;
             document.body.classList.toggle('light-mode', currentTheme === 'light');
-            themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+            themeIcon.className = currentTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
         }
 
         window.toggleTheme = function() {
@@ -562,6 +593,42 @@
             mobileMenu.classList.toggle('active');
             document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
         }
+        
+        function populateMobileMenu() {
+            const desktopNav = document.querySelector('.nav-desktop .nav-menu');
+            const mobileMenuContainer = document.getElementById('mobileMenu');
+            if (!desktopNav || !mobileMenuContainer) return;
+            if (mobileMenuContainer.childElementCount > 0) return; // Already populated
+
+            const header = document.createElement('div');
+            header.className = 'mobile-menu-header';
+            
+            const logo = document.querySelector('.nav-container .logo').cloneNode(true);
+            
+            const closeButton = document.createElement('button');
+            closeButton.className = 'mobile-menu-close';
+            closeButton.innerHTML = '<i class="fas fa-times text-xl"></i>';
+            closeButton.onclick = toggleMobileMenu;
+            
+            header.appendChild(logo);
+            header.appendChild(closeButton);
+
+            const content = document.createElement('div');
+            content.className = 'mobile-menu-content';
+            
+            const navList = desktopNav.cloneNode(true);
+            navList.className = 'flex flex-col gap-4 p-4';
+            navList.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('p-2');
+                link.classList.add('text-xl', 'w-full', 'text-left', 'p-4', 'hover:bg-slate-700', 'rounded-lg');
+            });
+
+            content.appendChild(navList);
+            
+            mobileMenuContainer.appendChild(header);
+            mobileMenuContainer.appendChild(content);
+        }
+
 
         const observer = new IntersectionObserver((entries, obs) => {
             entries.forEach(entry => {
@@ -577,6 +644,7 @@
         });
         
         updateThemeUI();
+        populateMobileMenu();
 
         // --- SIMULATION SCRIPT ---
 
@@ -703,7 +771,7 @@
                 time: "13:50", type: "Email", from: "Utilisateur", title: "Dossier entier disparu !",
                 description: "Tout le dossier 'Projets 2024' sur le partage commun a disparu ! Je pense que je l'ai supprimé par erreur il y a quelques minutes.",
                 gameType: 'veeamRestore',
-                data: { correctPath: '\\\\SRV-FICHIERS\\Commun\\Projets 2024' },
+                data: { correctPath: '\\\\SRV-FICHIERS\\Commun' },
                 explanation: "Pour une suppression accidentelle récente, la restauration depuis une sauvegarde est la solution. Il faut naviguer dans la console de sauvegarde (ici, Veeam), trouver le bon point de restauration (celui de la nuit précédente), localiser le dossier et le restaurer à son emplacement d'origine."
             },
             // Afternoon Session
@@ -783,6 +851,8 @@
         let score = 0;
         const maxScore = eventsData.length * 10; // 10 points per game
         const userResponses = [];
+        let timerInterval = null;
+        let timeLeft = 60;
 
         const candidateForm = document.getElementById('candidate-form');
         const startBtn = document.getElementById('start-btn');
@@ -790,6 +860,7 @@
         const fullnameInput = document.getElementById('fullname');
         const simulationContainer = document.getElementById('simulation-container');
         const clockEl = document.getElementById('clock');
+        const timerEl = document.getElementById('timer');
         const progressDisplayEl = document.getElementById('progress-display');
         const eventContentEl = document.getElementById('event-content');
         const gameAreaEl = document.getElementById('game-area');
@@ -834,6 +905,25 @@
             displayEvent();
         }
 
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timeLeft = 60;
+            timerEl.textContent = timeLeft;
+            document.getElementById('timer-container').style.backgroundColor = '#dc2626'; // red-600
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerEl.textContent = timeLeft;
+                if (timeLeft <= 10) {
+                    document.getElementById('timer-container').style.backgroundColor = '#f59e0b'; // amber-500
+                }
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    skipQuestion();
+                }
+            }, 1000);
+        }
+
         function displayEvent() {
             if (currentEventIndex >= eventsData.length) {
                 endSimulation();
@@ -843,6 +933,7 @@
             gameFeedbackContainerEl.innerHTML = '';
             nextEventBtn.classList.add('hidden');
             skipEventBtn.classList.remove('hidden');
+            skipEventBtn.disabled = false;
 
             const event = eventsData[currentEventIndex];
             clockEl.textContent = event.time;
@@ -864,6 +955,7 @@
                 </div>`;
 
             renderGame(event);
+            startTimer();
         }
 
         function renderGame(event) {
@@ -880,7 +972,7 @@
                 case 'services': renderServicesGame(event); break;
                 case 'dhcp': renderDhcpGame(event); break;
                 case 'beep': renderBeepGame(event); break;
-                 case 'outlookSafe': renderOutlookSafeGame(event); break;
+                case 'outlookSafe': renderOutlookSafeGame(event); break;
                 case 'antivirus': renderAntivirusGame(event); break;
                 case 'veeamRestore': renderVeeamRestoreGame(event); break;
                 case 'sharepoint': renderSharepointGame(event); break;
@@ -899,6 +991,8 @@
         }
         
         function submitAnswer(gameType, points, details) {
+            if (timerInterval) clearInterval(timerInterval);
+            
             score += points;
             userResponses.push({
                 event: eventsData[currentEventIndex],
@@ -913,7 +1007,7 @@
 
             if (details.skipped) {
                 feedbackClass = 'feedback-skipped';
-                feedbackMessage = 'Question passée.';
+                feedbackMessage = 'Temps écoulé ou question passée.';
             } else {
                 feedbackClass = points > 5 ? 'feedback-success' : 'feedback-fail';
                 feedbackMessage = points > 5 ? 'Action réussie !' : 'Action incorrecte ou incomplète.';
@@ -926,6 +1020,7 @@
             Array.from(gameAreaEl.getElementsByTagName('input')).forEach(i => i.disabled = true);
             Array.from(gameAreaEl.getElementsByTagName('select')).forEach(s => s.disabled = true);
             gameAreaEl.querySelectorAll('.draggable').forEach(d => d.setAttribute('draggable', 'false'));
+            skipEventBtn.disabled = true;
         }
 
         function skipQuestion() {
@@ -998,11 +1093,12 @@
             `;
             const termInput = document.getElementById('terminal-input');
             const termOutput = document.getElementById('terminal-output');
+            const terminal = document.getElementById('terminal');
 
             const commands = {
-                'ipconfig': `\nConfiguration IP de Windows\n\n   Adresse IPv4. . . . . . . . . . . : ${event.data.ip}\n   Masque de sous-réseau . . . . . . : 255.255.255.0\n   Passerelle par défaut. . . . . . . : ${event.data.gateway}\n`,
+                'ipconfig': `\nConfiguration IP de Windows\n\n    Adresse IPv4. . . . . . . . . . . : ${event.data.ip}\n    Masque de sous-réseau . . . . . . : 255.255.255.0\n    Passerelle par défaut. . . . . . . : ${event.data.gateway}\n`,
                 'ping 10.1.1.5': `\nEnvoi d’une requête 'ping' sur ${event.data.serverIp} avec 32 octets de données:\nDélai d’attente de la demande dépassé.\n\nStatistiques Ping pour ${event.data.serverIp}:\n    Paquets : envoyés = 2, reçus = 0, perdus = 2 (perte 100%)\n`,
-                'nslookup portail-rh.corp': `\nServeur :   dc1.corp.local\nAddress:  10.0.0.1\n\nNom :    portail-rh.corp\nAddress:  10.2.5.10\n`,
+                'nslookup portail-rh.corp': `\nServeur :    dc1.corp.local\nAddress:  10.0.0.1\n\nNom :    portail-rh.corp\nAddress:  10.2.5.10\n`,
                 'help': `\nCommandes disponibles:\n  ipconfig, ping <ip>, nslookup <name>, submit\n`,
                 'submit': ''
             };
@@ -1017,8 +1113,8 @@
                     if (commands[command]) {
                         termOutput.innerHTML += commands[command];
                         if (command === 'ipconfig') ipconfigDone = true;
-                        if (command === `ping ${event.data.serverIp}`) pingDone = true;
-                        if (command === `nslookup ${event.data.name}`) nslookupDone = true;
+                        if (command === `ping 10.1.1.5`) pingDone = true;
+                        if (command === `nslookup portail-rh.corp`) nslookupDone = true;
 
                         if (command === 'submit') {
                             let points = 0;
@@ -1038,7 +1134,7 @@
                         termOutput.innerHTML += `'${command}' n’est pas reconnu en tant que commande interne ou externe, un programme exécutable ou un fichier de commandes.\n`;
                     }
                     termInput.value = '';
-                    document.getElementById('terminal').scrollTop = document.getElementById('terminal').scrollHeight;
+                    terminal.scrollTop = terminal.scrollHeight;
                 }
             });
         }
@@ -1148,12 +1244,18 @@
             document.getElementById('ad-submit').addEventListener('click', () => {
                 const selectedGroups = Array.from(document.querySelectorAll('#ad-groups input:checked')).map(cb => cb.value);
                 let correctSelections = 0;
-                event.data.groups.forEach(g => {
-                    if (selectedGroups.includes(g)) {
+                let totalCorrectGroups = event.data.groups.length;
+                
+                selectedGroups.forEach(sg => {
+                    if (event.data.groups.includes(sg)) {
                         correctSelections++;
+                    } else {
+                        correctSelections--; // Penalize for wrong selections
                     }
                 });
-                let points = (correctSelections / event.data.groups.length) * 10;
+
+                let points = (correctSelections / totalCorrectGroups) * 10;
+                points = Math.max(0, points); // Ensure score is not negative
                 submitAnswer('ad', points, { selected: selectedGroups, correct: event.data.groups });
             });
         }
@@ -1163,10 +1265,10 @@
                 <h4 class="font-bold mb-2">Analyse de Phishing</h4>
                 <p class="text-sm mb-2">Cliquez sur les 4 éléments suspects dans l'email ci-dessous.</p>
                 <div class="phishing-email border rounded-md p-4 bg-white relative">
-                    <div class="phishing-hotspot" style="top: 10px; left: 60px; width: 200px; height: 20px;" data-id="1"></div>
+                    <div class="phishing-hotspot" style="top: 10px; left: 60px; width: 250px; height: 20px;" data-id="1"></div>
                     <div class="phishing-hotspot" style="top: 55px; left: 10px; width: 150px; height: 20px;" data-id="2"></div>
                     <div class="phishing-hotspot" style="top: 100px; left: 10px; width: 450px; height: 40px;" data-id="3"></div>
-                    <div class="phishing-hotspot" style="top: 150px; left: 10px; width: 180px; height: 25px;" data-id="4"></div>
+                    <div class="phishing-hotspot" style="top: 150px; left: 10px; width: 300px; height: 25px;" data-id="4"></div>
                     <p class="text-sm"><strong>De:</strong> Service Client <span class="text-gray-500">&lt;secure-update-account@1t-online-service.com&gt;</span></p>
                     <p class="text-sm"><strong>Sujet:</strong> [URGENT] Votre compte sera suspendu</p>
                     <hr class="my-2">
@@ -1174,12 +1276,13 @@
                     <br>
                     <p>Nous avons détecté une activité inhabituelle. Pour votre sécurité, veuillez cliquer sur le lien ci-dessous pour vérifier votre compte immédiatement. L'échec de la vérification entraînera la fermeture du compte.</p>
                     <br>
-                    <a href="#" class="text-blue-600 underline">http://microsoft.security.com/verify-account</a>
+                    <a href="#" class="text-blue-600 underline" onclick="event.preventDefault()">http://microsoft.security.com.verify-account.net/login</a>
                     <br><br>
                     <p>Merci,</p>
                     <p>L'équipe de sécurité</p>
                 </div>
                 <p class="mt-2 text-sm">Indices trouvés: <span id="phishing-counter">0</span> / ${event.data.hotspots}</p>
+                <button id="phishing-submit" class="mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700">Valider les indices</button>
             `;
             let foundCount = 0;
             const counterEl = document.getElementById('phishing-counter');
@@ -1189,11 +1292,12 @@
                         spot.classList.add('found');
                         foundCount++;
                         counterEl.textContent = foundCount;
-                        if (foundCount === event.data.hotspots) {
-                            submitAnswer('phishing', 10, { found: foundCount });
-                        }
                     }
                 }, { once: true });
+            });
+            document.getElementById('phishing-submit').addEventListener('click', () => {
+                 let points = (foundCount / event.data.hotspots) * 10;
+                 submitAnswer('phishing', points, { found: foundCount });
             });
         }
         
@@ -1203,7 +1307,7 @@
             services.forEach(s => {
                 const status = (s === event.data.service) ? 'Arrêté' : 'En cours d\'exécution';
                 const color = (s === event.data.service) ? 'text-red-600' : 'text-green-600';
-                servicesHtml += `<li class="p-2 border-b"><span>${s}</span> - <span class="font-bold ${color}">${status}</span> <button data-service="${s}" class="float-right text-xs bg-gray-200 px-2 py-1 rounded">Démarrer</button></li>`;
+                servicesHtml += `<li class="p-2 border-b"><span>${s}</span> - <span class="font-bold ${color}">${status}</span> <button data-service="${s}" class="float-right text-xs bg-gray-200 px-2 py-1 rounded">Redémarrer</button></li>`;
             });
             servicesHtml += '</ul>';
 
@@ -1360,12 +1464,12 @@
                 <div class="relative bg-gray-200 h-64 w-full rounded-md p-2 border-2">
                     <div class="absolute bg-blue-200 border border-blue-400 text-center p-2" style="top: 20px; left: 20px; width: 150px; height: 180px;">Bureaux</div>
                     <div class="absolute bg-green-200 border border-green-400 text-center p-2" style="top: 80px; right: 20px; width: 100px; height: 80px;">Salle de Pause</div>
-                    <div class="absolute bg-gray-600" style="top: 0; left: 180px; width: 10px; height: 100%;"></div>
+                    <div class="absolute bg-gray-600" style="top: 0; left: 180px; width: 10px; height: 100%;">Mur Porteur</div>
                     <div class="absolute text-2xl" style="top: 110px; left: 60px;">📡<span class="text-xs">AP</span></div>
                 </div>
                 <div id="wifi-options" class="mt-4 space-y-2">
                     <button data-action="increase_power" class="w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-indigo-100">Augmenter la puissance de la borne</button>
-                    <button data-action="move_ap" class="w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-indigo-100">Déplacer la borne dans le couloir central</button>
+                    <button data-action="move_ap" class="w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-indigo-100">Déplacer la borne dans le couloir central ou en ajouter une</button>
                     <button data-action="change_channel" class="w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-indigo-100">Changer de canal Wi-Fi</button>
                 </div>
             `;
@@ -1407,8 +1511,8 @@
             gameAreaEl.innerHTML = `
                 <h4 class="font-bold mb-2">Console PowerShell</h4>
                 <p class="text-sm mb-4">Complétez la commande suivante pour trouver les comptes utilisateurs inactifs depuis 90 jours.</p>
-                <div class="terminal p-4">
-                    <span class="text-cyan-300">Search-ADAccount</span> <span class="text-yellow-300">-AccountInactive</span> <span class="text-yellow-300">-TimeSpan</span> <input id="ps-input" type="text" class="terminal-input w-48" placeholder="90.00:00:00"> <span class="text-yellow-300">-UsersOnly</span>
+                <div class="terminal p-4 font-mono">
+                    <span class="text-cyan-300">Search-ADAccount</span> <span class="text-yellow-300">-AccountInactive</span> <span class="text-yellow-300">-TimeSpan</span> <input id="ps-input" type="text" class="terminal-input w-48 bg-gray-700 rounded px-1" placeholder="90.00:00:00"> <span class="text-yellow-300">-UsersOnly</span>
                 </div>
                 <button id="ps-submit" class="mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700">Exécuter</button>
             `;
@@ -1494,10 +1598,12 @@
                 e.preventDefault();
                 const afterElement = getDragAfterElement(dropzone, e.clientY);
                 const draggable = document.querySelector('.opacity-50');
-                if (afterElement == null) {
-                    dropzone.appendChild(draggable);
-                } else {
-                    dropzone.insertBefore(draggable, afterElement);
+                if (draggable) {
+                    if (afterElement == null) {
+                        dropzone.appendChild(draggable);
+                    } else {
+                        dropzone.insertBefore(draggable, afterElement);
+                    }
                 }
             });
 
@@ -1568,14 +1674,14 @@
                 <h4 class="font-bold mb-2">Veeam - Restauration de fichiers</h4>
                 <p class="text-sm mb-4">Naviguez et sélectionnez le dossier à restaurer depuis la sauvegarde de 'Hier, 22:00'.</p>
                 <div class="p-2 border rounded-md bg-white h-48 overflow-y-auto">
-                    <ul>
+                    <ul class="font-mono text-sm">
                         <li><i class="fas fa-server mr-2"></i>SRV-FICHIERS
                             <ul>
                                 <li class="ml-4"><i class="fas fa-hdd mr-2"></i>C:</li>
                                 <li class="ml-4"><i class="fas fa-hdd mr-2"></i>D:
                                     <ul>
                                         <li class="ml-8"><i class="fas fa-folder mr-2"></i>Utilisateurs</li>
-                                        <li data-path="\\\\SRV-FICHIERS\\Commun\\Projets 2024" class="ml-8 cursor-pointer hover:bg-blue-100 p-1 rounded"><i class="fas fa-folder-open mr-2"></i>Commun</li>
+                                        <li data-path="\\\\SRV-FICHIERS\\Commun" class="ml-8 cursor-pointer hover:bg-blue-100 p-1 rounded"><i class="fas fa-folder-open mr-2"></i>Commun</li>
                                         <li class="ml-8"><i class="fas fa-folder mr-2"></i>Scans</li>
                                     </ul>
                                 </li>
@@ -1687,7 +1793,7 @@
                 heightLeft -= pdfHeight;
 
                 while (heightLeft > 0) {
-                    position = heightLeft - imgHeight;
+                    position = heightLeft - imgHeight + margin; // Adjust position for new page
                     pdf.addPage();
                     pdf.addImage(imgData, 'PNG', margin, position, pdfWidth - (margin * 2), imgHeight);
                     heightLeft -= pdfHeight;
@@ -1718,9 +1824,17 @@
         function copyEmailBody() {
             emailBodyTextarea.select();
             try {
-                document.execCommand('copy');
-                copyEmailBtn.textContent = 'Copié !';
-                setTimeout(() => { copyEmailBtn.textContent = 'Copier le rapport'; }, 2000);
+                // Use the Clipboard API for modern browsers
+                navigator.clipboard.writeText(emailBodyTextarea.value).then(() => {
+                    copyEmailBtn.textContent = 'Copié !';
+                    setTimeout(() => { copyEmailBtn.textContent = 'Copier le rapport'; }, 2000);
+                }).catch(err => {
+                    console.error('La copie a échoué via l\'API Clipboard', err);
+                    // Fallback for older browsers
+                    document.execCommand('copy');
+                    copyEmailBtn.textContent = 'Copié ! (fallback)';
+                    setTimeout(() => { copyEmailBtn.textContent = 'Copier le rapport'; }, 2000);
+                });
             } catch (err) {
                 console.error('La copie a échoué', err);
                 copyEmailBtn.textContent = 'Erreur de copie';
@@ -1731,8 +1845,7 @@
         nextEventBtn.addEventListener('click', loadNextEvent);
         skipEventBtn.addEventListener('click', skipQuestion);
         restartBtn.addEventListener('click', () => {
-            resultsContainer.classList.add('hidden');
-            candidateForm.classList.remove('hidden');
+            window.location.reload();
         });
         pdfBtn.addEventListener('click', generatePDF);
         emailBtn.addEventListener('click', prepareEmail);
