@@ -397,6 +397,7 @@
                         Démarrer la simulation
                     </button>
                     <p id="form-error" class="text-red-500 text-sm mt-2 hidden">Veuillez remplir tous les champs.</p>
+                    <a href="testinfopra.html" class="mt-4 block text-center text-sm text-indigo-600 hover:text-indigo-500 font-semibold">Passer au simulateur pratique <i class="fas fa-arrow-right ml-1"></i></a>
                 </div>
 
                 <div id="simulation-container" class="hidden">
@@ -437,8 +438,11 @@
                         </div>
                     </div>
                     <div id="action-buttons" class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <button id="pdf-btn" class="w-full bg-red-600 text-white font-bold py-2 px-4 rounded-md hover:bg-red-700">1. Télécharger le rapport complet (PDF)</button>
-                        <button id="email-btn" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700">2. Envoyer le rapport par E-mail</button>
+                        <button id="pdf-btn" class="w-full bg-red-600 text-white font-bold py-2 px-4 rounded-md hover:bg-red-700">Télécharger le rapport (PDF)</button>
+                        <button id="email-btn" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700">Envoyer le rapport par E-mail</button>
+                    </div>
+                    <div class="mt-6 text-center">
+                        <a href="simulateur.html" class="inline-block bg-green-600 text-white font-bold py-3 px-6 rounded-md hover:bg-green-700 transition-transform transform hover:scale-105">Essayer le simulateur pratique <i class="fas fa-arrow-right ml-2"></i></a>
                     </div>
                 </div>
             </div>
@@ -728,8 +732,8 @@
             time: "17:15", type: "Ticket GLPI", from: "RH", title: "Création d'une boîte mail partagée",
             description: "Bonjour, pourriez-vous créer une boîte mail partagée 'candidatures@notre-entreprise.com' et donner l'accès à 3 personnes du service RH ?",
             options: { a: "Créer un nouvel utilisateur 'candidatures' avec une licence.", b: "Créer une boîte aux lettres partagée depuis le centre d'administration Exchange Online et déléguer les accès 'FullAccess' et 'Send As'.", c: "Créer un groupe de distribution.", d: "Créer une liste de contacts.", e: "Créer un groupe Microsoft 365.", f: "Leur dire de créer un dossier dans une de leurs boîtes mail et de le partager.", g: "Leur demander de justifier ce besoin.", h: "Créer la boîte partagée et leur envoyer la documentation pour l'ajouter à leur Outlook.", i: "Combiner la création (b) et l'envoi de la documentation (h).", j: "Créer un canal privé dans le Teams des RH." },
-            answers: { veryGood: 'i', good: 'b', acceptable: 'e' },
-            explanation: "La démarche complète (i) est la meilleure. La création technique (b) est l'action principale. Créer un groupe M365 (e) est une alternative viable qui offre plus d'outils, mais ce n'est pas ce qui est demandé."
+                answers: { veryGood: 'i', good: 'b', acceptable: 'e' },
+                explanation: "La démarche complète (i) est la meilleure. La création technique (b) est l'action principale. Créer un groupe M365 (e) est une alternative viable qui offre plus d'outils, mais ce n'est pas ce qui est demandé."
         },
         {
             time: "17:30", type: "Ticket GLPI", from: "Service RH", title: "Fin de contrat",
@@ -996,30 +1000,43 @@
         const recipient = 'l.amara@ltd-international.com';
         const subject = `Rapport de simulation - ${fullnameInput.value}`;
         const scoreText = scoreEl.textContent.trim();
-        const pdfFileName = `Rapport_Simulation_${fullnameInput.value.replace(/ /g, '_')}.pdf`;
         
         let body = `Bonjour,\n\n`;
-        body += `Veuillez trouver ci-joint le rapport de performance détaillé de la simulation pour le candidat ${fullnameInput.value}.\n\n`;
+        body += `Voici le rapport de performance détaillé pour le candidat ${fullnameInput.value}.\n\n`;
         body += `--- RAPPORT SOMMAIRE ---\n`;
         body += `Candidat : ${fullnameInput.value}\n`;
         body += `Score de performance : ${scoreText}\n`;
         body += `Analyse : ${feedbackText.textContent}\n\n`;
-        body += `Le détail complet des réponses se trouve dans le PDF joint.\n\n`;
-        body += `Cordialement,\n\n`;
-        body += `L'équipe de simulation LTD International\n\n`;
-        body += `--- IMPORTANT ---\n`;
-        body += `N'oubliez pas de joindre manuellement le fichier PDF "${pdfFileName}" que vous venez de télécharger avant d'envoyer cet e-mail.`;
+        body += `--- REVUE DÉTAILLÉE DES SCÉNARIOS ---\n\n`;
+        userResponses.forEach((resp, index) => {
+            const { event, selected, points, responseTime } = resp;
+            const answers = event.answers;
+            let choiceText;
+            let fastResponseNote = responseTime < 5 ? `(Réponse rapide en ${responseTime.toFixed(1)}s)` : '';
 
-        const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        window.open(mailtoLink, '_blank');
+            if (selected === 'timeout') {
+                choiceText = `Temps écoulé (0 pts)`;
+            } else {
+                choiceText = `${event.options[selected]} (+${points} pts)`;
+            }
+
+            body += `----------------------------------------\n`;
+            body += `SCÉNARIO ${index + 1}: [${event.time}] ${event.title}\n`;
+            body += `----------------------------------------\n`;
+            body += `VOTRE ACTION : ${choiceText} ${fastResponseNote}\n\n`;
+            body += `RÉPONSE EXCELLENTE (+3 pts) : ${event.options[answers.veryGood]}\n`;
+            body += `BONNE RÉPONSE (+2 pts) : ${event.options[answers.good]}\n`;
+            body += `RÉPONSE ACCEPTABLE (+1 pt) : ${event.options[answers.acceptable]}\n\n`;
+            body += `JUSTIFICATION : ${event.explanation}\n\n\n`;
+        });
+        body += `Cordialement,\n\nL'équipe de simulation LTD International`;
+        
+        emailBodyTextarea.value = body;
+        const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(subject)}`;
+        openMailerBtn.href = mailtoLink;
+        emailModal.classList.remove('hidden');
     }
 
-    startBtn.addEventListener('click', startSimulation);
-    nextEventBtn.addEventListener('click', loadNextEvent);
-    pdfBtn.addEventListener('click', generatePDF);
-    emailBtn.addEventListener('click', prepareEmail);
-    closeModalBtn.addEventListener('click', () => emailModal.classList.add('hidden'));
-    
     function copyEmailBody() {
         emailBodyTextarea.select();
         try {
@@ -1028,6 +1045,12 @@
             setTimeout(() => { copyEmailBtn.textContent = 'Copier le rapport'; }, 2000);
         } catch (err) { console.error('La copie a échoué', err); copyEmailBtn.textContent = 'Erreur de copie'; }
     }
+
+    startBtn.addEventListener('click', startSimulation);
+    nextEventBtn.addEventListener('click', loadNextEvent);
+    pdfBtn.addEventListener('click', generatePDF);
+    emailBtn.addEventListener('click', prepareEmail);
+    closeModalBtn.addEventListener('click', () => emailModal.classList.add('hidden'));
     copyEmailBtn.addEventListener('click', copyEmailBody);
     });
     </script>
