@@ -9,8 +9,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- Tailwind CSS for the simulation component -->
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- PDF Generation Libraries (jsPDF & html2canvas) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
     <style>
         :root {
             /* Colors */
@@ -118,7 +124,7 @@
             100% { background-position: 0% 50%; }
         }
         
-        [onclick], .nav-link, .launch-button, .theme-toggle, .mobile-toggle, .search-button {
+        [onclick], .nav-link, .launch-button, .theme-toggle, .mobile-toggle, .search-button, button, a[href] {
             cursor: pointer;
         }
 
@@ -172,6 +178,38 @@
         
         .logo-text-extended {
             display: none;
+        }
+        
+        /* --- Search Bar Styles --- */
+        .header-search {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .header-search i {
+            position: absolute;
+            left: 0.75rem;
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+        .header-search input {
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+            color: var(--text-primary);
+            transition: var(--transition);
+            width: 150px;
+        }
+        .header-search input::placeholder {
+            color: var(--text-muted);
+        }
+        .header-search input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--surface-elevated);
+            box-shadow: 0 0 0 2px var(--primary-light);
+            width: 250px;
         }
 
         .nav-desktop { display: none; } 
@@ -258,12 +296,17 @@
         .mobile-toggle.active .hamburger span:nth-child(2) { opacity: 0; }
         .mobile-toggle.active .hamburger span:nth-child(3) { bottom: 50%; transform: translateY(50%) rotate(-45deg); }
         
-        .mobile-menu { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--background); z-index: 999; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: var(--transition-slow); }
-        .mobile-menu.active { opacity: 1; visibility: visible; }
-        .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--spacing-sm); height: 4.5rem; border-bottom: 1px solid var(--glass-border); }
+        .mobile-menu { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--background); z-index: 999; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: var(--transition-slow); transform: translateX(-100%); }
+        .mobile-menu.active { opacity: 1; visibility: visible; transform: translateX(0); }
+        .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--spacing-sm); height: 4.5rem; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
         .mobile-menu-close { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-primary); }
-        .mobile-menu-content { flex: 1; padding: var(--spacing-lg) var(--spacing-sm); overflow-y: auto; }
-        
+        .mobile-menu-content { flex: 1; padding: var(--spacing-lg) 0; overflow-y: auto; }
+        .nav-menu-mobile { list-style: none; }
+        .nav-menu-mobile .nav-link { display: block; padding: var(--spacing-sm); font-size: 1.2rem; border-bottom: 1px solid var(--glass-border); border-radius: 0; }
+        .nav-menu-mobile .nav-link:hover { background: var(--surface); }
+        .nav-actions-mobile { padding: var(--spacing-md) var(--spacing-sm); display: flex; justify-content: center; }
+        .nav-actions-mobile .theme-toggle { transform: scale(1.2); }
+
         .main-content { 
             margin-top: 4.5rem; 
             padding: var(--spacing-lg) var(--spacing-sm); 
@@ -299,7 +342,7 @@
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
+        @media (max-width: 1023px) {
             .nav-desktop { display: none; }
             .mobile-toggle { display: flex; }
         }
@@ -310,6 +353,7 @@
         }
         @media (min-width: 1280px) {
             .logo-text-extended { display: inline; }
+            .header-search input { width: 250px; }
         }
 
         /* Simulation-specific styles from the original artifact */
@@ -317,24 +361,30 @@
             min-height: 450px;
         }
         .option-button {
-            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, transform 0.1s ease;
             border: 2px solid transparent;
+        }
+        .option-button:hover {
+            transform: translateY(-2px);
         }
         .explanation { background-color: #f3f4f6; border-left: 4px solid #6366f1; }
         .modal-overlay {
             transition: opacity 0.3s ease;
         }
-        .very-good-answer { background-color: #fef08a !important; }
-        .good-answer { background-color: #dcfce7 !important; }
-        .acceptable-answer { background-color: #ffedd5 !important; }
+        .very-good-answer { background-color: #dcfce7 !important; border-color: #22c55e !important; }
+        .good-answer { background-color: #fef08a !important; border-color: #eab308 !important; }
+        .acceptable-answer { background-color: #ffedd5 !important; border-color: #f97316 !important; }
         .bad-answer { background-color: #f1f5f9 !important; }
-        .selected-choice { border-color: #4f46e5 !important; }
+        .selected-choice { 
+            border-width: 3px !important;
+            box-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
+        }
     </style>
 </head>
 <body oncontextmenu="return false;" oncopy="return false;" oncut="return false;" onpaste="return false;">
     
     <!-- Header -->
-     <header class="header" id="header">
+    <header class="header" id="header">
         <nav class="nav-container">
             <a href="index.html" class="logo" onclick="event.preventDefault(); navigateTo('index.html');">
                 <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
@@ -348,21 +398,21 @@
                     <i class="fas fa-search"></i>
                     <input type="search" name="query" placeholder="Rechercher..." aria-label="Rechercher">
                 </form>
-                 <ul class="nav-menu">
-                     <li class="nav-item"><a href="index.html" class="nav-link" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
-                     <li class="nav-item"><a href="simulateur.html" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
-                     <li class="nav-item"><a href="test.html" class="nav-link active" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
-                     <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
-                     <li class="nav-item"><a href="emploi.html" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
-                     <li class="nav-item"><a href="histoire.html" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
-                     <li class="nav-item"><a href="quiz.html" class="nav-link" onclick="event.preventDefault(); navigateTo('quiz.html')"><i class="fas fa-question-circle"></i>&nbsp;Quiz</a></li>
-                     <li class="nav-item"><a href="outils.html" class="nav-link" onclick="event.preventDefault(); navigateTo('outils.html')"><i class="fas fa-wrench"></i>&nbsp;Outils</a></li>
-                 </ul>
-                 <div class="nav-actions">
-                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
-                         <i class="fas fa-moon" id="themeIcon"></i>
-                     </button>
-                 </div>
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="index.html" class="nav-link" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
+                    <li class="nav-item"><a href="simulateur.html" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
+                    <li class="nav-item"><a href="test.html" class="nav-link active" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
+                    <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
+                    <li class="nav-item"><a href="emploi.html" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
+                    <li class="nav-item"><a href="histoire.html" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
+                    <li class="nav-item"><a href="quiz.html" class="nav-link" onclick="event.preventDefault(); navigateTo('quiz.html')"><i class="fas fa-question-circle"></i>&nbsp;Quiz</a></li>
+                    <li class="nav-item"><a href="outils.html" class="nav-link" onclick="event.preventDefault(); navigateTo('outils.html')"><i class="fas fa-wrench"></i>&nbsp;Outils</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
+                </div>
             </div>
             <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
                 <span class="hamburger"><span></span><span></span><span></span></span>
@@ -405,7 +455,7 @@
                 </div>
 
                 <div id="simulation-container" class="hidden">
-                    <div class="bg-gray-800 text-white p-3 rounded-t-lg flex justify-between items-center">
+                    <div class="bg-gray-800 text-white p-3 rounded-t-lg flex justify-between items-center flex-wrap gap-2">
                         <h2 class="font-bold text-xl">Tableau de Bord</h2>
                         <div id="progress-display" class="text-lg font-semibold">
                             Scénario <span id="current-question">1</span> / <span id="total-questions">32</span>
@@ -414,7 +464,7 @@
                             <div id="timer-display" class="text-lg font-semibold bg-red-600 px-3 py-1 rounded">
                                 Temps restant: <span id="timer">60</span>s
                             </div>
-                            <div class="text-lg">
+                            <div class="text-lg font-mono">
                                 <span id="clock">09:00</span>
                             </div>
                         </div>
@@ -423,7 +473,7 @@
                         <div id="event-content"></div>
                         <div id="event-options" class="mt-6"></div>
                     </div>
-                     <button id="next-event-btn" class="hidden mt-4 w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-700">
+                    <button id="next-event-btn" class="hidden mt-4 w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-700">
                         Événement Suivant
                     </button>
                 </div>
@@ -440,8 +490,8 @@
                             </div>
                         </div>
                         <div id="correction-details" class="mt-10 pt-6 border-t border-gray-200">
-                             <h3 class="text-2xl font-bold text-center mb-6">Revue des Scénarios</h3>
-                             <div id="correction-wrapper"></div>
+                            <h3 class="text-2xl font-bold text-center mb-6">Revue des Scénarios</h3>
+                            <div id="correction-wrapper"></div>
                         </div>
                     </div>
                     <div id="action-buttons" class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -450,20 +500,17 @@
                         <button id="restart-btn" class="w-full bg-gray-600 text-white font-bold py-2 px-4 rounded-md hover:bg-gray-700 flex items-center justify-center"><i class="fas fa-redo mr-2"></i>Recommencer ce test</button>
                         <a href="testinfopra.html" class="w-full text-center bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-700 flex items-center justify-center"><i class="fas fa-tasks mr-2"></i>Essayer le test pratique</a>
                     </div>
-                    <div class="mt-6 text-center">
-                        <a href="simulateur.html" class="inline-block bg-green-600 text-white font-bold py-3 px-6 rounded-md hover:bg-green-700 transition-transform transform hover:scale-105">Essayer le simulateur pratique <i class="fas fa-arrow-right ml-2"></i></a>
-                    </div>
                 </div>
             </div>
             <!-- END OF SIMULATION COMPONENT -->
         </div>
     </main>
     
-    <div id="email-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-lg shadow-xl p-6 max-w-2xl w-full">
+    <div id="email-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-overlay">
+        <div class="bg-white rounded-lg shadow-xl p-6 max-w-2xl w-full text-gray-800">
             <h3 class="text-xl font-bold mb-4">Envoyer le rapport par e-mail</h3>
             <p class="mb-4 text-gray-700">Le corps de l'e-mail a été préparé. Veuillez suivre ces étapes :</p>
-            <ol class="list-decimal list-inside mb-4 space-y-2">
+            <ol class="list-decimal list-inside mb-4 space-y-2 text-gray-700">
                 <li>Cliquez sur le bouton "Copier le rapport" ci-dessous.</li>
                 <li>Cliquez ensuite sur "Ouvrir la messagerie".</li>
                 <li>Collez le rapport dans le corps du nouvel e-mail.</li>
@@ -486,7 +533,13 @@
             const themeIcon = document.getElementById('themeIcon');
             if (!themeIcon) return;
             document.body.classList.toggle('light-mode', currentTheme === 'light');
-            themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+            themeIcon.className = currentTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+            
+            // Update mobile theme icon if it exists
+            const mobileThemeIcon = document.querySelector('.nav-actions-mobile #themeIcon');
+            if(mobileThemeIcon) {
+                mobileThemeIcon.className = currentTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+            }
         }
 
         window.toggleTheme = function() {
@@ -502,6 +555,43 @@
             mobileMenu.classList.toggle('active');
             document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
         }
+        
+        window.navigateTo = function(url) {
+            window.location.href = url;
+        }
+
+        function populateMobileMenu() {
+            const navMenuHTML = document.querySelector('.nav-desktop .nav-menu')?.innerHTML || '';
+            const navActionsHTML = document.querySelector('.nav-desktop .nav-actions')?.innerHTML || '';
+            const mobileMenu = document.getElementById('mobileMenu');
+
+            if (mobileMenu) {
+                mobileMenu.innerHTML = `
+                    <div class="mobile-menu-header">
+                        <a href="index.html" class="logo" onclick="event.preventDefault(); navigateTo('index.html');">
+                            <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
+                                <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
+                                <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+                            </svg>
+                            <span class="logo-text">LTD Simulator</span>
+                        </a>
+                        <button class="mobile-menu-close" onclick="toggleMobileMenu()">
+                            <i class="fas fa-times fa-lg"></i>
+                        </button>
+                    </div>
+                    <div class="mobile-menu-content">
+                        <ul class="nav-menu-mobile">
+                            ${navMenuHTML}
+                        </ul>
+                        <div class="nav-actions-mobile">
+                            ${navActionsHTML}
+                        </div>
+                    </div>
+                `;
+                 // Re-add event listener for the cloned theme toggle button
+                mobileMenu.querySelector('#themeToggle').addEventListener('click', toggleTheme);
+            }
+        }
 
         const observer = new IntersectionObserver((entries, obs) => {
             entries.forEach(entry => {
@@ -516,555 +606,383 @@
             observer.observe(el);
         });
         
+        populateMobileMenu();
         updateThemeUI();
 
         // --- SIMULATION SCRIPT ---
         const eventsData = [
-            {
-                time: "09:02", type: "Ticket GLPI", from: "Céline D.", title: "Problème d'impression",
-                description: "Bonjour, je n'arrive pas à imprimer sur l'imprimante 'COMPTA-COLOR'. D'autres collègues y arrivent. J'ai déjà redémarré mon PC. Que faire ?",
-                options: { a: "Redémarrer le serveur d'impression.", b: "Vérifier la connectivité réseau du poste.", c: "Prendre la main à distance pour réinstaller le pilote.", d: "Lui demander de changer de bureau.", e: "Guider l'utilisatrice pour qu'elle réinstalle l'imprimante.", f: "Vérifier si le service 'Spouleur d'impression' est démarré.", g: "Lui demander d'envoyer son document à un collègue.", h: "Vérifier si l'imprimante a du papier.", i: "Supprimer le profil Windows de l'utilisatrice.", j: "Escalader le ticket au Responsable SI." },
-                answers: { veryGood: 'c', good: 'e', acceptable: 'f' },
-                explanation: "La réinstallation du pilote (c) est l'action la plus directe. Guider l'utilisateur (e) est bien mais moins rapide. Vérifier le spouleur (f) est un diagnostic valide mais le redémarrage du PC l'a probablement déjà fait."
-            },
-            {
-                time: "09:15", type: "Email", from: "Alain T.", title: "URGENT - PC très lent",
-                description: "Mon ordinateur est incroyablement lent, je ne peux pas travailler. J'ai une présentation à finir pour 11h.",
-                options: { a: "Lui dire de créer un ticket GLPI.", b: "Prendre la main, vérifier le gestionnaire des tâches et lancer un scan antivirus rapide.", c: "Lui conseiller de redémarrer plusieurs fois.", d: "Planifier une réinstallation pour la semaine prochaine.", e: "Lancer une défragmentation du disque.", f: "Vérifier l'espace disque disponible.", g: "Lui demander de fermer des applications.", h: "Lui proposer d'utiliser un autre PC.", i: "Vérifier les mises à jour Windows en attente.", j: "Se déplacer à son bureau pour un diagnostic physique." },
-                answers: { veryGood: 'b', good: 'j', acceptable: 'f' },
-                explanation: "L'action (b) est la plus complète et efficace à distance. Se déplacer (j) est bien mais pas toujours nécessaire. Vérifier l'espace disque (f) est un bon réflexe."
-            },
-            {
-                time: "09:25", type: "Ticket GLPI", from: "Directeur Commercial", title: "Téléphone pro perdu/volé",
-                description: "Je pense avoir perdu mon téléphone professionnel ce matin. Il contient des données sensibles. Que faut-il faire de toute urgence ?",
-                options: { a: "Lui dire de chercher mieux.", b: "Lancer immédiatement la procédure d'effacement à distance via Intune/MDM.", c: "Commander un nouveau téléphone.", d: "Bloquer la ligne auprès de l'opérateur.", e: "Lui demander de porter plainte.", f: "Désactiver son compte M365.", g: "Forcer la déconnexion de ses sessions M365.", h: "Combiner l'effacement à distance (Intune) et le blocage de la ligne (opérateur).", i: "Attendre la fin de la journée.", j: "Vérifier la dernière position GPS du téléphone." },
-                answers: { veryGood: 'h', good: 'b', acceptable: 'd' },
-                explanation: "La sécurité des données est la priorité. L'action combinée (h) est la plus complète. L'effacement à distance seul (b) est excellent. Le blocage de la ligne (d) est acceptable mais ne protège pas les données sur le téléphone."
-            },
-            {
-                time: "09:35", type: "Email", from: "RH", title: "Préparation arrivée nouveau collaborateur",
-                description: "Bonjour, M. Durand nous rejoint lundi prochain en tant que commercial. Pouvez-vous préparer son compte et son matériel ?",
-                options: { a: "Attendre lundi matin pour tout créer.", b: "Créer le compte AD, la boîte mail, l'ajouter aux groupes de sécurité des commerciaux, et préparer un PC portable du stock.", c: "Demander à M. Durand de vous appeler lundi.", d: "Répondre que vous n'avez pas de PC en stock.", e: "Créer uniquement le compte AD.", f: "Préparer un PC et le laisser sur le bureau de M. Durand.", g: "Vérifier la procédure d'arrivée, et planifier la préparation complète pour la veille de son arrivée.", h: "Demander quel modèle de téléphone il souhaite.", i: "Cloner le compte d'un autre commercial.", j: "Lui attribuer une licence Office 365." },
-                answers: { veryGood: 'g', good: 'b', acceptable: 'j' },
-                explanation: "Suivre la procédure et planifier (g) est la démarche la plus professionnelle. Préparer les éléments clés (b) est une bonne action. Attribuer la licence (j) est une partie nécessaire mais incomplète de la tâche."
-            },
-            {
-                time: "09:45", type: "Appel Téléphonique", from: "Direction", title: "Panne Visioconférence Salle 'Prestige'",
-                description: "Réunion client dans 15 minutes dans la salle 'Prestige' et la visio ne s'allume pas. C'est la catastrophe !",
-                options: { a: "Dire que vous êtes occupé.", b: "Se déplacer immédiatement, vérifier les branchements et redémarrer le système.", c: "Suggérer d'utiliser un PC portable.", d: "Contacter le support du fabricant.", e: "Demander si la prise est alimentée.", f: "Vérifier si l'équipement répond sur le réseau.", g: "Envoyer un email pour dire que vous avez pris en compte.", h: "Redémarrer le switch réseau.", i: "Leur dire d'annuler la réunion.", j: "Apporter une solution de visio mobile si la panne n'est pas résolue en 5 minutes." },
-                answers: { veryGood: 'b', good: 'j', acceptable: 'f' },
-                explanation: "Une panne bloquante pour la direction est une priorité absolue. Une intervention physique (b) est indispensable. Avoir un plan B rapide (j) est un excellent réflexe. Vérifier la connectivité (f) est une bonne première étape."
-            },
-            {
-                time: "09:55", type: "Email", from: "Utilisateur", title: "Problème SSO application SaaS",
-                description: "Je n'arrive plus à me connecter à notre CRM en ligne. J'utilise le bouton 'Se connecter avec Microsoft' et ça me met une erreur 'AADSTS50011: The reply URL...'.",
-                options: { a: "Lui dire de réinitialiser son mot de passe.", b: "Vérifier la configuration de l'application dans Azure AD, notamment les URL de réponse.", c: "Contacter le support du CRM.", d: "Lui demander de vider le cache de son navigateur.", e: "Vérifier les journaux de connexion (Sign-in logs) dans Azure AD.", f: "Vérifier si le certificat de signature SAML a expiré.", g: "Lui demander d'essayer avec un autre navigateur.", h: "Révoquer ses sessions.", i: "Vérifier les politiques d'accès conditionnel.", j: "Combiner la vérification des logs (e) et la configuration de l'app (b)." },
-                answers: { veryGood: 'j', good: 'b', acceptable: 'e' },
-                explanation: "L'erreur est spécifique. Combiner l'analyse des logs et la vérification de la configuration (j) est l'approche la plus rigoureuse. Vérifier la configuration seule (b) est très bien. Analyser les logs (e) est une bonne première étape."
-            },
-            {
-                time: "10:05", type: "Ticket GLPI", from: "Utilisateur (Nantes)", title: "Problème de connexion VPN",
-                description: "De Nantes, je n'arrive pas à me connecter au VPN. Erreur 'Le serveur distant ne répond pas'.",
-                options: { a: "Lui dire de vérifier sa connexion Internet.", b: "Vérifier l'état du service VPN sur le pare-feu et les logs.", c: "Lui demander de réinstaller le client VPN.", d: "Lui dire d'attendre d'être à Paris.", e: "Vérifier que son compte n'est pas bloqué.", f: "Lui demander d'essayer en 4G.", g: "Vérifier si d'autres utilisateurs ont le problème.", h: "Redémarrer le serveur VPN.", i: "Lui envoyer la procédure VPN.", j: "Vérifier que son client VPN est à jour." },
-                answers: { veryGood: 'b', good: 'g', acceptable: 'a' },
-                explanation: "Vérifier l'infrastructure centrale (b) est prioritaire. Savoir si le problème est généralisé (g) est la deuxième meilleure étape. Les vérifications côté client (a) sont acceptables mais moins prioritaires."
-            },
-            {
-                time: "10:15", type: "Ticket GLPI", from: "Utilisateur", title: "Synchronisation OneDrive bloquée",
-                description: "Mon OneDrive Entreprise est bloqué sur 'Traitement des modifications' depuis hier et une icône de cadenas est apparue sur certains fichiers.",
-                options: { a: "Lui dire de redémarrer son PC.", b: "Vérifier si les noms de fichiers ou les chemins d'accès ne sont pas trop longs ou ne contiennent pas de caractères non autorisés.", c: "Lui dire de se déconnecter et de se reconnecter à son compte OneDrive.", d: "Vérifier l'espace de stockage disponible sur son OneDrive Online.", e: "Mettre en pause et reprendre la synchronisation.", f: "Utiliser le bouton 'Réinitialiser' de OneDrive.", g: "Vérifier si les fichiers bloqués ne sont pas trop volumineux.", h: "Lui demander de libérer de l'espace sur son disque local.", i: "Combiner la vérification des noms de fichiers (b), de l'espace de stockage (d) et la réinitialisation (f).", j: "Lui dire d'utiliser SharePoint à la place." },
-                answers: { veryGood: 'i', good: 'b', acceptable: 'f' },
-                explanation: "L'approche complète (i) est la meilleure. Les problèmes de noms de fichiers (b) sont une cause très fréquente de blocage. La réinitialisation (f) est une solution efficace mais plus radicale."
-            },
-            {
-                time: "10:30", type: "Ticket GLPI", from: "Automate", title: "ALERTE : Espace disque faible sur SRV-FICHIERS",
-                description: "Le lecteur D: du serveur 'SRV-FICHIERS' a moins de 5% d'espace libre.",
-                options: { a: "Ignorer l'alerte.", b: "Utiliser un outil comme TreeSize pour identifier les gros dossiers et contacter les propriétaires.", c: "Redémarrer le serveur.", d: "Augmenter la taille du disque sans analyse.", e: "Lancer un nettoyage de disque Windows.", f: "Envoyer un email à tous.", g: "Vérifier l'espace pris par les clichés instantanés.", h: "Activer la déduplication.", i: "Supprimer les fichiers les plus anciens.", j: "Archiver les données de plus d'un an après validation." },
-                answers: { veryGood: 'b', good: 'j', acceptable: 'g' },
-                explanation: "L'analyse avant action (b) est cruciale. L'archivage (j) est une excellente solution à moyen terme. Vérifier les clichés instantanés (g) est une cause fréquente."
-            },
-            {
-                time: "10:40", type: "Appel Téléphonique", from: "Commercial", title: "Problème 4G sur mobile pro",
-                description: "Je suis en clientèle et je n'ai plus du tout de data sur mon iPhone pro. J'ai essayé d'activer/désactiver le mode avion. Que puis-je faire ?",
-                options: { a: "Lui dire de se connecter au Wi-Fi du client.", b: "Vérifier dans l'outil de gestion de flotte mobile (MDM/Intune) si la ligne est bien active et si la consommation de data n'a pas dépassé le plafond.", c: "Lui dire de redémarrer le téléphone.", d: "Lui conseiller de contacter l'opérateur téléphonique directement.", e: "Vérifier que les 'Données cellulaires' sont bien activées dans les réglages de l'iPhone.", f: "Lui faire réinitialiser les réglages réseau.", g: "Lui demander de retirer et remettre la carte SIM.", h: "Vérifier qu'il n'est pas dans une zone sans couverture.", i: "Combiner la vérification de la ligne (b) et le guider sur les réglages de base (e).", j: "Planifier un échange de son téléphone." },
-                answers: { veryGood: 'i', good: 'b', acceptable: 'e' },
-                explanation: "L'approche combinée (i) est la plus efficace. Vérifier l'état de la ligne côté administration (b) est l'étape la plus importante. Guider l'utilisateur sur les réglages de base (e) est un bon réflexe."
-            },
-            {
-                time: "10:50", type: "Notification Système", from: "Veeam Backup", title: "Échec de sauvegarde",
-                description: "Le job de sauvegarde pour la VM 'SRV-FICHIERS' a échoué la nuit dernière. Erreur : 'Processing SRV-FICHIERS Error: VSS: L'enregistreur a rencontré une erreur non temporaire.'",
-                options: { a: "Relancer le job de sauvegarde manuellement en journée.", b: "Vérifier les services VSS sur la VM 'SRV-FICHIERS' et consulter l'observateur d'événements.", c: "Ignorer, ça arrive.", d: "Supprimer la sauvegarde et en recréer une.", e: "Redémarrer la VM 'SRV-FICHIERS'.", f: "Vérifier l'espace sur le disque de destination des sauvegardes.", g: "Mettre à jour les agents de sauvegarde.", h: "Contacter le support de l'outil de sauvegarde.", i: "Désactiver VSS pour cette sauvegarde.", j: "Vérifier si une autre tâche (ex: mise à jour) tournait en même temps." },
-                answers: { veryGood: 'b', good: 'e', acceptable: 'f' },
-                explanation: "L'erreur VSS est explicite. Le diagnostic doit commencer sur la VM concernée (b). Un redémarrage (e) peut résoudre un problème VSS bloqué. Vérifier l'espace de destination (f) est un prérequis de base."
-            },
-            {
-                time: "11:10", type: "Email", from: "Responsable SI", title: "Préparation GPO",
-                description: "Prépare une GPO qui verrouille la session après 10 min d'inactivité. Applique-la sur l'OU de test.",
-                options: { a: "Lier la GPO à la racine du domaine.", b: "Créer, configurer et lier la GPO à l'OU 'TEST'.", c: "Répondre que ce n'est pas possible.", d: "Installer un logiciel tiers.", e: "Créer la GPO et attendre la validation avant de lier.", f: "Rechercher la documentation Microsoft.", g: "Appliquer la GPO à l'OU 'Utilisateurs'.", h: "Faire un script PowerShell.", i: "Demander pourquoi.", j: "Créer, lier à l'OU de test, puis utiliser `gpupdate /force` sur un poste de test pour valider." },
-                answers: { veryGood: 'j', good: 'b', acceptable: 'f' },
-                explanation: "L'action (j) est la plus complète : création, lien et validation. L'action (b) est correcte mais omet la validation. Chercher la documentation (f) est une bonne pratique."
-            },
-            {
-                time: "11:25", type: "Ticket GLPI", from: "Utilisateur", title: "'Fichier corrompu' sur lecteur réseau",
-                description: "Un fichier Excel très important sur le lecteur partagé 'Commun' ne s'ouvre plus et affiche un message de corruption. J'y ai travaillé hier soir.",
-                options: { a: "Lui dire que le fichier est perdu.", b: "Restaurer la version précédente du fichier via les clichés instantanés (Shadow Copy).", c: "Demander à un collègue d'essayer d'ouvrir le fichier.", d: "Lancer une réparation du fichier avec l'outil intégré d'Excel.", e: "Vérifier les permissions sur le fichier.", f: "Redémarrer le serveur de fichiers.", g: "Demander une restauration depuis la sauvegarde de la nuit dernière.", h: "Copier le fichier sur son bureau pour essayer de l'ouvrir en local.", i: "Combiner la restauration via clichés instantanés (b) et la tentative d'ouverture par un collègue (c).", j: "Vérifier les logs du serveur de fichiers." },
-                answers: { veryGood: 'b', good: 'i', acceptable: 'd' },
-                explanation: "Les clichés instantanés (b) sont la solution la plus rapide et efficace pour ce type de problème. L'approche combinée (i) est excellente car elle permet de valider que le problème n'est pas lié au profil de l'utilisateur. La réparation Excel (d) peut parfois fonctionner."
-            },
-            {
-                time: "11:45", type: "Appel Téléphonique", from: "Comptabilité", title: "Logiciel métier ne se lance pas",
-                description: "Notre logiciel 'SAGE' ne se lance plus sur aucun poste. Erreur de connexion à la base de données.",
-                options: { a: "Demander de redémarrer les PC.", b: "Vérifier l'état du serveur de base de données (ping, services SQL, logs).", c: "Réinstaller les clients SAGE.", d: "Contacter le support SAGE.", e: "Vérifier le serveur de licences.", f: "Demander si une mise à jour a été faite.", g: "Redémarrer le serveur de BDD.", h: "Vérifier la connectivité réseau vers le serveur.", i: "Créer un ticket dans GLPI.", j: "Vérifier les sauvegardes de la BDD." },
-                answers: { veryGood: 'b', good: 'h', acceptable: 'f' },
-                explanation: "Une panne collective pointe vers un problème serveur. Vérifier l'état du serveur (b) est la priorité. Tester la connectivité (h) est un excellent diagnostic. Demander s'il y a eu des changements (f) est une question clé."
-            },
-            {
-                time: "12:00", type: "Email", from: "Responsable SI", title: "Vérification des règles de pare-feu",
-                description: "L'éditeur de notre nouvelle application de GED nous demande d'ouvrir le port TCP 8443 en sortie depuis notre réseau vers leur serveur public 203.0.113.50. Peux-tu vérifier et créer la règle si besoin ?",
-                options: { a: "Ouvrir tous les ports vers cette destination.", b: "Créer la règle sur le pare-feu en spécifiant le port, la destination, et en l'appliquant uniquement aux serveurs qui utiliseront l'application.", c: "Répondre que pour des raisons de sécurité, on n'ouvre aucun port.", d: "Créer la règle en autorisant tout le trafic sortant vers le port 8443.", e: "Demander plus d'informations sur le type de flux.", f: "Vérifier les règles existantes pour voir si ce flux n'est pas déjà autorisé.", g: "Créer une règle 'Any/Any' temporairement.", h: "Documenter la demande et la règle avant de l'appliquer.", i: "Combiner la documentation (h), la vérification (f) et la création de la règle spécifique (b).", j: "Contacter l'éditeur pour leur demander d'utiliser un port standard comme le 443." },
-                answers: { veryGood: 'i', good: 'b', acceptable: 'j' },
-                explanation: "La démarche complète et sécurisée (i) est idéale. Créer la règle spécifique (b) est l'action technique correcte. Suggérer l'utilisation d'un port standard (j) est une bonne pratique de sécurité."
-            },
-            {
-                time: "12:15", type: "Email", from: "Un utilisateur", title: "Fwd: Vous avez gagné un iPhone !",
-                description: "J'ai reçu cet email, est-ce une campagne officielle ? Je n'ai pas cliqué.",
-                options: { a: "Lui dire de le supprimer.", b: "Le féliciter, confirmer que c'est du phishing, demander de supprimer et envoyer un rappel de sécurité à tous.", c: "Cliquer sur le lien dans une sandbox.", d: "Lui demander de transférer à tous.", e: "Bloquer l'expéditeur et rechercher des emails similaires.", f: "Signaler comme phishing via Outlook.", g: "Lui demander de transférer en pièce jointe.", h: "Lui répondre avec un lien vers la charte IT.", i: "Ignorer l'email.", j: "Chercher l'expéditeur sur Google." },
-                answers: { veryGood: 'b', good: 'e', acceptable: 'f' },
-                explanation: "La meilleure réponse (b) combine réponse, prévention et formation. Utiliser les outils techniques (e) est une très bonne action proactive. Signaler via Outlook (f) est une action simple et efficace."
-            },
-            {
-                time: "13:30", type: "Ticket GLPI", from: "Utilisateur", title: "Pas de réseau à mon nouveau bureau",
-                description: "Je viens de m'installer à un nouveau bureau, j'ai tout branché mais je n'ai pas de connexion réseau. Le voyant sur la prise murale est éteint.",
-                options: { a: "Lui dire de changer de câble réseau.", b: "Vérifier si le port sur le switch est activé et dans le bon VLAN.", c: "Lui demander de redémarrer son ordinateur.", d: "Lui dire que ce bureau n'a pas de réseau.", e: "Lui demander le numéro de la prise murale.", f: "Se déplacer avec un testeur de câble.", g: "Lui demander de vérifier son adresse IP.", h: "Activer le port correspondant sur le panneau de brassage.", i: "Combiner la demande du numéro de prise (e) et l'activation sur le switch (b).", j: "Lui suggérer d'utiliser le Wi-Fi." },
-                answers: { veryGood: 'i', good: 'b', acceptable: 'e' },
-                explanation: "La démarche complète (i) est la plus efficace. Activer le port sur le switch (b) est l'action technique clé, mais il faut savoir quel port. Demander le numéro de prise (e) est donc un prérequis indispensable."
-            },
-            {
-                time: "13:45", type: "Ticket GLPI", from: "Utilisateur", title: "Wi-Fi lent dans la salle de pause",
-                description: "Le Wi-Fi est extrêmement lent dans la salle de pause, alors qu'il fonctionne bien dans les bureaux. C'est difficile de regarder des vidéos pendant notre pause.",
-                options: { a: "Leur dire que le Wi-Fi n'est pas fait pour regarder des vidéos.", b: "Vérifier la borne Wi-Fi la plus proche de la salle de pause sur le contrôleur Wi-Fi (nombre de clients, interférences, canal utilisé).", c: "Redémarrer toutes les bornes Wi-Fi de l'étage.", d: "Augmenter la puissance de transmission de la borne.", e: "Se déplacer dans la salle de pause avec un analyseur Wi-Fi pour mesurer la force du signal.", f: "Vérifier si un appareil ne sature pas la bande passante (ex: téléchargement P2P).", g: "Proposer d'installer une nouvelle borne Wi-Fi.", h: "Vérifier si la borne est bien alimentée (PoE).", i: "Combiner l'analyse sur le contrôleur (b) et l'analyse sur site (e).", j: "Mettre en place une politique de limitation de la bande passante pour le streaming vidéo." },
-                answers: { veryGood: 'i', good: 'b', acceptable: 'e' },
-                explanation: "L'approche combinée (i) est la plus rigoureuse. L'analyse centralisée (b) est la première étape logique. L'analyse sur site (e) permet de confirmer le diagnostic."
-            },
-            {
-                time: "14:05", type: "Ticket GLPI", from: "Nouveau Stagiaire", title: "Accès dossier partagé",
-                description: "Je n'arrive pas à accéder au dossier 'Marketing'. Mon manager m'a dit que j'en avais besoin.",
-                options: { a: "L'ajouter directement aux permissions NTFS.", b: "Vérifier le groupe de sécurité AD du dossier et y ajouter le stagiaire.", c: "Lui donner 'Contrôle Total'.", d: "Lui dire que les stagiaires n'ont pas d'accès.", e: "Demander une confirmation écrite du manager.", f: "Créer un nouveau groupe.", g: "Vérifier ses droits effectifs.", h: "Lui expliquer la procédure GLPI.", i: "Cloner les droits d'un collègue.", j: "Vérifier si le lecteur réseau est mappé." },
-                answers: { veryGood: 'b', good: 'e', acceptable: 'i' },
-                explanation: "La gestion des droits par groupe (b) est la règle. Demander une validation managériale (e) est une étape de sécurité essentielle. Cloner les droits (i) est une solution rapide et acceptable."
-            },
-            {
-                time: "14:15", type: "Notification Système", from: "Azure AD Connect", title: "Erreur de synchronisation",
-                description: "Le service de synchronisation Azure AD Connect Health signale des erreurs de type 'AttributeValueMustBeUnique' pour plusieurs objets utilisateurs.",
-                options: { a: "Ignorer, ce n'est pas bloquant.", b: "Lancer l'outil 'IdFix' pour identifier et corriger les attributs dupliqués (généralement proxyAddresses ou userPrincipalName) dans l'AD local.", c: "Supprimer les utilisateurs en erreur dans l'AD local.", d: "Désactiver et réactiver la synchronisation.", e: "Forcer une synchronisation complète avec `Start-ADSyncSyncCycle -PolicyType Initial`.", f: "Vérifier les logs de l'application sur le serveur Azure AD Connect.", g: "Contacter le support Microsoft.", h: "Modifier manuellement les attributs des utilisateurs concernés dans l'AD.", i: "Vérifier que les UPN des utilisateurs correspondent bien à leurs adresses email.", j: "Combiner la consultation des logs (f) et l'utilisation d'IdFix (b)." },
-                answers: { veryGood: 'b', good: 'j', acceptable: 'h' },
-                explanation: "L'outil IdFix (b) est spécifiquement conçu pour ce type de problème et est la solution recommandée. L'approche combinée (j) est encore meilleure. Modifier manuellement (h) fonctionne mais est moins efficace sur un grand nombre d'objets."
-            },
-            {
-                time: "14:30", type: "Ticket GLPI", from: "Chef de projet", title: "Création site SharePoint",
-                description: "Besoin d'un site SharePoint pour le projet 'ALPHA' avec bibliothèque, calendrier, tâches.",
-                options: { a: "Créer le site avec 'Contrôle total' pour tous.", b: "Contacter le chef de projet, créer un site d'équipe, configurer les permissions et les apps.", c: "Leur dire d'utiliser un dossier partagé.", d: "Répondre que ce n'est pas du ressort de l'IT.", e: "Créer un groupe Microsoft 365 pour le projet.", f: "Leur envoyer la documentation Microsoft.", g: "Planifier une réunion pour cadrer le besoin.", h: "Créer un site de communication.", i: "Vérifier si un site n'existe pas déjà.", j: "Proposer d'utiliser Microsoft Teams." },
-                answers: { veryGood: 'e', good: 'j', acceptable: 'b' },
-                explanation: "Créer un groupe M365 (e) est la méthode moderne et la plus intégrée. Proposer Teams (j) est une excellente alternative. L'action (b) est la méthode 'classique' et reste correcte."
-            },
-            {
-                time: "14:45", type: "Email", from: "Manager", title: "Extraire des informations d'un VBScript",
-                description: "J'ai retrouvé ce vieux script VBS sur un partage. Peux-tu me dire ce qu'il fait avant qu'on ne le supprime ? Je ne veux pas l'exécuter.",
-                options: { a: "Le supprimer directement, c'est sûrement obsolète.", b: "L'ouvrir dans un éditeur de texte (Notepad++) et lire le code pour comprendre sa logique (création d'objets, boucles, actions sur le système de fichiers...).", c: "L'exécuter sur son propre poste pour voir ce qu'il fait.", d: "Répondre que vous ne connaissez pas le VBScript.", e: "L'exécuter dans une machine virtuelle de test isolée.", f: "Chercher des bouts de code du script sur Google.", g: "Demander à un développeur de le regarder.", h: "Faire une analyse antivirus du fichier.", i: "Combiner la lecture du code (b) et l'exécution en sandbox (e) pour une analyse complète.", j: "Le renommer en .txt pour éviter une exécution accidentelle." },
-                answers: { veryGood: 'i', good: 'b', acceptable: 'e' },
-                explanation: "L'approche la plus sûre et complète est de combiner la lecture et l'exécution en environnement contrôlé (i). Lire le code (b) est l'étape essentielle pour un technicien. L'exécution en sandbox (e) est une excellente mesure de sécurité."
-            },
-            {
-                time: "15:00", type: "Notification Système", from: "Antivirus", title: "Activité suspecte détectée",
-                description: "Un 'Potentially Unwanted App' (PUA) a été détecté et mis en quarantaine sur PC-NANTES-05.",
-                options: { a: "Supprimer le fichier sans investiguer.", b: "Isoler le poste, contacter l'utilisateur, et lancer une analyse complète.", c: "Restaurer le fichier.", d: "Ignorer, l'antivirus a agi.", e: "Vérifier la nature du PUA sur VirusTotal.", f: "Consulter les logs de l'antivirus.", g: "Vérifier si l'alerte est sur d'autres postes.", h: "Formater et réinstaller le poste.", i: "Appeler l'utilisateur pour le réprimander.", j: "Lancer une analyse sur les serveurs." },
-                answers: { veryGood: 'b', good: 'e', acceptable: 'f' },
-                explanation: "La sécurité prime. Isoler, contacter et analyser (b) est la procédure complète. Analyser le fichier sur VirusTotal (e) est une excellente étape d'investigation. Consulter les logs (f) est un diagnostic de base."
-            },
-            {
-                time: "15:15", type: "Ticket GLPI", from: "Utilisateur", title: "Demande d'installation logiciel non standard",
-                description: "Bonjour, j'aurais besoin d'installer la suite Adobe Creative Cloud pour un besoin ponctuel du service marketing. Est-ce possible ?",
-                options: { a: "Refuser, ce n'est pas dans le catalogue standard.", b: "Vérifier si l'entreprise dispose de licences Adobe CC disponibles et demander une validation managériale et/ou du RSI pour l'attribution.", c: "Lui dire d'acheter une licence avec sa carte de crédit.", d: "Lui donner les droits admin pour qu'il l'installe lui-même.", e: "Installer une version d'essai.", f: "Proposer une alternative gratuite comme GIMP ou Inkscape.", g: "Contacter le service achat pour obtenir un devis.", h: "Créer un paquet d'installation pour un déploiement via Intune/SCCM.", i: "Vérifier la compatibilité du logiciel avec le poste de l'utilisateur.", j: "Combiner la vérification des licences (b) et la validation managériale." },
-                answers: { veryGood: 'j', good: 'b', acceptable: 'g' },
-                explanation: "Une demande de logiciel payant doit suivre un processus. La démarche complète (j) est la meilleure. Vérifier les licences et demander la validation (b) est l'action correcte. Contacter les achats (g) est une étape logique si aucune licence n'est disponible."
-            },
-            {
-                time: "15:30", type: "Notification Système", from: "Serveur DHCP", title: "Étendue DHCP presque pleine",
-                description: "L'étendue 192.168.1.0/24 a utilisé 95% de ses adresses IP.",
-                options: { a: "Réduire la durée des baux à 1 heure.", b: "Vérifier les appareils non autorisés et analyser la pertinence d'agrandir la plage.", c: "Redémarrer le service DHCP.", d: "Ne rien faire.", e: "Documenter et surveiller.", f: "Ajouter une nouvelle étendue.", g: "Vérifier les réservations DHCP inutilisées.", h: "Passer le masque en /23.", i: "Débrancher des appareils.", j: "Vérifier les logs du switch." },
-                answers: { veryGood: 'b', good: 'h', acceptable: 'a' },
-                explanation: "Investiguer la cause (b) est la seule bonne approche à long terme. Agrandir la plage (h) est une solution technique efficace mais doit être planifiée. Réduire les baux (a) est une solution temporaire acceptable."
-            },
-            {
-                time: "15:45", type: "Email", from: "Responsable SI", title: "Demande de script Python",
-                description: "Bonjour, j'ai un fichier de log Apache de plusieurs Go. Peux-tu me faire un script Python qui l'ouvre, et qui compte le nombre de requêtes pour chaque adresse IP (les IPs sont en début de ligne) ?",
-                options: { a: "Dire que PowerShell est mieux pour ça.", b: "Proposer un script Python qui lit le fichier ligne par ligne, utilise une expression régulière pour extraire l'IP, et un dictionnaire pour compter les occurrences.", c: "Essayer d'ouvrir le fichier avec Excel.", d: "Dire que c'est une tâche de développeur, pas de technicien systèmes et réseaux.", e: "Chercher une solution sur Stack Overflow.", f: "Écrire un script qui charge tout le fichier en mémoire d'un coup.", g: "Proposer d'utiliser la commande `grep` ou `awk` sous Linux/WSL car ce serait plus rapide.", h: "Demander un exemple de ligne de log.", i: "Utiliser la librairie `collections.Counter` pour simplifier le comptage.", j: "Combiner la demande d'exemple (h) et la proposition de script avec un dictionnaire (b) et `collections.Counter` (i)." },
-                answers: { veryGood: 'j', good: 'b', acceptable: 'g' },
-                explanation: "La réponse (j) est la plus complète et montre une connaissance approfondie de Python. La proposition de base (b) est très bonne. Suggérer des outils plus adaptés comme awk/grep (g) est également une excellente preuve de compétence."
-            },
-            {
-                time: "16:00", type: "Appel Téléphonique", from: "Utilisateur paniqué", title: "Mon PC bippe et ne démarre pas !",
-                description: "Mon PC ne démarre pas, l'écran reste noir et j'entends 3 bips, une pause, 3 bips...",
-                options: { a: "Lui dire que le PC est mort.", b: "Lui demander de débrancher/rebrancher.", c: "Rechercher la signification des codes de bips du fabricant pour diagnostiquer la panne (probablement la RAM).", d: "Lui conseiller de taper sur le PC.", e: "Lui demander le modèle exact du PC.", f: "Planifier une intervention pour tester la RAM.", g: "Lui demander s'il a installé un nouveau matériel.", h: "Lui dire d'ouvrir le capot.", i: "Vérifier si le moniteur est allumé.", j: "Lui proposer de prendre un café." },
-                answers: { veryGood: 'c', good: 'e', acceptable: 'f' },
-                explanation: "Les bips sont des codes de diagnostic. Les rechercher (c) est la méthode professionnelle. Pour cela, il faut le modèle (e). Planifier l'intervention sur la RAM (f) est l'étape suivante logique."
-            },
-            {
-                time: "16:15", type: "Ticket GLPI", from: "Utilisateur", title: "Besoin de droits admin",
-                description: "Bonjour, pour installer le logiciel 'SuperUtilitaire' dont j'ai absolument besoin, il me faut les droits d'administrateur local. Pouvez-vous me les donner ?",
-                options: { a: "Lui donner les droits admin local de manière permanente.", b: "Refuser catégoriquement.", c: "Demander la validation de son manager et du RSI.", d: "Lui proposer de prendre la main à distance pour taper le mot de passe administrateur et installer le logiciel pour lui.", e: "Vérifier si le logiciel peut être déployé via une GPO ou Intune.", f: "Lui donner les droits admin pour 1 heure seulement.", g: "Analyser le logiciel pour s'assurer qu'il ne présente pas de risque de sécurité.", h: "Combiner la validation (c) et l'analyse de sécurité (g) avant de l'installer pour lui (d).", i: "Lui demander pourquoi il a 'absolument' besoin de ce logiciel.", j: "L'ajouter au groupe 'Admins du domaine'." },
-                answers: { veryGood: 'h', good: 'e', acceptable: 'd' },
-                explanation: "La sécurité est primordiale. La démarche complète (h) est la plus rigoureuse. Chercher à déployer proprement (e) est une excellente alternative. L'installer pour lui (d) est acceptable mais moins sécurisé si une analyse n'est pas faite."
-            },
-            {
-                time: "16:30", type: "Email", from: "Responsable SI", title: "Script pour inventaire",
-                description: "Peux-tu me faire un script PowerShell qui exporte en CSV le nom, l'OS et la RAM de tous les PC du domaine ?",
-                options: { a: "Dire que c'est trop complexe.", b: "Proposer un script utilisant `Get-ADComputer` et `Export-Csv`.", c: "Se connecter à chaque PC.", d: "Proposer un script en Python.", e: "Demander si d'autres informations sont nécessaires.", f: "Écrire le script, le tester, et l'envoyer avec des commentaires.", g: "Chercher un script sur internet.", h: "Utiliser `Get-CimInstance` en boucle.", i: "Répondre que GLPI peut le faire.", j: "Planifier une tâche qui exécute le script." },
-                answers: { veryGood: 'f', good: 'b', acceptable: 'h' },
-                explanation: "Fournir un script testé et commenté (f) est la réponse la plus professionnelle. Proposer la bonne commande (b) montre la connaissance technique. Utiliser Get-CimInstance (h) est une autre méthode valide."
-            },
-            {
-                time: "16:45", type: "Ticket GLPI", from: "Utilisateur", title: "Outlook ne se connecte plus",
-                description: "Mon Outlook n'arrête pas de me demander mon mot de passe en boucle et ne se connecte plus à Office 365. Mon Teams et mon OneDrive fonctionnent bien.",
-                options: { a: "Lui dire de réinitialiser son mot de passe.", b: "Supprimer et recréer son profil Outlook.", c: "Vérifier l'état de santé du service Exchange Online dans le portail d'admin M365.", d: "Lancer l'outil de diagnostic et de réparation de Microsoft (SaRA).", e: "Vider le gestionnaire d'identification Windows (Credential Manager).", f: "Réparer l'installation d'Office.", g: "Lui dire d'utiliser le webmail (OWA).", h: "Vérifier si l'authentification moderne est bien activée sur le tenant.", i: "Combiner la suppression des identifiants (e) et la recréation du profil (b).", j: "Mettre à jour Outlook." },
-                answers: { veryGood: 'd', good: 'i', acceptable: 'e' },
-                explanation: "L'outil SaRA (d) est spécifiquement conçu par Microsoft pour ce genre de panne et est très efficace. La combinaison (i) est la méthode manuelle la plus courante. Vider le gestionnaire d'identification (e) résout souvent le problème seul."
-            },
-            {
-                time: "17:00", type: "Email", from: "Responsable SI", title: "Problème DNS intermittent",
-                description: "Plusieurs utilisateurs se plaignent que des sites internes sont parfois inaccessibles, alors qu'ils répondent au ping via leur IP. Problème de DNS ?",
-                options: { a: "Demander de vider leur cache DNS.", b: "Vérifier les logs DNS sur les DC et utiliser `nslookup`.", c: "Mettre les DNS de Google sur les postes.", d: "Redémarrer tous les DC.", e: "Vérifier les redirecteurs DNS.", f: "Vérifier la configuration DHCP.", g: "Vérifier la réplication AD avec `repadmin /showrepl`.", h: "Utiliser le fichier 'hosts'.", i: "Vider le cache du serveur DNS.", j: "Désactiver l'IPv6." },
-                answers: { veryGood: 'b', good: 'g', acceptable: 'i' },
-                explanation: "Un diagnostic complet sur les serveurs DNS (b) est la meilleure approche. Les problèmes de DNS dans un AD sont souvent liés à la réplication (g). Vider le cache du serveur (i) peut résoudre le problème temporairement."
-            },
-        {
-            time: "17:15", type: "Ticket GLPI", from: "RH", title: "Création d'une boîte mail partagée",
-            description: "Bonjour, pourriez-vous créer une boîte mail partagée 'candidatures@notre-entreprise.com' et donner l'accès à 3 personnes du service RH ?",
-            options: { a: "Créer un nouvel utilisateur 'candidatures' avec une licence.", b: "Créer une boîte aux lettres partagée depuis le centre d'administration Exchange Online et déléguer les accès 'FullAccess' et 'Send As'.", c: "Créer un groupe de distribution.", d: "Créer une liste de contacts.", e: "Créer un groupe Microsoft 365.", f: "Leur dire de créer un dossier dans une de leurs boîtes mail et de le partager.", g: "Leur demander de justifier ce besoin.", h: "Créer la boîte partagée et leur envoyer la documentation pour l'ajouter à leur Outlook.", i: "Combiner la création (b) et l'envoi de la documentation (h).", j: "Créer un canal privé dans le Teams des RH." },
-                answers: { veryGood: 'i', good: 'b', acceptable: 'e' },
-                explanation: "La démarche complète (i) est la meilleure. La création technique (b) est l'action principale. Créer un groupe M365 (e) est une alternative viable qui offre plus d'outils, mais ce n'est pas ce qui est demandé."
-        },
-        {
-            time: "17:30", type: "Ticket GLPI", from: "Service RH", title: "Fin de contrat",
-            description: "Le contrat de M. Martin se termine ce vendredi soir. Merci de procéder aux actions nécessaires.",
-            options: { a: "Attendre lundi.", b: "Désactiver son compte AD, sauvegarder ses données, et planifier la récupération du matériel.", c: "Supprimer son compte AD.", d: "Ne rien faire.", e: "Changer son mot de passe.", f: "Transférer ses fichiers à son manager.", g: "Désactiver son compte AD uniquement.", h: "Planifier un script pour désactiver le compte vendredi à 18h00.", i: "Lui retirer ses licences O365.", j: "Vérifier s'il avait des accès spécifiques (VPN, admin...) à révoquer." },
-            answers: { veryGood: 'h', good: 'b', acceptable: 'j' },
-            explanation: "Automatiser la désactivation (h) est la solution la plus propre. Le faire manuellement (b) est très bien. Penser à vérifier les accès spéciaux (j) est un excellent réflexe de sécurité."
-        },
-        {
-            time: "17:45", type: "Appel Téléphonique", from: "Utilisateur (Bordeaux)", title: "Qualité visioconférence",
-            description: "Bonjour, nous sommes dans la salle de réunion de Bordeaux, et la qualité de notre appel Teams avec Paris est très mauvaise, l'image se fige constamment.",
-            options: { a: "Leur dire de couper leur caméra.", b: "Lancer un test de bande passante (speedtest) sur un PC dans la même salle à Bordeaux.", c: "Vérifier l'utilisation de la bande passante sur le pare-feu du site de Bordeaux.", d: "Leur dire que le réseau est mauvais à Bordeaux.", e: "Vérifier l'état de santé du service Teams dans le portail d'administration M365.", f: "Leur demander de redémarrer l'équipement de visioconférence.", g: "Mettre en place de la QoS (Qualité de Service) pour prioriser le trafic Teams.", h: "Combiner la vérification de l'état du service (e) et l'analyse de la bande passante locale (c).", i: "Accuser le réseau du site de Paris.", j: "Leur proposer de continuer en audio seulement." },
-            answers: { veryGood: 'h', good: 'c', acceptable: 'b' },
-            explanation: "La meilleure approche (h) combine la vérification du service global et l'analyse locale. Analyser le pare-feu (c) est une excellente action technique. Un simple speedtest (b) est un bon début mais moins précis."
-        },
-        {
-            time: "18:00", type: "Email", from: "Responsable SI", title: "Préparation déplacement Bordeaux",
-            description: "N'oublie pas que tu te déplaces à Bordeaux demain. Peux-tu me lister les actions que tu as prévues sur place ?",
-            options: { a: "Y aller les mains dans les poches et voir sur place.", b: "Consulter les tickets GLPI ouverts pour le site de Bordeaux et contacter les utilisateurs pour planifier des rendez-vous.", c: "Prévoir de faire un inventaire du stock de matériel sur place.", d: "Prévoir une session de formation rapide pour les utilisateurs sur une nouvelle fonctionnalité.", e: "Vérifier l'état des serveurs et de la salle technique locale.", f: "Combiner la revue des tickets (b), l'inventaire (c) et la vérification de la salle technique (e).", g: "Prévoir uniquement de remplacer le matériel défectueux.", h: "Demander aux utilisateurs de Bordeaux de lister leurs problèmes.", i: "Imprimer la liste des tickets.", j: "Prévoir une réunion avec le responsable du site de Bordeaux pour faire le point." },
-            answers: { veryGood: 'f', good: 'b', acceptable: 'j' },
-            explanation: "Un déplacement doit être préparé. La réponse (f) est la plus complète et proactive. La revue des tickets (b) est le minimum syndical. Faire un point avec le responsable local (j) est une très bonne initiative."
+             { time: "09:02", type: "Ticket GLPI", from: "Céline D.", title: "Problème d'impression", description: "Bonjour, je n'arrive pas à imprimer sur l'imprimante 'COMPTA-COLOR'. D'autres collègues y arrivent. J'ai déjà redémarré mon PC. Que faire ?", options: { a: "Redémarrer le serveur d'impression.", b: "Vérifier la connectivité réseau du poste.", c: "Prendre la main à distance pour réinstaller le pilote.", d: "Lui demander de changer de bureau.", e: "Guider l'utilisatrice pour qu'elle réinstalle l'imprimante.", f: "Vérifier si le service 'Spouleur d'impression' est démarré.", g: "Lui demander d'envoyer son document à un collègue.", h: "Vérifier si l'imprimante a du papier.", i: "Supprimer le profil Windows de l'utilisatrice.", j: "Escalader le ticket au Responsable SI." }, answers: { veryGood: 'c', good: 'e', acceptable: 'f' }, explanation: "La réinstallation du pilote (c) est l'action la plus directe. Guider l'utilisateur (e) est bien mais moins rapide. Vérifier le spouleur (f) est un diagnostic valide mais le redémarrage du PC l'a probablement déjà fait." },
+             { time: "09:15", type: "Email", from: "Alain T.", title: "URGENT - PC très lent", description: "Mon ordinateur est incroyablement lent, je ne peux pas travailler. J'ai une présentation à finir pour 11h.", options: { a: "Lui dire de créer un ticket GLPI.", b: "Prendre la main, vérifier le gestionnaire des tâches et lancer un scan antivirus rapide.", c: "Lui conseiller de redémarrer plusieurs fois.", d: "Planifier une réinstallation pour la semaine prochaine.", e: "Lancer une défragmentation du disque.", f: "Vérifier l'espace disque disponible.", g: "Lui demander de fermer des applications.", h: "Lui proposer d'utiliser un autre PC.", i: "Vérifier les mises à jour Windows en attente.", j: "Se déplacer à son bureau pour un diagnostic physique." }, answers: { veryGood: 'b', good: 'j', acceptable: 'f' }, explanation: "L'action (b) est la plus complète et efficace à distance. Se déplacer (j) est bien mais pas toujours nécessaire. Vérifier l'espace disque (f) est un bon réflexe." },
+             { time: "09:25", type: "Ticket GLPI", from: "Directeur Commercial", title: "Téléphone pro perdu/volé", description: "Je pense avoir perdu mon téléphone professionnel ce matin. Il contient des données sensibles. Que faut-il faire de toute urgence ?", options: { a: "Lui dire de chercher mieux.", b: "Lancer immédiatement la procédure d'effacement à distance via Intune/MDM.", c: "Commander un nouveau téléphone.", d: "Bloquer la ligne auprès de l'opérateur.", e: "Lui demander de porter plainte.", f: "Désactiver son compte M365.", g: "Forcer la déconnexion de ses sessions M365.", h: "Combiner l'effacement à distance (Intune) et le blocage de la ligne (opérateur).", i: "Attendre la fin de la journée.", j: "Vérifier la dernière position GPS du téléphone." }, answers: { veryGood: 'h', good: 'b', acceptable: 'd' }, explanation: "La sécurité des données est la priorité. L'action combinée (h) est la plus complète. L'effacement à distance seul (b) est excellent. Le blocage de la ligne (d) est acceptable mais ne protège pas les données sur le téléphone." },
+             { time: "09:35", type: "Email", from: "RH", title: "Préparation arrivée nouveau collaborateur", description: "Bonjour, M. Durand nous rejoint lundi prochain en tant que commercial. Pouvez-vous préparer son compte et son matériel ?", options: { a: "Attendre lundi matin pour tout créer.", b: "Créer le compte AD, la boîte mail, l'ajouter aux groupes de sécurité des commerciaux, et préparer un PC portable du stock.", c: "Demander à M. Durand de vous appeler lundi.", d: "Répondre que vous n'avez pas de PC en stock.", e: "Créer uniquement le compte AD.", f: "Préparer un PC et le laisser sur le bureau de M. Durand.", g: "Vérifier la procédure d'arrivée, et planifier la préparation complète pour la veille de son arrivée.", h: "Demander quel modèle de téléphone il souhaite.", i: "Cloner le compte d'un autre commercial.", j: "Lui attribuer une licence Office 365." }, answers: { veryGood: 'g', good: 'b', acceptable: 'j' }, explanation: "Suivre la procédure et planifier (g) est la démarche la plus professionnelle. Préparer les éléments clés (b) est une bonne action. Attribuer la licence (j) est une partie nécessaire mais incomplète de la tâche." },
+             { time: "09:45", type: "Appel Téléphonique", from: "Direction", title: "Panne Visioconférence Salle 'Prestige'", description: "Réunion client dans 15 minutes dans la salle 'Prestige' et la visio ne s'allume pas. C'est la catastrophe !", options: { a: "Dire que vous êtes occupé.", b: "Se déplacer immédiatement, vérifier les branchements et redémarrer le système.", c: "Suggérer d'utiliser un PC portable.", d: "Contacter le support du fabricant.", e: "Demander si la prise est alimentée.", f: "Vérifier si l'équipement répond sur le réseau.", g: "Envoyer un email pour dire que vous avez pris en compte.", h: "Redémarrer le switch réseau.", i: "Leur dire d'annuler la réunion.", j: "Apporter une solution de visio mobile si la panne n'est pas résolue en 5 minutes." }, answers: { veryGood: 'b', good: 'j', acceptable: 'f' }, explanation: "Une panne bloquante pour la direction est une priorité absolue. Une intervention physique (b) est indispensable. Avoir un plan B rapide (j) est un excellent réflexe. Vérifier la connectivité (f) est une bonne première étape." },
+             { time: "09:55", type: "Email", from: "Utilisateur", title: "Problème SSO application SaaS", description: "Je n'arrive plus à me connecter à notre CRM en ligne. J'utilise le bouton 'Se connecter avec Microsoft' et ça me met une erreur 'AADSTS50011: The reply URL...'.", options: { a: "Lui dire de réinitialiser son mot de passe.", b: "Vérifier la configuration de l'application dans Azure AD, notamment les URL de réponse.", c: "Contacter le support du CRM.", d: "Lui demander de vider le cache de son navigateur.", e: "Vérifier les journaux de connexion (Sign-in logs) dans Azure AD.", f: "Vérifier si le certificat de signature SAML a expiré.", g: "Lui demander d'essayer avec un autre navigateur.", h: "Révoquer ses sessions.", i: "Vérifier les politiques d'accès conditionnel.", j: "Combiner la vérification des logs (e) et la configuration de l'app (b)." }, answers: { veryGood: 'j', good: 'b', acceptable: 'e' }, explanation: "L'erreur est spécifique. Combiner l'analyse des logs et la vérification de la configuration (j) est l'approche la plus rigoureuse. Vérifier la configuration seule (b) est très bien. Analyser les logs (e) est une bonne première étape." },
+             { time: "10:05", type: "Ticket GLPI", from: "Utilisateur (Nantes)", title: "Problème de connexion VPN", description: "De Nantes, je n'arrive pas à me connecter au VPN. Erreur 'Le serveur distant ne répond pas'.", options: { a: "Lui dire de vérifier sa connexion Internet.", b: "Vérifier l'état du service VPN sur le pare-feu et les logs.", c: "Lui demander de réinstaller le client VPN.", d: "Lui dire d'attendre d'être à Paris.", e: "Vérifier que son compte n'est pas bloqué.", f: "Lui demander d'essayer en 4G.", g: "Vérifier si d'autres utilisateurs ont le problème.", h: "Redémarrer le serveur VPN.", i: "Lui envoyer la procédure VPN.", j: "Vérifier que son client VPN est à jour." }, answers: { veryGood: 'b', good: 'g', acceptable: 'a' }, explanation: "Vérifier l'infrastructure centrale (b) est prioritaire. Savoir si le problème est généralisé (g) est la deuxième meilleure étape. Les vérifications côté client (a) sont acceptables mais moins prioritaires." },
+             { time: "10:15", type: "Ticket GLPI", from: "Utilisateur", title: "Synchronisation OneDrive bloquée", description: "Mon OneDrive Entreprise est bloqué sur 'Traitement des modifications' depuis hier et une icône de cadenas est apparue sur certains fichiers.", options: { a: "Lui dire de redémarrer son PC.", b: "Vérifier si les noms de fichiers ou les chemins d'accès ne sont pas trop longs ou ne contiennent pas de caractères non autorisés.", c: "Lui dire de se déconnecter et de se reconnecter à son compte OneDrive.", d: "Vérifier l'espace de stockage disponible sur son OneDrive Online.", e: "Mettre en pause et reprendre la synchronisation.", f: "Utiliser le bouton 'Réinitialiser' de OneDrive.", g: "Vérifier si les fichiers bloqués ne sont pas trop volumineux.", h: "Lui demander de libérer de l'espace sur son disque local.", i: "Combiner la vérification des noms de fichiers (b), de l'espace de stockage (d) et la réinitialisation (f).", j: "Lui dire d'utiliser SharePoint à la place." }, answers: { veryGood: 'i', good: 'b', acceptable: 'f' }, explanation: "L'approche complète (i) est la meilleure. Les problèmes de noms de fichiers (b) sont une cause très fréquente de blocage. La réinitialisation (f) est une solution efficace mais plus radicale." },
+             { time: "10:30", type: "Ticket GLPI", from: "Automate", title: "ALERTE : Espace disque faible sur SRV-FICHIERS", description: "Le lecteur D: du serveur 'SRV-FICHIERS' a moins de 5% d'espace libre.", options: { a: "Ignorer l'alerte.", b: "Utiliser un outil comme TreeSize pour identifier les gros dossiers et contacter les propriétaires.", c: "Redémarrer le serveur.", d: "Augmenter la taille du disque sans analyse.", e: "Lancer un nettoyage de disque Windows.", f: "Envoyer un email à tous.", g: "Vérifier l'espace pris par les clichés instantanés.", h: "Activer la déduplication.", i: "Supprimer les fichiers les plus anciens.", j: "Archiver les données de plus d'un an après validation." }, answers: { veryGood: 'b', good: 'j', acceptable: 'g' }, explanation: "L'analyse avant action (b) est cruciale. L'archivage (j) est une excellente solution à moyen terme. Vérifier les clichés instantanés (g) est une cause fréquente." },
+             { time: "10:40", type: "Appel Téléphonique", from: "Commercial", title: "Problème 4G sur mobile pro", description: "Je suis en clientèle et je n'ai plus du tout de data sur mon iPhone pro. J'ai essayé d'activer/désactiver le mode avion. Que puis-je faire ?", options: { a: "Lui dire de se connecter au Wi-Fi du client.", b: "Vérifier dans l'outil de gestion de flotte mobile (MDM/Intune) si la ligne est bien active et si la consommation de data n'a pas dépassé le plafond.", c: "Lui dire de redémarrer le téléphone.", d: "Lui conseiller de contacter l'opérateur téléphonique directement.", e: "Vérifier que les 'Données cellulaires' sont bien activées dans les réglages de l'iPhone.", f: "Lui faire réinitialiser les réglages réseau.", g: "Lui demander de retirer et remettre la carte SIM.", h: "Vérifier qu'il n'est pas dans une zone sans couverture.", i: "Combiner la vérification de la ligne (b) et le guider sur les réglages de base (e).", j: "Planifier un échange de son téléphone." }, answers: { veryGood: 'i', good: 'b', acceptable: 'e' }, explanation: "L'approche combinée (i) est la plus efficace. Vérifier l'état de la ligne côté administration (b) est l'étape la plus importante. Guider l'utilisateur sur les réglages de base (e) est un bon réflexe." },
+             { time: "10:50", type: "Notification Système", from: "Veeam Backup", title: "Échec de sauvegarde", description: "Le job de sauvegarde pour la VM 'SRV-FICHIERS' a échoué la nuit dernière. Erreur : 'Processing SRV-FICHIERS Error: VSS: L'enregistreur a rencontré une erreur non temporaire.'", options: { a: "Relancer le job de sauvegarde manuellement en journée.", b: "Vérifier les services VSS sur la VM 'SRV-FICHIERS' et consulter l'observateur d'événements.", c: "Ignorer, ça arrive.", d: "Supprimer la sauvegarde et en recréer une.", e: "Redémarrer la VM 'SRV-FICHIERS'.", f: "Vérifier l'espace sur le disque de destination des sauvegardes.", g: "Mettre à jour les agents de sauvegarde.", h: "Contacter le support de l'outil de sauvegarde.", i: "Désactiver VSS pour cette sauvegarde.", j: "Vérifier si une autre tâche (ex: mise à jour) tournait en même temps." }, answers: { veryGood: 'b', good: 'e', acceptable: 'f' }, explanation: "L'erreur VSS est explicite. Le diagnostic doit commencer sur la VM concernée (b). Un redémarrage (e) peut résoudre un problème VSS bloqué. Vérifier l'espace de destination (f) est un prérequis de base." },
+             { time: "11:10", type: "Email", from: "Responsable SI", title: "Préparation GPO", description: "Prépare une GPO qui verrouille la session après 10 min d'inactivité. Applique-la sur l'OU de test.", options: { a: "Lier la GPO à la racine du domaine.", b: "Créer, configurer et lier la GPO à l'OU 'TEST'.", c: "Répondre que ce n'est pas possible.", d: "Installer un logiciel tiers.", e: "Créer la GPO et attendre la validation avant de lier.", f: "Rechercher la documentation Microsoft.", g: "Appliquer la GPO à l'OU 'Utilisateurs'.", h: "Faire un script PowerShell.", i: "Demander pourquoi.", j: "Créer, lier à l'OU de test, puis utiliser `gpupdate /force` sur un poste de test pour valider." }, answers: { veryGood: 'j', good: 'b', acceptable: 'f' }, explanation: "L'action (j) est la plus complète : création, lien et validation. L'action (b) est correcte mais omet la validation. Chercher la documentation (f) est une bonne pratique." },
+             { time: "11:25", type: "Ticket GLPI", from: "Utilisateur", title: "'Fichier corrompu' sur lecteur réseau", description: "Un fichier Excel très important sur le lecteur partagé 'Commun' ne s'ouvre plus et affiche un message de corruption. J'y ai travaillé hier soir.", options: { a: "Lui dire que le fichier est perdu.", b: "Restaurer la version précédente du fichier via les clichés instantanés (Shadow Copy).", c: "Demander à un collègue d'essayer d'ouvrir le fichier.", d: "Lancer une réparation du fichier avec l'outil intégré d'Excel.", e: "Vérifier les permissions sur le fichier.", f: "Redémarrer le serveur de fichiers.", g: "Demander une restauration depuis la sauvegarde de la nuit dernière.", h: "Copier le fichier sur son bureau pour essayer de l'ouvrir en local.", i: "Combiner la restauration via clichés instantanés (b) et la tentative d'ouverture par un collègue (c).", j: "Vérifier les logs du serveur de fichiers." }, answers: { veryGood: 'b', good: 'i', acceptable: 'd' }, explanation: "Les clichés instantanés (b) sont la solution la plus rapide et efficace pour ce type de problème. L'approche combinée (i) est excellente car elle permet de valider que le problème n'est pas lié au profil de l'utilisateur. La réparation Excel (d) peut parfois fonctionner." },
+             { time: "11:45", type: "Appel Téléphonique", from: "Comptabilité", title: "Logiciel métier ne se lance pas", description: "Notre logiciel 'SAGE' ne se lance plus sur aucun poste. Erreur de connexion à la base de données.", options: { a: "Demander de redémarrer les PC.", b: "Vérifier l'état du serveur de base de données (ping, services SQL, logs).", c: "Réinstaller les clients SAGE.", d: "Contacter le support SAGE.", e: "Vérifier le serveur de licences.", f: "Demander si une mise à jour a été faite.", g: "Redémarrer le serveur de BDD.", h: "Vérifier la connectivité réseau vers le serveur.", i: "Créer un ticket dans GLPI.", j: "Vérifier les sauvegardes de la BDD." }, answers: { veryGood: 'b', good: 'h', acceptable: 'f' }, explanation: "Une panne collective pointe vers un problème serveur. Vérifier l'état du serveur (b) est la priorité. Tester la connectivité (h) est un excellent diagnostic. Demander s'il y a eu des changements (f) est une question clé." },
+             { time: "12:00", type: "Email", from: "Responsable SI", title: "Vérification des règles de pare-feu", description: "L'éditeur de notre nouvelle application de GED nous demande d'ouvrir le port TCP 8443 en sortie depuis notre réseau vers leur serveur public 203.0.113.50. Peux-tu vérifier et créer la règle si besoin ?", options: { a: "Ouvrir tous les ports vers cette destination.", b: "Créer la règle sur le pare-feu en spécifiant le port, la destination, et en l'appliquant uniquement aux serveurs qui utiliseront l'application.", c: "Répondre que pour des raisons de sécurité, on n'ouvre aucun port.", d: "Créer la règle en autorisant tout le trafic sortant vers le port 8443.", e: "Demander plus d'informations sur le type de flux.", f: "Vérifier les règles existantes pour voir si ce flux n'est pas déjà autorisé.", g: "Créer une règle 'Any/Any' temporairement.", h: "Documenter la demande et la règle avant de l'appliquer.", i: "Combiner la documentation (h), la vérification (f) et la création de la règle spécifique (b).", j: "Contacter l'éditeur pour leur demander d'utiliser un port standard comme le 443." }, answers: { veryGood: 'i', good: 'b', acceptable: 'j' }, explanation: "La démarche complète et sécurisée (i) est idéale. Créer la règle spécifique (b) est l'action technique correcte. Suggérer l'utilisation d'un port standard (j) est une bonne pratique de sécurité." },
+             { time: "12:15", type: "Email", from: "Un utilisateur", title: "Fwd: Vous avez gagné un iPhone !", description: "J'ai reçu cet email, est-ce une campagne officielle ? Je n'ai pas cliqué.", options: { a: "Lui dire de le supprimer.", b: "Le féliciter, confirmer que c'est du phishing, demander de supprimer et envoyer un rappel de sécurité à tous.", c: "Cliquer sur le lien dans une sandbox.", d: "Lui demander de transférer à tous.", e: "Bloquer l'expéditeur et rechercher des emails similaires.", f: "Signaler comme phishing via Outlook.", g: "Lui demander de transférer en pièce jointe.", h: "Lui répondre avec un lien vers la charte IT.", i: "Ignorer l'email.", j: "Chercher l'expéditeur sur Google." }, answers: { veryGood: 'b', good: 'e', acceptable: 'f' }, explanation: "La meilleure réponse (b) combine réponse, prévention et formation. Utiliser les outils techniques (e) est une très bonne action proactive. Signaler via Outlook (f) est une action simple et efficace." },
+             { time: "13:30", type: "Ticket GLPI", from: "Utilisateur", title: "Pas de réseau à mon nouveau bureau", description: "Je viens de m'installer à un nouveau bureau, j'ai tout branché mais je n'ai pas de connexion réseau. Le voyant sur la prise murale est éteint.", options: { a: "Lui dire de changer de câble réseau.", b: "Vérifier si le port sur le switch est activé et dans le bon VLAN.", c: "Lui demander de redémarrer son ordinateur.", d: "Lui dire que ce bureau n'a pas de réseau.", e: "Lui demander le numéro de la prise murale.", f: "Se déplacer avec un testeur de câble.", g: "Lui demander de vérifier son adresse IP.", h: "Activer le port correspondant sur le panneau de brassage.", i: "Combiner la demande du numéro de prise (e) et l'activation sur le switch (b).", j: "Lui suggérer d'utiliser le Wi-Fi." }, answers: { veryGood: 'i', good: 'b', acceptable: 'e' }, explanation: "La démarche complète (i) est la plus efficace. Activer le port sur le switch (b) est l'action technique clé, mais il faut savoir quel port. Demander le numéro de prise (e) est donc un prérequis indispensable." },
+             { time: "13:45", type: "Ticket GLPI", from: "Utilisateur", title: "Wi-Fi lent dans la salle de pause", description: "Le Wi-Fi est extrêmement lent dans la salle de pause, alors qu'il fonctionne bien dans les bureaux. C'est difficile de regarder des vidéos pendant notre pause.", options: { a: "Leur dire que le Wi-Fi n'est pas fait pour regarder des vidéos.", b: "Vérifier la borne Wi-Fi la plus proche de la salle de pause sur le contrôleur Wi-Fi (nombre de clients, interférences, canal utilisé).", c: "Redémarrer toutes les bornes Wi-Fi de l'étage.", d: "Augmenter la puissance de transmission de la borne.", e: "Se déplacer dans la salle de pause avec un analyseur Wi-Fi pour mesurer la force du signal.", f: "Vérifier si un appareil ne sature pas la bande passante (ex: téléchargement P2P).", g: "Proposer d'installer une nouvelle borne Wi-Fi.", h: "Vérifier si la borne est bien alimentée (PoE).", i: "Combiner l'analyse sur le contrôleur (b) et l'analyse sur site (e).", j: "Mettre en place une politique de limitation de la bande passante pour le streaming vidéo." }, answers: { veryGood: 'i', good: 'b', acceptable: 'e' }, explanation: "L'approche combinée (i) est la plus rigoureuse. L'analyse centralisée (b) est la première étape logique. L'analyse sur site (e) permet de confirmer le diagnostic." },
+             { time: "14:05", type: "Ticket GLPI", from: "Nouveau Stagiaire", title: "Accès dossier partagé", description: "Je n'arrive pas à accéder au dossier 'Marketing'. Mon manager m'a dit que j'en avais besoin.", options: { a: "L'ajouter directement aux permissions NTFS.", b: "Vérifier le groupe de sécurité AD du dossier et y ajouter le stagiaire.", c: "Lui donner 'Contrôle Total'.", d: "Lui dire que les stagiaires n'ont pas d'accès.", e: "Demander une confirmation écrite du manager.", f: "Créer un nouveau groupe.", g: "Vérifier ses droits effectifs.", h: "Lui expliquer la procédure GLPI.", i: "Cloner les droits d'un collègue.", j: "Vérifier si le lecteur réseau est mappé." }, answers: { veryGood: 'b', good: 'e', acceptable: 'i' }, explanation: "La gestion des droits par groupe (b) est la règle. Demander une validation managériale (e) est une étape de sécurité essentielle. Cloner les droits (i) est une solution rapide et acceptable." },
+             { time: "14:15", type: "Notification Système", from: "Azure AD Connect", title: "Erreur de synchronisation", description: "Le service de synchronisation Azure AD Connect Health signale des erreurs de type 'AttributeValueMustBeUnique' pour plusieurs objets utilisateurs.", options: { a: "Ignorer, ce n'est pas bloquant.", b: "Lancer l'outil 'IdFix' pour identifier et corriger les attributs dupliqués (généralement proxyAddresses ou userPrincipalName) dans l'AD local.", c: "Supprimer les utilisateurs en erreur dans l'AD local.", d: "Désactiver et réactiver la synchronisation.", e: "Forcer une synchronisation complète avec `Start-ADSyncSyncCycle -PolicyType Initial`.", f: "Vérifier les logs de l'application sur le serveur Azure AD Connect.", g: "Contacter le support Microsoft.", h: "Modifier manuellement les attributs des utilisateurs concernés dans l'AD.", i: "Vérifier que les UPN des utilisateurs correspondent bien à leurs adresses email.", j: "Combiner la consultation des logs (f) et l'utilisation d'IdFix (b)." }, answers: { veryGood: 'b', good: 'j', acceptable: 'h' }, explanation: "L'outil IdFix (b) est spécifiquement conçu pour ce type de problème et est la solution recommandée. L'approche combinée (j) est encore meilleure. Modifier manuellement (h) fonctionne mais est moins efficace sur un grand nombre d'objets." },
+             { time: "14:30", type: "Ticket GLPI", from: "Chef de projet", title: "Création site SharePoint", description: "Besoin d'un site SharePoint pour le projet 'ALPHA' avec bibliothèque, calendrier, tâches.", options: { a: "Créer le site avec 'Contrôle total' pour tous.", b: "Contacter le chef de projet, créer un site d'équipe, configurer les permissions et les apps.", c: "Leur dire d'utiliser un dossier partagé.", d: "Répondre que ce n'est pas du ressort de l'IT.", e: "Créer un groupe Microsoft 365 pour le projet.", f: "Leur envoyer la documentation Microsoft.", g: "Planifier une réunion pour cadrer le besoin.", h: "Créer un site de communication.", i: "Vérifier si un site n'existe pas déjà.", j: "Proposer d'utiliser Microsoft Teams." }, answers: { veryGood: 'e', good: 'j', acceptable: 'b' }, explanation: "Créer un groupe M365 (e) est la méthode moderne et la plus intégrée. Proposer Teams (j) est une excellente alternative. L'action (b) est la méthode 'classique' et reste correcte." },
+             { time: "14:45", type: "Email", from: "Manager", title: "Extraire des informations d'un VBScript", description: "J'ai retrouvé ce vieux script VBS sur un partage. Peux-tu me dire ce qu'il fait avant qu'on ne le supprime ? Je ne veux pas l'exécuter.", options: { a: "Le supprimer directement, c'est sûrement obsolète.", b: "L'ouvrir dans un éditeur de texte (Notepad++) et lire le code pour comprendre sa logique (création d'objets, boucles, actions sur le système de fichiers...).", c: "L'exécuter sur son propre poste pour voir ce qu'il fait.", d: "Répondre que vous ne connaissez pas le VBScript.", e: "L'exécuter dans une machine virtuelle de test isolée.", f: "Chercher des bouts de code du script sur Google.", g: "Demander à un développeur de le regarder.", h: "Faire une analyse antivirus du fichier.", i: "Combiner la lecture du code (b) et l'exécution en sandbox (e) pour une analyse complète.", j: "Le renommer en .txt pour éviter une exécution accidentelle." }, answers: { veryGood: 'i', good: 'b', acceptable: 'e' }, explanation: "L'approche la plus sûre et complète est de combiner la lecture et l'exécution en environnement contrôlé (i). Lire le code (b) est l'étape essentielle pour un technicien. L'exécution en sandbox (e) est une excellente mesure de sécurité." },
+             { time: "15:00", type: "Notification Système", from: "Antivirus", title: "Activité suspecte détectée", description: "Un 'Potentially Unwanted App' (PUA) a été détecté et mis en quarantaine sur PC-NANTES-05.", options: { a: "Supprimer le fichier sans investiguer.", b: "Isoler le poste, contacter l'utilisateur, et lancer une analyse complète.", c: "Restaurer le fichier.", d: "Ignorer, l'antivirus a agi.", e: "Vérifier la nature du PUA sur VirusTotal.", f: "Consulter les logs de l'antivirus.", g: "Vérifier si l'alerte est sur d'autres postes.", h: "Formater et réinstaller le poste.", i: "Appeler l'utilisateur pour le réprimander.", j: "Lancer une analyse sur les serveurs." }, answers: { veryGood: 'b', good: 'e', acceptable: 'f' }, explanation: "La sécurité prime. Isoler, contacter et analyser (b) est la procédure complète. Analyser le fichier sur VirusTotal (e) est une excellente étape d'investigation. Consulter les logs (f) est un diagnostic de base." },
+             { time: "15:15", type: "Ticket GLPI", from: "Utilisateur", title: "Demande d'installation logiciel non standard", description: "Bonjour, j'aurais besoin d'installer la suite Adobe Creative Cloud pour un besoin ponctuel du service marketing. Est-ce possible ?", options: { a: "Refuser, ce n'est pas dans le catalogue standard.", b: "Vérifier si l'entreprise dispose de licences Adobe CC disponibles et demander une validation managériale et/ou du RSI pour l'attribution.", c: "Lui dire d'acheter une licence avec sa carte de crédit.", d: "Lui donner les droits admin pour qu'il l'installe lui-même.", e: "Installer une version d'essai.", f: "Proposer une alternative gratuite comme GIMP ou Inkscape.", g: "Contacter le service achat pour obtenir un devis.", h: "Créer un paquet d'installation pour un déploiement via Intune/SCCM.", i: "Vérifier la compatibilité du logiciel avec le poste de l'utilisateur.", j: "Combiner la vérification des licences (b) et la validation managériale." }, answers: { veryGood: 'j', good: 'b', acceptable: 'g' }, explanation: "Une demande de logiciel payant doit suivre un processus. La démarche complète (j) est la meilleure. Vérifier les licences et demander la validation (b) est l'action correcte. Contacter les achats (g) est une étape logique si aucune licence n'est disponible." },
+             { time: "15:30", type: "Notification Système", from: "Serveur DHCP", title: "Étendue DHCP presque pleine", description: "L'étendue 192.168.1.0/24 a utilisé 95% de ses adresses IP.", options: { a: "Réduire la durée des baux à 1 heure.", b: "Vérifier les appareils non autorisés et analyser la pertinence d'agrandir la plage.", c: "Redémarrer le service DHCP.", d: "Ne rien faire.", e: "Documenter et surveiller.", f: "Ajouter une nouvelle étendue.", g: "Vérifier les réservations DHCP inutilisées.", h: "Passer le masque en /23.", i: "Débrancher des appareils.", j: "Vérifier les logs du switch." }, answers: { veryGood: 'b', good: 'h', acceptable: 'a' }, explanation: "Investiguer la cause (b) est la seule bonne approche à long terme. Agrandir la plage (h) est une solution technique efficace mais doit être planifiée. Réduire les baux (a) est une solution temporaire acceptable." },
+             { time: "15:45", type: "Email", from: "Responsable SI", title: "Demande de script Python", description: "Bonjour, j'ai un fichier de log Apache de plusieurs Go. Peux-tu me faire un script Python qui l'ouvre, et qui compte le nombre de requêtes pour chaque adresse IP (les IPs sont en début de ligne) ?", options: { a: "Dire que PowerShell est mieux pour ça.", b: "Proposer un script Python qui lit le fichier ligne par ligne, utilise une expression régulière pour extraire l'IP, et un dictionnaire pour compter les occurrences.", c: "Essayer d'ouvrir le fichier avec Excel.", d: "Dire que c'est une tâche de développeur, pas de technicien systèmes et réseaux.", e: "Chercher une solution sur Stack Overflow.", f: "Écrire un script qui charge tout le fichier en mémoire d'un coup.", g: "Proposer d'utiliser la commande `grep` ou `awk` sous Linux/WSL car ce serait plus rapide.", h: "Demander un exemple de ligne de log.", i: "Utiliser la librairie `collections.Counter` pour simplifier le comptage.", j: "Combiner la demande d'exemple (h) et la proposition de script avec un dictionnaire (b) et `collections.Counter` (i)." }, answers: { veryGood: 'j', good: 'b', acceptable: 'g' }, explanation: "La réponse (j) est la plus complète et montre une connaissance approfondie de Python. La proposition de base (b) est très bonne. Suggérer des outils plus adaptés comme awk/grep (g) est également une excellente preuve de compétence." },
+             { time: "16:00", type: "Appel Téléphonique", from: "Utilisateur paniqué", title: "Mon PC bippe et ne démarre pas !", description: "Mon PC ne démarre pas, l'écran reste noir et j'entends 3 bips, une pause, 3 bips...", options: { a: "Lui dire que le PC est mort.", b: "Lui demander de débrancher/rebrancher.", c: "Rechercher la signification des codes de bips du fabricant pour diagnostiquer la panne (probablement la RAM).", d: "Lui conseiller de taper sur le PC.", e: "Lui demander le modèle exact du PC.", f: "Planifier une intervention pour tester la RAM.", g: "Lui demander s'il a installé un nouveau matériel.", h: "Lui dire d'ouvrir le capot.", i: "Vérifier si le moniteur est allumé.", j: "Lui proposer de prendre un café." }, answers: { veryGood: 'c', good: 'e', acceptable: 'f' }, explanation: "Les bips sont des codes de diagnostic. Les rechercher (c) est la méthode professionnelle. Pour cela, il faut le modèle (e). Planifier l'intervention sur la RAM (f) est l'étape suivante logique." },
+             { time: "16:15", type: "Ticket GLPI", from: "Utilisateur", title: "Besoin de droits admin", description: "Bonjour, pour installer le logiciel 'SuperUtilitaire' dont j'ai absolument besoin, il me faut les droits d'administrateur local. Pouvez-vous me les donner ?", options: { a: "Lui donner les droits admin local de manière permanente.", b: "Refuser catégoriquement.", c: "Demander la validation de son manager et du RSI.", d: "Lui proposer de prendre la main à distance pour taper le mot de passe administrateur et installer le logiciel pour lui.", e: "Vérifier si le logiciel peut être déployé via une GPO ou Intune.", f: "Lui donner les droits admin pour 1 heure seulement.", g: "Analyser le logiciel pour s'assurer qu'il ne présente pas de risque de sécurité.", h: "Combiner la validation (c) et l'analyse de sécurité (g) avant de l'installer pour lui (d).", i: "Lui demander pourquoi il a 'absolument' besoin de ce logiciel.", j: "L'ajouter au groupe 'Admins du domaine'." }, answers: { veryGood: 'h', good: 'e', acceptable: 'd' }, explanation: "La sécurité est primordiale. La démarche complète (h) est la plus rigoureuse. Chercher à déployer proprement (e) est une excellente alternative. L'installer pour lui (d) est acceptable mais moins sécurisé si une analyse n'est pas faite." },
+             { time: "16:30", type: "Email", from: "Responsable SI", title: "Script pour inventaire", description: "Peux-tu me faire un script PowerShell qui exporte en CSV le nom, l'OS et la RAM de tous les PC du domaine ?", options: { a: "Dire que c'est trop complexe.", b: "Proposer un script utilisant `Get-ADComputer` et `Export-Csv`.", c: "Se connecter à chaque PC.", d: "Proposer un script en Python.", e: "Demander si d'autres informations sont nécessaires.", f: "Écrire le script, le tester, et l'envoyer avec des commentaires.", g: "Chercher un script sur internet.", h: "Utiliser `Get-CimInstance` en boucle.", i: "Répondre que GLPI peut le faire.", j: "Planifier une tâche qui exécute le script." }, answers: { veryGood: 'f', good: 'b', acceptable: 'h' }, explanation: "Fournir un script testé et commenté (f) est la réponse la plus professionnelle. Proposer la bonne commande (b) montre la connaissance technique. Utiliser Get-CimInstance (h) est une autre méthode valide." },
+             { time: "16:45", type: "Ticket GLPI", from: "Utilisateur", title: "Outlook ne se connecte plus", description: "Mon Outlook n'arrête pas de me demander mon mot de passe en boucle et ne se connecte plus à Office 365. Mon Teams et mon OneDrive fonctionnent bien.", options: { a: "Lui dire de réinitialiser son mot de passe.", b: "Supprimer et recréer son profil Outlook.", c: "Vérifier l'état de santé du service Exchange Online dans le portail d'admin M365.", d: "Lancer l'outil de diagnostic et de réparation de Microsoft (SaRA).", e: "Vider le gestionnaire d'identification Windows (Credential Manager).", f: "Réparer l'installation d'Office.", g: "Lui dire d'utiliser le webmail (OWA).", h: "Vérifier si l'authentification moderne est bien activée sur le tenant.", i: "Combiner la suppression des identifiants (e) et la recréation du profil (b).", j: "Mettre à jour Outlook." }, answers: { veryGood: 'd', good: 'i', acceptable: 'e' }, explanation: "L'outil SaRA (d) est spécifiquement conçu par Microsoft pour ce genre de panne et est très efficace. La combinaison (i) est la méthode manuelle la plus courante. Vider le gestionnaire d'identification (e) résout souvent le problème seul." },
+             { time: "17:00", type: "Email", from: "Responsable SI", title: "Problème DNS intermittent", description: "Plusieurs utilisateurs se plaignent que des sites internes sont parfois inaccessibles, alors qu'ils répondent au ping via leur IP. Problème de DNS ?", options: { a: "Demander de vider leur cache DNS.", b: "Vérifier les logs DNS sur les DC et utiliser `nslookup`.", c: "Mettre les DNS de Google sur les postes.", d: "Redémarrer tous les DC.", e: "Vérifier les redirecteurs DNS.", f: "Vérifier la configuration DHCP.", g: "Vérifier la réplication AD avec `repadmin /showrepl`.", h: "Utiliser le fichier 'hosts'.", i: "Vider le cache du serveur DNS.", j: "Désactiver l'IPv6." }, answers: { veryGood: 'b', good: 'g', acceptable: 'i' }, explanation: "Un diagnostic complet sur les serveurs DNS (b) est la meilleure approche. Les problèmes de DNS dans un AD sont souvent liés à la réplication (g). Vider le cache du serveur (i) peut résoudre le problème temporairement." },
+             { time: "17:15", type: "Ticket GLPI", from: "RH", title: "Création d'une boîte mail partagée", description: "Bonjour, pourriez-vous créer une boîte mail partagée 'candidatures@notre-entreprise.com' et donner l'accès à 3 personnes du service RH ?", options: { a: "Créer un nouvel utilisateur 'candidatures' avec une licence.", b: "Créer une boîte aux lettres partagée depuis le centre d'administration Exchange Online et déléguer les accès 'FullAccess' et 'Send As'.", c: "Créer un groupe de distribution.", d: "Créer une liste de contacts.", e: "Créer un groupe Microsoft 365.", f: "Leur dire de créer un dossier dans une de leurs boîtes mail et de le partager.", g: "Leur demander de justifier ce besoin.", h: "Créer la boîte partagée et leur envoyer la documentation pour l'ajouter à leur Outlook.", i: "Combiner la création (b) et l'envoi de la documentation (h).", j: "Créer un canal privé dans le Teams des RH." }, answers: { veryGood: 'i', good: 'b', acceptable: 'e' }, explanation: "La démarche complète (i) est la meilleure. La création technique (b) est l'action principale. Créer un groupe M365 (e) est une alternative viable qui offre plus d'outils, mais ce n'est pas ce qui est demandé." },
+             { time: "17:30", type: "Ticket GLPI", from: "Service RH", title: "Fin de contrat", description: "Le contrat de M. Martin se termine ce vendredi soir. Merci de procéder aux actions nécessaires.", options: { a: "Attendre lundi.", b: "Désactiver son compte AD, sauvegarder ses données, et planifier la récupération du matériel.", c: "Supprimer son compte AD.", d: "Ne rien faire.", e: "Changer son mot de passe.", f: "Transférer ses fichiers à son manager.", g: "Désactiver son compte AD uniquement.", h: "Planifier un script pour désactiver le compte vendredi à 18h00.", i: "Lui retirer ses licences O365.", j: "Vérifier s'il avait des accès spécifiques (VPN, admin...) à révoquer." }, answers: { veryGood: 'h', good: 'b', acceptable: 'j' }, explanation: "Automatiser la désactivation (h) est la solution la plus propre. Le faire manuellement (b) est très bien. Penser à vérifier les accès spéciaux (j) est un excellent réflexe de sécurité." },
+             { time: "17:45", type: "Appel Téléphonique", from: "Utilisateur (Bordeaux)", title: "Qualité visioconférence", description: "Bonjour, nous sommes dans la salle de réunion de Bordeaux, et la qualité de notre appel Teams avec Paris est très mauvaise, l'image se fige constamment.", options: { a: "Leur dire de couper leur caméra.", b: "Lancer un test de bande passante (speedtest) sur un PC dans la même salle à Bordeaux.", c: "Vérifier l'utilisation de la bande passante sur le pare-feu du site de Bordeaux.", d: "Leur dire que le réseau est mauvais à Bordeaux.", e: "Vérifier l'état de santé du service Teams dans le portail d'administration M365.", f: "Leur demander de redémarrer l'équipement de visioconférence.", g: "Mettre en place de la QoS (Qualité de Service) pour prioriser le trafic Teams.", h: "Combiner la vérification de l'état du service (e) et l'analyse de la bande passante locale (c).", i: "Accuser le réseau du site de Paris.", j: "Leur proposer de continuer en audio seulement." }, answers: { veryGood: 'h', good: 'c', acceptable: 'b' }, explanation: "La meilleure approche (h) combine la vérification du service global et l'analyse locale. Analyser le pare-feu (c) est une excellente action technique. Un simple speedtest (b) est un bon début mais moins précis." },
+             { time: "18:00", type: "Email", from: "Responsable SI", title: "Préparation déplacement Bordeaux", description: "N'oublie pas que tu te déplaces à Bordeaux demain. Peux-tu me lister les actions que tu as prévues sur place ?", options: { a: "Y aller les mains dans les poches et voir sur place.", b: "Consulter les tickets GLPI ouverts pour le site de Bordeaux et contacter les utilisateurs pour planifier des rendez-vous.", c: "Prévoir de faire un inventaire du stock de matériel sur place.", d: "Prévoir une session de formation rapide pour les utilisateurs sur une nouvelle fonctionnalité.", e: "Vérifier l'état des serveurs et de la salle technique locale.", f: "Combiner la revue des tickets (b), l'inventaire (c) et la vérification de la salle technique (e).", g: "Prévoir uniquement de remplacer le matériel défectueux.", h: "Demander aux utilisateurs de Bordeaux de lister leurs problèmes.", i: "Imprimer la liste des tickets.", j: "Prévoir une réunion avec le responsable du site de Bordeaux pour faire le point." }, answers: { veryGood: 'f', good: 'b', acceptable: 'j' }, explanation: "Un déplacement doit être préparé. La réponse (f) est la plus complète et proactive. La revue des tickets (b) est le minimum syndical. Faire un point avec le responsable local (j) est une très bonne initiative." }
+        ];
+
+        let currentEventIndex = 0;
+        let score = 0;
+        let maxScore = 0;
+        const userResponses = [];
+        let timerInterval;
+        let questionStartTime;
+
+        const candidateForm = document.getElementById('candidate-form');
+        const startBtn = document.getElementById('start-btn');
+        const formError = document.getElementById('form-error');
+        const fullnameInput = document.getElementById('fullname');
+        const emailInput = document.getElementById('email');
+        const simulationContainer = document.getElementById('simulation-container');
+        const clockEl = document.getElementById('clock');
+        const timerEl = document.getElementById('timer');
+        const eventContentEl = document.getElementById('event-content');
+        const eventOptionsEl = document.getElementById('event-options');
+        const nextEventBtn = document.getElementById('next-event-btn');
+        const resultsContainer = document.getElementById('results-container');
+        const candidateNameResult = document.getElementById('candidate-name-result');
+        const scoreEl = document.getElementById('score');
+        const feedbackText = document.getElementById('feedback-text');
+        const correctionWrapper = document.getElementById('correction-wrapper');
+        const pdfBtn = document.getElementById('pdf-btn');
+        const emailBtn = document.getElementById('email-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const emailModal = document.getElementById('email-modal');
+        const emailBodyTextarea = document.getElementById('email-body-textarea');
+        const copyEmailBtn = document.getElementById('copy-email-btn');
+        const openMailerBtn = document.getElementById('open-mailer-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const currentQuestionEl = document.getElementById('current-question');
+        const totalQuestionsEl = document.getElementById('total-questions');
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
         }
-    ];
 
-    let currentEventIndex = 0;
-    let score = 0;
-    let maxScore = 0;
-    const userResponses = [];
-    let timerInterval;
-    let questionStartTime;
+        function startSimulation() {
+            const fullname = fullnameInput.value.trim();
+            const email = emailInput.value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    const candidateForm = document.getElementById('candidate-form');
-    const startBtn = document.getElementById('start-btn');
-    const formError = document.getElementById('form-error');
-    const fullnameInput = document.getElementById('fullname');
-    const simulationContainer = document.getElementById('simulation-container');
-    const clockEl = document.getElementById('clock');
-    const timerEl = document.getElementById('timer');
-    const eventContentEl = document.getElementById('event-content');
-    const eventOptionsEl = document.getElementById('event-options');
-    const nextEventBtn = document.getElementById('next-event-btn');
-    const resultsContainer = document.getElementById('results-container');
-    const candidateNameResult = document.getElementById('candidate-name-result');
-    const scoreEl = document.getElementById('score');
-    const feedbackText = document.getElementById('feedback-text');
-    const correctionWrapper = document.getElementById('correction-wrapper');
-    const pdfBtn = document.getElementById('pdf-btn');
-    const emailBtn = document.getElementById('email-btn');
-    const emailModal = document.getElementById('email-modal');
-    const emailBodyTextarea = document.getElementById('email-body-textarea');
-    const copyEmailBtn = document.getElementById('copy-email-btn');
-    const openMailerBtn = document.getElementById('open-mailer-btn');
-    const closeModalBtn = document.getElementById('close-modal-btn');
-    const currentQuestionEl = document.getElementById('current-question');
-    const totalQuestionsEl = document.getElementById('total-questions');
+            if (fullname === '' || email === '') {
+                formError.textContent = 'Veuillez remplir tous les champs.';
+                formError.classList.remove('hidden');
+                return;
+            }
+            if (!emailRegex.test(email)) {
+                formError.textContent = 'Veuillez entrer une adresse e-mail valide.';
+                formError.classList.remove('hidden');
+                return;
+            }
 
-    function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
+            formError.classList.add('hidden');
+            candidateForm.classList.add('hidden');
+            simulationContainer.classList.remove('hidden');
+            maxScore = eventsData.length * 3;
+            totalQuestionsEl.textContent = eventsData.length;
+            eventsData.sort((a, b) => a.time.localeCompare(b.time));
+            displayEvent();
         }
-        return array;
-    }
 
-    function startSimulation() {
-        if (fullnameInput.value.trim() === '') {
-            formError.classList.remove('hidden');
-            return;
-        }
-        formError.classList.add('hidden');
-        candidateForm.classList.add('hidden');
-        simulationContainer.classList.remove('hidden');
-        maxScore = eventsData.length * 3;
-        totalQuestionsEl.textContent = eventsData.length;
-        eventsData.sort((a, b) => a.time.localeCompare(b.time));
-        displayEvent();
-    }
-
-    function startTimer() {
-        let timeLeft = 60;
-        timerEl.textContent = timeLeft;
-        timerInterval = setInterval(() => {
-            timeLeft--;
+        function startTimer() {
+            let timeLeft = 60;
+            timerEl.parentElement.classList.remove('bg-yellow-500', 'bg-orange-500');
+            timerEl.parentElement.classList.add('bg-red-600');
             timerEl.textContent = timeLeft;
-            if (timeLeft <= 0) {
-                handleTimeOut();
-            }
-        }, 1000);
-    }
-
-    function displayEvent() {
-        if (currentEventIndex >= eventsData.length) {
-            endSimulation();
-            return;
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerEl.textContent = timeLeft;
+                if (timeLeft <= 30) timerEl.parentElement.classList.add('bg-yellow-500');
+                if (timeLeft <= 10) timerEl.parentElement.classList.add('bg-orange-500');
+                if (timeLeft <= 0) {
+                    handleTimeOut();
+                }
+            }, 1000);
         }
-        currentQuestionEl.textContent = currentEventIndex + 1;
-        questionStartTime = new Date().getTime();
-        startTimer();
 
-        const event = eventsData[currentEventIndex];
-        clockEl.textContent = event.time;
-        let icon = event.type === 'Ticket GLPI' ? '🎫' : event.type === 'Email' ? '📧' : event.type === 'Appel Téléphonique' ? '📞' : '⚠️';
-        eventContentEl.innerHTML = `
-            <div class="flex items-start space-x-4">
-                <div class="text-3xl">${icon}</div>
-                <div>
-                    <div class="flex justify-between items-baseline">
-                        <h3 class="text-xl font-bold text-gray-900">${event.title}</h3>
-                        <span class="text-sm font-medium text-gray-500">${event.type}</span>
+        function displayEvent() {
+            if (currentEventIndex >= eventsData.length) {
+                endSimulation();
+                return;
+            }
+            currentQuestionEl.textContent = currentEventIndex + 1;
+            questionStartTime = new Date().getTime();
+            startTimer();
+
+            const event = eventsData[currentEventIndex];
+            clockEl.textContent = event.time;
+            let icon = event.type === 'Ticket GLPI' ? '🎫' : event.type === 'Email' ? '📧' : event.type === 'Appel Téléphonique' ? '📞' : '⚠️';
+            eventContentEl.innerHTML = `
+                <div class="flex items-start space-x-4">
+                    <div class="text-3xl">${icon}</div>
+                    <div>
+                        <div class="flex justify-between items-baseline">
+                            <h3 class="text-xl font-bold text-gray-900">${event.title}</h3>
+                            <span class="text-sm font-medium text-gray-500">${event.type}</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">De : ${event.from}</p>
+                        <p class="text-gray-700 whitespace-pre-wrap">${event.description}</p>
                     </div>
-                    <p class="text-sm text-gray-600 mb-4">De : ${event.from}</p>
-                    <p class="text-gray-700 whitespace-pre-wrap">${event.description}</p>
-                </div>
-            </div>`;
-        
-        const optionsArray = Object.entries(event.options).map(([key, value]) => ({ key, value }));
-        const shuffledOptions = shuffleArray(optionsArray);
-
-        let optionsHTML = '<div class="grid grid-cols-1 md:grid-cols-2 gap-3">';
-        shuffledOptions.forEach(option => {
-            optionsHTML += `<button data-key="${option.key}" class="option-button w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-indigo-100">${option.value}</button>`;
-        });
-        optionsHTML += '</div>';
-        eventOptionsEl.innerHTML = optionsHTML;
-        document.querySelectorAll('.option-button').forEach(button => button.addEventListener('click', handleOptionSelect));
-    }
-
-    function handleTimeOut() {
-        clearInterval(timerInterval);
-        const event = eventsData[currentEventIndex];
-        userResponses.push({ event, selected: 'timeout', points: 0, responseTime: 60 });
-        
-        eventContentEl.innerHTML += `<div class="mt-4 p-4 rounded-md bg-red-100 text-red-800 font-bold">Temps écoulé ! Vous passez au scénario suivant.</div>`;
-        document.querySelectorAll('.option-button').forEach(button => {
-            button.disabled = true;
-        });
-
-        nextEventBtn.classList.remove('hidden');
-    }
-
-    function handleOptionSelect(e) {
-        clearInterval(timerInterval);
-        const responseTime = (new Date().getTime() - questionStartTime) / 1000;
-        
-        const selectedKey = e.target.closest('button').dataset.key;
-        const event = eventsData[currentEventIndex];
-        const answers = event.answers;
-        let points = 0;
-
-        if (selectedKey === answers.veryGood) points = 3;
-        else if (selectedKey === answers.good) points = 2;
-        else if (selectedKey === answers.acceptable) points = 1;
-        score += points;
-
-        userResponses.push({ event, selected: selectedKey, points, responseTime });
-
-        document.querySelectorAll('.option-button').forEach(button => {
-            button.disabled = true;
-            button.classList.remove('hover:bg-indigo-100');
-            const key = button.dataset.key;
-            if (key === answers.veryGood) button.classList.add('very-good-answer');
-            else if (key === answers.good) button.classList.add('good-answer');
-            else if (key === answers.acceptable) button.classList.add('acceptable-answer');
-            else button.classList.add('bad-answer');
-
-            if (key === selectedKey) button.classList.add('selected-choice');
-        });
-
-        let explanationHTML = `<div class="explanation mt-4 p-4 rounded-md"><strong>Justification :</strong> ${event.explanation}</div>`;
-        if (responseTime < 5) {
-            explanationHTML += `<div class="mt-2 text-sm text-yellow-600 font-semibold">Note : Réponse très rapide (${responseTime.toFixed(1)}s).</div>`;
-        }
-        eventOptionsEl.insertAdjacentHTML('afterend', explanationHTML);
-        nextEventBtn.classList.remove('hidden');
-    }
-
-    function loadNextEvent() {
-        currentEventIndex++;
-        const explanationDiv = eventOptionsEl.nextElementSibling;
-        if (explanationDiv && (explanationDiv.classList.contains('explanation') || explanationDiv.classList.contains('bg-red-100'))) {
-            explanationDiv.remove();
-        }
-        const fastResponseDiv = eventOptionsEl.nextElementSibling;
-        if (fastResponseDiv && fastResponseDiv.classList.contains('text-yellow-600')) {
-            fastResponseDiv.remove();
-        }
-
-        nextEventBtn.classList.add('hidden');
-        displayEvent();
-    }
-
-    function endSimulation() {
-        simulationContainer.classList.add('hidden');
-        resultsContainer.classList.remove('hidden');
-        const percentage = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
-        candidateNameResult.textContent = fullnameInput.value;
-        scoreEl.textContent = `${percentage}% (${score} / ${maxScore} points)`;
-        
-        if (percentage >= 85) feedbackText.textContent = "Excellente performance ! Vous avez démontré une très bonne compréhension technique et une excellente capacité à gérer les priorités. Votre profil est très prometteur.";
-        else if (percentage >= 65) feedbackText.textContent = "Bonne performance. Vous avez géré la plupart des situations correctement. Quelques décisions pourraient être affinées, mais les bases sont solides.";
-        else if (percentage >= 40) feedbackText.textContent = "Performance moyenne. Certaines situations critiques ont été mal évaluées. Une révision des priorités et de certaines bases techniques serait bénéfique.";
-        else feedbackText.textContent = "Performance insuffisante. Des lacunes importantes ont été observées dans le diagnostic et la gestion des priorités.";
-        
-        renderCorrection();
-    }
-
-    function renderCorrection() {
-        let correctionHTML = '';
-        userResponses.forEach((resp, index) => {
-            const { event, selected, points, responseTime } = resp;
-            let choiceText;
-            let fastResponseNote = '';
-
-            if (responseTime < 5) {
-                fastResponseNote = `<span class="text-xs text-yellow-600 font-bold ml-2">(Réponse en ${responseTime.toFixed(1)}s)</span>`;
-            }
-
-            if (selected === 'timeout') {
-                choiceText = `<span class="text-red-600 font-bold">Temps écoulé</span>`;
-            } else {
-                choiceText = `${event.options[selected]} (+${points} pts)`;
-            }
-
-            const answers = event.answers;
-            correctionHTML += `
-                <div class="mb-6 p-4 border rounded-lg">
-                    <p class="font-semibold mb-1">${index + 1}. [${event.time}] ${event.title}</p>
-                    <p class="text-sm mb-3">Votre choix : ${choiceText}${fastResponseNote}</p>
-                    <ul class="text-sm space-y-2">
-                        <li class="p-2 rounded-md very-good-answer"><strong>Excellente (+3) :</strong> ${event.options[answers.veryGood]}</li>
-                        <li class="p-2 rounded-md good-answer"><strong>Bonne (+2) :</strong> ${event.options[answers.good]}</li>
-                        <li class="p-2 rounded-md acceptable-answer"><strong>Acceptable (+1) :</strong> ${event.options[answers.acceptable]}</li>
-                    </ul>
-                    <div class="text-sm mt-2 p-2 explanation"><strong>Justification :</strong> ${event.explanation}</div>
                 </div>`;
-        });
-        correctionWrapper.innerHTML = correctionHTML;
-    }
+            
+            const optionsArray = Object.entries(event.options).map(([key, value]) => ({ key, value }));
+            const shuffledOptions = shuffleArray(optionsArray);
 
-    function generatePDF() {
-        const pdfContent = document.getElementById('pdf-content');
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        const margin = 10;
-        document.getElementById('action-buttons').style.display = 'none';
-        html2canvas(pdfContent, { scale: 2, useCORS: true, width: pdfContent.scrollWidth, height: pdfContent.scrollHeight }).then(canvas => {
-            document.getElementById('action-buttons').style.display = 'grid';
-            const imgData = canvas.toDataURL('image/png');
-            const imgProps = pdf.getImageProperties(imgData);
-            const imgWidth = pdfWidth - margin * 2;
-            const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
-            let heightLeft = imgHeight, position = 0;
-            pdf.addImage(imgData, 'PNG', margin, position + margin, imgWidth, imgHeight);
-            heightLeft -= (pdfHeight - margin * 2);
-            while (heightLeft > 0) {
-                position -= (pdfHeight - margin);
-                pdf.addPage();
-                pdf.addImage(imgData, 'PNG', margin, position + margin, imgWidth, imgHeight);
-                heightLeft -= (pdfHeight - margin * 2);
-            }
-            pdf.save(`Rapport_Simulation_${fullnameInput.value.replace(/ /g, '_')}.pdf`);
-        });
-    }
+            let optionsHTML = '<div class="grid grid-cols-1 md:grid-cols-2 gap-3">';
+            shuffledOptions.forEach(option => {
+                optionsHTML += `<button data-key="${option.key}" class="option-button w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-indigo-100">${option.value}</button>`;
+            });
+            optionsHTML += '</div>';
+            eventOptionsEl.innerHTML = optionsHTML;
+            document.querySelectorAll('.option-button').forEach(button => button.addEventListener('click', handleOptionSelect));
+        }
 
-    function prepareEmail() {
-        const recipient = 'l.amara@ltd-international.com';
-        const subject = `Rapport de simulation - ${fullnameInput.value}`;
-        const scoreText = scoreEl.textContent.trim();
-        
-        let body = `Bonjour,\n\n`;
-        body += `Voici le rapport de performance détaillé pour le candidat ${fullnameInput.value}.\n\n`;
-        body += `--- RAPPORT SOMMAIRE ---\n`;
-        body += `Candidat : ${fullnameInput.value}\n`;
-        body += `Score de performance : ${scoreText}\n`;
-        body += `Analyse : ${feedbackText.textContent}\n\n`;
-        body += `--- REVUE DÉTAILLÉE DES SCÉNARIOS ---\n\n`;
-        userResponses.forEach((resp, index) => {
-            const { event, selected, points, responseTime } = resp;
+        function handleTimeOut() {
+            clearInterval(timerInterval);
+            const event = eventsData[currentEventIndex];
+            userResponses.push({ event, selected: 'timeout', points: 0, responseTime: 60 });
+            
+            eventContentEl.innerHTML += `<div class="mt-4 p-4 rounded-md bg-red-100 text-red-800 font-bold">Temps écoulé ! Vous passez au scénario suivant.</div>`;
+            document.querySelectorAll('.option-button').forEach(button => {
+                button.disabled = true;
+            });
+
+            nextEventBtn.classList.remove('hidden');
+        }
+
+        function handleOptionSelect(e) {
+            clearInterval(timerInterval);
+            const responseTime = (new Date().getTime() - questionStartTime) / 1000;
+            
+            const selectedButton = e.target.closest('button');
+            const selectedKey = selectedButton.dataset.key;
+            const event = eventsData[currentEventIndex];
             const answers = event.answers;
-            let choiceText;
-            let fastResponseNote = responseTime < 5 ? `(Réponse rapide en ${responseTime.toFixed(1)}s)` : '';
+            let points = 0;
 
-            if (selected === 'timeout') {
-                choiceText = `Temps écoulé (0 pts)`;
-            } else {
-                choiceText = `${event.options[selected]} (+${points} pts)`;
+            if (selectedKey === answers.veryGood) points = 3;
+            else if (selectedKey === answers.good) points = 2;
+            else if (selectedKey === answers.acceptable) points = 1;
+            score += points;
+
+            userResponses.push({ event, selected: selectedKey, points, responseTime });
+
+            document.querySelectorAll('.option-button').forEach(button => {
+                button.disabled = true;
+                button.classList.remove('hover:bg-indigo-100');
+                const key = button.dataset.key;
+                if (key === answers.veryGood) button.classList.add('very-good-answer');
+                else if (key === answers.good) button.classList.add('good-answer');
+                else if (key === answers.acceptable) button.classList.add('acceptable-answer');
+                else button.classList.add('bad-answer');
+            });
+            
+            selectedButton.classList.add('selected-choice');
+
+            let explanationHTML = `<div class="explanation mt-4 p-4 rounded-md"><strong>Justification :</strong> ${event.explanation}</div>`;
+            if (responseTime < 5) {
+                explanationHTML += `<div class="mt-2 text-sm text-yellow-600 font-semibold">Note : Réponse très rapide (${responseTime.toFixed(1)}s).</div>`;
             }
+            eventOptionsEl.insertAdjacentHTML('afterend', explanationHTML);
+            nextEventBtn.classList.remove('hidden');
+        }
 
-            body += `----------------------------------------\n`;
-            body += `SCÉNARIO ${index + 1}: [${event.time}] ${event.title}\n`;
-            body += `----------------------------------------\n`;
-            body += `VOTRE ACTION : ${choiceText} ${fastResponseNote}\n\n`;
-            body += `RÉPONSE EXCELLENTE (+3 pts) : ${event.options[answers.veryGood]}\n`;
-            body += `BONNE RÉPONSE (+2 pts) : ${event.options[answers.good]}\n`;
-            body += `RÉPONSE ACCEPTABLE (+1 pt) : ${event.options[answers.acceptable]}\n\n`;
-            body += `JUSTIFICATION : ${event.explanation}\n\n\n`;
-        });
-        body += `Cordialement,\n\nL'équipe de simulation LTD International`;
-        
-        emailBodyTextarea.value = body;
-        const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(subject)}`;
-        openMailerBtn.href = mailtoLink;
-        emailModal.classList.remove('hidden');
-    }
+        function loadNextEvent() {
+            currentEventIndex++;
+            // Clean up explanation divs from previous question
+            const explanationDivs = document.querySelectorAll('.explanation, .text-yellow-600, .bg-red-100');
+            explanationDivs.forEach(div => div.remove());
 
-    function copyEmailBody() {
-        emailBodyTextarea.select();
-        try {
-            document.execCommand('copy');
-            copyEmailBtn.textContent = 'Copié !';
-            setTimeout(() => { copyEmailBtn.textContent = 'Copier le rapport'; }, 2000);
-        } catch (err) { console.error('La copie a échoué', err); copyEmailBtn.textContent = 'Erreur de copie'; }
-    }
+            nextEventBtn.classList.add('hidden');
+            displayEvent();
+        }
 
-    startBtn.addEventListener('click', startSimulation);
-    nextEventBtn.addEventListener('click', loadNextEvent);
-    pdfBtn.addEventListener('click', generatePDF);
-    emailBtn.addEventListener('click', prepareEmail);
-    closeModalBtn.addEventListener('click', () => emailModal.classList.add('hidden'));
-    copyEmailBtn.addEventListener('click', copyEmailBody);
+        function endSimulation() {
+            simulationContainer.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+            const percentage = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
+            candidateNameResult.textContent = fullnameInput.value;
+            scoreEl.textContent = `${percentage}% (${score} / ${maxScore} points)`;
+            
+            if (percentage >= 85) feedbackText.textContent = "Excellente performance ! Vous avez démontré une très bonne compréhension technique et une excellente capacité à gérer les priorités. Votre profil est très prometteur.";
+            else if (percentage >= 65) feedbackText.textContent = "Bonne performance. Vous avez géré la plupart des situations correctement. Quelques décisions pourraient être affinées, mais les bases sont solides.";
+            else if (percentage >= 40) feedbackText.textContent = "Performance moyenne. Certaines situations critiques ont été mal évaluées. Une révision des priorités et de certaines bases techniques serait bénéfique.";
+            else feedbackText.textContent = "Performance insuffisante. Des lacunes importantes ont été observées dans le diagnostic et la gestion des priorités.";
+            
+            renderCorrection();
+        }
+
+        function renderCorrection() {
+            let correctionHTML = '';
+            userResponses.forEach((resp, index) => {
+                const { event, selected, points, responseTime } = resp;
+                let choiceText;
+                let fastResponseNote = '';
+
+                if (responseTime < 5) {
+                    fastResponseNote = `<span class="text-xs text-yellow-600 font-bold ml-2">(Réponse en ${responseTime.toFixed(1)}s)</span>`;
+                }
+
+                if (selected === 'timeout') {
+                    choiceText = `<span class="text-red-600 font-bold">Temps écoulé</span>`;
+                } else {
+                    choiceText = `${event.options[selected]} (+${points} pts)`;
+                }
+
+                const answers = event.answers;
+                correctionHTML += `
+                    <div class="mb-6 p-4 border rounded-lg">
+                        <p class="font-semibold mb-1">${index + 1}. [${event.time}] ${event.title}</p>
+                        <p class="text-sm mb-3">Votre choix : ${choiceText}${fastResponseNote}</p>
+                        <ul class="text-sm space-y-2">
+                            <li class="p-2 rounded-md very-good-answer"><strong>Excellente (+3) :</strong> ${event.options[answers.veryGood]}</li>
+                            <li class="p-2 rounded-md good-answer"><strong>Bonne (+2) :</strong> ${event.options[answers.good]}</li>
+                            <li class="p-2 rounded-md acceptable-answer"><strong>Acceptable (+1) :</strong> ${event.options[answers.acceptable]}</li>
+                        </ul>
+                        <div class="text-sm mt-2 p-2 explanation"><strong>Justification :</strong> ${event.explanation}</div>
+                    </div>`;
+            });
+            correctionWrapper.innerHTML = correctionHTML;
+        }
+
+        function generatePDF() {
+            const actionButtons = document.getElementById('action-buttons');
+            actionButtons.style.display = 'none'; // Hide buttons for capture
+
+            const { jsPDF } = window.jspdf;
+            const pdfContent = document.getElementById('pdf-content');
+            
+            html2canvas(pdfContent, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+            }).then(canvas => {
+                actionButtons.style.display = 'grid'; // Show buttons again
+
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                const canvasAspectRatio = canvas.width / canvas.height;
+                
+                const imgWidth = pdfWidth - 20; // Margin 10mm
+                const imgHeight = imgWidth / canvasAspectRatio;
+                
+                let heightLeft = imgHeight;
+                let position = 0;
+
+                pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+                heightLeft -= (pdfHeight - 20);
+
+                while (heightLeft > 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 10, position - 10, imgWidth, imgHeight);
+                    heightLeft -= (pdfHeight - 20);
+                }
+
+                const fullName = fullnameInput.value.trim().replace(/ /g, '_') || 'candidat';
+                pdf.save(`Rapport_Simulation_${fullName}.pdf`);
+            }).catch(err => {
+                console.error("Erreur lors de la génération du PDF:", err);
+                actionButtons.style.display = 'grid'; // Restore buttons on error
+                // Instead of alert, you could show a message on the page
+            });
+        }
+
+        function prepareEmail() {
+            const recipient = 'l.amara@ltd-international.com';
+            const subject = `Rapport de simulation - ${fullnameInput.value}`;
+            const scoreText = scoreEl.textContent.trim();
+            
+            let body = `Bonjour,\n\n`;
+            body += `Voici le rapport de performance détaillé pour le candidat ${fullnameInput.value}.\n\n`;
+            body += `--- RAPPORT SOMMAIRE ---\n`;
+            body += `Candidat : ${fullnameInput.value}\n`;
+            body += `Score de performance : ${scoreText}\n`;
+            body += `Analyse : ${feedbackText.textContent}\n\n`;
+            body += `--- REVUE DÉTAILLÉE DES SCÉNARIOS ---\n\n`;
+            userResponses.forEach((resp, index) => {
+                const { event, selected, points, responseTime } = resp;
+                const answers = event.answers;
+                let choiceText;
+                let fastResponseNote = responseTime < 5 ? `(Réponse rapide en ${responseTime.toFixed(1)}s)` : '';
+
+                if (selected === 'timeout') {
+                    choiceText = `Temps écoulé (0 pts)`;
+                } else {
+                    choiceText = `${event.options[selected]} (+${points} pts)`;
+                }
+
+                body += `----------------------------------------\n`;
+                body += `SCÉNARIO ${index + 1}: [${event.time}] ${event.title}\n`;
+                body += `----------------------------------------\n`;
+                body += `VOTRE ACTION : ${choiceText} ${fastResponseNote}\n\n`;
+                body += `RÉPONSE EXCELLENTE (+3 pts) : ${event.options[answers.veryGood]}\n`;
+                body += `BONNE RÉPONSE (+2 pts) : ${event.options[answers.good]}\n`;
+                body += `RÉPONSE ACCEPTABLE (+1 pt) : ${event.options[answers.acceptable]}\n\n`;
+                body += `JUSTIFICATION : ${event.explanation}\n\n\n`;
+            });
+            body += `Cordialement,\n\nL'équipe de simulation LTD International`;
+            
+            emailBodyTextarea.value = body;
+            const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(subject)}`;
+            openMailerBtn.href = mailtoLink;
+            emailModal.classList.remove('hidden');
+        }
+
+        function copyEmailBody() {
+            emailBodyTextarea.select();
+            try {
+                document.execCommand('copy');
+                copyEmailBtn.textContent = 'Copié !';
+                setTimeout(() => { copyEmailBtn.textContent = 'Copier le rapport'; }, 2000);
+            } catch (err) { 
+                console.error('La copie a échoué', err); 
+                copyEmailBtn.textContent = 'Erreur de copie'; 
+            }
+        }
+
+        startBtn.addEventListener('click', startSimulation);
+        nextEventBtn.addEventListener('click', loadNextEvent);
+        restartBtn.addEventListener('click', () => window.location.reload());
+        pdfBtn.addEventListener('click', generatePDF);
+        emailBtn.addEventListener('click', prepareEmail);
+        closeModalBtn.addEventListener('click', () => emailModal.classList.add('hidden'));
+        copyEmailBtn.addEventListener('click', copyEmailBody);
     });
     </script>
 </body>
