@@ -377,7 +377,7 @@
             <!-- START OF SIMULATION COMPONENT -->
             <div id="simulation-main-container" class="container mx-auto p-4 sm:p-6 md:p-8 max-w-5xl">
                 <header class="text-center mb-8">
-                    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Simulation de Journée de Travail</h1>
+                    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Simulation de Journée de Travail (Situationel)</h1>
                     <p class="text-lg text-gray-600 mt-2">Poste : Informaticien(ne) Systèmes et Réseaux</p>
                 </header>
 
@@ -403,6 +403,9 @@
                 <div id="simulation-container" class="hidden">
                     <div class="bg-gray-800 text-white p-3 rounded-t-lg flex justify-between items-center">
                         <h2 class="font-bold text-xl">Tableau de Bord</h2>
+                        <div id="progress-display" class="text-lg font-semibold">
+                            Scénario <span id="current-question">1</span> / <span id="total-questions">32</span>
+                        </div>
                         <div class="flex items-center space-x-4">
                             <div id="timer-display" class="text-lg font-semibold bg-red-600 px-3 py-1 rounded">
                                 Temps restant: <span id="timer">60</span>s
@@ -787,6 +790,8 @@
     const copyEmailBtn = document.getElementById('copy-email-btn');
     const openMailerBtn = document.getElementById('open-mailer-btn');
     const closeModalBtn = document.getElementById('close-modal-btn');
+    const currentQuestionEl = document.getElementById('current-question');
+    const totalQuestionsEl = document.getElementById('total-questions');
 
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -805,6 +810,7 @@
         candidateForm.classList.add('hidden');
         simulationContainer.classList.remove('hidden');
         maxScore = eventsData.length * 3;
+        totalQuestionsEl.textContent = eventsData.length;
         eventsData.sort((a, b) => a.time.localeCompare(b.time));
         displayEvent();
     }
@@ -826,6 +832,7 @@
             endSimulation();
             return;
         }
+        currentQuestionEl.textContent = currentEventIndex + 1;
         questionStartTime = new Date().getTime();
         startTimer();
 
