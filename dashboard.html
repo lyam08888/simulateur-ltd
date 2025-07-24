@@ -2,7 +2,6 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <!-- La balise meta viewport est essentielle pour le design responsive. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Tableau de bord de l'utilisateur pour le LTD Simulator.">
     <title>LTD Simulator - Tableau de bord</title>
@@ -21,6 +20,7 @@
             --accent: #f59e0b;
             --accent-dark: #d97706;
             --error: #ef4444;
+            --error-dark: #b91c1c;
             
             /* Surfaces */
             --background: #0f172a;
@@ -408,6 +408,55 @@
         .mega-menu-item:hover .mega-menu-item-text h4 {
             color: var(--primary-light);
         }
+        
+        .btn-connect {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: 0.5rem 1rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            border-radius: var(--radius);
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-connect .text-connect, .btn-connect .text-disconnect {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .btn-connect .text-disconnect {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, 150%);
+            opacity: 0;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        .btn-connect:hover {
+            background: var(--error);
+            border-color: var(--error-dark);
+            color: white;
+        }
+        .btn-connect:hover .text-connect {
+            transform: translateY(-150%);
+            opacity: 0;
+        }
+        .btn-connect:hover .text-disconnect {
+            transform: translate(-50%, -50%);
+            opacity: 1;
+        }
+
+        .connection-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--secondary);
+            border-radius: 50%;
+            box-shadow: 0 0 6px var(--secondary);
+        }
 
         /* --- Contenu Principal --- */
         .main-content { 
@@ -415,7 +464,7 @@
             padding: var(--spacing-xl) var(--spacing-sm); 
             max-width: 1400px; 
             margin-left: auto; 
-            margin-right: auto;
+            margin-right: auto; 
         }
 
         /* --- Dashboard Styles --- */
@@ -434,7 +483,7 @@
             font-size: 1.1rem;
             word-break: break-all;
         }
-        .logout-btn, .login-link-btn {
+        .login-link-btn {
             width: auto;
             padding: 0.8rem 2rem;
             border: none;
@@ -445,16 +494,6 @@
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
-        }
-        .logout-btn {
-            background-color: var(--error);
-            color: white;
-        }
-        .logout-btn:hover {
-            background-color: #b91c1c; /* Darker red */
-            box-shadow: 0 0 15px 0px rgba(239, 68, 68, 0.4);
-        }
-        .login-link-btn {
             background-color: var(--primary);
             color: white;
         }
@@ -594,9 +633,9 @@
                      <input type="search" name="query" placeholder="Rechercher..." aria-label="Rechercher">
                  </form>
                  <ul class="nav-menu">
-                     <li class="nav-item"><a href="dashboard.html" class="nav-link"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
+                     <li class="nav-item"><a href="dashboard.html" class="nav-link active"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
                      <li class="nav-item has-mega-menu">
-                         <a href="#" class="nav-link active" onclick="event.preventDefault();"><i class="fas fa-compass"></i>&nbsp;Explorer</a>
+                         <a href="#" class="nav-link" onclick="event.preventDefault();"><i class="fas fa-compass"></i>&nbsp;Explorer</a>
                          <div class="mega-menu">
                              <div class="mega-menu-grid">
                                  <div class="mega-menu-column">
@@ -644,9 +683,14 @@
                      </li>
                  </ul>
                  <div class="nav-actions">
-                     <button class="logout-btn" onclick="logout()" title="Déconnexion">
-                        <i class="fas fa-sign-out-alt"></i>&nbsp;<span>Déconnexion</span>
-                     </button>
+                    <button class="btn-connect" onclick="logout()" title="Déconnexion">
+                        <span class="text-connect">
+                            <span class="connection-dot"></span>&nbsp;Connecté
+                        </span>
+                        <span class="text-disconnect">
+                            <i class="fas fa-sign-out-alt"></i>&nbsp;Se déconnecter
+                        </span>
+                    </button>
                      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
                          <i class="fas fa-moon" id="themeIcon"></i>
                      </button>
@@ -702,7 +746,7 @@
         // --- Supabase Client Setup ---
         const { createClient } = supabase;
         const supabaseUrl = "https://llujeetuahyabtocjzjl.supabase.co";
-        const supabaseKey = "eyJhbGciOiJIJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdWplZXR1YWh5YWJ0b2NqempsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNTA3NjcsImV4cCI6MjA2ODkyNjc2N30.tnkkUUzl7T5EKD-DJ5fuElwAzBFEUr7shQuLtdACdcY";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdWplZXR1YWh5YWJ0b2NqempsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNTA3NjcsImV4cCI6MjA2ODkyNjc2N30.tnkkUUzl7T5EKD-DJ5fuElwAzBFEUr7shQuLtdACdcY";
         const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
         async function checkSession() {
@@ -712,7 +756,7 @@
             if (error || !session) {
                 // S'il y a une erreur ou pas de session, afficher un message d'erreur au lieu de rediriger.
                 dashboardContent.innerHTML = `
-                    <div class="dashboard-container">
+                    <div class="dashboard-header">
                         <h2>Accès non autorisé</h2>
                         <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">Vous devez être connecté pour accéder à cette page.</p>
                         <a href="connexion.html" class="login-link-btn">Aller à la page de connexion</a>
@@ -800,7 +844,7 @@
             const themeIcon = document.getElementById('themeIcon');
             if (!themeIcon) return;
             document.body.classList.toggle('light-mode', currentTheme === 'light');
-            themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+            themeIcon.className = currentTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
         }
 
         function populateMobileNav() {
