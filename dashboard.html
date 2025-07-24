@@ -1,42 +1,588 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Tableau de bord</title>
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-    button { padding: 10px 20px; background: #d9534f; color: #fff; border: none; cursor: pointer; }
-    button:hover { background: #c9302c; }
-  </style>
+    <meta charset="UTF-8">
+    <!-- La balise meta viewport est essentielle pour le design responsive. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tableau de bord de l'utilisateur pour le LTD Simulator.">
+    <title>LTD Simulator - Tableau de bord</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            /* Colors */
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --secondary: #10b981;
+            --secondary-dark: #059669;
+            --accent: #f59e0b;
+            --accent-dark: #d97706;
+            --error: #ef4444;
+            
+            /* Surfaces */
+            --background: #0f172a;
+            --surface: #1e293b;
+            --surface-elevated: #334155;
+            --surface-hover: #475569;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            
+            /* Text */
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            --shadow-glow: 0 0 15px 0px rgba(99, 102, 241, 0.3);
+
+            /* Animation */
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Spacing */
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            
+            /* Borders */
+            --radius-sm: 0.375rem;
+            --radius: 0.5rem;
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.5rem;
+            --radius-full: 9999px;
+        }
+
+        /* Light mode */
+        body.light-mode {
+            --background: #f1f5f9;
+            --surface: #ffffff;
+            --surface-elevated: #e2e8f0;
+            --surface-hover: #cbd5e1;
+            --glass: rgba(0, 0, 0, 0.05);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --shadow-glow: 0 0 15px 0px rgba(99, 102, 241, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: var(--transition-slow);
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 50% 85%, rgba(245, 158, 11, 0.1) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+            animation: background-pan 30s linear infinite;
+        }
+        
+        @keyframes background-pan {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn, .notification-bell, .logout-btn {
+            cursor: pointer;
+        }
+
+        /* --- Header & Navigation --- */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px) saturate(180%);
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid var(--glass-border);
+            transition: var(--transition);
+        }
+
+        body.light-mode .header {
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-sm); 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 4.5rem;
+            gap: var(--spacing-md);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 800;
+            font-size: 1.2rem; 
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        .logo:hover {
+            transform: scale(1.05);
+            text-shadow: 0 0 10px var(--primary-light);
+        }
+
+        .logo-icon {
+            height: 1.8rem;
+            width: auto;
+            vertical-align: -0.4rem;
+        }
+        
+        .logo-text-extended {
+            display: none;
+        }
+
+        /* --- Mobile Navigation --- */
+        .nav-desktop { 
+            display: none; 
+        } 
+
+        .mobile-toggle {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+        
+        .hamburger { position: relative; width: 1.25rem; height: 1rem; }
+        .hamburger span { position: absolute; left: 0; width: 100%; height: 2px; background: var(--text-primary); border-radius: 1px; transition: var(--transition); }
+        .hamburger span:nth-child(1) { top: 0; }
+        .hamburger span:nth-child(2) { top: 50%; transform: translateY(-50%); }
+        .hamburger span:nth-child(3) { bottom: 0; }
+        .mobile-toggle.active .hamburger span:nth-child(1) { top: 50%; transform: translateY(-50%) rotate(45deg); }
+        .mobile-toggle.active .hamburger span:nth-child(2) { opacity: 0; }
+        .mobile-toggle.active .hamburger span:nth-child(3) { bottom: 50%; transform: translateY(50%) rotate(-45deg); }
+
+        .mobile-menu { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--background); z-index: 999; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: var(--transition-slow); }
+        .mobile-menu.active { opacity: 1; visibility: visible; }
+        .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--spacing-sm); height: 4.5rem; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+        .mobile-menu-close { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-primary); }
+        .mobile-menu-content { flex: 1; padding: var(--spacing-lg) var(--spacing-sm); overflow-y: auto; }
+        .mobile-nav-section-title { color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin: var(--spacing-lg) 0 var(--spacing-md) 0; }
+        .mobile-nav-items { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+        .mobile-nav-item { display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-md); color: var(--text-secondary); text-decoration: none; border-radius: var(--radius-md); }
+        .mobile-nav-item-icon { font-size: 1.25rem; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border-radius: var(--radius); }
+        .mobile-nav-item:hover { background: var(--glass); color: var(--text-primary); }
+
+        /* --- Desktop Navigation --- */
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            list-style: none;
+        }
+        .nav-item { position: relative; }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+        .nav-link:hover {
+            color: var(--text-primary);
+            background: var(--glass);
+        }
+        .nav-link.active {
+            color: var(--text-primary);
+            background: linear-gradient(45deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.2));
+            font-weight: 600;
+        }
+        
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+        .theme-toggle:hover {
+            background: var(--surface-elevated);
+            color: var(--text-primary);
+            transform: rotate(15deg);
+        }
+
+        /* --- Contenu Principal --- */
+        .main-content { 
+            margin-top: 4.5rem; 
+            padding: var(--spacing-xl) var(--spacing-sm); 
+            max-width: 1400px; 
+            margin-left: auto; 
+            margin-right: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 4.5rem);
+        }
+
+        /* --- Dashboard Styles --- */
+        .dashboard-container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--surface);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+
+        .dashboard-container h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+        }
+        
+        #user-email {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-lg);
+            font-size: 1.1rem;
+            word-break: break-all;
+        }
+
+        .logout-btn, .login-link-btn {
+            width: auto;
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 1rem;
+            transition: var(--transition);
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .logout-btn {
+            background-color: var(--error);
+            color: white;
+        }
+        .logout-btn:hover {
+            background-color: #b91c1c; /* Darker red */
+            box-shadow: 0 0 15px 0px rgba(239, 68, 68, 0.4);
+        }
+
+        .login-link-btn {
+            background-color: var(--primary);
+            color: white;
+        }
+        .login-link-btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        /* --- Animations & Utilitaires --- */
+        .toast-notification { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-xl); transform: translateX(calc(100% + var(--spacing-lg))); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1100; backdrop-filter: blur(20px); max-width: 350px; }
+        .toast-notification.show { transform: translateX(0); }
+        .toast-notification-content { display: flex; align-items: flex-start; gap: var(--spacing-sm); }
+        .toast-notification-icon { font-size: 1.25rem; color: var(--primary); margin-top: 2px; }
+        .toast-notification-text { color: var(--text-primary); font-weight: 500; flex: 1; }
+        .toast-notification-close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0; font-size: 1rem; }
+        .toast-notification.success .toast-notification-icon { color: var(--secondary); }
+        .toast-notification.warning .toast-notification-icon { color: var(--accent); }
+        .toast-notification.error .toast-notification-icon { color: var(--error); }
+
+        /* --- Media Queries pour la réactivité --- */
+        @media (min-width: 768px) {
+            .nav-container {
+                padding: 0 var(--spacing-md);
+            }
+            .logo {
+                font-size: 1.2rem;
+            }
+            .logo-icon {
+                height: 2rem;
+            }
+            .main-content {
+                padding: var(--spacing-xl) var(--spacing-md);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .mobile-toggle {
+                display: none;
+            }
+            .nav-desktop {
+                display: flex;
+                align-items: center;
+                flex-grow: 1;
+                justify-content: flex-start; 
+                gap: var(--spacing-sm); 
+            }
+            .nav-menu {
+                gap: var(--spacing-xs); 
+                margin-left: var(--spacing-md);
+            }
+            .nav-actions {
+                margin-left: auto;
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .logo-text-extended {
+                display: inline;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h2>Bienvenue sur votre tableau de bord</h2>
-  <p id="user-email"></p>
-  <button onclick="logout()">Déconnexion</button>
+    
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav-container">
+            <a href="index.html" class="logo">
+                <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
+                    <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
+                    <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+                </svg>
+                <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
+            </a>
+            
+            <!-- Navigation pour ordinateur -->
+            <div class="nav-desktop">
+                 <ul class="nav-menu">
+                     <li class="nav-item"><a href="index.html" class="nav-link"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
+                     <li class="nav-item"><a href="dashboard.html" class="nav-link active"><i class="fas fa-th-large"></i>&nbsp;Tableau de bord</a></li>
+                 </ul>
+                 <div class="nav-actions">
+                     <button class="logout-btn" onclick="logout()" title="Déconnexion">
+                        <i class="fas fa-sign-out-alt"></i>&nbsp;<span>Déconnexion</span>
+                     </button>
+                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
+                         <i class="fas fa-moon" id="themeIcon"></i>
+                     </button>
+                 </div>
+            </div>
 
-  <!-- Supabase JS -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const { createClient } = supabase;
-    const supabaseUrl = "https://llujeetuahyabtocjzjl.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdWplZXR1YWh5YWJ0b2NqempsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNTA3NjcsImV4cCI6MjA2ODkyNjc2N30.tnkkUUzl7T5EKD-DJ5fuElwAzBFEUr7shQuLtdACdcY";
-    const supabaseClient = createClient(supabaseUrl, supabaseKey);
+            <!-- Bouton pour le menu mobile -->
+            <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
+                <span class="hamburger"><span></span><span></span><span></span></span>
+            </button>
+        </nav>
+    </header>
 
-    async function checkSession() {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) {
-        window.location.href = "index.html"; // Redirection si pas connecté
-      } else {
-        document.getElementById("user-email").innerText = "Connecté en tant que : " + session.user.email;
-      }
-    }
+    <!-- Menu Mobile -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <a href="index.html" class="logo">
+                 <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
+                     <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
+                     <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+                 </svg>
+                <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
+            </a>
+            <button class="mobile-menu-close" onclick="toggleMobileMenu()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="mobile-menu-content">
+            <div class="mobile-nav-items">
+                <!-- Les liens de navigation mobile sont insérés ici par JavaScript. -->
+            </div>
+        </div>
+    </div>
 
-    async function logout() {
-      await supabaseClient.auth.signOut();
-      window.location.href = "index.html";
-    }
+    <!-- Contenu Principal -->
+    <main class="main-content">
+        <div class="dashboard-container">
+            <h2>Bienvenue sur votre tableau de bord</h2>
+            <p id="user-email">Chargement des informations...</p>
+            <button class="logout-btn" onclick="logout()">Déconnexion</button>
+        </div>
+    </main>
+    
+    <div class="toast-notification" id="toastNotification">
+        <div class="toast-notification-content">
+            <i class="fas fa-info-circle toast-notification-icon" id="toastNotificationIcon"></i>
+            <span class="toast-notification-text" id="toastNotificationText"></span>
+            <button class="toast-notification-close" onclick="this.parentElement.parentElement.classList.remove('show')"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
 
-    checkSession();
-  </script>
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        "use strict";
+
+        // --- Supabase Client Setup ---
+        const { createClient } = supabase;
+        const supabaseUrl = "https://llujeetuahyabtocjzjl.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdWplZXR1YWh5YWJ0b2NqempsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNTA3NjcsImV4cCI6MjA2ODkyNjc2N30.tnkkUUzl7T5EKD-DJ5fuElwAzBFEUr7shQuLtdACdcY";
+        const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+        async function checkSession() {
+            const { data: { session }, error } = await supabaseClient.auth.getSession();
+            const dashboardContainer = document.querySelector('.dashboard-container');
+
+            if (error || !session) {
+                // S'il y a une erreur ou pas de session, afficher un message d'erreur au lieu de rediriger.
+                // Cela évite les erreurs de navigation dans les environnements de type "sandbox".
+                dashboardContainer.innerHTML = `
+                    <h2>Accès non autorisé</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">Vous devez être connecté pour accéder à cette page.</p>
+                    <a href="connexion.html" class="login-link-btn">Aller à la page de connexion</a>
+                `;
+            } else {
+                // Si l'utilisateur est connecté, afficher son email
+                document.getElementById("user-email").innerText = "Connecté en tant que : " + session.user.email;
+            }
+        }
+
+        async function logout() {
+            showToastNotification('Déconnexion en cours...', 'info');
+            await supabaseClient.auth.signOut();
+            setTimeout(() => {
+                // Utilisation d'une URL relative simple qui est plus robuste.
+                window.location.href = "index.html";
+            }, 1000);
+        }
+
+        // --- UI Logic from Template ---
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+
+        function showToastNotification(message, type = 'info', duration = 3000) {
+            const notification = document.getElementById('toastNotification');
+            const notificationText = document.getElementById('toastNotificationText');
+            const notificationIcon = document.getElementById('toastNotificationIcon');
+            if (!notification || !notificationText || !notificationIcon) return;
+            
+            notification.className = 'toast-notification';
+            notificationIcon.className = 'toast-notification-icon fas';
+
+            switch(type) {
+                case 'success':
+                    notificationIcon.classList.add('fa-check-circle');
+                    notification.classList.add('success');
+                    break;
+                case 'warning':
+                    notificationIcon.classList.add('fa-exclamation-triangle');
+                    notification.classList.add('warning');
+                    break;
+                case 'error':
+                    notificationIcon.classList.add('fa-exclamation-circle');
+                    notification.classList.add('error');
+                    break;
+                default:
+                    notificationIcon.classList.add('fa-info-circle');
+            }
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
+
+        function updateThemeUI() {
+            const themeIcon = document.getElementById('themeIcon');
+            if (!themeIcon) return;
+            document.body.classList.toggle('light-mode', currentTheme === 'light');
+            themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+
+        function populateMobileNav() {
+            const mobileNavContainer = document.querySelector('.mobile-menu .mobile-nav-items');
+            if(!mobileNavContainer) return;
+
+            mobileNavContainer.innerHTML = `
+                <a href="index.html" class="mobile-nav-item">
+                    <div class="mobile-nav-item-icon"><i class="fas fa-home"></i></div><h4>Accueil</h4>
+                </a>
+                <a href="dashboard.html" class="mobile-nav-item">
+                    <div class="mobile-nav-item-icon"><i class="fas fa-th-large"></i></div><h4>Tableau de bord</h4>
+                </a>
+                <h3 class="mobile-nav-section-title">Actions</h3>
+                <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); logout();">
+                    <div class="mobile-nav-item-icon"><i class="fas fa-sign-out-alt"></i></div><h4>Déconnexion</h4>
+                </a>
+                <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); toggleTheme();">
+                    <div class="mobile-nav-item-icon"><i class="fas fa-sun"></i></div><h4>Changer de thème</h4>
+                </a>
+            `;
+        }
+        
+        window.toggleTheme = function() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            updateThemeUI();
+            showToastNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
+        }
+        
+        window.toggleMobileMenu = function() {
+            const mobileToggle = document.getElementById('mobileToggle');
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (!mobileToggle || !mobileMenu) return;
+
+            mobileToggle.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkSession();
+            updateThemeUI();
+            populateMobileNav();
+        });
+    </script>
 </body>
 </html>
