@@ -117,7 +117,7 @@
             100% { background-position: 0% 50%; }
         }
         
-        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn, .notification-bell, .launch-button, .search-button {
+        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn, .notification-bell, .launch-button, .search-button, .btn-connect {
             cursor: pointer;
         }
 
@@ -418,6 +418,8 @@
         .notification-panel.show { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
         body.light-mode .notification-panel { background: rgba(241, 245, 249, 0.9); }
         .notification-panel-header { display: flex; justify-content: space-between; align-items: center; padding: var(--spacing-sm) var(--spacing-md); border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+        .notification-panel-title-wrapper { display: flex; align-items: center; gap: 0.75rem; }
+        .connection-status { width: 10px; height: 10px; background-color: var(--secondary); border-radius: 50%; border: 2px solid var(--surface); box-shadow: 0 0 8px var(--secondary); }
         .notification-panel-header h3 { font-size: 1rem; font-weight: 600; color: var(--text-primary); }
         .notification-panel-header button { background: none; border: none; color: var(--primary); font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: var(--transition); }
         .notification-panel-header button:hover { text-decoration: underline; }
@@ -440,6 +442,32 @@
         .notification-item-time { font-size: 0.75rem; color: var(--text-muted); }
         .notification-list-empty { padding: var(--spacing-xl) var(--spacing-md); text-align: center; color: var(--text-muted); }
         .notification-list-empty i { font-size: 2rem; margin-bottom: var(--spacing-sm); }
+        
+        .btn-connect {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: 0.5rem 1rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            border-radius: var(--radius);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-connect:hover {
+            background: var(--surface-elevated);
+            color: var(--text-primary);
+        }
+
+        .connection-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--secondary);
+            border-radius: 50%;
+            box-shadow: 0 0 6px var(--secondary);
+        }
 
         /* --- Contenu Principal --- */
         .main-content { 
@@ -487,30 +515,6 @@
         .slider-dots { position: absolute; bottom: var(--spacing-md); left: 50%; transform: translateX(-50%); display: flex; gap: 1rem; }
         .slider-dot { width: 0.75rem; height: 0.75rem; border-radius: var(--radius-full); background: var(--glass); border: 1px solid var(--glass-border); cursor: pointer; transition: var(--transition-slow); }
         .slider-dot.active { background: var(--primary); transform: scale(1.3); box-shadow: 0 0 10px var(--primary); }
-
-        .search-section { margin-bottom: var(--spacing-xl); }
-        .search-container { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); display: flex; flex-direction: column; gap: var(--spacing-md); }
-        @media (min-width: 768px) { .search-container { flex-direction: row; align-items: center; } }
-        .search-input-wrapper { position: relative; flex-grow: 1; }
-        .search-input-wrapper i { position: absolute; top: 50%; left: var(--spacing-md); transform: translateY(-50%); color: var(--text-muted); }
-        .search-input-wrapper input { width: 100%; background: var(--background); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 2.5rem; color: var(--text-primary); font-size: 1rem; transition: var(--transition); }
-        .search-input-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); outline: none; }
-        
-        .search-button {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.8rem 2rem;
-            border-radius: var(--radius);
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .search-button:hover {
-            background-color: var(--primary-dark);
-            transform: scale(1.05);
-        }
 
         .simulators-grid .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; }
         .simulator-card { 
@@ -644,7 +648,7 @@
     <!-- Header -->
     <header class="header" id="header">
         <nav class="nav-container">
-            <a href="dashboard.html" class="logo" onclick="event.preventDefault(); navigateTo('dashboard.html');">
+            <a href="index.html" class="logo" onclick="event.preventDefault(); navigateTo('index.html');">
                 <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
                     <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
                     <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
@@ -657,14 +661,14 @@
                     <input type="search" name="query" placeholder="Rechercher..." aria-label="Rechercher">
                 </form>
                 <ul class="nav-menu">
-                    <li class="nav-item"><a href="dashboard.html" class="nav-link" onclick="event.preventDefault(); navigateTo('dashboard.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
+                    <li class="nav-item"><a href="index.html" class="nav-link" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
                     <li class="nav-item has-mega-menu">
                          <a href="#" class="nav-link active" onclick="event.preventDefault();"><i class="fas fa-compass"></i>&nbsp;Explorer</a>
                          <div class="mega-menu">
                              <div class="mega-menu-grid">
                                  <div class="mega-menu-column">
                                      <h3 class="mega-menu-heading">Pratique</h3>
-                                     <a href="connect/simulateur1.html" class="mega-menu-item" onclick="event.preventDefault(); navigateTo('connect/simulateur1.html')"><i class="fas fa-cubes fa-fw item-icon"></i><div class="mega-menu-item-text"><h4>Simulateurs</h4></div></a>
+                                     <a href="simulateur.html" class="mega-menu-item" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-cubes fa-fw item-icon"></i><div class="mega-menu-item-text"><h4>Simulateurs</h4></div></a>
                                      <a href="outils.html" class="mega-menu-item" onclick="event.preventDefault(); navigateTo('outils.html')"><i class="fas fa-wrench fa-fw item-icon"></i><div class="mega-menu-item-text"><h4>Outils</h4></div></a>
                                  </div>
                                  <div class="mega-menu-column">
@@ -686,6 +690,10 @@
                      </li>
                 </ul>
                 <div class="nav-actions">
+                    <button class="btn-connect">
+                        <span class="connection-dot"></span>
+                        Connecté
+                    </button>
                     <div class="notification-bell-wrapper">
                         <button class="notification-bell" id="notificationBell" title="Notifications">
                             <i class="fas fa-bell"></i>
@@ -693,7 +701,7 @@
                         </button>
                         <div class="notification-panel" id="notificationPanel">
                            <div class="notification-panel-header">
-                               <h3>Notifications</h3>
+                               <div class="notification-panel-title-wrapper"><span class="connection-status"></span><h3>Notifications</h3></div>
                                <button id="markAllReadBtn">Tout marquer comme lu</button>
                            </div>
                            <div class="notification-list" id="notificationList"></div>
@@ -713,7 +721,7 @@
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
         <div class="mobile-menu-header">
-            <a href="dashboard.html" class="logo" onclick="event.preventDefault(); toggleMobileMenu(); navigateTo('dashboard.html');">
+            <a href="index.html" class="logo" onclick="event.preventDefault(); toggleMobileMenu(); navigateTo('index.html');">
                 <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
                     <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
                     <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
