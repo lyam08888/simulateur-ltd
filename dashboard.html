@@ -422,8 +422,13 @@
             transition: var(--transition);
             position: relative;
             overflow: hidden;
+            min-width: 140px; /* Pour éviter le redimensionnement */
+            justify-content: center;
         }
         .btn-connect .text-connect, .btn-connect .text-disconnect {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
             transition: transform 0.3s ease, opacity 0.3s ease;
         }
         .btn-connect .text-disconnect {
@@ -432,9 +437,6 @@
             top: 50%;
             transform: translate(-50%, 150%);
             opacity: 0;
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
         }
         .btn-connect:hover {
             background: var(--error);
@@ -685,10 +687,12 @@
                  <div class="nav-actions">
                     <button class="btn-connect" onclick="logout()" title="Déconnexion">
                         <span class="text-connect">
-                            <span class="connection-dot"></span>&nbsp;Connecté
+                            <span class="connection-dot"></span>
+                            <span>Connecté</span>
                         </span>
                         <span class="text-disconnect">
-                            <i class="fas fa-sign-out-alt"></i>&nbsp;Se déconnecter
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Déconnexion</span>
                         </span>
                     </button>
                      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
