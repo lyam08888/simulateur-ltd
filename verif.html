@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Page de confirmation de vérification d'email pour le LTD Simulator.">
+    <title>Email Vérifié - LTD Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            /* Colors */
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --secondary: #10b981; /* Vert pour le succès */
+            --secondary-dark: #059669;
+            --accent: #f59e0b;
+            --accent-dark: #d97706;
+            --error: #ef4444;
+            
+            /* Surfaces */
+            --background: #0f172a;
+            --surface: #1e293b;
+            --surface-elevated: #334155;
+            --surface-hover: #475569;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            
+            /* Text */
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            --shadow-glow: 0 0 15px 0px rgba(99, 102, 241, 0.3);
+
+            /* Animation */
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Spacing */
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            
+            /* Borders */
+            --radius-sm: 0.375rem;
+            --radius: 0.5rem;
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.5rem;
+            --radius-full: 9999px;
+        }
+
+        /* Light mode */
+        body.light-mode {
+            --background: #f1f5f9;
+            --surface: #ffffff;
+            --surface-elevated: #e2e8f0;
+            --surface-hover: #cbd5e1;
+            --glass: rgba(0, 0, 0, 0.05);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --shadow-glow: 0 0 15px 0px rgba(99, 102, 241, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: var(--transition-slow);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 50% 85%, rgba(245, 158, 11, 0.1) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+            animation: background-pan 30s linear infinite;
+        }
+        
+        @keyframes background-pan {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn, .notification-bell, .logout-btn {
+            cursor: pointer;
+        }
+
+        /* --- Header & Navigation (Identique au tableau de bord) --- */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px) saturate(180%);
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid var(--glass-border);
+            transition: var(--transition);
+        }
+
+        body.light-mode .header {
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-sm); 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 4.5rem;
+            gap: var(--spacing-md);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 800;
+            font-size: 1.2rem; 
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        .logo:hover {
+            transform: scale(1.05);
+            text-shadow: 0 0 10px var(--primary-light);
+        }
+
+        .logo-icon {
+            height: 1.8rem;
+            width: auto;
+            vertical-align: -0.4rem;
+        }
+        
+        .logo-text-extended {
+            display: none;
+        }
+        
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+        .theme-toggle:hover {
+            background: var(--surface-elevated);
+            color: var(--text-primary);
+            transform: rotate(15deg);
+        }
+
+        /* --- Contenu Principal --- */
+        .main-content { 
+            margin-top: 4.5rem; 
+            padding: var(--spacing-xl) var(--spacing-sm); 
+            max-width: 1400px; 
+            margin-left: auto; 
+            margin-right: auto;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- Styles pour la page de vérification --- */
+        .verification-container {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: var(--spacing-xl);
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            animation: fade-in-up 0.6s ease-out;
+        }
+
+        @keyframes fade-in-up {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .verification-icon {
+            font-size: 4rem;
+            color: var(--secondary); /* Utilise la couleur secondaire (vert) */
+            margin-bottom: var(--spacing-lg);
+            display: block;
+            animation: icon-pop 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s backwards;
+        }
+
+        @keyframes icon-pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .verification-container h1 {
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            font-weight: 800;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-primary);
+        }
+
+        .verification-container p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .action-btn {
+            width: auto;
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 1rem;
+            transition: var(--transition);
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+        }
+        .action-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* --- Media Queries pour la réactivité --- */
+        @media (min-width: 768px) {
+            .nav-container {
+                padding: 0 var(--spacing-md);
+            }
+            .logo {
+                font-size: 1.2rem;
+            }
+            .logo-icon {
+                height: 2rem;
+            }
+            .main-content {
+                padding: var(--spacing-xl) var(--spacing-md);
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .logo-text-extended {
+                display: inline;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Header Simplifié -->
+    <header class="header" id="header">
+        <nav class="nav-container">
+            <a href="index.html" class="logo">
+                <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
+                    <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
+                    <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+                </svg>
+                <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
+            </a>
+            
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Contenu Principal -->
+    <main class="main-content">
+        <div class="verification-container">
+            <i class="fas fa-check-circle verification-icon"></i>
+            <h1>Vérification Réussie !</h1>
+            <p>
+                Votre adresse e-mail a été confirmée. Vous pouvez maintenant accéder à toutes les fonctionnalités de votre tableau de bord.
+            </p>
+            <a href="dashboard.html" class="action-btn">
+                <i class="fas fa-tachometer-alt"></i>&nbsp; Aller au tableau de bord
+            </a>
+        </div>
+    </main>
+    
+    <script>
+        "use strict";
+
+        // --- Logique de l'interface utilisateur ---
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+
+        function updateThemeUI() {
+            const themeIcon = document.getElementById('themeIcon');
+            if (!themeIcon) return;
+            document.body.classList.toggle('light-mode', currentTheme === 'light');
+            // Mettre à jour l'icône en fonction du thème
+            if (currentTheme === 'light') {
+                themeIcon.className = 'fas fa-moon';
+            } else {
+                themeIcon.className = 'fas fa-sun';
+            }
+        }
+        
+        // Fonction globale pour être appelée depuis le HTML
+        window.toggleTheme = function() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            updateThemeUI();
+        }
+
+        // Initialiser le thème au chargement de la page
+        document.addEventListener('DOMContentLoaded', () => {
+            updateThemeUI();
+        });
+    </script>
+</body>
+</html>
