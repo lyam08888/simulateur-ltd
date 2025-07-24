@@ -1,0 +1,2394 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Grand Chantier - Simulateur Canal Seine-Nord</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js CDN -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap');
+        :root {
+            --bg-main: #111827;
+            --bg-card: #1f2937;
+            --border-color: #374151;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --accent-blue: #3b82f6;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --accent-yellow: #eab308;
+            --accent-purple: #8b5cf6;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Prevent body scroll */
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            grid-template-rows: auto 1fr;
+            grid-template-areas:
+                "header header header"
+                "metrics main log";
+            gap: 1.5rem;
+            height: 100vh;
+            padding: 1.5rem;
+            box-sizing: border-box; /* Include padding in height */
+        }
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr auto; /* Header, Metrics, Main, Log */
+                grid-template-areas:
+                    "header"
+                    "metrics"
+                    "main"
+                    "log";
+                gap: 1rem; /* Smaller gap for mobile */
+                padding: 1rem; /* Smaller padding for mobile */
+                height: auto; /* Allow scrolling on smaller screens */
+                min-height: 100vh;
+            }
+            #metrics-panel {
+                max-height: 250px; /* More constrained height for metrics on mobile */
+                overflow-y: auto;
+            }
+            #log-panel {
+                max-height: 200px; /* More constrained height for log on mobile */
+                overflow-y: auto;
+            }
+            .card {
+                padding: 1rem; /* Smaller card padding on mobile */
+            }
+            .btn {
+                padding: 0.5rem 1rem; /* Smaller button padding on mobile */
+                font-size: 0.875rem; /* Smaller font size for buttons */
+            }
+            h1.text-2xl {
+                font-size: 1.5rem; /* Smaller header font size */
+            }
+            h2.text-xl {
+                font-size: 1.25rem; /* Smaller section title font size */
+            }
+        }
+
+        /* Forced Mobile Layout */
+        main[data-layout-mode="mobile"] .dashboard-grid {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto 1fr auto;
+            grid-template-areas:
+                "header"
+                "metrics"
+                "main"
+                "log";
+            gap: 1rem; /* Forced smaller gap */
+            padding: 1rem; /* Forced smaller padding */
+            height: auto;
+            min-height: 100vh;
+        }
+        main[data-layout-mode="mobile"] #metrics-panel {
+            max-height: 250px; /* Forced more constrained height */
+            overflow-y: auto;
+        }
+        main[data-layout-mode="mobile"] #log-panel {
+            max-height: 200px; /* Forced more constrained height */
+            overflow-y: auto;
+        }
+        main[data-layout-mode="mobile"] .card {
+            padding: 1rem; /* Forced smaller card padding */
+        }
+        main[data-layout-mode="mobile"] .btn {
+            padding: 0.5rem 1rem; /* Forced smaller button padding */
+            font-size: 0.875rem; /* Forced smaller font size for buttons */
+        }
+        main[data-layout-mode="mobile"] h1.text-2xl {
+            font-size: 1.5rem; /* Forced smaller header font size */
+        }
+        main[data-layout-mode="mobile"] h2.text-xl {
+            font-size: 1.25rem; /* Forced smaller section title font size */
+        }
+
+
+        /* Forced Desktop Layout */
+        main[data-layout-mode="desktop"] .dashboard-grid {
+            grid-template-columns: 280px 1fr 320px;
+            grid-template-rows: auto 1fr;
+            grid-template-areas:
+                "header header header"
+                "metrics main log";
+            gap: 1.5rem; /* Default desktop gap */
+            padding: 1.5rem; /* Default desktop padding */
+            height: 100vh;
+            min-height: initial;
+        }
+        main[data-layout-mode="desktop"] #metrics-panel,
+        main[data-layout-mode="desktop"] #log-panel {
+            max-height: initial; /* This will override the media query if active */
+            overflow-y: hidden;
+        }
+        main[data-layout-mode="desktop"] .card {
+            padding: 1.5rem;
+        }
+        main[data-layout-mode="desktop"] .btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+        }
+        main[data-layout-mode="desktop"] h1.text-2xl {
+            font-size: 2rem;
+        }
+        main[data-layout-mode="desktop"] h2.text-xl {
+            font-size: 1.5rem;
+        }
+
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .screen {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(17, 24, 39, 0.9);
+            z-index: 100;
+            transition: opacity 0.3s ease;
+        }
+        .screen-hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .metric-bar-bg { background-color: #374151; }
+        .metric-bar { transition: width 0.5s ease-in-out; }
+        .log-item { border-left: 2px solid var(--border-color); }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem; /* Slightly more rounded */
+            font-weight: 600;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn-primary { background-color: var(--accent-blue); color: white; }
+        .btn-primary:hover { background-color: #2563eb; transform: translateY(-2px); box-shadow: 0 6px 8px rgba(0,0,0,0.15); }
+        .btn-secondary { background-color: var(--border-color); color: white; }
+        .btn-secondary:hover { background-color: #4b5563; transform: translateY(-2px); box-shadow: 0 6px 8px rgba(0,0,0,0.15); }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Floating Layout Toggle Button */
+        #layout-toggle-btn {
+            position: fixed;
+            bottom: 1.5rem; /* 24px */
+            right: 1.5rem; /* 24px */
+            z-index: 50; /* Ensure it's on top */
+            background-color: var(--border-color); /* Matches secondary button style */
+            color: white;
+            padding: 1rem; /* Slightly larger for touch */
+            border-radius: 9999px; /* Fully rounded */
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        #layout-toggle-btn:hover {
+            background-color: #4b5563;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 18px -4px rgba(0,0,0,0.2), 0 6px 8px -3px rgba(0,0,0,0.1);
+        }
+        /* Hide text on small screens for the floating button */
+        @media (max-width: 640px) {
+            #layout-toggle-btn .sm\:inline {
+                display: none;
+            }
+        }
+
+        /* Event Modal Styling */
+        #event-modal {
+            position: absolute;
+            inset: 0;
+            background-color: rgba(31, 41, 55, 0.95);
+            backdrop-filter: blur(8px);
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .event-card {
+            max-width: 800px;
+            width: 90%; /* Responsive width */
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 1.5rem; /* More rounded */
+        }
+        .choice-btn {
+            background-color: #374151;
+            text-align: left;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            transition: background-color 0.2s, border-color 0.2s, transform 0.1s;
+            border: 1px solid #4b5563;
+            width: 100%; /* Full width */
+            margin-bottom: 0.75rem; /* Spacing between choices */
+        }
+        .choice-btn:hover {
+            background-color: #4b5563;
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+        .choice-btn:last-child {
+            margin-bottom: 0;
+        }
+        .urgency-low { border-left: 4px solid var(--accent-green); }
+        .urgency-medium { border-left: 4px solid var(--accent-blue); }
+        .urgency-high { border-left: 4px solid var(--accent-yellow); }
+        .urgency-critical { border-left: 4px solid var(--accent-red); animation: pulse-border 1.5s infinite; }
+        @keyframes pulse-border {
+            0%, 100% { border-color: var(--accent-red); }
+            50% { border-color: #fca5a5; }
+        }
+
+        /* Loading Overlay */
+        #loading-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(17, 24, 39, 0.95);
+            z-index: 101;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            transition: opacity 0.3s ease;
+        }
+        #loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .spinner {
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-top: 8px solid #3b82f6;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Impact Preview Styling */
+        .impact-preview {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.375rem;
+            white-space: nowrap;
+            display: inline-flex; /* To align icon and text */
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .impact-positive {
+            background-color: rgba(34, 197, 94, 0.2); /* green-500 with opacity */
+            color: #22c55e; /* green-500 */
+        }
+        .impact-negative {
+            background-color: rgba(239, 68, 68, 0.2); /* red-500 with opacity */
+            color: #ef4444; /* red-500 */
+        }
+        .impact-neutral {
+            background-color: rgba(156, 163, 175, 0.2); /* gray-400 with opacity */
+            color: #9ca3af; /* gray-400 */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Layout Toggle Button (floating) -->
+    <button id="layout-toggle-btn" class="fixed z-50 bottom-4 right-4 bg-gray-700 text-white p-3 rounded-full shadow-lg flex items-center justify-center gap-2">
+        <i id="layout-mode-icon" class="fa-solid fa-mobile-screen-button"></i> <span id="layout-mode-text" class="hidden sm:inline">Mode Auto</span>
+    </button>
+
+    <!-- Start Screen -->
+    <div id="start-screen" class="screen">
+        <div class="card text-center max-w-2xl p-10 rounded-2xl">
+            <h1 class="text-5xl font-extrabold mb-4 text-white">Le Grand Chantier</h1>
+            <p class="text-xl text-slate-300 mb-8">Vous êtes nommé(e) Directeur des Travaux du Canal Seine-Nord Europe. Un projet titanesque de 7 ans, des responsabilités immenses. Vos décisions façonneront l'avenir. Êtes-vous prêt(e) ?</p>
+            <button id="start-game-btn" class="btn btn-primary text-2xl px-10 py-5">Commencer la mission</button>
+        </div>
+    </div>
+
+    <!-- Game UI -->
+    <main id="game-screen" class="dashboard-grid screen-hidden" data-layout-mode="auto">
+        <header class="card flex items-center justify-between" style="grid-area: header;">
+            <h1 class="text-2xl font-bold text-white">Tableau de Bord - Canal Seine-Nord Europe</h1>
+            <div class="flex items-center gap-6">
+                <!-- Layout Toggle Button was here, now global -->
+                <div class="text-center">
+                    <div class="text-sm text-slate-400">Jour du Projet</div>
+                    <div id="day-display" class="text-2xl font-bold text-white">1</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-sm text-slate-400">Échéancier</div>
+                    <div id="timeline-display" class="text-2xl font-bold text-green-400">En avance</div>
+                </div>
+            </div>
+        </header>
+
+        <aside id="metrics-panel" class="card flex flex-col gap-4" style="grid-area: metrics;">
+            <h2 class="text-xl font-bold border-b border-slate-700 pb-2 text-white">Indicateurs Clés</h2>
+            <div id="metrics-display" class="space-y-5"></div>
+        </aside>
+
+        <section id="main-panel" class="relative" style="grid-area: main;">
+            <div class="card h-full flex flex-col">
+                <h2 class="text-xl font-bold border-b border-slate-700 pb-2 mb-4 text-white">Suivi du Projet</h2>
+                <div id="chart-container" class="flex-grow bg-slate-800 rounded-lg p-4 flex items-center justify-center">
+                   <canvas id="project-chart"></canvas>
+                </div>
+            </div>
+            <!-- Event modal will appear here -->
+            <div id="event-modal" class="hidden"></div>
+        </section>
+
+        <aside id="log-panel" class="card flex flex-col" style="grid-area: log;">
+            <h2 class="text-xl font-bold border-b border-slate-700 pb-2 mb-4 text-white">Journal de Bord</h2>
+            <div id="log-content" class="flex-grow pr-2 flex flex-col justify-between">
+                <div id="current-log-entry" class="space-y-4 overflow-y-auto">
+                    <!-- Current log entry will be displayed here -->
+                </div>
+                <div class="flex justify-between items-center mt-4 pt-4 border-t border-slate-700">
+                    <button id="prev-log-btn" class="btn btn-secondary px-3 py-2 rounded-lg text-sm">
+                        <i class="fa-solid fa-chevron-left"></i> Précédent
+                    </button>
+                    <span id="log-page-indicator" class="text-slate-400 text-sm">0/0</span>
+                    <button id="next-log-btn" class="btn btn-secondary px-3 py-2 rounded-lg text-sm">
+                        Suivant <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+    </main>
+    
+    <!-- Result Screen -->
+    <div id="result-screen" class="screen screen-hidden">
+           <div class="card text-center max-w-2xl p-10 rounded-2xl">
+            <h1 id="result-title" class="text-5xl font-extrabold mb-4 text-white">Fin de Mission</h1>
+            <p id="result-score" class="text-xl text-amber-400 mb-6"></p>
+            <p id="result-description" class="text-lg text-slate-300 mb-8"></p>
+            <div id="result-summary" class="text-left mt-8 p-4 bg-slate-700 rounded-lg">
+                <h3 class="text-xl font-bold mb-2 text-white">Bilan Détaillé</h3>
+                <ul id="summary-list" class="text-slate-300 space-y-1">
+                    <li>Budget final: <span id="summary-budget"></span></li>
+                    <li>Échéancier final: <span id="summary-timeline"></span></li>
+                    <li>Moral de l'équipe: <span id="summary-teamMorale"></span></li>
+                    <li>Opinion publique: <span id="summary-publicOpinion"></span></li>
+                    <li>Soutien politique: <span id="summary-politicalSupport"></span></li>
+                    <li>Risque écologique: <span id="summary-ecoRisk"></span></li>
+                    <li>Innovation: <span id="summary-innovationScore"></span></li>
+                    <li>Relations Parties Prenantes: <span id="summary-stakeholderRelations"></span></li>
+                    <li>Sécurité: <span id="summary-safetyIndex"></span></li>
+                    <li>Disponibilité Ressources: <span id="summary-resourceAvailability"></span></li>
+                    <li>Impact Santé Publique: <span id="summary-publicHealthImpact"></span></li>
+                    <li>Conformité Légale: <span id="summary-legalCompliance"></span></li>
+                </ul>
+            </div>
+            <div id="result-advice" class="text-left mt-8 p-4 bg-slate-700 rounded-lg">
+                <h3 class="text-xl font-bold mb-2 text-white">Conseils d'Amélioration</h3>
+                <p id="advice-text" class="text-slate-300 italic">Pour améliorer votre prochaine mission, analysez attentivement l'impact de chaque décision sur les métriques clés. Priorisez la gestion des risques et la communication pour maintenir l'équilibre du projet.</p>
+            </div>
+            <button id="restart-game-btn" class="btn btn-primary text-xl px-8 py-4 mt-8">Recommencer une mission</button>
+        </div>
+    </div>
+
+    <!-- Loading Overlay for AI Generation -->
+    <div id="loading-overlay" class="hidden">
+        <div class="spinner"></div>
+        <p>Chargement en cours...</p>
+        <p class="text-sm text-slate-400 mt-2">(Cela peut prendre quelques instants)</p>
+    </div>
+
+
+<script>
+(function() {
+    // --- DOM Elements ---
+    const dom = {
+        screens: {
+            start: document.getElementById('start-screen'),
+            game: document.getElementById('game-screen'),
+            result: document.getElementById('result-screen'),
+            loading: document.getElementById('loading-overlay'), 
+        },
+        buttons: {
+            start: document.getElementById('start-game-btn'),
+            restart: document.getElementById('restart-game-btn'),
+            prevLog: document.getElementById('prev-log-btn'),
+            nextLog: document.getElementById('next-log-btn'),
+            layoutToggle: null, // Initialized later
+        },
+        displays: {
+            day: document.getElementById('day-display'),
+            timeline: document.getElementById('timeline-display'),
+            metrics: document.getElementById('metrics-display'),
+            log: document.getElementById('current-log-entry'),
+            logPageIndicator: document.getElementById('log-page-indicator'),
+            eventModal: document.getElementById('event-modal'),
+            result: {
+                title: document.getElementById('result-title'),
+                score: document.getElementById('result-score'),
+                description: document.getElementById('result-description'),
+                advice: document.getElementById('advice-text'), 
+                summary: { 
+                    budget: document.getElementById('summary-budget'),
+                    timeline: document.getElementById('summary-timeline'),
+                    teamMorale: document.getElementById('summary-teamMorale'),
+                    publicOpinion: document.getElementById('summary-publicOpinion'),
+                    politicalSupport: document.getElementById('summary-politicalSupport'),
+                    ecoRisk: document.getElementById('summary-ecoRisk'),
+                    innovationScore: document.getElementById('summary-innovationScore'),
+                    stakeholderRelations: document.getElementById('summary-stakeholderRelations'),
+                    safetyIndex: document.getElementById('summary-safetyIndex'),
+                    resourceAvailability: document.getElementById('summary-resourceAvailability'),
+                    publicHealthImpact: document.getElementById('summary-publicHealthImpact'),
+                    legalCompliance: document.getElementById('summary-legalCompliance'),
+                }
+            },
+            chartCanvas: document.getElementById('project-chart'), // New: Canvas for the chart
+            layoutModeText: document.getElementById('layout-mode-text'),
+            layoutModeIcon: document.getElementById('layout-mode-icon'),
+        }
+    };
+
+    // --- Sound Engine ---
+    const sounds = {
+        clickSynth: null,
+        synth: new Tone.Synth().toDestination(),
+        initialized: false,
+
+        init: async () => {
+            if (!sounds.initialized) {
+                try {
+                    if (Tone.context.state !== 'running') {
+                        await Tone.start();
+                        console.log("Tone.js context started.");
+                    }
+                    sounds.clickSynth = new Tone.MembraneSynth({
+                        pitchDecay: 0.05,
+                        octaves: 2,
+                        envelope: {
+                            attack: 0.001,
+                            decay: 0.4,
+                            sustain: 0.01,
+                            release: 0.8,
+                            attackCurve: "exponential"
+                        }
+                    }).toDestination();
+                    sounds.clickSynth.volume.value = -15;
+
+                    sounds.initialized = true;
+                    console.log("Tone.js synths initialized for sounds.");
+                } catch (e) {
+                    console.error("Error during Tone.js initialization:", e);
+                }
+            }
+        },
+        play: (sound) => {
+            sounds.init();
+
+            const now = Tone.now();
+            if (sounds.initialized) {
+                switch(sound) {
+                    case 'click':
+                        if (sounds.clickSynth) {
+                            sounds.clickSynth.triggerAttackRelease("C4", "16n", now);
+                        }
+                        break;
+                    case 'success': sounds.synth.triggerAttackRelease("C5", "8n", now); break;
+                    case 'error': sounds.synth.triggerAttackRelease("C3", "8n", now); break;
+                    case 'event': sounds.synth.triggerAttackRelease("G4", "8n", now); break;
+                    case 'win': sounds.synth.triggerAttackRelease("C4", "2n", now); break;
+                    case 'lose': sounds.synth.triggerAttackRelease("C2", "1n", now); break;
+                }
+            } else {
+                 console.warn(`Tone.js not fully initialized, cannot play ${sound} sound yet.`);
+            }
+        }
+    };
+
+    // --- Utility Functions ---
+    /**
+     * Shuffles an array in place using the Fisher-Yates (Knuth) algorithm.
+     * @param {Array} array The array to shuffle.
+     * @returns {Array} The shuffled array.
+     */
+    const shuffleArray = (array) => {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+        };
+
+    /**
+     * Creates the HTML string for a single metric display.
+     * @param {string} name The name of the metric.
+     * @param {string} value The current value of the metric.
+     * @param {number} percentage The percentage for the progress bar (0-100).
+     * @param {string} iconClass Font Awesome icon class.
+     * @param {string} colorClass Tailwind color class for the bar (e.g., 'green', 'blue').
+     * @param {boolean} isInverted If true, lower percentage is better (e.g., ecoRisk).
+     * @returns {string} The HTML string.
+     */
+    const createMetricHTML = (name, value, percentage, iconClass, colorClass, isInverted = false) => {
+        let barColor = '';
+        let textColor = '';
+        let displayPercentage = percentage;
+
+        if (isInverted) {
+            if (percentage <= 25) {
+                barColor = 'bg-green-500';
+                textColor = 'text-green-400';
+            } else if (percentage <= 50) {
+                barColor = 'bg-yellow-500';
+                textColor = 'text-yellow-400';
+            } else {
+                barColor = 'bg-red-500';
+                textColor = 'text-red-400';
+            }
+            displayPercentage = 100 - percentage; 
+        } else {
+            if (percentage >= 75) {
+                barColor = `bg-${colorClass}-500`;
+                textColor = `text-${colorClass}-400`;
+            } else if (percentage >= 50) {
+                barColor = `bg-yellow-500`;
+                textColor = `text-yellow-400`;
+            } else {
+                barColor = `bg-red-500`;
+                textColor = `text-red-400`;
+            }
+        }
+
+        const clampedPercentage = Math.max(0, Math.min(100, displayPercentage));
+
+        return `
+            <div data-metric-name="${name.toLowerCase().replace(/\s/g, '')}" class="metric-item">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-sm text-slate-400 flex items-center gap-2">
+                        <i class="fa-solid ${iconClass}"></i> ${name}
+                    </span>
+                    <span class="font-semibold ${textColor}" data-current-value>${value}</span>
+                    <span class="impact-preview hidden"></span>
+                </div>
+                <div class="w-full metric-bar-bg rounded-full h-2.5">
+                    <div class="metric-bar ${barColor} h-2.5 rounded-full" style="width: ${clampedPercentage}%;"></div>
+                </div>
+            </div>
+        `;
+    };
+
+    /**
+     * Adds an entry to the game log.
+     * @param {Object} event The event object.
+     * @param {Object} choice The chosen option object.
+     */
+    const addToLog = (event, choice) => {
+        const logEntry = {
+            day: state.day,
+            title: event.title,
+            choice: choice.text,
+            effects: choice.effects,
+            rationale: choice.rationale,
+            type: event.type
+        };
+        state.log.unshift(logEntry); // Add new entry to the beginning
+        state.currentLogIndex = 0; // Reset to show the newest entry
+        updateDashboard(); 
+    };
+
+    /**
+     * Displays the event modal with the given event details.
+     * @param {Object} event The event object to display.
+     */
+    const showEventModal = (event) => {
+        sounds.play('event');
+        const modalContent = `
+            <div class="event-card card p-6">
+                <div class="flex items-center gap-4 mb-4">
+                    <i class="fa-solid ${event.icon} text-4xl text-blue-400"></i>
+                    <div>
+                        <h3 class="text-xl font-bold text-white">${event.title}</h3>
+                        ${event.source ? `<p class="text-sm text-slate-400">De: ${event.source}</p>` : ''}
+                    </div>
+                </div>
+                <p class="text-slate-300 mb-6">${event.description}</p>
+                <div class="space-y-3" id="event-choices">
+                    ${event.choices.map((choice, index) => `
+                        <button class="choice-btn flex items-center justify-between ${'urgency-' + event.urgency}" data-choice-index="${index}">
+                            <span class="flex-grow text-white">${choice.text}</span>
+                            <span class="text-slate-400 text-xs italic ml-4">${choice.rationale}</span>
+                        </button>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        dom.displays.eventModal.innerHTML = modalContent;
+        dom.displays.eventModal.classList.remove('hidden');
+
+        // Attach event listeners to choice buttons
+        document.querySelectorAll('#event-choices .choice-btn').forEach(button => {
+            const choiceIndex = parseInt(button.dataset.choiceIndex);
+            const choice = event.choices[choiceIndex];
+
+            button.addEventListener('click', () => handleChoice(event, choice));
+            button.addEventListener('mouseenter', () => displayImpacts(choice.effects));
+            button.addEventListener('mouseleave', () => hideImpacts());
+        });
+    };
+
+    /**
+     * Hides the event modal.
+     */
+    const hideEventModal = () => {
+        dom.displays.eventModal.classList.add('hidden');
+        dom.displays.eventModal.innerHTML = ''; // Clear content
+        hideImpacts(); // Ensure impacts are hidden
+    };
+
+    /**
+     * Displays the potential impacts of a choice on the metric bars.
+     * @param {Object} impacts The effects object from a choice.
+     */
+    const displayImpacts = (impacts) => {
+        for (const metricKey in impacts) {
+            const change = impacts[metricKey];
+            // Map metric keys to their display names for selection
+            let metricName = '';
+            switch(metricKey) {
+                case 'budget': metricName = 'budget'; break;
+                case 'timeline': metricName = 'échéancier'; break;
+                case 'teamMorale': metricName = 'moral équipe'; break;
+                case 'publicOpinion': metricName = 'opinion publique'; break;
+                case 'politicalSupport': metricName = 'soutien politique'; break;
+                case 'ecoRisk': metricName = 'risque écologique'; break;
+                case 'innovationScore': metricName = 'innovation'; break;
+                case 'stakeholderRelations': metricName = 'relations parties prenantes'; break;
+                case 'safetyIndex': metricName = 'sécurité'; break;
+                case 'resourceAvailability': metricName = 'disponibilité ressources'; break;
+                case 'publicHealthImpact': metricName = 'impact santé publique'; break;
+                case 'legalCompliance': metricName = 'conformité légale'; break;
+                default: continue; // Skip unknown metrics
+            }
+
+            const metricItem = document.querySelector(`.metric-item[data-metric-name="${metricName.toLowerCase().replace(/\s/g, '')}"]`);
+            if (metricItem) {
+                const impactPreview = metricItem.querySelector('.impact-preview');
+                const icon = change > 0 ? '<i class="fa-solid fa-arrow-up"></i>' : (change < 0 ? '<i class="fa-solid fa-arrow-down"></i>' : '<i class="fa-solid fa-equals"></i>');
+                
+                impactPreview.innerHTML = `${icon} ${Math.abs(change)}`;
+                impactPreview.classList.remove('impact-positive', 'impact-negative', 'impact-neutral', 'hidden');
+
+                // Special handling for ecoRisk and publicHealthImpact (lower is better)
+                if (metricKey === 'ecoRisk' || metricKey === 'publicHealthImpact') {
+                    if (change < 0) { // Negative change to ecoRisk/publicHealthImpact is positive impact
+                        impactPreview.classList.add('impact-positive');
+                    } else if (change > 0) { // Positive change to ecoRisk/publicHealthImpact is negative impact
+                        impactPreview.classList.add('impact-negative');
+                    } else {
+                        impactPreview.classList.add('impact-neutral');
+                    }
+                } else {
+                    if (change > 0) {
+                        impactPreview.classList.add('impact-positive');
+                    } else if (change < 0) {
+                        impactPreview.classList.add('impact-negative');
+                    } else {
+                        impactPreview.classList.add('impact-neutral');
+                    }
+                }
+            }
+        }
+    };
+
+    /**
+     * Hides all impact previews on the metric bars.
+     */
+    const hideImpacts = () => {
+        document.querySelectorAll('.impact-preview').forEach(span => {
+            span.classList.add('hidden');
+            span.classList.remove('impact-positive', 'impact-negative', 'impact-neutral');
+            span.innerHTML = '';
+        });
+    };
+
+    // --- Game Data ---
+    const initialEvents = [
+        {
+            type: 'scenario',
+            urgency: 'medium',
+            title: 'Découverte Archéologique Inattendue',
+            icon: 'fa-landmark',
+            description: "Lors des travaux de terrassement près de Compiègne, les équipes ont mis au jour les fondations d'une villa gallo-romaine. La DRAC (Direction régionale des affaires culturelles) a été alertée. Le chantier est localement à l'arrêt.",
+            choices: [
+                { text: "Collaborer avec la DRAC pour une fouille complète.", rationale: "Respecte la loi et le patrimoine, valorise l'image du projet.", effects: { timeline: -30, budget: -5, publicOpinion: 15, politicalSupport: 5, legalCompliance: 5 } },
+                { text: "Négocier une fouille préventive rapide et limitée.", rationale: "Compromis pour limiter les retards tout en respectant la loi.", effects: { timeline: -10, budget: -2, publicOpinion: 5, politicalSupport: 0, legalCompliance: 2 } },
+                { text: "Tenter de minimiser l'importance de la découverte et faire pression pour une reprise rapide.", rationale: "Risqué, peut entraîner un scandale médiatique et des sanctions.", effects: { timeline: -2, budget: 0, publicOpinion: -20, politicalSupport: -10, legalCompliance: -10 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'high',
+            source: 'Ministère de la Transition Écologique',
+            title: 'URGENT: Dépassement des seuils de turbidité',
+            icon: 'fa-envelope-open-text',
+            description: "Nos capteurs en aval du chantier indiquent des rejets de particules fines dépassant de 200% les normes autorisées, menaçant la faune aquatique de l'Oise. Vous devez prendre des mesures correctives immédiates.",
+            choices: [
+                { text: "Mettre en place des bassins de décantation supplémentaires.", rationale: "Solution technique la plus efficace mais très coûteuse.", effects: { timeline: -5, budget: -8, ecoRisk: -15, politicalSupport: 5, legalCompliance: 5, publicHealthImpact: -10 } },
+                { text: "Réduire la cadence des travaux de 50% le temps que la situation se stabilise.", rationale: "Moins cher mais impacte lourdement le calendrier.", effects: { timeline: -15, budget: -1, ecoRisk: -10, teamMorale: -5, publicHealthImpact: -5 } },
+                { text: "Contester les mesures et commander une contre-expertise.", rationale: "Gagne du temps but risque d'aggraver la situation et les relations politiques.", effects: { timeline: 0, budget: -1, ecoRisk: 10, politicalSupport: -15, legalCompliance: -5, publicHealthImpact: 5 } }
+            ]
+        },
+        {
+            type: 'call',
+            urgency: 'critical',
+            source: 'Chef de Chantier (Secteur 3)',
+            icon: 'fa-phone-volume',
+            description: "Directeur, on a un problème majeur ! Une tête de forage vient de percer une nappe phréatique non répertoriée. Le terrain s'inonde, on doit évacuer le matériel d'urgence !",
+            choices: [
+                { text: "Priorité à la sécurité. Évacuation de tout le personnel et matériel, puis évaluation.", rationale: "La sécurité avant tout.", effects: { timeline: -7, budget: -4, teamMorale: 10, safetyIndex: 10 } },
+                { text: "Tenter de sauver le matériel le plus coûteux avant l'évacuation complète.", rationale: "Risqué pour les équipes mais pourrait sauver des millions.", effects: { timeline: -5, budget: -2, teamMorale: -15, safetyIndex: -10 } },
+                { text: "Déployer immédiatement les pompes d'urgence pour limiter l'inondation.", rationale: "Action rapide mais peut être insuffisante et dangereuse.", effects: { timeline: -3, budget: -6, teamMorale: -5, safetyIndex: -5, ecoRisk: 5 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'low',
+            title: 'Innovation Technologique Proposée',
+            icon: 'fa-lightbulb',
+            description: "Une start-up locale propose une nouvelle méthode de consolidation des sols qui pourrait accélérer certaines phases du chantier, mais elle est coûteuse et non éprouvée à cette échelle.",
+            choices: [
+                { text: "Investir dans la technologie et l'intégrer au projet.", rationale: "Potentiel de gain de temps et d'image, mais risque financier.", effects: { timeline: 20, budget: -10, publicOpinion: 10, ecoRisk: -5, innovationScore: 15, stakeholderRelations: 5 } },
+                { text: "Mener une étude pilote limitée avant toute intégration.", rationale: "Prudent, réduit le risque mais retarde les bénéfices potentiels.", effects: { timeline: -10, budget: -2, publicOpinion: 2, innovationScore: 5 } },
+                { text: "Refuser la proposition, s'en tenir aux méthodes éprouvées.", rationale: "Sécurité maximale, mais manque une opportunité d'innovation.", effects: { timeline: 0, budget: 0, publicOpinion: -5, innovationScore: -5 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'medium',
+            source: 'Syndicat des Ouvriers du BTP',
+            title: 'Conditions de Travail : Demande d\'Amélioration',
+            icon: 'fa-hard-hat',
+            description: "Nous recevons des plaintes concernant les longues heures et le manque de pauses adéquates sur certains secteurs. Le moral des troupes est en baisse. Nous demandons une révision des plannings.",
+            choices: [
+                { text: "Accorder des pauses supplémentaires et réorganiser les équipes.", rationale: "Améliore le moral mais peut impacter le calendrier.", effects: { timeline: -10, teamMorale: 15, budget: -1, safetyIndex: 5 } },
+                { text: "Organiser une réunion pour discuter des préoccupations sans engagement immédiat.", rationale: "Montre de l'écoute mais peut être perçu comme de la temporisation.", effects: { teamMorale: 5, publicOpinion: 2, stakeholderRelations: 5 } },
+                { text: "Renforcer la supervision pour s'assurer du respect des règles existantes.", rationale: "Peut être perçu comme un manque de confiance, risque de tension.", effects: { teamMorale: -10, politicalSupport: -5, safetyIndex: -5 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'medium',
+            title: 'Fluctuation des Prix des Matériaux',
+            icon: 'fa-chart-line',
+            description: "Les prix de l'acier et du béton ont subi une hausse inattendue sur les marchés mondiaux, impactant directement notre budget prévisionnel.",
+            choices: [
+                { text: "Acheter en grande quantité maintenant pour bloquer les prix.", rationale: "Peut économiser à long terme mais immobilise du capital.", effects: { budget: -10, timeline: 0, resourceAvailability: 10 } },
+                { text: "Revoir les spécifications pour utiliser des matériaux alternatifs moins chers.", rationale: "Économise de l'argent mais peut affecter la qualité ou la durabilité.", effects: { budget: 5, publicOpinion: -5, ecoRisk: 5, innovationScore: 5 } },
+                { text: "Négocier de nouveaux contrats avec les fournisseurs actuels.", rationale: "Peut réduire l'impact mais prend du temps.", effects: { budget: -2, timeline: -5, stakeholderRelations: -5 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'low',
+            source: 'Service Communication',
+            title: 'Opportunité de Relations Publiques',
+            icon: 'fa-bullhorn',
+            description: "Un grand média national souhaite réaliser un reportage approfondi sur l'avancement du chantier. C'est une excellente occasion de montrer notre travail.",
+            choices: [
+                { text: "Accueillir l'équipe de tournage et organiser une visite complète.", rationale: "Maximise la visibilité positive mais prend du temps aux équipes.", effects: { publicOpinion: 10, teamMorale: -2, timeline: -1, stakeholderRelations: 5 } },
+                { text: "Proposer une interview à distance avec le directeur du projet.", rationale: "Bon compromis pour la visibilité sans perturber le chantier.", effects: { publicOpinion: 5, stakeholderRelations: 2 } },
+                { text: "Décliner l'offre pour éviter toute distraction.", rationale: "Maintient la concentration mais manque une opportunité positive.", effects: { publicOpinion: -2 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'high',
+            title: 'Intempéries Exceptionnelles',
+            icon: 'fa-cloud-showers-heavy',
+            description: "Des pluies torrentielles et des vents violents ont frappé la région, causant des inondations localisées et endommageant des équipements sur plusieurs sites.",
+            choices: [
+                { text: "Mobiliser toutes les ressources pour réparer rapidement et reprendre les travaux.", rationale: "Minimise les retards mais coûte cher.", effects: { timeline: -10, budget: -7, teamMorale: 5, resourceAvailability: -5 } },
+                { text: "Prioriser la sécurité et la protection de l'environnement avant la reprise.", rationale: "Plus lent mais réduit les risques futurs et améliore l'image.", effects: { timeline: -15, ecoRisk: -10, publicOpinion: 5, safetyIndex: 5, publicHealthImpact: -5 } },
+                { text: "Demander une aide d'urgence au gouvernement pour la reconstruction.", rationale: "Peut alléger le budget mais dépend du soutien politique.", effects: { budget: 3, politicalSupport: -5, resourceAvailability: -10 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'low',
+            title: 'Subvention Européenne Supplémentaire',
+            icon: 'fa-euro-sign',
+            description: "Suite à l'évaluation de l'impact économique régional du projet, une subvention européenne inattendue a été approuvée.",
+            choices: [
+                { text: "Accepter la subvention et l'allouer au budget général.", rationale: "Améliore la stabilité financière du projet.", effects: { budget: 15, politicalSupport: 5 } },
+                { text: "Utiliser la subvention pour des initiatives de développement local.", rationale: "Renforce l'acceptation publique et le moral de l'équipe.", effects: { publicOpinion: 10, teamMorale: 5, stakeholderRelations: 10 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'medium',
+            source: 'ONG Environnementale',
+            title: 'Demande de Transparence sur l\'Impact Faunique',
+            icon: 'fa-paw',
+            description: "Nous avons reçu des rapports d'activistes concernant des perturbations de la faune locale. Nous demandons un rapport détaillé et des mesures compensatoires.",
+            choices: [
+                { text: "Publier un rapport transparent et proposer des actions concrètes.", rationale: "Améliore l'image mais peut révéler des faiblesses.", effects: { publicOpinion: 10, ecoRisk: -5, legalCompliance: 5, stakeholderRelations: 10 } },
+                { text: "Répondre de manière générique et éviter de fournir trop de détails.", rationale: "Maintient la flexibilité mais risque d'augmenter la méfiance.", effects: { publicOpinion: -10, politicalSupport: -5, legalCompliance: -5, stakeholderRelations: -10 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'high',
+            title: 'Grève Inattendue des Transporteurs',
+            icon: 'fa-truck-ramp-box',
+            description: "Une grève nationale des transporteurs bloque l'acheminement de matériaux essentiels vers plusieurs de nos chantiers, menaçant de paralyser les opérations.",
+            choices: [
+                { text: "Négocier directement avec les syndicats locaux pour obtenir des dérogations.", rationale: "Solution rapide mais peut créer un précédent.", effects: { timeline: -10, budget: -3, teamMorale: 5, politicalSupport: -5, resourceAvailability: -10, stakeholderRelations: 5 } },
+                { text: "Mettre en place un plan d'urgence avec des transporteurs alternatifs, même si plus coûteux.", rationale: "Assure la continuité but impacte le budget.", effects: { timeline: -5, budget: -8, resourceAvailability: -5 } },
+                { text: "Suspendre temporairement les travaux affectés et attendre la fin de la grève.", rationale: "Économise de l'argent mais entraîne des retards significatifs.", effects: { timeline: -20, budget: 2, teamMorale: -10, resourceAvailability: 10 } }
+            ]
+        },
+        {
+            type: 'call',
+            urgency: 'medium',
+            source: 'Directeur Financier',
+            icon: 'fa-money-bill-transfer',
+            title: 'Audit Budgétaire Imminent',
+            description: "Le ministère des Finances a annoncé un audit surprise de nos dépenses. Nous devons préparer tous les justificatifs et nous assurer de la conformité de nos comptes.",
+            choices: [
+                { text: "Collaborer pleinement et fournir toutes les informations demandées immédiatement.", rationale: "Assure la transparence et renforce la confiance.", effects: { politicalSupport: 10, budget: 0, legalCompliance: 10 } },
+                { text: "Demander un délai pour organiser les documents, tout en préparant la défense.", rationale: "Gagne du temps pour corriger d'éventuelles erreurs mais peut éveiller les soupçons.", effects: { politicalSupport: -5, timeline: -2, legalCompliance: -5 } },
+                { text: "Engager un cabinet d'audit externe pour une pré-vérification.", rationale: "Coûteux mais minimise les risques de non-conformité.", effects: { budget: -3, politicalSupport: 5, legalCompliance: 5 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'low',
+            title: 'Programme de Formation des Jeunes',
+            icon: 'fa-user-graduate',
+            description: "Une initiative gouvernementale propose de financer des programmes de formation professionnelle pour les jeunes locaux sur nos chantiers. Cela pourrait améliorer notre image et notre main-d'œuvre future.",
+            choices: [
+                { text: "Lancer un vaste programme de formation avec des objectifs ambitieux.", rationale: "Excellent pour l'image et le développement durable, mais demande des ressources.", effects: { publicOpinion: 15, teamMorale: 10, budget: -2, stakeholderRelations: 10, innovationScore: 5 } },
+                { text: "Participer modestement avec quelques places limitées.", rationale: "Bon pour l'image sans trop d'engagement.", effects: { publicOpinion: 5, stakeholderRelations: 5 } },
+                { text: "Décliner l'offre, se concentrer uniquement sur l'avancement du chantier.", rationale: "Économise des ressources mais manque une opportunité sociale.", effects: { publicOpinion: -5, stakeholderRelations: -5 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'critical',
+            source: 'Agence Régionale de Santé',
+            title: 'Alerte Sanitaire sur le Chantier',
+            icon: 'fa-triangle-exclamation',
+            description: "Plusieurs cas de maladie respiratoire ont été signalés parmi le personnel d'un secteur, potentiellement liés à la poussière ou à des matériaux. Une inspection immédiate est requise.",
+            choices: [
+                { text: "Arrêter immédiatement le secteur concerné, tester le personnel et analyser les causes.", rationale: "Priorité à la santé, mais impact majeur sur le calendrier et le budget.", effects: { timeline: -20, budget: -10, teamMorale: 10, publicOpinion: -5, safetyIndex: 10, publicHealthImpact: -15, legalCompliance: 10 } },
+                { text: "Renforcer les mesures de protection et continuer les travaux sous surveillance.", rationale: "Moins d'impact sur le calendrier mais risque d'aggraver la situation et la réputation.", effects: { timeline: -5, teamMorale: -15, publicOpinion: -15, safetyIndex: -10, publicHealthImpact: 10, legalCompliance: -10 } },
+                { text: "Évacuer le personnel non essentiel et procéder à une désinfection rapide.", rationale: "Compromis entre sécurité et continuité, mais peut ne pas résoudre le problème de fond.", effects: { timeline: -10, budget: -5, teamMorale: 0, safetyIndex: 5, publicHealthImpact: -5 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'medium',
+            title: 'Protestation Locale des Agriculteurs',
+            icon: 'fa-tractor',
+            description: "Des agriculteurs locaux bloquent un accès clé au chantier, protestant contre l'expropriation de leurs terres et les compensations jugées insuffisantes.",
+            choices: [
+                { text: "Ouvrir un dialogue immédiat avec les agriculteurs et revoir les offres de compensation.", rationale: "Peut résoudre le conflit mais coûte cher et prend du temps.", effects: { budget: -10, publicOpinion: 10, politicalSupport: 5, timeline: -7, stakeholderRelations: 15 } },
+                { text: "Faire appel aux forces de l'ordre pour débloquer l'accès.", rationale: "Solution rapide mais très négative pour l'image et les relations locales.", effects: { publicOpinion: -20, politicalSupport: -10, teamMorale: -5, stakeholderRelations: -20 } },
+                { text: "Trouver des itinéraires alternatifs pour le matériel, même si plus longs.", rationale: "Maintient l'avancement but augmente les coûts et les délais de transport.", effects: { budget: -5, timeline: -5, resourceAvailability: -5 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'low',
+            source: 'Bureau d\'Études',
+            title: 'Optimisation du Tracé Proposée',
+            icon: 'fa-map-location-dot',
+            description: "Nos ingénieurs ont identifié une légère modification du tracé qui pourrait réduire les coûts et l'impact environnemental sur une section, mais cela nécessiterait de nouvelles autorisations.",
+            choices: [
+                { text: "Lancer la procédure pour les nouvelles autorisations et implémenter l'optimisation.", rationale: "Bénéfices à long terme mais retards administratifs.", effects: { budget: 10, ecoRisk: -10, timeline: -30, innovationScore: 5, legalCompliance: -5 } },
+                { text: "Ignorer la proposition et s'en tenir au plan initial.", rationale: "Évite les complications mais manque une opportunité d'amélioration.", effects: { budget: 0, ecoRisk: 0 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'high',
+            title: 'Pénurie de Main-d\'œuvre Qualifiée',
+            icon: 'fa-user-tie',
+            description: "Nous faisons face à une pénurie croissante d'ingénieurs et de techniciens spécialisés, ce qui ralentit les phases critiques du projet.",
+            choices: [
+                { text: "Lancer une campagne de recrutement agressive avec des salaires compétitifs.", rationale: "Attire les talents mais augmente les coûts de personnel.", effects: { budget: -10, teamMorale: 5, resourceAvailability: -10 } },
+                { text: "Investir dans la formation interne pour qualifier nos équipes existantes.", rationale: "Solution à long terme, améliore le moral but prend du temps.", effects: { timeline: -15, teamMorale: 10, budget: -3, innovationScore: 5 } },
+                { text: "Externaliser certaines tâches à des entreprises spécialisées.", rationale: "Solution rapide mais coûteuse et réduit le contrôle interne.", effects: { budget: -7, timeline: -5, resourceAvailability: -5 } }
+            ]
+        },
+        {
+            type: 'call',
+            urgency: 'medium',
+            source: 'Maire d\'une Commune Traversée',
+            icon: 'fa-city',
+            title: 'Plaintes pour Nuisances Sonores',
+            description: "Les habitants d'une commune proche du chantier se plaignent de nuisances sonores excessives, surtout la nuit. La tension monte et des actions en justice sont envisagées.",
+            choices: [
+                { text: "Réduire les horaires de travail bruyants, même si cela ralentit le projet.", rationale: "Améliore les relations locales but impacte le calendrier.", effects: { publicOpinion: 10, timeline: -10, stakeholderRelations: 10, publicHealthImpact: -5 } },
+                { text: "Installer des écrans acoustiques temporaires et des équipements moins bruyants.", rationale: "Coûteux but efficace pour réduire les plaintes.", effects: { budget: -5, publicOpinion: 5, publicHealthImpact: -3 } },
+                { text: "Organiser une réunion publique pour expliquer la situation et les mesures prises.", rationale: "Montre de l'écoute mais ne résout pas immédiatement le problème de bruit.", effects: { publicOpinion: 2, stakeholderRelations: 5 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'low',
+            title: 'Visite Officielle Imminente',
+            icon: 'fa-handshake-simple',
+            description: "Une délégation de parlementaires et de hauts fonctionnaires a annoncé une visite surprise du chantier la semaine prochaine. C'est une occasion de renforcer le soutien politique.",
+            choices: [
+                { text: "Préparer une présentation impeccable et une visite guidée des zones clés.", rationale: "Maximise l'impact positif mais demande beaucoup de préparation.", effects: { politicalSupport: 15, teamMorale: -2, timeline: -1, publicOpinion: 5, legalCompliance: 5 } },
+                { text: "Se concentrer sur les progrès récents et minimiser les défis.", rationale: "Peut paraître superficiel mais évite les questions difficiles.", effects: { politicalSupport: 5, publicOpinion: 2 } },
+                { text: "Reporter la visite pour se concentrer sur les opérations critiques.", rationale: "Évite les distractions mais peut être perçu négativement.", effects: { politicalSupport: -5 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'medium',
+            source: 'Service Juridique',
+            title: 'Litige Contractuel avec un Fournisseur',
+            icon: 'fa-gavel',
+            description: "Un de nos principaux fournisseurs conteste les termes d'un contrat et menace de suspendre ses livraisons, ce qui pourrait avoir des répercussions graves sur le chantier.",
+            choices: [
+                { text: "Engager une médiation pour résoudre le litige à l'amiable.", rationale: "Moins coûteux et plus rapide que la justice, mais nécessite des concessions.", effects: { budget: -2, timeline: -5, legalCompliance: 5, stakeholderRelations: 5, resourceAvailability: 5 } },
+                { text: "Préparer une action en justice pour faire valoir nos droits.", rationale: "Peut être long et coûteux, mais protège les intérêts du projet.", effects: { budget: -7, timeline: -15, publicOpinion: -5, legalCompliance: 10, stakeholderRelations: -10, resourceAvailability: -10 } },
+                { text: "Céder aux demandes du fournisseur pour éviter l'interruption des livraisons.", rationale: "Assure la continuité but coûte cher.", effects: { budget: -10, resourceAvailability: 10 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'high',
+            title: 'Défaillance Structurelle Mineure',
+            icon: 'fa-triangle-exclamation',
+            description: "Une fissure a été détectée dans une structure temporaire essentielle à l'avancement des travaux. Elle nécessite une intervention rapide pour éviter un effondrement.",
+            choices: [
+                { text: "Arrêter les travaux dans la zone affectée et procéder à une réparation immédiate.", rationale: "Sécurité avant tout, mais entraîne des retards.", effects: { timeline: -10, budget: -5, teamMorale: 5, safetyIndex: 10 } },
+                { text: "Renforcer la structure temporairement pour continuer les travaux en parallèle de la réparation.", rationale: "Moins de retard mais risque accru pour la sécurité.", effects: { timeline: -3, budget: -2, teamMorale: -10, publicOpinion: -5, safetyIndex: -10 } },
+                { text: "Demander une expertise externe avant toute intervention.", rationale: "Prudent but retarde la résolution du problème.", effects: { timeline: -7, budget: -1, innovationScore: 5 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'low',
+            source: 'Association de Pêcheurs',
+            title: 'Demande de Mesures pour la Faune Aquatique',
+            icon: 'fa-fish-fins',
+            description: "Une association locale de pêcheurs s'inquiète de l'impact du chantier sur les populations de poissons et demande des mesures spécifiques pour protéger la faune aquatique.",
+            choices: [
+                { text: "Mettre en place des frayères artificielles et un suivi renforcé.", rationale: "Coûteux mais excellent pour l'image environnementale.", effects: { budget: -3, ecoRisk: -10, publicOpinion: 10, stakeholderRelations: 10 } },
+                { text: "Organiser une rencontre avec l'association pour discuter des préoccupations.", rationale: "Montre de l'écoute mais peut ne pas suffire.", effects: { publicOpinion: 5, stakeholderRelations: 5 } },
+                { text: "Décliner la demande, arguant que les normes sont déjà respectées.", rationale: "Économise des ressources mais risque de conflit.", effects: { publicOpinion: -5, ecoRisk: 5, stakeholderRelations: -5 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'medium',
+            title: 'Découverte de Contamination des Sols',
+            icon: 'fa-biohazard',
+            description: "Des analyses de sol ont révélé une contamination inattendue sur une parcelle, nécessitant un traitement spécial avant de pouvoir poursuivre les travaux.",
+            choices: [
+                { text: "Mettre en place un plan de dépollution complet et sécurisé.", rationale: "Coûteux et long, mais essentiel pour l'environnement et la conformité.", effects: { budget: -15, timeline: -20, ecoRisk: -15, publicOpinion: 5, legalCompliance: 10, publicHealthImpact: -10 } },
+                { text: "Tenter de confiner la zone contaminée et la contourner si possible.", rationale: "Moins coûteux mais risque de propagation et de problèmes futurs.", effects: { budget: -5, timeline: -5, ecoRisk: 10, publicOpinion: -10, publicHealthImpact: 5 } },
+                { text: "Demander une aide financière aux autorités pour la dépollution.", rationale: "Peut alléger le budget mais dépend du soutien politique.", effects: { budget: 5, politicalSupport: -5 } }
+            ]
+        },
+        {
+            type: 'call',
+            urgency: 'high',
+            source: 'Responsable Sécurité',
+            icon: 'fa-person-falling-burst',
+            title: 'Accident du Travail Grave',
+            description: "Un accident grave s'est produit sur le chantier, un ouvrier a été blessé et transporté à l'hôpital. L'inspection du travail est en route.",
+            choices: [
+                { text: "Arrêter immédiatement les travaux sur le secteur, lancer une enquête interne rigoureuse.", rationale: "Priorité à la sécurité et à la transparence, mais impacte le projet.", effects: { timeline: -15, teamMorale: -10, publicOpinion: -10, politicalSupport: -5, safetyIndex: -15, legalCompliance: -10 } },
+                { text: "Assurer le soutien à la victime et à sa famille, puis coopérer pleinement avec l'inspection.", rationale: "Humainement responsable, peut atténuer les conséquences négatives.", effects: { teamMorale: 10, publicOpinion: 5, budget: -2, stakeholderRelations: 5 } },
+                { text: "Tenter de minimiser l'incident pour éviter les répercussions.", rationale: "Extrêmement risqué pour la réputation et les sanctions légales.", effects: { teamMorale: -20, publicOpinion: -20, politicalSupport: -15, safetyIndex: -20, legalCompliance: -20 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'low',
+            title: 'Développement de l\'Art Local',
+            icon: 'fa-palette',
+            description: "Des artistes locaux proposent de créer des fresques ou des sculptures le long du futur canal pour embellir le paysage et impliquer la communauté.",
+            choices: [
+                { text: "Financer et soutenir pleinement le projet artistique.", rationale: "Excellent pour l'image et l'intégration locale, mais coûteux.", effects: { budget: -3, publicOpinion: 15, stakeholderRelations: 10 } },
+                { text: "Proposer un soutien logistique sans financement direct.", rationale: "Bon compromis, montre l'intérêt sans impacter le budget.", effects: { publicOpinion: 5, stakeholderRelations: 5 } },
+                { text: "Décliner l'offre, se concentrer sur l'aspect fonctionnel du canal.", rationale: "Économise des ressources mais manque une opportunité culturelle.", effects: { publicOpinion: -2, stakeholderRelations: -2 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'medium',
+            title: 'Problèmes de Géologie Imprévus',
+            icon: 'fa-mountain',
+            description: "Des sondages supplémentaires révèlent des zones de sol instables non prévues, nécessitant des techniques de renforcement plus complexes et coûteuses.",
+            choices: [
+                { text: "Mettre en œuvre les techniques de renforcement nécessaires sans délai.", rationale: "Assure la stabilité à long terme mais impacte budget et calendrier.", effects: { budget: -12, timeline: -15, innovationScore: 5 } },
+                { text: "Revoir le tracé pour contourner les zones problématiques, si possible.", rationale: "Peut éviter des coûts et retards, mais nécessite de nouvelles autorisations.", effects: { budget: 5, timeline: -20, politicalSupport: -5, ecoRisk: -5 } },
+                { text: "Procéder avec des renforcements minimaux, en acceptant un risque calculé.", rationale: "Économise de l'argent et du temps, mais augmente le risque de défaillance future.", effects: { budget: 3, ecoRisk: 10, safetyIndex: -10 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'low',
+            source: 'Département R&D',
+            title: 'Proposition d\'Équipements Écologiques',
+            icon: 'fa-leaf',
+            description: "Notre département R&D propose d'investir dans de nouveaux équipements de chantier plus silencieux et moins polluants. Cela améliorerait notre empreinte environnementale et notre image.",
+            choices: [
+                { text: "Investir massivement dans ces équipements pour tous les chantiers.", rationale: "Excellent pour l'image et l'environnement, mais très coûteux.", effects: { budget: -10, publicOpinion: 15, ecoRisk: -10, innovationScore: 10, publicHealthImpact: -5 } },
+                { text: "Tester ces équipements sur un seul secteur pilote.", rationale: "Approche prudente, permet d'évaluer les bénéfices avant un déploiement complet.", effects: { budget: -3, publicOpinion: 5, ecoRisk: -3, innovationScore: 5 } },
+                { text: "Reporter l'investissement, les coûts sont trop élevés actuellement.", rationale: "Maintient le budget mais manque une opportunité d'amélioration durable.", effects: { publicOpinion: -5, ecoRisk: 2 } }
+            ]
+        },
+        {
+            type: 'call',
+            urgency: 'critical',
+            source: 'Chef de la Sécurité Informatique',
+            icon: 'fa-shield-halved',
+            title: 'Cyberattaque sur nos Systèmes',
+            description: "Nos systèmes informatiques ont été la cible d'une cyberattaque. Les plannings, les données financières et les communications sont compromis. Le chantier est à l'arrêt !",
+            choices: [
+                { text: "Déconnecter tous les systèmes, engager des experts en cybersécurité et reconstruire.", rationale: "Mesure drastique mais nécessaire pour la sécurité des données, entraîne des retards majeurs.", effects: { timeline: -30, budget: -15, teamMorale: -10, publicOpinion: -10, legalCompliance: -10, innovationScore: -5 } },
+                { text: "Tenter de restaurer les systèmes à partir de sauvegardes récentes.", rationale: "Plus rapide mais risque de persistance de menaces cachées.", effects: { timeline: -10, budget: -5, publicOpinion: -5, legalCompliance: -5 } },
+                { text: "Payer la rançon demandée pour récupérer les données rapidement.", rationale: "Solution rapide mais risquée, ne garantit pas la récupération et encourage les attaques futures.", effects: { budget: -20, publicOpinion: -20, politicalSupport: -15, legalCompliance: -15 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'medium',
+            title: 'Découverte d\'Espèces Protégées',
+            icon: 'fa-frog',
+            description: "Des équipes ont découvert une colonie d'une espèce animale protégée dans une zone du tracé. La loi exige des mesures de protection strictes.",
+            choices: [
+                { text: "Mettre en place un programme de déplacement et de protection de l'espèce.", rationale: "Respecte l'environnement mais coûte cher et retarde le projet.", effects: { budget: -8, timeline: -15, ecoRisk: -10, publicOpinion: 10, legalCompliance: 10, stakeholderRelations: 10 } },
+                { text: "Adapter le tracé pour contourner la zone, si possible.", rationale: "Solution idéale mais peut être très coûteuse et complexe à mettre en œuvre.", effects: { budget: -15, timeline: -25, ecoRisk: -15, publicOpinion: 15, legalCompliance: 15 } },
+                { text: "Demander une dérogation aux autorités, arguant de l'importance du projet.", rationale: "Risqué, peut entraîner des scandales et des sanctions.", effects: { publicOpinion: -20, politicalSupport: -10, ecoRisk: 10, legalCompliance: -10 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'low',
+            source: 'Service des Ressources Humaines',
+            title: 'Enquête de Satisfaction du Personnel',
+            icon: 'fa-face-smile',
+            description: "Les résultats de la dernière enquête de satisfaction révèlent une légère baisse du moral général, mais aussi des points forts sur lesquels capitaliser.",
+            choices: [
+                { text: "Lancer un plan d'action pour améliorer les conditions de travail et la reconnaissance.", rationale: "Améliore le moral et la productivité, but a un coût.", effects: { teamMorale: 10, budget: -2, safetyIndex: 5 } },
+                { text: "Organiser des événements sociaux pour renforcer la cohésion d'équipe.", rationale: "Moins coûteux, bon pour le moral et les relations.", effects: { teamMorale: 5, budget: -1 } },
+                { text: "Communiquer les résultats positifs et ignorer les points négatifs.", rationale: "Peut être perçu comme un manque d'écoute.", effects: { teamMorale: -5, stakeholderRelations: -5 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'medium',
+            title: 'Obstruction par des Vestiges Industriels',
+            icon: 'fa-industry',
+            description: "Lors des excavations, les équipes ont rencontré des fondations massives d'une ancienne usine non répertoriée, nécessitant des méthodes de démolition spéciales.",
+            choices: [
+                { text: "Engager des entreprises spécialisées pour la démolition et l'évacuation.", rationale: "Solution efficace mais coûteuse et prend du temps.", effects: { budget: -10, timeline: -10, ecoRisk: 5, publicHealthImpact: 5 } },
+                { text: "Tenter de démanteler les structures avec les moyens internes.", rationale: "Moins coûteux mais dangereux et très lent.", effects: { budget: -3, timeline: -20, teamMorale: -10, safetyIndex: -10 } },
+                { text: "Revoir le plan pour intégrer ou contourner les vestiges si possible.", rationale: "Peut éviter la démolition mais complexifie le projet.", effects: { budget: 5, timeline: -15, innovationScore: 5 } }
+            ]
+        },
+        {
+            type: 'call',
+            urgency: 'high',
+            source: 'Préfet de Région',
+            icon: 'fa-user-tie',
+            title: 'Pression Politique pour l\'Accélération',
+            description: "Le Préfet vous appelle pour exprimer l'impatience du gouvernement. Il demande une accélération significative du chantier, peu importe les contraintes.",
+            choices: [
+                { text: "Mettre en place des équipes supplémentaires et des heures de travail prolongées.", rationale: "Accélère le projet mais augmente les coûts et risque d'épuisement des équipes.", effects: { timeline: 15, budget: -10, teamMorale: -10, safetyIndex: -5 } },
+                { text: "Identifier les goulots d'étranglement et optimiser les processus existants.", rationale: "Accélère sans surcoût excessif mais demande une analyse approfondie.", effects: { timeline: 10, budget: -2, innovationScore: 5 } },
+                { text: "Expliquer les contraintes techniques et budgétaires, refuser l'accélération forcée.", rationale: "Maintient la stabilité mais peut entraîner une perte de soutien politique.", effects: { politicalSupport: -15, publicOpinion: -5, stakeholderRelations: -5 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'low',
+            title: 'Partenariat avec des Écoles d\'Ingénieurs',
+            icon: 'fa-school',
+            description: "Des écoles d'ingénieurs locales proposent des partenariats pour que leurs étudiants travaillent sur le projet (stages, projets de fin d'études).",
+            choices: [
+                { text: "Accueillir un grand nombre d'étudiants pour des stages longs.", rationale: "Apporte de nouvelles idées et main-d'œuvre à faible coût, bonne image.", effects: { budget: 5, teamMorale: 5, publicOpinion: 10, innovationScore: 10, stakeholderRelations: 10 } },
+                { text: "Proposer des projets de recherche spécifiques en collaboration.", rationale: "Moins d'impact direct mais peut apporter des solutions innovantes à long terme.", effects: { budget: -1, publicOpinion: 5, innovationScore: 5 } },
+                { text: "Décliner l'offre, craignant une surcharge de gestion.", rationale: "Évite les complications mais manque une opportunité de collaboration.", effects: { teamMorale: -2 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'medium',
+            source: 'Service de Maintenance',
+            title: 'Panne Majeure d\'Équipements Clés',
+            icon: 'fa-screwdriver-wrench',
+            description: "Une de nos machines de forage principales est tombée en panne et la réparation prendra plusieurs semaines. Cela va impacter lourdement l'avancement.",
+            choices: [
+                { text: "Louer un équipement de remplacement de haute performance.", rationale: "Minimise le retard mais est très coûteux.", effects: { timeline: -5, budget: -10, resourceAvailability: -10 } },
+                { text: "Réaffecter les équipes sur d'autres tâches en attendant la réparation.", rationale: "Optimise les ressources mais n'évite pas le retard sur la tâche principale.", effects: { timeline: -15, teamMorale: 2 } },
+                { text: "Accélérer la réparation à tout prix, même si cela implique des heures supplémentaires coûteuses.", rationale: "Réduit le temps d'arrêt mais augmente les coûts et le stress des équipes.", effects: { timeline: -7, budget: -5, teamMorale: -5, resourceAvailability: -5 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'high',
+            title: 'Découverte d\'une Cavité Souterraine',
+            icon: 'fa-hole-left',
+            description: "Les équipes ont découvert une vaste cavité souterraine non cartographiée sous le tracé du canal. Cela représente un risque structurel majeur.",
+            choices: [
+                { text: "Remplir la cavité avec des matériaux de consolidation spéciaux.", rationale: "Solution sûre mais extrêmement coûteuse et longue.", effects: { budget: -20, timeline: -30, ecoRisk: 5, safetyIndex: 10 } },
+                { text: "Construire un pont ou une structure de support au-dessus de la cavité.", rationale: "Alternative coûteuse mais peut être plus rapide que le remplissage complet.", effects: { budget: -15, timeline: -20, innovationScore: 5 } },
+                { text: "Modifier le tracé pour contourner la cavité, si possible.", rationale: "Solution radicale, peut être la plus sûre mais implique de nouvelles études et autorisations.", effects: { budget: -10, timeline: -40, politicalSupport: -10, ecoRisk: -5 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'medium',
+            source: 'Service de Prévention des Risques',
+            title: 'Rapport sur les Risques d\'Inondation',
+            icon: 'fa-water',
+            description: "Un nouveau rapport hydrologique indique un risque accru d'inondation dans une zone du chantier en cas de fortes pluies. Nos défenses actuelles pourraient être insuffisantes.",
+            choices: [
+                { text: "Renforcer immédiatement les systèmes de drainage et de protection contre les inondations.", rationale: "Prévient les problèmes futurs mais coûte cher.", effects: { budget: -7, ecoRisk: -10, safetyIndex: 10, publicHealthImpact: -5 } },
+                { text: "Mettre en place un plan d'évacuation d'urgence et de protection du matériel.", rationale: "Moins coûteux mais ne prévient pas l'inondation, seulement ses conséquences.", effects: { teamMorale: -5, publicOpinion: -5, safetyIndex: 5 } },
+                { text: "Ignorer le rapport, le risque est jugé faible par nos experts internes.", rationale: "Économise de l'argent mais prend un risque majeur.", effects: { ecoRisk: 15, publicOpinion: -10, safetyIndex: -10, legalCompliance: -5 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'low',
+            title: 'Proposition d\'Infrastructure Verte',
+            icon: 'fa-tree',
+            description: "Des urbanistes proposent d'intégrer des 'infrastructures vertes' (toits végétalisés, jardins filtrants) le long du canal pour améliorer la biodiversité et l'esthétique.",
+            choices: [
+                { text: "Intégrer ces infrastructures vertes dans le design final.", rationale: "Améliore l'image environnementale et publique, mais augmente les coûts.", effects: { budget: -5, publicOpinion: 10, ecoRisk: -5, innovationScore: 5, stakeholderRelations: 5 } },
+                { text: "Mettre en place un projet pilote sur une petite section.", rationale: "Permet d'évaluer la faisabilité et les bénéfices avant un déploiement plus large.", effects: { budget: -1, publicOpinion: 3, ecoRisk: -1, innovationScore: 2 } },
+                { text: "Refuser la proposition, se concentrer sur la fonctionnalité de base.", rationale: "Économise des coûts mais manque une opportunité d'innovation environnementale.", effects: { publicOpinion: -3 } }
+            ]
+        },
+        {
+            type: 'call',
+            urgency: 'medium',
+            source: 'Représentant des Riverains',
+            icon: 'fa-house-user',
+            title: 'Demande de Compensation pour Perturbations',
+            description: "Des riverains se plaignent de la dégradation de leur qualité de vie (bruit, poussière, trafic) et demandent des compensations financières ou des aménagements.",
+            choices: [
+                { text: "Négocier des compensations équitables et mettre en place des mesures d'atténuation.", rationale: "Améliore les relations locales but coûte cher.", effects: { budget: -5, publicOpinion: 10, stakeholderRelations: 10, publicHealthImpact: -5 } },
+                { text: "Proposer des aménagements non financiers (espaces verts, amélioration des routes locales).", rationale: "Moins coûteux que des compensations directes, mais peut ne pas satisfaire tout le monde.", effects: { publicOpinion: 5, stakeholderRelations: 5 } },
+                { text: "Refuser les demandes, arguant que les nuisances sont temporaires et inévitables.", rationale: "Économise de l'argent mais risque d'escalade du conflit et de mauvaise presse.", effects: { publicOpinion: -15, politicalSupport: -5, stakeholderRelations: -15, legalCompliance: -5 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'high',
+            title: 'Découverte de Matériaux Dangereux',
+            icon: 'fa-radiation',
+            description: "Lors de l'excavation d'une ancienne zone industrielle, des fûts contenant des produits chimiques dangereux ont été découverts. Le site doit être sécurisé et dépollué d'urgence.",
+            choices: [
+                { text: "Engager une équipe spécialisée en dépollution d'urgence.", rationale: "Priorité à la sécurité et à l'environnement, but très coûteux et long.", effects: { budget: -20, timeline: -30, ecoRisk: -20, publicOpinion: 10, safetyIndex: 10, publicHealthImpact: -15, legalCompliance: 10 } },
+                { text: "Tenter de confiner la zone et de la contourner.", rationale: "Moins coûteux et rapide, mais risque de fuites et de problèmes futurs.", effects: { budget: -5, timeline: -5, ecoRisk: 20, publicOpinion: -15, publicHealthImpact: 10, legalCompliance: -10 } },
+                { text: "Demander l'intervention de l'État pour une gestion de crise.", rationale: "Peut alléger le budget mais transfère la responsabilité et peut entraîner des retards.", effects: { budget: 10, politicalSupport: -10, timeline: -10 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'low',
+            source: 'Service Marketing',
+            title: 'Proposition de Naming du Canal',
+            icon: 'fa-lightbulb',
+            description: "Notre équipe marketing propose de lancer un concours national pour trouver un nom plus attractif au canal, afin d'engager le public.",
+            choices: [
+                { text: "Lancer le concours et promouvoir l'engagement citoyen.", rationale: "Excellent pour l'image et l'appropriation publique, faible coût.", effects: { publicOpinion: 10, budget: -1, stakeholderRelations: 5 } },
+                { text: "Rejeter l'idée, le nom actuel est suffisant.", rationale: "Évite les complications mais manque une opportunité de communication.", effects: { publicOpinion: -2 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'medium',
+            title: 'Pression des Lobbyistes Industriels',
+            icon: 'fa-industry',
+            description: "Des lobbyistes de l'industrie du transport fluvial font pression pour modifier certaines spécifications du canal afin de favoriser leurs intérêts, potentiellement au détriment du budget ou de l'environnement.",
+            choices: [
+                { text: "Négocier des compromis qui bénéficient à l'industrie sans compromettre le projet.", rationale: "Maintient le soutien industriel mais peut être complexe.", effects: { politicalSupport: 5, budget: -3, stakeholderRelations: 10 } },
+                { text: "Refuser fermement toute modification qui nuirait aux objectifs initiaux.", rationale: "Protège l'intégrité du projet mais risque de perdre du soutien politique.", effects: { politicalSupport: -10, stakeholderRelations: -10 } },
+                { text: "Demander une étude d'impact approfondie avant toute décision.", rationale: "Gagne du temps et fournit des données, mais retarde la décision.", effects: { timeline: -5, legalCompliance: 5 } }
+            ]
+        },
+        {
+            type: 'call',
+            urgency: 'high',
+            source: 'Ingénieur en Chef',
+            icon: 'fa-hard-hat',
+            title: 'Problème de Qualité sur un Ouvrage Majeur',
+            description: "Des tests de résistance sur un pont clé révèlent des faiblesses structurelles. Il faut le renforcer ou le reconstruire, ce qui aura un impact majeur.",
+            choices: [
+                { text: "Renforcer l'ouvrage avec des techniques avancées.", rationale: "Assure la sécurité mais coûte cher et prend du temps.", effects: { budget: -15, timeline: -20, publicOpinion: -5, safetyIndex: 10, innovationScore: 5 } },
+                { text: "Reconstruire la section défectueuse.", rationale: "Coût et délai maximum, mais garantit une qualité irréprochable.", effects: { budget: -25, timeline: -40, publicOpinion: -10, safetyIndex: 15 } },
+                { text: "Tenter une réparation minimale et espérer que cela tienne.", rationale: "Solution risquée, peut entraîner un effondrement futur et un scandale.", effects: { budget: -5, timeline: -5, publicOpinion: -30, ecoRisk: 10, safetyIndex: -20, legalCompliance: -15 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'low',
+            title: 'Découverte de Fossiles',
+            icon: 'fa-bone',
+            description: "Des ouvriers ont découvert des fossiles d'une espèce préhistorique rare. Les paléontologues demandent l'arrêt des travaux pour fouilles.",
+            choices: [
+                { text: "Collaborer avec les paléontologues pour une fouille rapide et documentée.", rationale: "Bonne image, valorise la science, mais retarde le chantier.", effects: { timeline: -10, publicOpinion: 10, stakeholderRelations: 5 } },
+                { text: "Ignorer la découverte et poursuivre les travaux discrètement.", rationale: "Évite le retard mais risque un scandale scientifique et médiatique.", effects: { publicOpinion: -15, politicalSupport: -5, legalCompliance: -10 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'medium',
+            source: 'Service des Relations Communautaires',
+            title: 'Demande d\'Infrastructure Locale',
+            icon: 'fa-road',
+            description: "Une communauté voisine demande la construction d'une route d'accès ou d'un pont pour faciliter leur quotidien, impacté par le chantier.",
+            choices: [
+                { text: "Accepter la demande et intégrer l'infrastructure au projet.", rationale: "Améliore les relations locales et le soutien public, mais coûte cher.", effects: { budget: -7, publicOpinion: 10, stakeholderRelations: 15 } },
+                { text: "Négocier une solution moins coûteuse ou un financement partagé.", rationale: "Compromis pour satisfaire la communauté sans trop impacter le budget.", effects: { budget: -3, publicOpinion: 5, stakeholderRelations: 10 } },
+                { text: "Refuser la demande, le projet est déjà trop complexe.", rationale: "Économise des ressources mais risque de tensions locales.", effects: { publicOpinion: -10, stakeholderRelations: -10 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'high',
+            title: 'Attaque Médiatique Négative',
+            icon: 'fa-newspaper',
+            description: "Un grand journal national publie une série d'articles très critiques sur la gestion du projet, pointant du doigt les retards, les coûts et l'impact environnemental.",
+            choices: [
+                { text: "Organiser une conférence de presse pour réfuter les accusations et présenter les faits.", rationale: "Contre-attaque directe, mais risquée si les arguments sont faibles.", effects: { publicOpinion: 10, politicalSupport: 5, stakeholderRelations: 5 } },
+                { text: "Engager une campagne de communication positive massive.", rationale: "Améliore l'image à long terme mais coûte cher.", effects: { budget: -5, publicOpinion: 15, politicalSupport: 10 } },
+                { text: "Ignorer les critiques, se concentrer sur le travail.", rationale: "Peut aggraver la perception publique si aucune réponse n'est donnée.", effects: { publicOpinion: -20, politicalSupport: -10, stakeholderRelations: -10 } }
+            ]
+        },
+        {
+            type: 'call',
+            urgency: 'critical',
+            source: 'Ministre des Transports',
+            icon: 'fa-building-columns',
+            title: 'Menace de Retrait de Financement',
+            description: "Le Ministre vous informe que, suite à des problèmes récents, le gouvernement envisage de réduire drastiquement les financements du projet, voire de le suspendre.",
+            choices: [
+                { text: "Présenter un plan d'urgence détaillé pour redresser la situation rapidement.", rationale: "Dernière chance de sauver le projet, demande des efforts intenses.", effects: { budget: -10, timeline: 10, politicalSupport: 20, publicOpinion: 10, teamMorale: 5 } },
+                { text: "Négocier une réduction progressive des objectifs plutôt qu'un arrêt brutal.", rationale: "Sauve une partie du projet mais réduit son ampleur.", effects: { budget: 5, politicalSupport: 10, publicOpinion: 5 } },
+                { text: "Accepter la suspension et préparer la fermeture du chantier.", rationale: "Fin du projet, impact catastrophique sur tous les indicateurs.", effects: { budget: -50, timeline: -100, teamMorale: -50, publicOpinion: -50, politicalSupport: -50, ecoRisk: 20, innovationScore: -20, stakeholderRelations: -20, safetyIndex: -20, resourceAvailability: -20, publicHealthImpact: 20, legalCompliance: -20 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'low',
+            title: 'Opportunité de Partenariat International',
+            icon: 'fa-globe-europe',
+            description: "Une entreprise de construction internationale de renom propose un partenariat pour partager des technologies et des expertises sur le projet.",
+            choices: [
+                { text: "Accepter le partenariat pour bénéficier de l'expertise et des ressources.", rationale: "Peut accélérer et améliorer le projet, mais implique des partages de contrôle.", effects: { timeline: 10, budget: 5, teamMorale: 5, innovationScore: 10, resourceAvailability: 10 } },
+                { text: "Refuser le partenariat pour maintenir le contrôle total du projet.", rationale: "Maintient l'autonomie mais manque une opportunité de renforcement.", effects: { timeline: 0, budget: 0, innovationScore: 0 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'medium',
+            source: 'Service de Gestion des Déchets',
+            title: 'Problème de Capacité de Stockage des Déblais',
+            icon: 'fa-dumpster',
+            description: "Les sites de stockage de déblais approchent de leur capacité maximale. Nous devons trouver de nouvelles solutions rapidement pour éviter un arrêt des travaux d'excavation.",
+            choices: [
+                { text: "Identifier et acquérir de nouveaux terrains pour le stockage.", rationale: "Solution à long terme mais coûteuse et complexe administrativement.", effects: { budget: -8, timeline: -10, publicOpinion: -5, ecoRisk: 5, legalCompliance: -5 } },
+                { text: "Mettre en place un programme de valorisation des déblais (remblaiement, matériaux de construction).", rationale: "Solution écologique et économique à long terme, mais demande des investissements initiaux.", effects: { budget: 5, ecoRisk: -10, publicOpinion: 5, innovationScore: 10, resourceAvailability: 5 } },
+                { text: "Réduire la cadence des excavations pour gérer le flux de déblais.", rationale: "Solution temporaire qui ralentit le projet.", effects: { timeline: -15, resourceAvailability: 10 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'high',
+            title: 'Découverte d\'une Faille Géologique Active',
+            icon: 'fa-earth-americas',
+            description: "Des études géotechniques approfondies révèlent une faille géologique active traversant une section critique du tracé. Cela représente un risque sismique majeur.",
+            choices: [
+                { text: "Concevoir et construire des ouvrages parasismiques complexes.", rationale: "Assure la sécurité mais est extrêmement coûteux et retarde considérablement.", effects: { budget: -25, timeline: -40, ecoRisk: 5, safetyIndex: 15, innovationScore: 10 } },
+                { text: "Modifier le tracé pour contourner la faille, si possible.", rationale: "Peut être la solution la plus sûre, mais implique des changements majeurs et de nouvelles autorisations.", effects: { budget: -15, timeline: -50, politicalSupport: -10, ecoRisk: -5, legalCompliance: -10 } },
+                { text: "Renforcer la zone avec des injections de béton et un suivi constant.", rationale: "Moins coûteux mais ne garantit pas une sécurité absolue en cas de séisme majeur.", effects: { budget: -10, ecoRisk: 10, safetyIndex: -10 } }
+            ]
+        },
+        {
+            type: 'call',
+            urgency: 'critical',
+            source: 'Service de Renseignement',
+            icon: 'fa-user-secret',
+            title: 'Menace de Sabotage',
+            description: "Nos services de renseignement ont intercepté des informations crédibles concernant une menace de sabotage ciblant le chantier par un groupe extrémiste.",
+            choices: [
+                { text: "Renforcer drastiquement la sécurité sur tous les sites.", rationale: "Priorité à la protection, mais coûte très cher et peut impacter le moral.", effects: { budget: -10, teamMorale: -5, safetyIndex: 15, publicOpinion: -5 } },
+                { text: "Collaborer étroitement avec les forces de l'ordre pour déjouer le complot.", rationale: "Solution discrète et efficace, mais demande une coordination intense.", effects: { politicalSupport: 10, legalCompliance: 10 } },
+                { text: "Fermer temporairement les sites les plus vulnérables.", rationale: "Sécurité maximale but impacte lourdement le calendrier.", effects: { timeline: -20, teamMorale: -10, safetyIndex: 10 } }
+            ]
+        },
+        // --- NOUVEAUX ÉVÉNEMENTS SUPPLÉMENTAIRES ---
+        {
+            type: 'scenario',
+            urgency: 'medium',
+            title: 'Développement d\'une nouvelle Zone Humide',
+            icon: 'fa-water-ladder',
+            description: "Des études environnementales révèlent la formation d'une nouvelle zone humide de grande valeur écologique sur une partie du tracé. Cela pourrait nécessiter une révision des plans.",
+            choices: [
+                { text: "Protéger intégralement la zone humide et adapter le tracé.", rationale: "Excellent pour l'environnement et l'image, mais coûteux et long.", effects: { budget: -15, timeline: -25, ecoRisk: -15, publicOpinion: 15, legalCompliance: 10 } },
+                { text: "Tenter de minimiser l'impact en la traversant avec des structures spéciales.", rationale: "Compromis, moins coûteux mais risque environnemental et de réputation.", effects: { budget: -5, timeline: -10, ecoRisk: 5, publicOpinion: -5 } },
+                { text: "Contester la classification de la zone pour éviter les contraintes.", rationale: "Risqué, peut entraîner des sanctions légales et une mauvaise presse.", effects: { publicOpinion: -20, politicalSupport: -10, legalCompliance: -15 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'low',
+            source: 'Service Juridique',
+            title: 'Proposition de Réglementation Simplifiée',
+            icon: 'fa-file-contract',
+            description: "Le gouvernement propose une simplification des procédures administratives pour les grands projets d'infrastructure. Cela pourrait accélérer certaines phases du chantier.",
+            choices: [
+                { text: "Soutenir activement la proposition et aider à sa mise en œuvre.", rationale: "Peut faire gagner du temps et de l'argent, renforce le soutien politique.", effects: { timeline: 10, budget: 3, politicalSupport: 10, legalCompliance: 5 } },
+                { text: "Adopter une position neutre, observant les effets sur d'autres projets.", rationale: "Prudent, mais manque l'opportunité de bénéficier des avantages rapidement.", effects: { timeline: 0 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'high',
+            title: 'Pénurie Mondiale de Carburant',
+            icon: 'fa-gas-pump',
+            description: "Une crise géopolitique a entraîné une forte hausse des prix du carburant et des difficultés d'approvisionnement, impactant directement nos engins de chantier.",
+            choices: [
+                { text: "Investir dans des carburants alternatifs ou des équipements plus économes.", rationale: "Coûteux à court terme mais durable et bon pour l'image.", effects: { budget: -10, ecoRisk: -5, innovationScore: 10, resourceAvailability: 5 } },
+                { text: "Réduire l'activité des engins les moins prioritaires.", rationale: "Économise du carburant mais ralentit le projet.", effects: { timeline: -15, resourceAvailability: 10 } },
+                { text: "Demander des quotas d'approvisionnement prioritaires au gouvernement.", rationale: "Peut aider but dépend du soutien politique et peut créer des tensions.", effects: { politicalSupport: -5, resourceAvailability: 10 } }
+            ]
+        },
+        {
+            type: 'call',
+            urgency: 'medium',
+            source: 'Responsable de la Santé et Sécurité',
+            icon: 'fa-first-aid',
+            title: 'Augmentation des Incidents Mineurs',
+            description: "Nous observons une augmentation des petits accidents et incidents sur le chantier, signe d'une baisse de vigilance ou de fatigue du personnel.",
+            choices: [
+                { text: "Renforcer les formations à la sécurité et les pauses obligatoires.", rationale: "Améliore la sécurité et le moral, mais a un coût et peut ralentir.", effects: { teamMorale: 10, safetyIndex: 10, budget: -2, timeline: -5 } },
+                { text: "Mettre en place des primes pour les équipes sans incident.", rationale: "Motive mais peut masquer des problèmes et coûte cher.", effects: { teamMorale: 5, safetyIndex: 5, budget: -3 } },
+                { text: "Augmenter la pression sur les chefs d'équipe pour plus de rigueur.", rationale: "Peut être contre-productif et nuire au moral.", effects: { teamMorale: -10, safetyIndex: -5 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'low',
+            title: 'Candidature au Prix de l\'Innovation Durable',
+            icon: 'fa-award',
+            description: "Le projet Canal Seine-Nord Europe a été présélectionné pour un prestigieux prix européen de l'innovation durable. Une opportunité de reconnaissance internationale.",
+            choices: [
+                { text: "Préparer une candidature solide et mettre en avant nos initiatives vertes.", rationale: "Renforce l'image, le soutien politique et l'innovation.", effects: { publicOpinion: 10, politicalSupport: 5, innovationScore: 5, ecoRisk: -5 } },
+                { text: "Ne pas participer, se concentrer sur l'avancement du chantier.", rationale: "Économise des ressources mais manque une opportunité majeure.", effects: { publicOpinion: -2 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'critical',
+            source: 'Syndicat des Riverains',
+            title: 'Action en Justice Collective pour Nuisances',
+            icon: 'fa-scale-balanced',
+            description: "Un collectif de riverains a déposé une action en justice collective contre le projet pour nuisances sonores, vibrations et dégradations des habitations.",
+            choices: [
+                { text: "Proposer un accord à l'amiable avec des compensations substantielles.", rationale: "Évite un procès long et coûteux, mais impacte le budget et crée un précédent.", effects: { budget: -15, publicOpinion: 5, legalCompliance: -5, stakeholderRelations: 10 } },
+                { text: "Préparer une défense juridique solide et contester les allégations.", rationale: "Peut faire gagner le procès mais coûte cher et nuit à l'image pendant longtemps.", effects: { budget: -10, publicOpinion: -15, legalCompliance: 10, stakeholderRelations: -15 } },
+                { text: "Arrêter temporairement les travaux les plus bruyants pour apaiser la situation.", rationale: "Réduit les nuisances mais entraîne des retards majeurs.", effects: { timeline: -20, publicOpinion: 0 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'medium',
+            title: 'Découverte d\'un Gisement de Matériaux Rares',
+            icon: 'fa-gem',
+            description: "Lors des excavations, un gisement inattendu de sable de haute qualité a été découvert, utilisable pour le bétonnage. Cela pourrait réduire nos coûts d'approvisionnement.",
+            choices: [
+                { text: "Exploiter le gisement pour les besoins du projet.", rationale: "Réduit les coûts et améliore la disponibilité des ressources.", effects: { budget: 10, resourceAvailability: 15 } },
+                { text: "Vendre l'excédent du gisement pour générer des revenus supplémentaires.", rationale: "Maximise les profits mais peut entraîner des complications logistiques.", effects: { budget: 15, publicOpinion: -2 } },
+                { text: "Protéger le gisement pour une exploitation future ou pour des raisons écologiques.", rationale: "Manque une opportunité économique mais peut améliorer l'image environnementale.", effects: { ecoRisk: -5, publicOpinion: 5 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'low',
+            source: 'Département Communication',
+            title: 'Demande de Contenu pour Réseaux Sociaux',
+            icon: 'fa-share-nodes',
+            description: "Notre équipe de communication demande plus de photos et vidéos de l'avancement du chantier pour alimenter nos réseaux sociaux et maintenir l'engagement du public.",
+            choices: [
+                { text: "Dédier une petite équipe pour produire du contenu régulier et de qualité.", rationale: "Améliore l'image et l'engagement public, mais demande des ressources.", effects: { publicOpinion: 5, budget: -1, teamMorale: 2 } },
+                { text: "Utiliser le contenu existant et le recycler.", rationale: "Moins d'effort mais peut paraître répétitif.", effects: { publicOpinion: 1 } },
+                { text: "Refuser, les équipes sont trop occupées par le travail de terrain.", rationale: "Maintient la concentration mais manque une opportunité de visibilité.", effects: { publicOpinion: -2 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'high',
+            title: 'Effondrement Partiel d\'un Tunnel',
+            icon: 'fa-mountain-sun',
+            description: "Un effondrement partiel s'est produit dans un tunnel en construction, piégeant des équipements et nécessitant une opération de sauvetage complexe. La sécurité est compromise.",
+            choices: [
+                { text: "Lancer une opération de sauvetage immédiate, priorité aux vies humaines.", rationale: "La sécurité avant tout, mais coûte cher et retarde énormément.", effects: { timeline: -25, budget: -15, teamMorale: 10, safetyIndex: -10, publicOpinion: -10, politicalSupport: -5 } },
+                { text: "Stabiliser la zone avant toute intervention pour minimiser les risques supplémentaires.", rationale: "Plus sûr mais retarde le sauvetage et augmente le stress des équipes.", effects: { timeline: -30, teamMorale: -15, safetyIndex: 5 } },
+                { text: "Faire appel à des équipes de secours spécialisées externes.", rationale: "Efficace mais très coûteux et peut entraîner des retards administratifs.", effects: { budget: -20, timeline: -15, resourceAvailability: -5 } }
+            ]
+        },
+        {
+            type: 'call',
+            urgency: 'medium',
+            source: 'Chef de Projet Adjoint',
+            icon: 'fa-user-gear',
+            title: 'Problèmes de Coordination Inter-Équipes',
+            description: "Des frictions et des retards sont apparus entre différentes équipes travaillant sur des sections adjacentes du canal. La coordination est inefficace.",
+            choices: [
+                { text: "Organiser des ateliers de team-building et renforcer la communication.", rationale: "Améliore la cohésion et l'efficacité à long terme, mais prend du temps.", effects: { teamMorale: 10, timeline: -5, stakeholderRelations: 5 } },
+                { text: "Mettre en place un système de gestion de projet centralisé et strict.", rationale: "Améliore la coordination mais peut être perçu comme autoritaire.", effects: { teamMorale: -5, timeline: 5, innovationScore: 5 } },
+                { text: "Ignorer les problèmes, espérant qu'ils se résolvent d'eux-mêmes.", rationale: "Économise des efforts mais risque d'aggraver les tensions et les retards.", effects: { teamMorale: -10, timeline: -10 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'low',
+            title: 'Journée Portes Ouvertes sur le Chantier',
+            icon: 'fa-door-open',
+            description: "La municipalité propose d'organiser une journée portes ouvertes pour les habitants afin de leur faire découvrir l'avancement du projet.",
+            choices: [
+                { text: "Soutenir pleinement l'initiative et organiser une visite attrayante.", rationale: "Excellent pour l'opinion publique et les relations locales.", effects: { publicOpinion: 15, stakeholderRelations: 10, teamMorale: 5 } },
+                { text: "Limiter l'accès à une zone sécurisée et présenter des vidéos.", rationale: "Moins d'impact mais réduit les risques et la logistique.", effects: { publicOpinion: 5 } },
+                { text: "Décliner l'offre pour éviter les perturbations.", rationale: "Maintient la concentration mais manque une opportunité positive.", effects: { publicOpinion: -5 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'medium',
+            source: 'Fournisseur Principal',
+            title: 'Augmentation des Délais de Livraison',
+            icon: 'fa-truck-fast',
+            description: "Notre principal fournisseur de béton annonce une augmentation significative de ses délais de livraison en raison de problèmes de production. Cela affectera notre approvisionnement.",
+            choices: [
+                { text: "Rechercher des fournisseurs alternatifs immédiatement.", rationale: "Assure la continuité mais peut être plus coûteux ou de moindre qualité.", effects: { budget: -5, resourceAvailability: -10 } },
+                { text: "Négocier des pénalités de retard avec le fournisseur actuel.", rationale: "Compense les pertes mais ne résout pas le problème d'approvisionnement.", effects: { budget: 2, legalCompliance: 5 } },
+                { text: "Ajuster le calendrier du projet pour tenir compte des nouveaux délais.", rationale: "Réaliste mais entraîne des retards.", effects: { timeline: -10 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'high',
+            title: 'Découverte de Munitions Non Explosées',
+            icon: 'fa-bomb',
+            description: "Lors de travaux de dragage, des munitions datant de la Seconde Guerre Mondiale ont été découvertes. Le site est sécurisé, mais les travaux sont à l'arrêt et une intervention spécialisée est requise.",
+            choices: [
+                { text: "Contacter les démineurs de l'armée et sécuriser la zone à tout prix.", rationale: "Priorité absolue à la sécurité, mais coûte cher et retarde énormément.", effects: { timeline: -15, budget: -10, safetyIndex: 15, publicHealthImpact: -10 } },
+                { text: "Tenter de déplacer les munitions avec des équipes internes expérimentées.", rationale: "Extrêmement risqué, mais pourrait accélérer la reprise des travaux.", effects: { timeline: -5, safetyIndex: -20, legalCompliance: -15 } },
+                { text: "Faire pression pour une intervention rapide, minimisant le temps d'arrêt.", rationale: "Peut accélérer mais risque de compromettre la sécurité si la procédure est bâclée.", effects: { timeline: -10, politicalSupport: -5 } }
+            ]
+        },
+        {
+            type: 'call',
+            urgency: 'critical',
+            source: 'Ministre de l\'Intérieur',
+            icon: 'fa-shield-alt',
+            title: 'Menace de Sécurité Nationale',
+            description: "Le chantier est identifié comme une cible potentielle dans le cadre d'une menace de sécurité nationale. Des mesures de sécurité exceptionnelles sont exigées.",
+            choices: [
+                { text: "Mettre en place un dispositif de sécurité renforcé et des contrôles stricts.", rationale: "Assure la sécurité mais impacte le budget et la fluidité du chantier.", effects: { budget: -15, teamMorale: -5, safetyIndex: 20, timeline: -5 } },
+                { text: "Fermer temporairement les zones à haut risque et rediriger les opérations.", rationale: "Sécurité maximale but retards majeurs et impact sur le moral.", effects: { timeline: -30, teamMorale: -10, publicOpinion: -10 } },
+                { text: "Collaborer étroitement avec les services de renseignement pour une approche ciblée.", rationale: "Moins intrusif mais demande une confiance totale et une coordination parfaite.", effects: { politicalSupport: 15, legalCompliance: 10 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'low',
+            title: 'Développement de Nouvelles Compétences',
+            icon: 'fa-brain',
+            description: "Une opportunité se présente de former nos équipes aux dernières techniques de construction numérique (BIM, jumeaux numériques). Cela pourrait améliorer l'efficacité future.",
+            choices: [
+                { text: "Investir massivement dans la formation et les outils numériques.", rationale: "Améliore l'innovation et la productivité à long terme, mais coûte cher et prend du temps.", effects: { budget: -5, timeline: -5, innovationScore: 15, teamMorale: 5 } },
+                { text: "Proposer des formations optionnelles pour les plus motivés.", rationale: "Moins d'impact mais permet une adoption progressive.", effects: { innovationScore: 5 } },
+                { text: "Reporter l'investissement, les priorités sont ailleurs.", rationale: "Économise de l'argent mais manque une opportunité de modernisation.", effects: { innovationScore: -5 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'medium',
+            source: 'Direction Générale',
+            title: 'Demande de Rapport d\'Avancement Détaillé',
+            icon: 'fa-chart-column',
+            description: "La Direction Générale demande un rapport d'avancement très détaillé pour la prochaine réunion du conseil d'administration. Cela demande un effort important de compilation.",
+            choices: [
+                { text: "Dédier une équipe pour produire un rapport exhaustif et visuellement attrayant.", rationale: "Renforce la confiance de la Direction mais monopolise des ressources.", effects: { teamMorale: -2, politicalSupport: 5 } },
+                { text: "Fournir un rapport standard avec les données clés.", rationale: "Suffisant mais peut ne pas impressionner.", effects: { politicalSupport: 2 } },
+                { text: "Demander un délai pour le rapport en raison de l'activité intense sur le terrain.", rationale: "Peut être perçu comme un manque de réactivité.", effects: { politicalSupport: -5 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'medium',
+            title: 'Problèmes de Qualité des Sous-Traitants',
+            icon: 'fa-handshake-slash',
+            description: "Des retours de terrain indiquent une baisse de la qualité du travail de certains de nos sous-traitants, entraînant des reprises coûteuses.",
+            choices: [
+                { text: "Renforcer la supervision et exiger des reprises immédiates à leurs frais.", rationale: "Maintient la qualité mais peut créer des tensions.", effects: { budget: 5, teamMorale: -5, stakeholderRelations: -10 } },
+                { text: "Mettre fin aux contrats des sous-traitants défaillants et en chercher de nouveaux.", rationale: "Solution radicale, assure la qualité future mais coûte cher et retarde.", effects: { budget: -10, timeline: -15, resourceAvailability: -10 } },
+                { text: "Négocier des clauses de qualité plus strictes pour les futurs contrats.", rationale: "Améliore la situation à long terme mais ne résout pas le problème actuel.", effects: { legalCompliance: 5 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'low',
+            source: 'Service de Gestion du Patrimoine',
+            title: 'Demande de Réutilisation des Matériaux',
+            icon: 'fa-recycle',
+            description: "Le service du patrimoine propose de réutiliser une partie des matériaux excavés (pierres, bois) pour des projets locaux de restauration. Cela améliorerait notre image verte.",
+            choices: [
+                { text: "Soutenir l'initiative et mettre en place un circuit de valorisation.", rationale: "Excellent pour l'image et l'environnement, mais demande de la logistique.", effects: { ecoRisk: -5, publicOpinion: 10, budget: -1, innovationScore: 5 } },
+                { text: "Proposer de vendre les matériaux à des entreprises spécialisées.", rationale: "Génère des revenus mais moins d'impact positif sur l'image locale.", effects: { budget: 3 } },
+                { text: "Refuser, la gestion des déblais est déjà complexe.", rationale: "Évite les complications but manque une opportunité positive.", effects: { publicOpinion: -2 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'high',
+            title: 'Épidémie sur le Chantier',
+            icon: 'fa-viruses',
+            description: "Une épidémie (grippe, gastro-entérite) se propage rapidement parmi le personnel, entraînant un absentéisme massif et un ralentissement des opérations.",
+            choices: [
+                { text: "Mettre en place des mesures sanitaires strictes et isoler les cas.", rationale: "Contrôle la propagation mais peut impacter le moral et la productivité.", effects: { teamMorale: -5, safetyIndex: 5, publicHealthImpact: -10, timeline: -10 } },
+                { text: "Faire appel à du personnel de remplacement en urgence.", rationale: "Maintient l'avancement but coûte très cher et peut être difficile à trouver.", effects: { budget: -10, resourceAvailability: -10 } },
+                { text: "Arrêter temporairement les travaux pour désinfecter les locaux et laisser le personnel récupérer.", rationale: "Solution radicale, coûteuse en temps but assure la santé à long terme.", effects: { timeline: -20, budget: -5, teamMorale: 10, publicHealthImpact: -15 } }
+            ]
+        },
+        {
+            type: 'call',
+            urgency: 'critical',
+            source: 'Chef de la Sécurité Civile',
+            icon: 'fa-fire-extinguisher',
+            title: 'Incendie Majeur sur un Site',
+            description: "Un incendie majeur s'est déclaré sur un de nos sites de stockage de matériel, menaçant de se propager aux zones résidentielles voisines. Les pompiers sont sur place.",
+            choices: [
+                { text: "Priorité à l'extinction et à la protection des populations.", rationale: "La sécurité avant tout, mais pertes matérielles importantes et impact sur le calendrier.", effects: { budget: -20, timeline: -30, publicOpinion: -10, safetyIndex: -15, publicHealthImpact: 10 } },
+                { text: "Tenter de sauver le matériel de valeur avant l'extension du feu.", rationale: "Risqué pour les équipes et peut aggraver la situation.", effects: { budget: -10, teamMorale: -15, safetyIndex: -20 } },
+                { text: "Collaborer pleinement avec les secours et fournir tous les plans du site.", rationale: "Facilite leur travail et peut limiter les dégâts, renforce les relations.", effects: { stakeholderRelations: 10, legalCompliance: 5 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'low',
+            title: 'Campagne de Sensibilisation Environnementale',
+            icon: 'fa-leaf',
+            description: "Une ONG locale propose de collaborer sur une campagne de sensibilisation environnementale auprès des communautés riveraines du canal.",
+            choices: [
+                { text: "Soutenir la campagne et y participer activement.", rationale: "Améliore l'image environnementale et les relations locales.", effects: { publicOpinion: 10, ecoRisk: -2, stakeholderRelations: 10 } },
+                { text: "Fournir un soutien financier modeste sans implication directe.", rationale: "Moins d'impact but montre une bonne volonté.", effects: { budget: -1, publicOpinion: 3 } },
+                { text: "Refuser, le projet a déjà ses propres initiatives de communication.", rationale: "Économise des ressources mais manque une opportunité de partenariat.", effects: { publicOpinion: -3 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'medium',
+            source: 'Service de Gestion de la Qualité',
+            title: 'Non-conformité des Matériaux Livrés',
+            icon: 'fa-clipboard-check',
+            description: "Des tests de laboratoire révèlent que des livraisons récentes de béton ne respectent pas les normes de qualité requises. Cela met en péril la solidité des ouvrages.",
+            choices: [
+                { text: "Refuser les livraisons, exiger le remplacement et des pénalités.", rationale: "Maintient la qualité mais entraîne des retards et des tensions avec le fournisseur.", effects: { timeline: -10, legalCompliance: 10, resourceAvailability: -5 } },
+                { text: "Accepter les matériaux, mais les utiliser pour des ouvrages moins critiques.", rationale: "Évite le retard mais compromet la qualité globale du projet.", effects: { publicOpinion: -5, safetyIndex: -5 } },
+                { text: "Négocier une réduction de prix et renforcer les contrôles à l'avenir.", rationale: "Compromis, réduit le coût mais ne résout pas le problème de qualité immédiat.", effects: { budget: 5, legalCompliance: -5 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'high',
+            title: 'Découverte de Réservoirs de Gaz Naturel',
+            icon: 'fa-gas-pump',
+            description: "Des forages ont mis au jour des petits réservoirs de gaz naturel non répertoriés. Cela représente un risque d'explosion et nécessite une expertise spécialisée.",
+            choices: [
+                { text: "Mettre en place un périmètre de sécurité et faire appel à des experts en gaz.", rationale: "Priorité à la sécurité, mais coûte cher et retarde énormément.", effects: { timeline: -20, budget: -10, safetyIndex: 15, publicHealthImpact: 10 } },
+                { text: "Tenter de forer autour des réservoirs avec des précautions extrêmes.", rationale: "Risqué, mais pourrait limiter les retards.", effects: { timeline: -5, safetyIndex: -10, ecoRisk: 5 } },
+                { text: "Demander une intervention gouvernementale pour la gestion du gisement.", rationale: "Peut alléger le budget mais retarde le projet et dépend du soutien politique.", effects: { budget: 5, politicalSupport: -5, timeline: -15 } }
+            ]
+        },
+        {
+            type: 'call',
+            urgency: 'medium',
+            source: 'Responsable des Relations Publiques',
+            icon: 'fa-user-group',
+            title: 'Demande de Visite par des Écoles',
+            description: "Plusieurs écoles de la région souhaitent organiser des visites pédagogiques du chantier pour leurs élèves. C'est une opportunité d'éducation et de relations publiques.",
+            choices: [
+                { text: "Organiser des visites éducatives régulières et sécurisées.", rationale: "Excellent pour l'image publique et l'engagement communautaire, mais demande des ressources.", effects: { publicOpinion: 10, stakeholderRelations: 10, teamMorale: 2, budget: -1 } },
+                { text: "Proposer des supports pédagogiques à distance (vidéos, présentations).", rationale: "Moins d'impact direct mais permet de toucher un public plus large sans perturber le chantier.", effects: { publicOpinion: 5 } },
+                { text: "Décliner l'offre en raison des risques de sécurité et des contraintes opérationnelles.", rationale: "Évite les complications mais manque une opportunité positive.", effects: { publicOpinion: -3 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'low',
+            title: 'Optimisation des Processus Internes',
+            icon: 'fa-gears',
+            description: "Une équipe interne propose une réorganisation des flux de travail qui pourrait améliorer l'efficacité et réduire les coûts sur le long terme.",
+            choices: [
+                { text: "Mettre en œuvre la réorganisation à grande échelle.", rationale: "Potentiel de gains importants, mais demande un investissement initial en temps et en formation.", effects: { budget: 5, timeline: 5, teamMorale: 5, innovationScore: 10 } },
+                { text: "Tester la réorganisation sur un petit secteur pilote.", rationale: "Approche prudente, permet d'évaluer les bénéfices avant un déploiement complet.", effects: { budget: 1, timeline: 1, innovationScore: 5 } },
+                { text: "Refuser la proposition, préférant la stabilité actuelle.", rationale: "Évite les perturbations mais manque une opportunité d'amélioration.", effects: { innovationScore: -2 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'critical',
+            source: 'Service de Surveillance Environnementale',
+            title: 'Violation Grave des Normes de Bruit',
+            icon: 'fa-volume-xmark',
+            description: "Nos capteurs indiquent des niveaux de bruit nocturnes bien au-delà des limites légales dans les zones résidentielles. Une amende salée et un arrêt des travaux nocturnes sont probables.",
+            choices: [
+                { text: "Arrêter immédiatement tous les travaux nocturnes et investir dans des équipements silencieux.", rationale: "Conforme à la loi et améliore l'image, mais impacte lourdement le calendrier et le budget.", effects: { timeline: -25, budget: -10, publicOpinion: 10, legalCompliance: 10, publicHealthImpact: -10 } },
+                { text: "Contester les mesures et demander un délai pour des ajustements.", rationale: "Gagne du temps mais risque d'aggraver les sanctions et la réputation.", effects: { publicOpinion: -15, legalCompliance: -15, stakeholderRelations: -10 } },
+                { text: "Installer des barrières acoustiques temporaires et continuer les travaux.", rationale: "Moins d'impact sur le calendrier mais coûte cher et peut être insuffisant.", effects: { budget: -5, publicHealthImpact: 5 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'low',
+            title: 'Proposition de Mécénat Culturel',
+            icon: 'fa-masks-theater',
+            description: "Une institution culturelle locale propose un partenariat : le projet finance une partie de leurs activités en échange d'une visibilité et de l'accès à des événements pour nos équipes.",
+            choices: [
+                { text: "Accepter le mécénat pour renforcer notre ancrage local et le moral des équipes.", rationale: "Bonne image, améliore le moral, mais a un coût.", effects: { budget: -2, publicOpinion: 5, teamMorale: 5, stakeholderRelations: 5 } },
+                { text: "Proposer une contribution symbolique sans engagement majeur.", rationale: "Montre une bonne volonté sans impacter significativement le budget.", effects: { publicOpinion: 2 } },
+                { text: "Refuser, les fonds sont destinés au projet principal.", rationale: "Économise de l'argent mais manque une opportunité culturelle.", effects: { publicOpinion: -2 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'medium',
+            source: 'Service de Gestion des Risques',
+            title: 'Alerte sur la Stabilité des Berges',
+            icon: 'fa-land-slide',
+            description: "Un rapport géotechnique récent signale une instabilité potentielle des berges sur une section déjà construite du canal, nécessitant des travaux de consolidation urgents.",
+            choices: [
+                { text: "Lancer immédiatement les travaux de consolidation avec les meilleures techniques.", rationale: "Assure la sécurité et la durabilité, mais coûte cher et peut nécessiter un arrêt partiel.", effects: { budget: -10, timeline: -10, safetyIndex: 10, ecoRisk: -5 } },
+                { text: "Mettre en place une surveillance renforcée et intervenir si la situation s'aggrave.", rationale: "Moins coûteux à court terme mais risque d'effondrement et de problèmes futurs.", effects: { budget: -2, safetyIndex: -10, publicOpinion: -5 } },
+                { text: "Demander une contre-expertise pour confirmer la gravité du risque.", rationale: "Gagne du temps mais retarde la résolution et maintient le risque.", effects: { timeline: -5 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'high',
+            title: 'Fuite d\'Information Sensible',
+            icon: 'fa-user-secret',
+            description: "Des documents confidentiels concernant des dépassements de budget et des retards ont fuité dans la presse. L'image du projet est gravement entachée.",
+            choices: [
+                { text: "Mener une enquête interne approfondie pour identifier la source de la fuite.", rationale: "Essentiel pour la sécurité interne mais coûteux et chronophage.", effects: { budget: -3, teamMorale: -5, legalCompliance: 5 } },
+                { text: "Communiquer de manière transparente sur les difficultés et les mesures correctives.", rationale: "Peut regagner la confiance du public mais expose les faiblesses.", effects: { publicOpinion: 5, politicalSupport: 5 } },
+                { text: "Minimiser l'incident et attaquer les médias pour diffamation.", rationale: "Risqué, peut aggraver la situation et la réputation.", effects: { publicOpinion: -20, legalCompliance: -10 } }
+            ]
+        },
+        {
+            type: 'call',
+            urgency: 'critical',
+            source: 'Agence Nationale de la Sécurité des Systèmes d\'Information',
+            icon: 'fa-shield-virus',
+            title: 'Vulnérabilité Critique Détectée',
+            description: "Une vulnérabilité critique a été détectée dans un logiciel clé utilisé pour la gestion du chantier. Une exploitation pourrait paralyser toutes les opérations.",
+            choices: [
+                { text: "Appliquer le correctif d'urgence et renforcer la cybersécurité.", rationale: "Priorité à la sécurité, mais peut entraîner des micro-interruptions et des coûts.", effects: { budget: -5, timeline: -1, innovationScore: 5, legalCompliance: 10 } },
+                { text: "Isoler le système vulnérable et passer en mode manuel.", rationale: "Sécurité maximale but impact majeur sur l'efficacité et les délais.", effects: { timeline: -15, teamMorale: -10, innovationScore: -5 } },
+                { text: "Ignorer l'alerte, se fier aux défenses existantes.", rationale: "Économise de l'argent et du temps à court terme, mais risque catastrophique.", effects: { safetyIndex: -20, legalCompliance: -20, publicOpinion: -20 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'low',
+            title: 'Proposition de Valorisation Touristique',
+            icon: 'fa-camera-retro',
+            description: "L'office de tourisme local propose d'intégrer des points de vue et des parcours de promenade le long du canal pour attirer les visiteurs.",
+            choices: [
+                { text: "Intégrer pleinement les aménagements touristiques au design du canal.", rationale: "Améliore l'attractivité régionale et l'image publique, mais a un coût.", effects: { budget: -3, publicOpinion: 10, stakeholderRelations: 10 } },
+                { text: "Proposer des aménagements plus modestes et moins coûteux.", rationale: "Compromis pour l'attractivité sans trop impacter le budget.", effects: { budget: -1, publicOpinion: 5 } },
+                { text: "Refuser, le projet est avant tout une infrastructure de transport.", rationale: "Économise des ressources mais manque une opportunité de développement local.", effects: { publicOpinion: -2 } }
+            ]
+        },
+        {
+            type: 'email',
+            urgency: 'medium',
+            source: 'Service de Gestion des Déchets',
+            title: 'Augmentation des Coûts de Traitement des Déchets',
+            icon: 'fa-trash-can',
+            description: "Les coûts de traitement des déchets de chantier ont augmenté de manière inattendue en raison de nouvelles réglementations environnementales.",
+            choices: [
+                { text: "Revoir les processus pour réduire la production de déchets à la source.", rationale: "Solution durable, réduit les coûts à long terme et l'impact environnemental.", effects: { budget: 5, ecoRisk: -10, innovationScore: 5 } },
+                { text: "Négocier de nouveaux contrats avec d'autres centres de traitement.", rationale: "Peut réduire les coûts mais prend du temps et n'est pas garanti.", effects: { budget: -2, resourceAvailability: -5 } },
+                { text: "Répercuter une partie des coûts sur les sous-traitants.", rationale: "Allège le budget mais peut créer des tensions contractuelles.", effects: { budget: 3, stakeholderRelations: -5 } }
+            ]
+        },
+        {
+            type: 'scenario',
+            urgency: 'high',
+            title: 'Découverte de Vestiges Historiques Sensibles',
+            icon: 'fa-scroll',
+            description: "Des fouilles ont révélé des vestiges historiques d'une importance nationale. La zone est classée et toute intervention nécessite des autorisations spéciales et des archéologues sur site.",
+            choices: [
+                { text: "Arrêter les travaux dans la zone, collaborer pleinement avec les autorités culturelles.", rationale: "Respecte le patrimoine et la loi, mais retarde énormément et coûte cher.", effects: { timeline: -40, budget: -10, publicOpinion: 15, politicalSupport: 10, legalCompliance: 10 } },
+                { text: "Tenter de minimiser la zone d'impact pour une reprise rapide.", rationale: "Risqué, peut entraîner des scandales et des sanctions.", effects: { timeline: -10, publicOpinion: -20, legalCompliance: -15 } },
+                { text: "Proposer de déplacer les vestiges si techniquement possible.", rationale: "Solution complexe et coûteuse, mais peut sauver le calendrier.", effects: { budget: -15, timeline: -20, innovationScore: 5 } }
+            ]
+        },
+        {
+            type: 'call',
+            urgency: 'critical',
+            source: 'Chef de la Protection Civile',
+            icon: 'fa-person-shelter',
+            title: 'Évacuation d\'Urgence d\'une Zone',
+            description: "Une menace imminente (glissement de terrain, risque d'explosion) nécessite l'évacuation d'urgence d'une zone résidentielle proche du chantier. La responsabilité du projet est en jeu.",
+            choices: [
+                { text: "Coopérer pleinement avec la protection civile, mobiliser nos ressources pour l'évacuation.", rationale: "Priorité à la sécurité des vies, mais impact majeur sur l'image et le budget.", effects: { budget: -10, publicOpinion: -10, safetyIndex: 10, publicHealthImpact: -10, stakeholderRelations: 15 } },
+                { text: "Tenter de contenir la menace sans évacuation pour minimiser les perturbations.", rationale: "Extrêmement risqué, peut entraîner des pertes humaines et un désastre médiatique.", effects: { safetyIndex: -30, publicHealthImpact: 20, publicOpinion: -30, legalCompliance: -20 } },
+                { text: "Nier la responsabilité du projet et laisser les autorités gérer.", rationale: "Délégue la responsabilité mais détruit l'image et le soutien politique.", effects: { publicOpinion: -25, politicalSupport: -20, legalCompliance: -15 } }
+            ]
+        }
+    ];
+
+    // --- Game State & Config ---
+    let state;
+    const TOTAL_PROJECT_DAYS = 7 * 365; // 7 years in days
+    let projectChart; // Variable to hold the Chart.js instance
+
+    let currentLayoutMode = 'auto'; // 'auto', 'mobile', 'desktop'
+
+    const initial_state = {
+        day: 0,
+        timeline: 0, // in days, positive is ahead, negative is behind
+        budget: 200, // in millions €
+        teamMorale: 75, // %
+        publicOpinion: 60, // %
+        politicalSupport: 70, // %
+        ecoRisk: 30, // % (lower is better, higher is worse)
+        innovationScore: 50, // %
+        stakeholderRelations: 70, // %
+        safetyIndex: 90, // %
+        resourceAvailability: 85, // %
+        publicHealthImpact: 15, // % (lower is better)
+        legalCompliance: 95, // %
+        log: [],
+        eventQueue: [],
+        currentLogIndex: 0,
+        // History for chart
+        history: {
+            days: [],
+            budget: [],
+            timeline: [],
+            teamMorale: [],
+            publicOpinion: [],
+            politicalSupport: [],
+            ecoRisk: [],
+            innovationScore: [],
+            stakeholderRelations: [],
+            safetyIndex: [],
+            resourceAvailability: [],
+            publicHealthImpact: [],
+            legalCompliance: []
+        }
+    };
+
+    // --- Game Flow ---
+    const init = () => {
+        dom.buttons.start.onclick = startGame;
+        dom.buttons.restart.onclick = startGame;
+        dom.buttons.prevLog.onclick = showPrevLogEntry;
+        dom.buttons.nextLog.onclick = showNextLogEntry;
+        
+        dom.buttons.layoutToggle = document.getElementById('layout-toggle-btn');
+        dom.buttons.layoutToggle.onclick = toggleLayoutMode;
+        updateLayoutDisplay(); // Set initial layout display
+    };
+
+    const startGame = () => {
+        sounds.play('click');
+        state = JSON.parse(JSON.stringify(initial_state));
+        state.eventQueue = shuffleArray([...initialEvents]); // Start with all predefined events
+        
+        // Initialize history with day 0 values
+        state.history.days.push(state.day);
+        state.history.budget.push(state.budget);
+        state.history.timeline.push(state.timeline);
+        state.history.teamMorale.push(state.teamMorale);
+        state.history.publicOpinion.push(state.publicOpinion);
+        state.history.politicalSupport.push(state.politicalSupport);
+        state.history.ecoRisk.push(state.ecoRisk);
+        state.history.innovationScore.push(state.innovationScore);
+        state.history.stakeholderRelations.push(state.stakeholderRelations);
+        state.history.safetyIndex.push(state.safetyIndex);
+        state.history.resourceAvailability.push(state.resourceAvailability);
+        state.history.publicHealthImpact.push(state.publicHealthImpact);
+        state.history.legalCompliance.push(state.legalCompliance);
+
+
+        showScreen('game');
+        updateDashboard();
+        updateLayoutDisplay(); // Ensure layout display is updated on game start
+        initializeChart(); // Initialize the chart when game starts
+        setTimeout(processNextEvent, 500); 
+    };
+    
+    const processNextEvent = async () => {
+        // Check for project completion: Must be at or past TOTAL_PROJECT_DAYS.
+        if (state.day >= TOTAL_PROJECT_DAYS) {
+            endGame("time_completion"); 
+            return;
+        }
+
+        // If there's an event, process it
+        if (state.eventQueue.length > 0) {
+            const event = state.eventQueue.shift();
+            showEventModal(event);
+        } else {
+            // No more events in queue, and project days not reached.
+            // This means all predefined events have been processed.
+            // The game will continue advancing days until TOTAL_PROJECT_DAYS is met.
+            console.log("No more predefined events. Advancing days until project completion.");
+            state.day += Math.floor(Math.random() * 30) + 30; // Advance by 30-60 days for silent progression
+            // Add current state to history even if no event occurred
+            state.history.days.push(state.day);
+            state.history.budget.push(state.budget);
+            state.history.timeline.push(state.timeline);
+            state.history.teamMorale.push(state.teamMorale);
+            state.history.publicOpinion.push(state.publicOpinion);
+            state.history.politicalSupport.push(state.politicalSupport);
+            state.history.ecoRisk.push(state.ecoRisk);
+            state.history.innovationScore.push(state.innovationScore);
+            state.history.stakeholderRelations.push(state.stakeholderRelations);
+            state.history.safetyIndex.push(state.safetyIndex);
+            state.history.resourceAvailability.push(state.resourceAvailability);
+            state.history.publicHealthImpact.push(state.publicHealthImpact);
+            state.history.legalCompliance.push(state.legalCompliance);
+
+            updateDashboard();
+            setTimeout(processNextEvent, 100); 
+        }
+        updateDashboard(); 
+    };
+
+    const handleChoice = (event, choice) => {
+        sounds.play('success');
+        for (const key in choice.effects) {
+            if (state.hasOwnProperty(key)) {
+                state[key] += choice.effects[key];
+            }
+        }
+        // Clamp percentage-based metrics between 0 and 100
+        ['teamMorale', 'publicOpinion', 'politicalSupport', 'ecoRisk', 'innovationScore', 'stakeholderRelations', 'safetyIndex', 'resourceAvailability', 'publicHealthImpact', 'legalCompliance'].forEach(key => {
+            if (state[key] > 100) state[key] = 100;
+            if (state[key] < 0) state[key] = 0;
+        });
+
+        state.day += Math.floor(Math.random() * 21) + 20; 
+
+        // Add current state to history
+        state.history.days.push(state.day);
+        state.history.budget.push(state.budget);
+        state.history.timeline.push(state.timeline);
+        state.history.teamMorale.push(state.teamMorale);
+        state.history.publicOpinion.push(state.publicOpinion);
+        state.history.politicalSupport.push(state.politicalSupport);
+        state.history.ecoRisk.push(state.ecoRisk);
+        state.history.innovationScore.push(state.innovationScore);
+        state.history.stakeholderRelations.push(state.stakeholderRelations);
+        state.history.safetyIndex.push(state.safetyIndex);
+        state.history.resourceAvailability.push(state.resourceAvailability);
+        state.history.publicHealthImpact.push(state.publicHealthImpact);
+        state.history.legalCompliance.push(state.legalCompliance);
+
+        addToLog(event, choice);
+        
+        hideEventModal();
+        updateChart(); // Update chart after each choice
+        setTimeout(processNextEvent, 100);
+    };
+
+    const endGame = async (reason) => { 
+        let title, description;
+        // Calculate score based on all metrics
+        const score = Math.round(
+            (state.budget / initial_state.budget) * 100 // Budget influence
+            + state.publicOpinion
+            + state.politicalSupport
+            + (100 - state.ecoRisk) // Inverted for ecoRisk
+            + state.teamMorale
+            + state.innovationScore
+            + state.stakeholderRelations
+            + state.safetyIndex
+            + state.resourceAvailability
+            + (100 - state.publicHealthImpact) // Inverted for publicHealthImpact
+            + state.legalCompliance
+            - Math.abs(state.timeline / 10) // Penalty for timeline deviation
+        );
+        
+        // Define thresholds for end game messages
+        const budgetGood = initial_state.budget * 0.75; 
+        const budgetMedium = initial_state.budget * 0.25; 
+        const moraleGood = 80;
+        const moraleMedium = 50;
+        const publicGood = 80;
+        const publicMedium = 50;
+        const politicalGood = 80;
+        const politicalMedium = 50;
+        const ecoGood = 20; 
+        const ecoMedium = 50;
+        const innovationGood = 75;
+        const innovationMedium = 50;
+        const stakeholderGood = 80;
+        const stakeholderMedium = 50;
+        const safetyGood = 90;
+        const safetyMedium = 70;
+        const resourceGood = 80;
+        const resourceMedium = 50;
+        const publicHealthGood = 20;
+        const publicHealthMedium = 50;
+        const legalGood = 90;
+        const legalMedium = 70;
+        const timelineAhead = 0; 
+        const timelineSlightlyBehind = -180; 
+
+        switch (reason) {
+            case "time_completion":
+                if (state.timeline >= timelineAhead && state.budget > budgetGood && state.publicOpinion > publicGood && state.politicalSupport > politicalGood && state.ecoRisk < ecoGood && state.teamMorale > moraleGood && state.innovationScore > innovationGood && state.stakeholderRelations > stakeholderGood && state.safetyIndex > safetyGood && state.resourceAvailability > resourceGood && state.publicHealthImpact < publicHealthGood && state.legalCompliance > legalGood) {
+                    title = "Triomphe d'Ingénierie : Un Héritage pour la Nation !";
+                    description = `Félicitations, Directeur(trice) ! Vous avez non seulement livré le Canal Seine-Nord Europe en ${Math.floor(state.day / 365)} ans, ${state.timeline > 0 ? `avec ${state.timeline} jours d'avance` : 'dans les temps'}, avec un budget maîtrisé, mais vous avez aussi gagné le cœur de la population et le respect des élites. Un modèle de gestion de projet.`;
+                    sounds.play('win');
+                } else if (state.timeline >= timelineSlightlyBehind && state.budget > budgetMedium && state.publicOpinion > publicMedium && state.politicalSupport > politicalMedium && state.ecoRisk < ecoMedium && state.teamMorale > moraleMedium && state.innovationScore > innovationMedium && state.stakeholderRelations > stakeholderMedium && state.safetyIndex > safetyMedium && state.resourceAvailability > resourceMedium && state.publicHealthImpact < publicHealthMedium && state.legalCompliance > legalMedium) {
+                    title = "Mission Accomplie : Un Succès Solide";
+                    description = `Le Canal Seine-Nord Europe est achevé après ${Math.floor(state.day / 365)} ans ! Malgré quelques défis et ajustements, votre leadership a permis de mener à bien ce projet historique dans des conditions honorables. Le pays vous remercie.`;
+                    sounds.play('win');
+                } else if (state.budget > 0 && state.publicOpinion > 30 && state.politicalSupport > 30 && state.ecoRisk < 70 && state.teamMorale > 30 && state.innovationScore > 20 && state.stakeholderRelations > 20 && state.safetyIndex > 40 && state.resourceAvailability > 20 && state.publicHealthImpact < 80 && state.legalCompliance > 40) {
+                    title = "Projet Terminé avec Défis : Une Victoire Amère";
+                    description = `Le Canal est enfin une réalité après ${Math.floor(state.day / 365)} ans, mais le chemin fut semé d'embûches. Retards (${Math.abs(state.timeline)} jours), surcoûts et controverses ont marqué le chantier. Votre ténacité a payé, mais la réputation du projet est mitigée.`;
+                    sounds.play('lose'); 
+                } else {
+                    title = "Achèvement Difficile : Bilan Mitigé et Coûteux";
+                    description = `Le Canal est terminé après ${Math.floor(state.day / 365)} ans, mais le projet a connu de sérieuses difficultés. Des dépassements de budget importants (budget final: ${state.budget.toFixed(1)} M€), des retards considérables (${Math.abs(state.timeline)} jours) et une image publique dégradée. Le bilan est lourd et votre carrière est incertaine.`;
+                    sounds.play('lose');
+                }
+                break;
+            default: // This case covers the scenario where all events are exhausted before TOTAL_PROJECT_DAYS
+                title = "Fin du Projet : Bilan Incertain (Événements Épuisés)";
+                description = `Le projet est arrivé à son terme après ${Math.floor(state.day / 365)} ans, mais la simulation a rencontré des difficultés à générer de nouveaux événements. Une analyse plus approfondie est nécessaire pour évaluer l'impact global.`;
+                sounds.play('lose');
+                break;
+        }
+        
+        dom.displays.result.title.textContent = title;
+        dom.displays.result.score.textContent = `Score final : ${score.toFixed(0)}`;
+        dom.displays.result.description.textContent = description;
+
+        dom.displays.result.summary.budget.textContent = `${state.budget.toFixed(1)} M€`;
+        dom.displays.result.summary.timeline.textContent = `${state.timeline} jours (${state.timeline >= 0 ? 'avance' : 'retard'})`;
+        dom.displays.result.summary.teamMorale.textContent = `${state.teamMorale}%`;
+        dom.displays.result.summary.publicOpinion.textContent = `${state.publicOpinion}%`;
+        dom.displays.result.summary.politicalSupport.textContent = `${state.politicalSupport}%`;
+        dom.displays.result.summary.ecoRisk.textContent = `${state.ecoRisk}%`;
+        dom.displays.result.summary.innovationScore.textContent = `${state.innovationScore}%`;
+        dom.displays.result.summary.stakeholderRelations.textContent = `${state.stakeholderRelations}%`;
+        dom.displays.result.summary.safetyIndex.textContent = `${state.safetyIndex}%`;
+        dom.displays.result.summary.resourceAvailability.textContent = `${state.resourceAvailability}%`;
+        dom.displays.result.summary.publicHealthImpact.textContent = `${state.publicHealthImpact}%`;
+        dom.displays.result.summary.legalCompliance.textContent = `${state.legalCompliance}%`;
+
+
+        showScreen('result');
+    };
+
+    // --- UI Updates ---
+    const showScreen = (screenName) => {
+        Object.values(dom.screens).forEach(s => s.classList.add('screen-hidden'));
+        dom.screens[screenName].classList.remove('screen-hidden');
+    };
+
+    const showLoadingOverlay = (message) => {
+        dom.screens.loading.querySelector('p:first-of-type').textContent = message;
+        dom.screens.loading.classList.remove('hidden');
+    };
+
+    const hideLoadingOverlay = () => {
+        dom.screens.loading.classList.add('hidden');
+    };
+
+    const updateDashboard = () => {
+        dom.displays.day.textContent = state.day;
+        
+        if (state.timeline > 0) {
+            dom.displays.timeline.textContent = `${state.timeline}J d'avance`;
+            dom.displays.timeline.className = 'text-2xl font-bold text-green-400';
+        } else if (state.timeline < 0) {
+            dom.displays.timeline.textContent = `${Math.abs(state.timeline)}J de retard`;
+            dom.displays.timeline.className = 'text-2xl font-bold text-red-400';
+        } else {
+            dom.displays.timeline.textContent = `Dans les temps`;
+            dom.displays.timeline.className = 'text-2xl font-bold text-white';
+        }
+
+        const budgetDisplayPercentage = state.budget > 0 ? (state.budget / initial_state.budget) * 100 : 0;
+        dom.displays.metrics.innerHTML = `
+            ${createMetricHTML('Budget', `${state.budget.toFixed(1)} M€`, budgetDisplayPercentage, 'fa-euro-sign', 'green')}
+            ${createMetricHTML('Soutien Politique', `${state.politicalSupport}%`, state.politicalSupport, 'fa-landmark-flag', 'purple')}
+            ${createMetricHTML('Opinion Publique', `${state.publicOpinion}%`, state.publicOpinion, 'fa-users', 'blue')}
+            ${createMetricHTML('Moral Équipe', `${state.teamMorale}%`, state.teamMorale, 'fa-helmet-safety', 'yellow')}
+            ${createMetricHTML('Risque Écologique', `${state.ecoRisk}%`, state.ecoRisk, 'fa-leaf', 'red', true)}
+            ${createMetricHTML('Innovation', `${state.innovationScore}%`, state.innovationScore, 'fa-lightbulb', 'amber')}
+            ${createMetricHTML('Relations Parties Prenantes', `${state.stakeholderRelations}%`, state.stakeholderRelations, 'fa-handshake', 'teal')}
+            ${createMetricHTML('Sécurité', `${state.safetyIndex}%`, state.safetyIndex, 'fa-shield-halved', 'emerald')}
+            ${createMetricHTML('Disponibilité Ressources', `${state.resourceAvailability}%`, state.resourceAvailability, 'fa-boxes-stacked', 'indigo')}
+            ${createMetricHTML('Impact Santé Publique', `${state.publicHealthImpact}%`, state.publicHealthImpact, 'fa-hospital', 'purple', true)}
+            ${createMetricHTML('Conformité Légale', `${state.legalCompliance}%`, state.legalCompliance, 'fa-gavel', 'cyan')}
+        `;
+        
+        renderLog(); // Call renderLog to update the log display
+    };
+
+    // Renders the current log entry
+    const renderLog = () => {
+        dom.displays.log.innerHTML = ''; // Clear previous content
+
+        if (state.log.length > 0) {
+            const currentItem = state.log[state.currentLogIndex];
+            const logEl = document.createElement('div');
+            logEl.className = 'log-item p-3 text-sm rounded-md'; 
+            logEl.innerHTML = `
+                <p class="font-semibold text-slate-300">Jour ${currentItem.day}: ${currentItem.title}</p>
+                <p class="text-slate-400 italic">Votre décision : "${currentItem.choice}"</p>
+            `;
+            dom.displays.log.appendChild(logEl);
+
+            // Update page indicator
+            dom.displays.logPageIndicator.textContent = `${state.currentLogIndex + 1}/${state.log.length}`;
+
+            // Enable/disable navigation buttons
+            dom.buttons.prevLog.disabled = state.currentLogIndex === state.log.length - 1;
+            dom.buttons.nextLog.disabled = state.currentLogIndex === 0;
+        } else {
+            dom.displays.logPageIndicator.textContent = `0/0`;
+            dom.buttons.prevLog.disabled = true;
+            dom.buttons.nextLog.disabled = true;
+        }
+    };
+
+    // Functions to navigate log entries
+    const showPrevLogEntry = () => {
+        sounds.play('click');
+        if (state.currentLogIndex < state.log.length - 1) {
+            state.currentLogIndex++;
+            renderLog();
+        }
+    };
+
+    const showNextLogEntry = () => {
+        sounds.play('click');
+        if (state.currentLogIndex > 0) {
+            state.currentLogIndex--;
+            renderLog();
+        }
+    };
+
+    // Function to update the layout based on currentLayoutMode
+    const updateLayoutDisplay = () => {
+        const gameScreen = dom.screens.game;
+        const layoutModeText = dom.displays.layoutModeText;
+        const layoutModeIcon = dom.displays.layoutModeIcon;
+
+        gameScreen.dataset.layoutMode = currentLayoutMode;
+
+        if (currentLayoutMode === 'auto') {
+            layoutModeText.textContent = 'Mode Auto';
+            layoutModeIcon.className = 'fa-solid fa-mobile-screen-button';
+        } else if (currentLayoutMode === 'mobile') {
+            layoutModeText.textContent = 'Mode Mobile';
+            layoutModeIcon.className = 'fa-solid fa-mobile-screen';
+        } else if (currentLayoutMode === 'desktop') {
+            layoutModeText.textContent = 'Mode Ordinateur';
+            layoutModeIcon.className = 'fa-solid fa-desktop';
+        }
+    };
+
+    // Function to toggle the layout mode
+    const toggleLayoutMode = () => {
+        sounds.play('click');
+        if (currentLayoutMode === 'auto') {
+            currentLayoutMode = 'mobile';
+        } else if (currentLayoutMode === 'mobile') {
+            currentLayoutMode = 'desktop';
+        } else {
+            currentLayoutMode = 'auto';
+        }
+        updateLayoutDisplay();
+    };
+
+    // --- Chart Functions ---
+    const initializeChart = () => {
+        const ctx = dom.displays.chartCanvas.getContext('2d');
+        if (projectChart) {
+            projectChart.destroy(); // Destroy existing chart if any
+        }
+
+        projectChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: state.history.days,
+                datasets: [
+                    {
+                        label: 'Budget (€M)',
+                        data: state.history.budget,
+                        borderColor: 'rgb(34, 197, 94)', // green-500
+                        backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                        tension: 0.1,
+                        fill: false,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Échéancier (Jours)',
+                        data: state.history.timeline,
+                        borderColor: 'rgb(59, 130, 246)', // blue-500
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        tension: 0.1,
+                        fill: false,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Moral Équipe (%)',
+                        data: state.history.teamMorale,
+                        borderColor: 'rgb(234, 179, 8)', // yellow-500
+                        backgroundColor: 'rgba(234, 179, 8, 0.2)',
+                        tension: 0.1,
+                        fill: false,
+                        yAxisID: 'y100' // Use a different Y-axis for percentages
+                    },
+                    {
+                        label: 'Opinion Publique (%)',
+                        data: state.history.publicOpinion,
+                        borderColor: 'rgb(139, 92, 246)', // purple-500
+                        backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                        tension: 0.1,
+                        fill: false,
+                        yAxisID: 'y100'
+                    },
+                    {
+                        label: 'Soutien Politique (%)',
+                        data: state.history.politicalSupport,
+                        borderColor: 'rgb(249, 115, 22)', // orange-500
+                        backgroundColor: 'rgba(249, 115, 22, 0.2)',
+                        tension: 0.1,
+                        fill: false,
+                        yAxisID: 'y100'
+                    },
+                    {
+                        label: 'Risque Écologique (%)',
+                        data: state.history.ecoRisk,
+                        borderColor: 'rgb(239, 68, 68)', // red-500
+                        backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                        tension: 0.1,
+                        fill: false,
+                        yAxisID: 'y100'
+                    },
+                    {
+                        label: 'Innovation (%)',
+                        data: state.history.innovationScore,
+                        borderColor: 'rgb(251, 191, 36)', // amber-500
+                        backgroundColor: 'rgba(251, 191, 36, 0.2)',
+                        tension: 0.1,
+                        fill: false,
+                        yAxisID: 'y100'
+                    },
+                    {
+                        label: 'Relations Parties Prenantes (%)',
+                        data: state.history.stakeholderRelations,
+                        borderColor: 'rgb(20, 184, 166)', // teal-500
+                        backgroundColor: 'rgba(20, 184, 166, 0.2)',
+                        tension: 0.1,
+                        fill: false,
+                        yAxisID: 'y100'
+                    },
+                    {
+                        label: 'Sécurité (%)',
+                        data: state.history.safetyIndex,
+                        borderColor: 'rgb(16, 185, 129)', // emerald-500
+                        backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                        tension: 0.1,
+                        fill: false,
+                        yAxisID: 'y100'
+                    },
+                    {
+                        label: 'Disponibilité Ressources (%)',
+                        data: state.history.resourceAvailability,
+                        borderColor: 'rgb(99, 102, 241)', // indigo-500
+                        backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                        tension: 0.1,
+                        fill: false,
+                        yAxisID: 'y100'
+                    },
+                    {
+                        label: 'Impact Santé Publique (%)',
+                        data: state.history.publicHealthImpact,
+                        borderColor: 'rgb(168, 85, 247)', // purple-500 (darker to differentiate from political support)
+                        backgroundColor: 'rgba(168, 85, 247, 0.2)',
+                        tension: 0.1,
+                        fill: false,
+                        yAxisID: 'y100'
+                    },
+                    {
+                        label: 'Conformité Légale (%)',
+                        data: state.history.legalCompliance,
+                        borderColor: 'rgb(6, 182, 212)', // cyan-500
+                        backgroundColor: 'rgba(6, 182, 212, 0.2)',
+                        tension: 0.1,
+                        fill: false,
+                        yAxisID: 'y100'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Jour du Projet',
+                            color: '#9ca3af' // Replaced var(--text-secondary)
+                        },
+                        ticks: {
+                            color: '#9ca3af' // Replaced var(--text-secondary)
+                        },
+                        grid: {
+                            color: '#374151' // Replaced var(--border-color)
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Valeur (M€ / Jours)',
+                            color: '#9ca3af' // Replaced var(--text-secondary)
+                        },
+                        ticks: {
+                            color: '#9ca3af' // Replaced var(--text-secondary)
+                        },
+                        grid: {
+                            color: '#374151' // Replaced var(--border-color)
+                        }
+                    },
+                    y100: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Pourcentage (%)',
+                            color: '#9ca3af' // Replaced var(--text-secondary)
+                        },
+                        min: 0,
+                        max: 100,
+                        ticks: {
+                            color: '#9ca3af' // Replaced var(--text-secondary)
+                        },
+                        grid: {
+                            drawOnChartArea: false, // Only draw grid lines for the first Y-axis
+                            color: '#374151' // Replaced var(--border-color)
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#f9fafb' // Replaced var(--text-primary)
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.dataset.label.includes('Budget')) {
+                                    label += `${context.raw.toFixed(1)} M€`;
+                                } else if (context.dataset.label.includes('Échéancier')) {
+                                    label += `${context.raw} Jours`;
+                                } else {
+                                    label += `${context.raw}%`;
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    };
+
+    const updateChart = () => {
+        if (projectChart) {
+            projectChart.data.labels = state.history.days;
+            projectChart.data.datasets[0].data = state.history.budget;
+            projectChart.data.datasets[1].data = state.history.timeline;
+            projectChart.data.datasets[2].data = state.history.teamMorale;
+            projectChart.data.datasets[3].data = state.history.publicOpinion;
+            projectChart.data.datasets[4].data = state.history.politicalSupport;
+            projectChart.data.datasets[5].data = state.history.ecoRisk;
+            projectChart.data.datasets[6].data = state.history.innovationScore;
+            projectChart.data.datasets[7].data = state.history.stakeholderRelations;
+            projectChart.data.datasets[8].data = state.history.safetyIndex;
+            projectChart.data.datasets[9].data = state.history.resourceAvailability;
+            projectChart.data.datasets[10].data = state.history.publicHealthImpact;
+            projectChart.data.datasets[11].data = state.history.legalCompliance;
+            projectChart.update();
+        }
+    };
+
+    // --- Start ---
+    document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+
+</body>
+</html>
