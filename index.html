@@ -294,6 +294,27 @@
             transform: rotate(15deg);
         }
 
+        /* --- Login Button --- */
+        .login-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: 0.5rem 1rem;
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            border-radius: var(--radius);
+            font-weight: 600;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+        .login-btn:hover {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-glow);
+        }
+
+
         /* --- Mega Menu --- */
         .nav-item.has-mega-menu > .nav-link::after {
             content: '\f078'; /* Font Awesome chevron-down */
@@ -1070,6 +1091,10 @@
                      </li>
                  </ul>
                  <div class="nav-actions">
+                    <!-- NOUVEAU BOUTON CONNEXION -->
+                    <a href="connexion.html" class="login-btn" onclick="event.preventDefault(); navigateTo('login.html')">
+                        <i class="fas fa-user-circle"></i>&nbsp;<span>Connexion</span>
+                    </a>
                      <div class="notification-bell-wrapper">
                          <button class="notification-bell" id="notificationBell" title="Notifications">
                              <i class="fas fa-bell"></i>
@@ -1242,7 +1267,7 @@
                             <circle cx="100" cy="100" r="3" fill="var(--accent)"/>
                         </g>
                         <g stroke="var(--accent-dark)" opacity="0.6">
-                             <path d="M 140 60 a 10 10 0 1 1 20 0 c 0 7.5 -10 7.5 -10 15" stroke-width="2"/>
+                            <path d="M 140 60 a 10 10 0 1 1 20 0 c 0 7.5 -10 7.5 -10 15" stroke-width="2"/>
                             <circle cx="150" cy="85" r="2" fill="var(--accent-dark)"/>
                             <path d="M 40 60 a 10 10 0 1 1 20 0 c 0 7.5 -10 7.5 -10 15" stroke-width="2"/>
                             <circle cx="50" cy="85" r="2" fill="var(--accent-dark)"/>
@@ -1499,6 +1524,18 @@
             actionsHeader.className = 'mobile-nav-section-title';
             actionsHeader.textContent = 'Actions';
             mobileNavContainer.appendChild(actionsHeader);
+            
+            // AJOUT DU LIEN CONNEXION AU MENU MOBILE
+            const loginItem = document.createElement('a');
+            loginItem.href = 'login.html';
+            loginItem.className = 'mobile-nav-item';
+            loginItem.onclick = (e) => {
+                e.preventDefault();
+                toggleMobileMenu();
+                navigateTo('login.html');
+            };
+            loginItem.innerHTML = `<div class="mobile-nav-item-icon"><i class="fas fa-user-circle"></i></div><h4>Connexion</h4>`;
+            mobileNavContainer.appendChild(loginItem);
 
             const notifItem = document.createElement('a');
             notifItem.href = '#';
