@@ -696,7 +696,7 @@
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
         <div class="mobile-menu-header">
-            <a href="index.html" class="logo" onclick="event.preventDefault(); toggleMobileMenu(); navigateTo('index.html');">
+            <a href="dashboard.html" class="logo" onclick="event.preventDefault(); toggleMobileMenu(); navigateTo('dashboard.html');">
                 <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
                     <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
                     <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
@@ -1020,7 +1020,7 @@
 
             mobileNavContainer.innerHTML = ''; 
 
-            const homeLink = desktopNav.querySelector('a[href="index.html"]');
+            const homeLink = desktopNav.querySelector('a[href="dashboard.html"]');
             if (homeLink) {
                  const newNavItem = document.createElement('a');
                 newNavItem.href = homeLink.href;
