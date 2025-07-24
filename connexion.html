@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Espace Membres</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+    .container { max-width: 300px; margin: auto; }
+    input { width: 100%; padding: 10px; margin: 5px 0; }
+    button { width: 100%; padding: 10px; margin-top: 10px; background: #2b8a3e; color: #fff; border: none; cursor: pointer; }
+    button:hover { background: #1f6b2f; }
+    #dashboard { display: none; margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <h2>Connexion / Inscription</h2>
+  <div class="container" id="auth-form">
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Mot de passe" />
+    <button onclick="signup()">Créer un compte</button>
+    <button onclick="login()">Connexion</button>
+    <p id="message"></p>
+  </div>
+
+  <!-- Tableau de bord -->
+  <div id="dashboard">
+    <h3>Bienvenue !</h3>
+    <p id="user-email"></p>
+    <button onclick="logout()">Déconnexion</button>
+  </div>
+
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const { createClient } = supabase;
+    const supabaseUrl = "https://llujeetuahyabtocjzjl.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdWplZXR1YWh5YWJ0b2NqempsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNTA3NjcsImV4cCI6MjA2ODkyNjc2N30.tnkkUUzl7T5EKD-DJ5fuElwAzBFEUr7shQuLtdACdcY";
+    const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+    // Affichage dynamique selon l'état de connexion
+    async function checkSession() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session) {
+        document.getElementById("auth-form").style.display = "none";
+        document.getElementById("dashboard").style.display = "block";
+        document.getElementById("user-email").innerText = "Connecté : " + session.user.email;
+      } else {
+        document.getElementById("auth-form").style.display = "block";
+        document.getElementById("dashboard").style.display = "none";
+      }
+    }
+
+    // Inscription
+    async function signup() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const { error } = await supabaseClient.auth.signUp({ email, password });
+      document.getElementById("message").innerText = error ? error.message : "Compte créé ! Vérifiez vos emails.";
+      checkSession();
+    }
+
+    // Connexion
+    async function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      document.getElementById("message").innerText = error ? error.message : "Connexion réussie.";
+      checkSession();
+    }
+
+    // Déconnexion
+    async function logout() {
+      await supabaseClient.auth.signOut();
+      checkSession();
+    }
+
+    // Vérifier la session au chargement
+    checkSession();
+  </script>
+</body>
+</html>
