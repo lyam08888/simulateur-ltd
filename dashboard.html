@@ -568,6 +568,16 @@
             background-color: var(--primary-dark);
             transform: scale(1.05);
         }
+        
+        .toast-notification { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-xl); transform: translateX(calc(100% + var(--spacing-lg))); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1100; backdrop-filter: blur(20px); max-width: 350px; }
+        .toast-notification.show { transform: translateX(0); }
+        .toast-notification-content { display: flex; align-items: flex-start; gap: var(--spacing-sm); }
+        .toast-notification-icon { font-size: 1.25rem; color: var(--primary); margin-top: 2px; }
+        .toast-notification-text { color: var(--text-primary); font-weight: 500; flex: 1; }
+        .toast-notification-close { background: none; border: none; color: var(--text-muted); padding: 0; font-size: 1rem; }
+        .toast-notification.success .toast-notification-icon { color: var(--secondary); }
+        .toast-notification.warning .toast-notification-icon { color: var(--accent); }
+        .toast-notification.error .toast-notification-icon { color: #ef4444; }
 
         /* --- Media Queries pour la réactivité --- */
         @media (min-width: 768px) {
