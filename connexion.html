@@ -305,6 +305,10 @@
             font-size: 1rem;
             transition: var(--transition);
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
         }
 
         .login-form .btn-primary {
@@ -321,6 +325,18 @@
         }
         .login-form .btn-secondary:hover {
             background-color: var(--secondary-dark);
+        }
+        
+        .login-form .btn-google {
+            background-color: #fff;
+            color: #1e293b;
+            border: 1px solid var(--glass-border);
+        }
+        .login-form .btn-google:hover {
+            background-color: #f1f5f9;
+        }
+        .login-form .btn-google .fa-google {
+            color: #DB4437;
         }
 
         #message {
@@ -450,6 +466,9 @@
                 <input type="password" id="password" placeholder="Mot de passe" required />
                 <button class="btn btn-secondary" onclick="signup()">Créer un compte</button>
                 <button class="btn btn-primary" onclick="login()">Connexion</button>
+                <button class="btn btn-google" onclick="loginWithGoogle()">
+                    <i class="fab fa-google"></i> Se connecter avec Google
+                </button>
                 <p id="message"></p>
             </div>
         </div>
@@ -504,6 +523,21 @@
                 setTimeout(() => {
                     window.location.href = "dashboard.html"; // Redirige vers le tableau de bord
                 }, 1500);
+            }
+        }
+        
+        async function loginWithGoogle() {
+            const { data, error } = await supabaseClient.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: 'https://llujeetuahyabtocjzjl.supabase.co/auth/v1/callback'
+                }
+            });
+
+            if (error) {
+                const messageEl = document.getElementById("message");
+                messageEl.innerText = error.message;
+                messageEl.style.color = "var(--error)";
             }
         }
 
