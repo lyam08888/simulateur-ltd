@@ -370,6 +370,68 @@
         .progress-bar { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: transparent; z-index: 1001; opacity: 0; transition: opacity 0.3s ease; }
         .progress-bar.show { opacity: 1; }
         .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.3s ease; box-shadow: 0 0 10px var(--primary), 0 0 5px var(--secondary); }
+        
+        /* --- Loading Overlay --- */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .loading-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .loading-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-lg);
+            color: var(--text-primary);
+        }
+        .loading-content .logo-icon {
+            height: 5rem;
+            animation: pulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+        }
+        .loading-content p {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--glass-border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.7;
+                transform: scale(0.95);
+            }
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
         /* --- Media Queries pour la réactivité --- */
         @media (min-width: 768px) {
@@ -474,6 +536,18 @@
         </div>
     </main>
     
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
+                <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
+                <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+            </svg>
+            <p>Connexion en cours...</p>
+            <div class="spinner"></div>
+        </div>
+    </div>
+
     <div class="toast-notification" id="toastNotification">
         <div class="toast-notification-content">
             <i class="fas fa-info-circle toast-notification-icon" id="toastNotificationIcon"></i>
@@ -494,13 +568,28 @@
         const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdWplZXR1YWh5YWJ0b2NqempsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNTA3NjcsImV4cCI6MjA2ODkyNjc2N30.tnkkUUzl7T5EKD-DJ5fuElwAzBFEUr7shQuLtdACdcY";
         const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
+        // --- Helper Functions for UI ---
+        function showLoadingOverlay() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) overlay.classList.add('show');
+        }
+
+        function hideLoadingOverlay() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) overlay.classList.remove('show');
+        }
+
+        // --- Auth Functions ---
         async function signup() {
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
             const messageEl = document.getElementById("message");
             
             messageEl.textContent = '';
+            showLoadingOverlay();
             const { error } = await supabaseClient.auth.signUp({ email, password });
+            hideLoadingOverlay();
+
             if (error) {
                 messageEl.innerText = error.message;
             } else {
@@ -515,27 +604,28 @@
             const messageEl = document.getElementById("message");
 
             messageEl.textContent = '';
+            showLoadingOverlay();
             const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            
             if (error) {
+                hideLoadingOverlay();
                 messageEl.innerText = error.message;
                 messageEl.style.color = "var(--error)";
-            } else {
-                showToastNotification('Connexion réussie ! Redirection...', 'success');
-                setTimeout(() => {
-                    window.location.href = "dashboard.html"; // Redirige vers le tableau de bord
-                }, 1500);
-            }
+            } 
+            // La redirection sera gérée par onAuthStateChange
         }
         
         async function loginWithGoogle() {
+            showLoadingOverlay();
             const { data, error } = await supabaseClient.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: window.location.href.split('#')[0] // Redirect to the same page without the hash
+                    redirectTo: window.location.href.split('#')[0]
                 }
             });
 
             if (error) {
+                hideLoadingOverlay();
                 const messageEl = document.getElementById("message");
                 messageEl.innerText = error.message;
                 messageEl.style.color = "var(--error)";
@@ -684,12 +774,10 @@
 
             // --- Gère l'état d'authentification ---
             supabaseClient.auth.onAuthStateChange(async (event, session) => {
-                // Cet événement se déclenche après une connexion réussie (y compris la redirection OAuth)
                 if (event === 'SIGNED_IN' && session) {
-                    // **Nettoyer l'URL immédiatement (enlève le #access_token...)**
+                    showLoadingOverlay();
                     window.history.replaceState({}, document.title, window.location.pathname);
                     
-                    showToastNotification('Authentification réussie. Redirection...', 'success', 2000);
                     setTimeout(() => {
                         window.location.href = "dashboard.html";
                     }, 1500);
