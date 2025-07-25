@@ -579,6 +579,53 @@
         .toast-notification.warning .toast-notification-icon { color: var(--accent); }
         .toast-notification.error .toast-notification-icon { color: #ef4444; }
 
+        /* --- Logout Overlay --- */
+        .logout-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .logout-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .logout-content {
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        .logout-content .logo-icon {
+            height: 5rem;
+            width: auto;
+            margin-bottom: var(--spacing-lg);
+            animation: spin 1.5s linear infinite;
+        }
+
+        .logout-content p {
+            font-size: 1.1rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         /* --- Media Queries pour la réactivité --- */
         @media (min-width: 768px) {
             .nav-container {
@@ -627,6 +674,17 @@
 </head>
 <body>
     
+    <!-- Logout Loading Overlay -->
+    <div id="logoutOverlay" class="logout-overlay">
+        <div class="logout-content">
+            <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
+                <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
+                <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+            </svg>
+            <p>Déconnexion en cours...</p>
+        </div>
+    </div>
+
     <!-- Header -->
     <header class="header" id="header">
         <nav class="nav-container">
@@ -818,9 +876,16 @@
         }
 
         async function logout() {
-            showToastNotification('Déconnexion en cours...', 'info');
-            await supabaseClient.auth.signOut();
-            // The onAuthStateChange listener will handle the redirect automatically.
+            const overlay = document.getElementById('logoutOverlay');
+            if (overlay) {
+                overlay.classList.add('show');
+            }
+
+            // Add a small delay to ensure the animation is visible before signing out
+            setTimeout(async () => {
+                 await supabaseClient.auth.signOut();
+                 // The onAuthStateChange listener will handle the redirect automatically.
+            }, 500); // 500ms delay
         }
         
         // --- Main Auth Listener ---
@@ -872,7 +937,6 @@
             themeIcon.className = currentTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
         }
         
-        // FIX: Create wrapper functions to handle mobile menu actions correctly.
         function handleMobileLogout(event) {
             event.preventDefault();
             toggleMobileMenu();
