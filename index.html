@@ -841,7 +841,7 @@
         .progress-bar.show { opacity: 1; }
         .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.3s ease; box-shadow: 0 0 10px var(--primary), 0 0 5px var(--secondary); }
         
-        /* --- Pop-up Nouveautés --- */
+        /* --- Pop-up Nouveautés (Conservé mais désactivé par défaut) --- */
         .news-popup-overlay {
             position: fixed;
             top: 0;
@@ -996,7 +996,7 @@
         <div class="progress-fill" id="progressFill"></div>
     </div>
 
-    <!-- Pop-up Nouveautés -->
+    <!-- Pop-up Nouveautés (Désactivé) -->
     <div class="news-popup-overlay" id="newsPopupOverlay">
         <div class="news-popup-content">
             <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none" style="height: 4rem; margin-bottom: 1.5rem;">
@@ -1091,10 +1091,10 @@
                      </li>
                  </ul>
                  <div class="nav-actions">
-                    <!-- NOUVEAU BOUTON CONNEXION -->
-                    <a href="connexion.html" class="login-btn" onclick="event.preventDefault(); navigateTo('connexion.html')">
-                        <i class="fas fa-user-circle"></i>&nbsp;<span>Connexion</span>
-                    </a>
+                     <!-- NOUVEAU BOUTON CONNEXION -->
+                     <a href="connexion.html" class="login-btn" onclick="event.preventDefault(); navigateTo('connexion.html')">
+                         <i class="fas fa-user-circle"></i>&nbsp;<span>Connexion</span>
+                     </a>
                      <div class="notification-bell-wrapper">
                          <button class="notification-bell" id="notificationBell" title="Notifications">
                              <i class="fas fa-bell"></i>
@@ -1102,13 +1102,13 @@
                          </button>
                          <!-- Panneau de notifications -->
                          <div class="notification-panel" id="notificationPanel">
-                            <div class="notification-panel-header">
-                                <h3>Notifications</h3>
-                                <button id="markAllReadBtn">Tout marquer comme lu</button>
-                            </div>
-                            <div class="notification-list" id="notificationList">
-                                <!-- Les notifications seront injectées ici par JavaScript -->
-                            </div>
+                             <div class="notification-panel-header">
+                                 <h3>Notifications</h3>
+                                 <button id="markAllReadBtn">Tout marquer comme lu</button>
+                             </div>
+                             <div class="notification-list" id="notificationList">
+                                 <!-- Les notifications seront injectées ici par JavaScript -->
+                             </div>
                          </div>
                      </div>
                      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
@@ -1587,7 +1587,8 @@
                             newNavItem.href = link.href;
                             newNavItem.className = 'mobile-nav-item';
                             newNavItem.onclick = (e) => { e.preventDefault(); toggleMobileMenu(); navigateTo(link.getAttribute('href')); };
-                            newNavItem.innerHTML = `<div class="mobile-nav-item-icon">${link.querySelector('.item-icon').innerHTML}</div><h4>${link.querySelector('h4').textContent}</h4>`;
+                            // CORRECTIF: Utiliser outerHTML pour copier l'icône entière, pas seulement son contenu.
+                            newNavItem.innerHTML = `<div class="mobile-nav-item-icon">${link.querySelector('.item-icon').outerHTML}</div><h4>${link.querySelector('h4').textContent}</h4>`;
                             mobileNavContainer.appendChild(newNavItem);
                         });
                     });
@@ -1701,6 +1702,7 @@
             const popupOverlay = document.getElementById('newsPopupOverlay');
             if (!popupOverlay) return;
 
+            // Empêche l'affichage si déjà vu dans la session
             if (sessionStorage.getItem('newsPopupShown')) {
                 popupOverlay.style.display = 'none';
                 return;
@@ -1709,24 +1711,26 @@
             const countdownElement = document.getElementById('popupCountdown');
             let countdown = 5;
 
+            // Affiche le pop-up après un court délai
             setTimeout(() => {
                 popupOverlay.classList.add('show');
                 sessionStorage.setItem('newsPopupShown', 'true');
             }, 500);
 
-            countdownElement.textContent = countdown;
-
-            const interval = setInterval(() => {
-                countdown--;
+            if (countdownElement) {
                 countdownElement.textContent = countdown;
-                if (countdown <= 0) {
-                    clearInterval(interval);
-                    popupOverlay.classList.remove('show');
-                    setTimeout(() => {
-                        popupOverlay.style.display = 'none';
-                    }, 500);
-                }
-            }, 1000);
+                const interval = setInterval(() => {
+                    countdown--;
+                    countdownElement.textContent = countdown;
+                    if (countdown <= 0) {
+                        clearInterval(interval);
+                        popupOverlay.classList.remove('show');
+                        setTimeout(() => {
+                            popupOverlay.style.display = 'none';
+                        }, 500);
+                    }
+                }, 1000);
+            }
         }
 
         // --- Fonctions globales ---
@@ -1772,7 +1776,8 @@
             initAnimations();
             populateMobileNav();
             setupSlider();
-            handleNewsPopup();
+            // L'appel à handleNewsPopup() est commenté pour désactiver le pop-up.
+            // handleNewsPopup(); 
             setupNotifications();
         });
     </script>
