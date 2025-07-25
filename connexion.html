@@ -683,9 +683,12 @@
             populateMobileNav();
 
             // --- Gère l'état d'authentification ---
-            supabaseClient.auth.onAuthStateChange((event, session) => {
+            supabaseClient.auth.onAuthStateChange(async (event, session) => {
                 // Cet événement se déclenche après une connexion réussie (y compris la redirection OAuth)
                 if (event === 'SIGNED_IN' && session) {
+                    // **Nettoyer l'URL immédiatement (enlève le #access_token...)**
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    
                     showToastNotification('Authentification réussie. Redirection...', 'success', 2000);
                     setTimeout(() => {
                         window.location.href = "dashboard.html";
