@@ -484,6 +484,35 @@
 
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script type="module">
+      const { createClient } = supabase;
+      const supabaseClient = createClient("https://llujeetuahyabtocjzjl.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdWplZXR1YWh5YWJ0b2NqempsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNTA3NjcsImV4cCI6MjA2ODkyNjc2N30.tnkkUUzl7T5EKD-DJ5fuElwAzBFEUr7shQuLtdACdcY");
+
+      const hash = window.location.hash;
+      if (hash.includes("access_token")) {
+        const params = new URLSearchParams(hash.substring(1));
+        const access_token = params.get("access_token");
+        const refresh_token = params.get("refresh_token");
+
+        if (access_token && refresh_token) {
+            supabaseClient.auth.setSession({
+                access_token,
+                refresh_token,
+            }).then(({ error }) => {
+                if (error) {
+                    console.error("Erreur lors de la configuration de la session:", error);
+                } else {
+                    // Nettoyer l'URL sans recharger la page
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    // Rediriger vers le dashboard
+                    window.location.href = "dashboard.html";
+                }
+            });
+        }
+      }
+    </script>
+    
     <script>
         "use strict";
 
@@ -530,7 +559,7 @@
             const { data, error } = await supabaseClient.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: 'https://llujeetuahyabtocjzjl.supabase.co/auth/v1/callback'
+                    redirectTo: window.location.href.split('#')[0] // Redirect to the same page without the hash
                 }
             });
 
@@ -680,17 +709,6 @@
             updateThemeUI();
             initAnimations();
             populateMobileNav();
-
-            // --- Check for active session on page load ---
-            supabaseClient.auth.onAuthStateChange((event, session) => {
-                if (event === 'SIGNED_IN' && session) {
-                    // User is logged in, redirect to the dashboard
-                    showToastNotification('Authentification réussie. Redirection...', 'success', 2000);
-                    setTimeout(() => {
-                        window.location.href = "dashboard.html";
-                    }, 1500);
-                }
-            });
         });
     </script>
 </body>
