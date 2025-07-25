@@ -971,17 +971,18 @@
             }
 
             try {
-                const { error } = await supabaseClient.auth.signOut();
+                // Use { scope: 'global' } to invalidate the refresh token on the server
+                const { error } = await supabaseClient.auth.signOut({ scope: 'global' });
                 if (error) {
-                    // This error might happen if the session is already invalid,
-                    // but we still want to force the user out.
-                    console.warn("Erreur Supabase lors de la déconnexion (sera ignorée):", error);
+                    throw error;
                 }
             } catch (e) {
-                console.warn("Exception inattendue lors de la déconnexion (sera ignorée):", e);
+                console.warn("Erreur lors de la déconnexion (sera ignorée):", e);
             } finally {
-                // This block ensures the user is always redirected,
-                // even if signOut fails.
+                // Clear all storage to be absolutely sure
+                localStorage.clear();
+                sessionStorage.clear();
+                // Redirect to the login page regardless of the outcome
                 redirectToLogin();
             }
         }
