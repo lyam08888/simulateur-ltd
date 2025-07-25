@@ -680,6 +680,17 @@
             updateThemeUI();
             initAnimations();
             populateMobileNav();
+
+            // --- Check for active session on page load ---
+            supabaseClient.auth.onAuthStateChange((event, session) => {
+                if (event === 'SIGNED_IN' && session) {
+                    // User is logged in, redirect to the dashboard
+                    showToastNotification('Authentification réussie. Redirection...', 'success', 2000);
+                    setTimeout(() => {
+                        window.location.href = "dashboard.html";
+                    }, 1500);
+                }
+            });
         });
     </script>
 </body>
