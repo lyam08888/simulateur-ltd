@@ -970,18 +970,22 @@
                 overlay.classList.add('show');
             }
 
-            const { error } = await supabaseClient.auth.signOut();
-
-            if (error) {
+            try {
+                const { error } = await supabaseClient.auth.signOut();
+                if (error) {
+                    throw error;
+                }
+                // onAuthStateChange will handle the redirect
+            } catch (error) {
                 console.error('Erreur lors de la déconnexion:', error);
                 showToastNotification('Une erreur est survenue lors de la déconnexion.', 'error');
                 if (overlay) {
                     overlay.classList.remove('show');
                 }
             }
-            // If successful, the onAuthStateChange listener will automatically
-            // detect the signed-out state and redirect to the login page.
         }
+        // Make it globally accessible
+        window.logout = logout;
         
         supabaseClient.auth.onAuthStateChange((event, session) => {
           if (session) {
