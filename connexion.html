@@ -495,14 +495,14 @@
         const access_token = params.get("access_token");
         const refresh_token = params.get("refresh_token");
 
-        // Stocker la session
+        // Stocker les tokens
         localStorage.setItem("supabase_access_token", access_token);
         localStorage.setItem("supabase_refresh_token", refresh_token);
 
-        // **Nettoyer l'URL sans rechargement**
+        // **1. Nettoyer l'URL immédiatement (enlève le #access_token...)**
         window.history.replaceState({}, document.title, window.location.pathname);
 
-        // **Rediriger vers une page propre**
+        // **2. Rediriger vers ton tableau de bord**
         window.location.href = "dashboard.html";
       }
     </script>
