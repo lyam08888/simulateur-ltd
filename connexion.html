@@ -486,30 +486,24 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script type="module">
-      const { createClient } = supabase;
-      const supabaseClient = createClient("https://llujeetuahyabtocjzjl.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdWplZXR1YWh5YWJ0b2NqempsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNTA3NjcsImV4cCI6MjA2ODkyNjc2N30.tnkkUUzl7T5EKD-DJ5fuElwAzBFEUr7shQuLtdACdcY");
+      import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+      const supabase = createClient("https://llujeetuahyabtocjzjl.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdWplZXR1YWh5YWJ0b2NqempsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNTA3NjcsImV4cCI6MjA2ODkyNjc2N30.tnkkUUzl7T5EKD-DJ5fuElwAzBFEUr7shQuLtdACdcY");
 
-      const hash = window.location.hash;
-      if (hash.includes("access_token")) {
-        const params = new URLSearchParams(hash.substring(1));
+      // Si on revient avec un access_token dans l'URL (après Google)
+      if (window.location.hash.includes("access_token")) {
+        const params = new URLSearchParams(window.location.hash.substring(1));
         const access_token = params.get("access_token");
         const refresh_token = params.get("refresh_token");
 
-        if (access_token && refresh_token) {
-            supabaseClient.auth.setSession({
-                access_token,
-                refresh_token,
-            }).then(({ error }) => {
-                if (error) {
-                    console.error("Erreur lors de la configuration de la session:", error);
-                } else {
-                    // Nettoyer l'URL sans recharger la page
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                    // Rediriger vers le dashboard
-                    window.location.href = "dashboard.html";
-                }
-            });
-        }
+        // Stocker la session
+        localStorage.setItem("supabase_access_token", access_token);
+        localStorage.setItem("supabase_refresh_token", refresh_token);
+
+        // **Nettoyer l'URL sans rechargement**
+        window.history.replaceState({}, document.title, window.location.pathname);
+
+        // **Rediriger vers une page propre**
+        window.location.href = "dashboard.html";
       }
     </script>
     
