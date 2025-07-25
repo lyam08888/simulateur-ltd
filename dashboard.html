@@ -824,34 +824,20 @@
         }
         
         // --- Main Auth Listener ---
-        // This is the recommended way to handle auth state. It avoids race conditions.
-        supabaseClient.auth.onAuthStateChange(async (event, session) => {
-            if (event === 'INITIAL_SESSION' && session) {
-                 renderDashboard(session);
-            } else if (event === 'SIGNED_IN' && session) {
-                 // Clean the URL by removing the hash fragment after a successful login
-                if (window.location.hash.includes('access_token')) {
-                    window.history.replaceState(null, '', window.location.pathname);
-                }
-                renderDashboard(session);
-            } else if (event === 'SIGNED_OUT') {
-                redirectToLogin();
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+          if (session) {
+            // A session exists (user is logged in).
+            if (window.location.hash.includes('access_token')) {
+                window.history.replaceState(null, '', window.location.pathname);
             }
+            renderDashboard(session);
+          } else {
+            // No session (user is logged out or not yet logged in).
+            if (!window.location.hash.includes('access_token')) {
+              redirectToLogin();
+            }
+          }
         });
-
-        // Check for session on initial load, in case onAuthStateChange is not triggered
-        // for an already existing session from a previous visit.
-        async function initialCheck() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (!session) {
-                 // If there's no session and the URL doesn't contain a token, redirect.
-                if (!window.location.hash.includes('access_token')) {
-                    redirectToLogin();
-                }
-            } else {
-                renderDashboard(session);
-            }
-        }
 
 
         // --- UI Logic from Template ---
@@ -885,6 +871,19 @@
             document.body.classList.toggle('light-mode', currentTheme === 'light');
             themeIcon.className = currentTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
         }
+        
+        // FIX: Create wrapper functions to handle mobile menu actions correctly.
+        function handleMobileLogout(event) {
+            event.preventDefault();
+            toggleMobileMenu();
+            logout();
+        }
+
+        function handleMobileThemeToggle(event) {
+            event.preventDefault();
+            toggleMobileMenu();
+            toggleTheme();
+        }
 
         function populateMobileNav() {
             const mobileNavContainer = document.querySelector('.mobile-menu .mobile-nav-items');
@@ -895,10 +894,10 @@
                     <div class="mobile-nav-item-icon"><i class="fas fa-home"></i></div><h4>Accueil</h4>
                 </a>
                 <h3 class="mobile-nav-section-title">Actions</h3>
-                <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); logout();">
+                <a href="#" class="mobile-nav-item" onclick="handleMobileLogout(event)">
                     <div class="mobile-nav-item-icon"><i class="fas fa-sign-out-alt"></i></div><h4>Déconnexion</h4>
                 </a>
-                <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); toggleTheme();">
+                <a href="#" class="mobile-nav-item" onclick="handleMobileThemeToggle(event)">
                     <div class="mobile-nav-item-icon"><i class="fas fa-sun"></i></div><h4>Changer de thème</h4>
                 </a>
             `;
@@ -922,9 +921,8 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // The onAuthStateChange listener is now the primary method,
-            // but we run an initial check for robustness.
-            initialCheck();
+            // The onAuthStateChange listener handles authentication, so we only
+            // need to set up the UI components here.
             updateThemeUI();
             populateMobileNav();
         });
