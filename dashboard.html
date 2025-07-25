@@ -973,15 +973,16 @@
             try {
                 const { error } = await supabaseClient.auth.signOut();
                 if (error) {
-                    throw error;
+                    // This error might happen if the session is already invalid,
+                    // but we still want to force the user out.
+                    console.warn("Erreur Supabase lors de la déconnexion (sera ignorée):", error);
                 }
-                // onAuthStateChange will handle the redirect
-            } catch (error) {
-                console.error('Erreur lors de la déconnexion:', error);
-                showToastNotification('Une erreur est survenue lors de la déconnexion.', 'error');
-                if (overlay) {
-                    overlay.classList.remove('show');
-                }
+            } catch (e) {
+                console.warn("Exception inattendue lors de la déconnexion (sera ignorée):", e);
+            } finally {
+                // This block ensures the user is always redirected,
+                // even if signOut fails.
+                redirectToLogin();
             }
         }
         // Make it globally accessible
