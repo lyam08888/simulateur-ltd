@@ -763,16 +763,11 @@
         const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdWplZXR1YWh5YWJ0b2NqempsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNTA3NjcsImV4cCI6MjA2ODkyNjc2N30.tnkkUUzl7T5EKD-DJ5fuElwAzBFEUr7shQuLtdACdcY";
         const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-        async function checkSession() {
-            const { data: { session }, error } = await supabaseClient.auth.getSession();
-            const dashboardContent = document.getElementById('dashboard-content');
+        // --- Authentication Logic ---
 
-            // FIX: Redirect using an absolute path to prevent "not a valid URL" error.
-            if (error || !session) {
-                const newPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) + 'connexion.html';
-                window.location.href = newPath;
-                return; // Stop script execution to prevent rendering the rest of the page.
-            }
+        function renderDashboard(session) {
+            const dashboardContent = document.getElementById('dashboard-content');
+            if (!dashboardContent) return;
             
             // If the user is connected, display the full dashboard.
             dashboardContent.innerHTML = `
@@ -817,16 +812,47 @@
             `;
         }
 
+        function redirectToLogin() {
+            const newPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) + 'connexion.html';
+            window.location.href = newPath;
+        }
 
         async function logout() {
             showToastNotification('Déconnexion en cours...', 'info');
             await supabaseClient.auth.signOut();
-            setTimeout(() => {
-                // FIX: Redirect using an absolute path to prevent "not a valid URL" error.
-                const newPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) + 'index.html';
-                window.location.href = newPath;
-            }, 1000);
+            // The onAuthStateChange listener will handle the redirect automatically.
         }
+        
+        // --- Main Auth Listener ---
+        // This is the recommended way to handle auth state. It avoids race conditions.
+        supabaseClient.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'INITIAL_SESSION' && session) {
+                 renderDashboard(session);
+            } else if (event === 'SIGNED_IN' && session) {
+                 // Clean the URL by removing the hash fragment after a successful login
+                if (window.location.hash.includes('access_token')) {
+                    window.history.replaceState(null, '', window.location.pathname);
+                }
+                renderDashboard(session);
+            } else if (event === 'SIGNED_OUT') {
+                redirectToLogin();
+            }
+        });
+
+        // Check for session on initial load, in case onAuthStateChange is not triggered
+        // for an already existing session from a previous visit.
+        async function initialCheck() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) {
+                 // If there's no session and the URL doesn't contain a token, redirect.
+                if (!window.location.hash.includes('access_token')) {
+                    redirectToLogin();
+                }
+            } else {
+                renderDashboard(session);
+            }
+        }
+
 
         // --- UI Logic from Template ---
         let currentTheme = localStorage.getItem('theme') || 'dark';
@@ -896,7 +922,9 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            checkSession();
+            // The onAuthStateChange listener is now the primary method,
+            // but we run an initial check for robustness.
+            initialCheck();
             updateThemeUI();
             populateMobileNav();
         });
