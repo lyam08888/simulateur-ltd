@@ -19,6 +19,8 @@
             --secondary-dark: #059669;
             --accent: #f59e0b;
             --accent-dark: #d97706;
+            --error: #ef4444;
+            --error-dark: #b91c1c;
             
             /* Surfaces */
             --background: #0f172a;
@@ -116,7 +118,7 @@
             100% { background-position: 0% 50%; }
         }
         
-        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn, .notification-bell, .launch-button, .search-button {
+        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn, .notification-bell, .launch-button, .search-button, .btn-connect {
             cursor: pointer;
         }
 
@@ -407,6 +409,91 @@
             color: var(--primary-light);
         }
 
+        /* --- Menu de Notifications --- */
+        .notification-bell-wrapper { position: relative; }
+        .notification-bell { display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-secondary); transition: var(--transition); font-size: 1rem; }
+        .notification-bell:hover { background: var(--surface-elevated); color: var(--text-primary); }
+        .notification-badge { position: absolute; top: -5px; right: -5px; background-color: var(--error); color: white; border-radius: var(--radius-full); width: 1.25rem; height: 1.25rem; font-size: 0.7rem; font-weight: 600; display: flex; align-items: center; justify-content: center; border: 2px solid var(--surface); transform: scale(0); transition: var(--transition-slow); }
+        .notification-badge.show { transform: scale(1); }
+        .notification-panel { position: absolute; top: calc(100% + 15px); right: 0; width: clamp(320px, 90vw, 400px); background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); opacity: 0; visibility: hidden; transform: translateY(20px); pointer-events: none; transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s; z-index: 1001; display: flex; flex-direction: column; }
+        .notification-panel.show { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+        body.light-mode .notification-panel { background: rgba(241, 245, 249, 0.9); }
+        .notification-panel-header { display: flex; justify-content: space-between; align-items: center; padding: var(--spacing-sm) var(--spacing-md); border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+        .notification-panel-title-wrapper { display: flex; align-items: center; gap: 0.75rem; }
+        .connection-status { width: 10px; height: 10px; background-color: var(--secondary); border-radius: 50%; border: 2px solid var(--surface); box-shadow: 0 0 8px var(--secondary); }
+        .notification-panel-header h3 { font-size: 1rem; font-weight: 600; color: var(--text-primary); }
+        .notification-panel-header button { background: none; border: none; color: var(--primary); font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: var(--transition); }
+        .notification-panel-header button:hover { text-decoration: underline; }
+        .notification-list { max-height: 400px; overflow-y: auto; flex-grow: 1; }
+        .notification-list::-webkit-scrollbar { width: 6px; }
+        .notification-list::-webkit-scrollbar-track { background: transparent; }
+        .notification-list::-webkit-scrollbar-thumb { background: var(--surface-hover); border-radius: 3px; }
+        .notification-list::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+        .notification-item { display: flex; gap: var(--spacing-sm); padding: var(--spacing-sm) var(--spacing-md); border-bottom: 1px solid var(--glass-border); transition: var(--transition); cursor: pointer; position: relative; }
+        .notification-item:last-child { border-bottom: none; }
+        .notification-item:hover { background: var(--glass); }
+        .notification-item.unread::before { content: ''; position: absolute; left: 8px; top: 50%; transform: translateY(-50%); width: 6px; height: 6px; border-radius: var(--radius-full); background-color: var(--primary); }
+        .notification-item-icon { width: 2.25rem; height: 2.25rem; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--glass); border-radius: var(--radius-full); color: var(--text-secondary); }
+        .notification-item.success .notification-item-icon { color: var(--secondary); }
+        .notification-item.warning .notification-item-icon { color: var(--accent); }
+        .notification-item.error .notification-item-icon { color: var(--error); }
+        .notification-item-content { flex-grow: 1; }
+        .notification-item-text { font-size: 0.9rem; color: var(--text-secondary); margin: 0 0 0.25rem 0; }
+        .notification-item.unread .notification-item-text { color: var(--text-primary); font-weight: 500; }
+        .notification-item-time { font-size: 0.75rem; color: var(--text-muted); }
+        .notification-list-empty { padding: var(--spacing-xl) var(--spacing-md); text-align: center; color: var(--text-muted); }
+        .notification-list-empty i { font-size: 2rem; margin-bottom: var(--spacing-sm); }
+        
+        .btn-connect {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: 0.5rem 1rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            border-radius: var(--radius);
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            min-width: 140px; /* Pour éviter le redimensionnement */
+            justify-content: center;
+        }
+        .btn-connect .text-connect, .btn-connect .text-disconnect {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .btn-connect .text-disconnect {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, 150%);
+            opacity: 0;
+        }
+        .btn-connect:hover {
+            background: var(--error);
+            border-color: var(--error-dark);
+            color: white;
+        }
+        .btn-connect:hover .text-connect {
+            transform: translateY(-150%);
+            opacity: 0;
+        }
+        .btn-connect:hover .text-disconnect {
+            transform: translate(-50%, -50%);
+            opacity: 1;
+        }
+
+        .connection-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--secondary);
+            border-radius: 50%;
+            box-shadow: 0 0 6px var(--secondary);
+        }
 
         /* --- Contenu Principal --- */
         .main-content { 
@@ -436,49 +523,6 @@
         }
         .hero p { font-size: 1.1rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto; line-height: 1.7; }
         
-        /* --- SLIDER STYLES --- */
-        .slider-container { position: relative; width: 100%; border-radius: var(--radius-xl); overflow: hidden; margin-bottom: var(--spacing-xl); background-color: var(--surface); box-shadow: var(--shadow-lg); border: 1px solid var(--glass-border); }
-        .slider-wrapper { display: flex; transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
-        .slide { min-width: 100%; position: relative; overflow: hidden; }
-        .slide .slide-background { width: 100%; display: block; aspect-ratio: 16 / 6; transition: transform 8s ease-out; background-color: var(--surface-elevated); }
-        .slide.active .slide-background { transform: scale(1.1); }
-        .slide-content { position: absolute; bottom: 0; left: 0; right: 0; padding: var(--spacing-lg); background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 10%, transparent); color: var(--text-primary); transform: translateY(100%); transition: transform 0.6s ease-out; }
-        .slide.active .slide-content { transform: translateY(0); }
-        body.light-mode .slide-content { background: linear-gradient(to top, rgba(241, 245, 249, 0.9) 10%, transparent); }
-        .slide-content h3 { font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 700; text-shadow: 0 2px 5px rgba(0,0,0,0.5); margin-bottom: 0.5rem; }
-        .slide-content p { font-size: clamp(0.9rem, 1.5vw, 1.1rem); color: var(--text-secondary); text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
-        .slider-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 3rem; height: 3rem; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius-full); color: var(--text-primary); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition-slow); opacity: 0.7; }
-        .slider-nav:hover { background-color: var(--secondary); transform: translateY(-50%) scale(1.1); opacity: 1; }
-        .slider-nav.prev { left: var(--spacing-md); }
-        .slider-nav.next { right: var(--spacing-md); }
-        .slider-dots { position: absolute; bottom: var(--spacing-md); left: 50%; transform: translateX(-50%); display: flex; gap: 1rem; }
-        .slider-dot { width: 0.75rem; height: 0.75rem; border-radius: var(--radius-full); background: var(--glass); border: 1px solid var(--glass-border); cursor: pointer; transition: var(--transition-slow); }
-        .slider-dot.active { background: var(--secondary); transform: scale(1.3); box-shadow: 0 0 10px var(--secondary); }
-
-        .search-section { margin-bottom: var(--spacing-xl); }
-        .search-container { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); display: flex; flex-direction: column; gap: var(--spacing-md); }
-        @media (min-width: 768px) { .search-container { flex-direction: row; align-items: center; } }
-        .search-input-wrapper { position: relative; flex-grow: 1; }
-        .search-input-wrapper i { position: absolute; top: 50%; left: var(--spacing-md); transform: translateY(-50%); color: var(--text-muted); }
-        .search-input-wrapper input { width: 100%; background: var(--background); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 2.5rem; color: var(--text-primary); font-size: 1rem; transition: var(--transition); }
-        .search-input-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); outline: none; }
-        
-        .search-button {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.8rem 2rem;
-            border-radius: var(--radius);
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .search-button:hover {
-            background-color: var(--primary-dark);
-            transform: scale(1.05);
-        }
-
         .tests-grid { margin: 4rem 0; }
         .tests-grid .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; }
         .test-card { 
@@ -561,15 +605,15 @@
             box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); 
         }
         
-        .notification { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-xl); transform: translateX(calc(100% + var(--spacing-lg))); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1100; backdrop-filter: blur(20px); max-width: 350px; }
-        .notification.show { transform: translateX(0); }
-        .notification-content { display: flex; align-items: flex-start; gap: var(--spacing-sm); }
-        .notification-icon { font-size: 1.25rem; color: var(--primary); margin-top: 2px; }
-        .notification-text { color: var(--text-primary); font-weight: 500; flex: 1; }
-        .notification-close { background: none; border: none; color: var(--text-muted); padding: 0; font-size: 1rem; }
-        .notification.success .notification-icon { color: var(--secondary); }
-        .notification.warning .notification-icon { color: var(--accent); }
-        .notification.error .notification-icon { color: #ef4444; }
+        .toast-notification { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-xl); transform: translateX(calc(100% + var(--spacing-lg))); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1100; backdrop-filter: blur(20px); max-width: 350px; }
+        .toast-notification.show { transform: translateX(0); }
+        .toast-notification-content { display: flex; align-items: flex-start; gap: var(--spacing-sm); }
+        .toast-notification-icon { font-size: 1.25rem; color: var(--primary); margin-top: 2px; }
+        .toast-notification-text { color: var(--text-primary); font-weight: 500; flex: 1; }
+        .toast-notification-close { background: none; border: none; color: var(--text-muted); padding: 0; font-size: 1rem; }
+        .toast-notification.success .toast-notification-icon { color: var(--secondary); }
+        .toast-notification.warning .toast-notification-icon { color: var(--accent); }
+        .toast-notification.error .toast-notification-icon { color: #ef4444; }
 
         .progress-bar { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: transparent; z-index: 1001; opacity: 0; transition: opacity 0.3s ease; }
         .progress-bar.show { opacity: 1; }
@@ -596,7 +640,7 @@
             .mobile-toggle { display: none; }
             .nav-desktop { display: flex; align-items: center; flex-grow: 1; justify-content: flex-start; gap: var(--spacing-sm); }
             .header-search { width: 280px; }
-            .nav-menu { gap: var(--spacing-xs); margin-left: var(--spacing-md); }
+            .nav-menu { margin-left: var(--spacing-md); }
             .nav-actions { margin-left: auto; }
         }
         @media (min-width: 1280px) {
@@ -612,91 +656,73 @@
     <!-- Header -->
     <header class="header" id="header">
         <nav class="nav-container">
-            <a href="dashboard.html" class="logo" onclick="event.preventDefault(); navigateTo('dashboard.html');">
+            <a href="index.html" class="logo" onclick="event.preventDefault(); navigateTo('index.html');">
                 <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
                     <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
                     <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
                 </svg>
                 <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
             </a>
-            
             <div class="nav-desktop">
-                 <form action="recherche.html" method="GET" class="header-search">
-                     <i class="fas fa-search"></i>
-                     <input type="search" name="query" placeholder="Rechercher..." aria-label="Rechercher">
-                 </form>
-                 <ul class="nav-menu">
-                     <li class="nav-item"><a href="dashboard.html" class="nav-link" onclick="event.preventDefault(); navigateTo('dashboard.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
-                     
-                     <li class="nav-item has-mega-menu">
+                <form action="recherche.html" method="GET" class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="search" name="query" placeholder="Rechercher..." aria-label="Rechercher">
+                </form>
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="index.html" class="nav-link" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
+                    <li class="nav-item has-mega-menu">
                          <a href="#" class="nav-link active" onclick="event.preventDefault();"><i class="fas fa-compass"></i>&nbsp;Explorer</a>
                          <div class="mega-menu">
                              <div class="mega-menu-grid">
-                                 <!-- Colonne 1 -->
                                  <div class="mega-menu-column">
                                      <h3 class="mega-menu-heading">Pratique</h3>
-                                     <a href="simulateur.html" class="mega-menu-item" onclick="event.preventDefault(); navigateTo('simulateur.html')">
-                                         <i class="fas fa-cubes fa-fw item-icon"></i>
-                                         <div class="mega-menu-item-text"><h4>Simulateurs</h4></div>
-                                     </a>
-                                     <a href="outils.html" class="mega-menu-item" onclick="event.preventDefault(); navigateTo('outils.html')">
-                                         <i class="fas fa-wrench fa-fw item-icon"></i>
-                                         <div class="mega-menu-item-text"><h4>Outils</h4></div>
-                                     </a>
+                                     <a href="simulateur.html" class="mega-menu-item" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-cubes fa-fw item-icon"></i><div class="mega-menu-item-text"><h4>Simulateurs</h4></div></a>
+                                     <a href="outils.html" class="mega-menu-item" onclick="event.preventDefault(); navigateTo('outils.html')"><i class="fas fa-wrench fa-fw item-icon"></i><div class="mega-menu-item-text"><h4>Outils</h4></div></a>
                                  </div>
-                                 <!-- Colonne 2 -->
                                  <div class="mega-menu-column">
                                      <h3 class="mega-menu-heading">Évaluation</h3>
-                                     <a href="test.html" class="mega-menu-item" onclick="event.preventDefault(); navigateTo('test.html')">
-                                         <i class="fas fa-brain fa-fw item-icon"></i>
-                                         <div class="mega-menu-item-text"><h4>Tests</h4></div>
-                                     </a>
-                                     <a href="quiz.html" class="mega-menu-item" onclick="event.preventDefault(); navigateTo('quiz.html')">
-                                         <i class="fas fa-question-circle fa-fw item-icon"></i>
-                                         <div class="mega-menu-item-text"><h4>Quiz</h4></div>
-                                     </a>
+                                     <a href="test.html" class="mega-menu-item" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain fa-fw item-icon"></i><div class="mega-menu-item-text"><h4>Tests</h4></div></a>
+                                     <a href="quiz.html" class="mega-menu-item" onclick="event.preventDefault(); navigateTo('quiz.html')"><i class="fas fa-question-circle fa-fw item-icon"></i><div class="mega-menu-item-text"><h4>Quiz</h4></div></a>
                                  </div>
-                                 <!-- Colonne 3 -->
                                  <div class="mega-menu-column">
                                      <h3 class="mega-menu-heading">Carrière</h3>
-                                     <a href="challenges.html" class="mega-menu-item" onclick="event.preventDefault(); navigateTo('challenges.html')">
-                                         <i class="fas fa-trophy fa-fw item-icon"></i>
-                                         <div class="mega-menu-item-text"><h4>Challenges</h4></div>
-                                     </a>
-                                     <a href="emploi.html" class="mega-menu-item" onclick="event.preventDefault(); navigateTo('emploi.html')">
-                                         <i class="fas fa-briefcase fa-fw item-icon"></i>
-                                         <div class="mega-menu-item-text"><h4>Nos offres d'emploi</h4></div>
-                                     </a>
+                                     <a href="challenges.html" class="mega-menu-item" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy fa-fw item-icon"></i><div class="mega-menu-item-text"><h4>Challenges</h4></div></a>
+                                     <a href="emploi.html" class="mega-menu-item" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase fa-fw item-icon"></i><div class="mega-menu-item-text"><h4>Nos offres d'emploi</h4></div></a>
                                  </div>
-                                  <!-- Colonne 4 -->
                                  <div class="mega-menu-column">
                                      <h3 class="mega-menu-heading">Culture</h3>
-                                     <a href="histoire.html" class="mega-menu-item" onclick="event.preventDefault(); navigateTo('histoire.html')">
-                                         <i class="fas fa-scroll fa-fw item-icon"></i>
-                                         <div class="mega-menu-item-text"><h4>Histoire du BTP</h4></div>
-                                     </a>
+                                     <a href="histoire.html" class="mega-menu-item" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll fa-fw item-icon"></i><div class="mega-menu-item-text"><h4>Histoire du BTP</h4></div></a>
                                  </div>
                              </div>
                          </div>
                      </li>
-                 </ul>
-                 <div class="nav-actions">
-                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
-                         <i class="fas fa-moon" id="themeIcon"></i>
-                     </button>
-                 </div>
+                </ul>
+                <div class="nav-actions">
+                    <button class="btn-connect" onclick="logout()" title="Déconnexion">
+                        <span class="text-connect">
+                            <span class="connection-dot"></span>
+                            <span>Connecté</span>
+                        </span>
+                        <span class="text-disconnect">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Déconnexion</span>
+                        </span>
+                    </button>
+                    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
+                </div>
             </div>
-
             <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
                 <span class="hamburger"><span></span><span></span><span></span></span>
             </button>
         </nav>
     </header>
-
+    
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
         <div class="mobile-menu-header">
-            <a href="dashboard.html" class="logo" onclick="event.preventDefault(); toggleMobileMenu(); navigateTo('dashboard.html');">
+            <a href="index.html" class="logo" onclick="event.preventDefault(); toggleMobileMenu(); navigateTo('index.html');">
                 <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
                     <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
                     <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
@@ -713,49 +739,13 @@
                 </form>
             </div>
             <div class="mobile-nav-items">
-                <!-- Mobile nav items will be populated by JS -->
             </div>
         </div>
     </div>
 
     <!-- Main Content -->
     <main class="main-content">
-
-        <!-- Image Slider Section -->
-        <section class="slider-container animate-in" id="imageSlider">
-            <div class="slider-wrapper">
-                <div class="slide">
-                    <div class="slide-background">
-                        <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--secondary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M 100 150 L 250 150 L 300 100 L 350 200 L 400 50 L 450 250 L 500 150 L 700 150" opacity="0.5"/></svg>
-                    </div>
-                    <div class="slide-content">
-                        <h3>Analysez votre Potentiel</h3>
-                        <p>Des tests conçus par des experts pour révéler vos talents.</p>
-                    </div>
-                </div>
-                <div class="slide">
-                    <div class="slide-background">
-                        <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--accent)" stroke-width="1.5"><path d="M 200 50 h 400 v 200 h -400 z" opacity="0.4"/><path d="M 250 100 h 300 M 250 150 h 300 M 250 200 h 300" opacity="0.6"/><path d="M 280 80 l 20 20 l -20 -20 M 380 130 l 20 20 l -20 -20 M 480 180 l 20 20 l -20 -20" stroke-width="3"/></svg>
-                    </div>
-                    <div class="slide-content">
-                        <h3>Validez vos Acquis</h3>
-                        <p>Confirmez vos connaissances techniques et comportementales.</p>
-                    </div>
-                </div>
-                <div class="slide">
-                    <div class="slide-background">
-                        <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--primary-light)" stroke-width="1"><path d="M 400 150 m -100 0 a 100 100 0 1 0 200 0 a 100 100 0 1 0 -200 0" opacity="0.3"/><path d="M 400 150 m -80 0 a 80 80 0 1 0 160 0 a 80 80 0 1 0 -160 0" opacity="0.5"/><circle cx="400" cy="150" r="10" fill="var(--primary-light)"/></svg>
-                    </div>
-                    <div class="slide-content">
-                        <h3>Atteignez vos Objectifs</h3>
-                        <p>Utilisez vos résultats pour cibler votre prochaine étape de carrière.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="slider-nav prev" id="sliderPrev"><i class="fas fa-chevron-left"></i></div>
-            <div class="slider-nav next" id="sliderNext"><i class="fas fa-chevron-right"></i></div>
-            <div class="slider-dots" id="sliderDots"></div>
-    
+        
         <section class="hero animate-in">
             <h1>Évaluez Vos Compétences</h1>
             <p>Découvrez vos points forts et vos axes d'amélioration avec nos tests conçus pour les secteurs du BTP et de l'IT.</p>
@@ -846,16 +836,16 @@
 
     </main>
     
-    <div class="notification" id="notification">
-        <div class="notification-content">
-            <i class="fas fa-info-circle notification-icon" id="notificationIcon"></i>
-            <span class="notification-text" id="notificationText"></span>
-            <button class="notification-close" onclick="this.parentElement.parentElement.classList.remove('show')"><i class="fas fa-times"></i></button>
+    <div class="toast-notification" id="toastNotification">
+        <div class="toast-notification-content">
+            <i class="fas fa-info-circle toast-notification-icon" id="toastNotificationIcon"></i>
+            <span class="toast-notification-text" id="toastNotificationText"></span>
+            <button class="toast-notification-close" onclick="this.parentElement.parentElement.classList.remove('show')"><i class="fas fa-times"></i></button>
         </div>
     </div>
 
     <script>
-        "use strict"; 
+        "use strict";
 
         let currentTheme = localStorage.getItem('theme') || 'dark';
 
@@ -873,7 +863,9 @@
                     clearInterval(interval);
                     setTimeout(() => {
                         progressBar.classList.remove('show');
-                        progressFill.style.width = '0%';
+                        setTimeout(() => {
+                            progressFill.style.width = '0%';
+                        }, 300);
                     }, 500);
                 }
                 progressFill.style.width = progress + '%';
@@ -882,9 +874,12 @@
 
         function navigateTo(pageFile) {
             showProgress();
-            showNotification(`Chargement de la page...`, 'info');
+            showToastNotification(`Chargement de la page...`, 'info');
             if (window.location.href.endsWith(pageFile)) {
-                 setTimeout(() => document.getElementById('progressBar').classList.remove('show'), 500);
+                 setTimeout(() => {
+                     const progressBar = document.getElementById('progressBar');
+                     if(progressBar) progressBar.classList.remove('show');
+                 }, 500);
                  return;
             }
             setTimeout(() => window.location.href = pageFile, 1000);
@@ -892,20 +887,20 @@
 
         function launchTest(url) {
             showProgress();
-            showNotification(`Lancement du test...`, 'success');
+            showToastNotification(`Lancement du test...`, 'success');
             setTimeout(() => {
                 window.location.href = url;
             }, 1500);
         }
 
-        function showNotification(message, type = 'info', duration = 3000) {
-            const notification = document.getElementById('notification');
-            const notificationText = document.getElementById('notificationText');
-            const notificationIcon = document.getElementById('notificationIcon');
+        function showToastNotification(message, type = 'info', duration = 3000) {
+            const notification = document.getElementById('toastNotification');
+            const notificationText = document.getElementById('toastNotificationText');
+            const notificationIcon = document.getElementById('toastNotificationIcon');
             if (!notification || !notificationText || !notificationIcon) return;
             
-            notification.classList.remove('success', 'warning', 'error');
-            notificationIcon.className = 'notification-icon fas ';
+            notification.className = 'toast-notification';
+            notificationIcon.className = 'toast-notification-icon fas';
 
             switch(type) {
                 case 'success': notificationIcon.classList.add('fa-check-circle'); notification.classList.add('success'); break;
@@ -922,14 +917,14 @@
             const themeIcon = document.getElementById('themeIcon');
             if (!themeIcon) return;
             document.body.classList.toggle('light-mode', currentTheme === 'light');
-            themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+            themeIcon.className = currentTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
         }
 
         function toggleTheme() {
             currentTheme = currentTheme === 'light' ? 'dark' : 'light';
             localStorage.setItem('theme', currentTheme);
             updateThemeUI();
-            showNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
+            showToastNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
         }
         
         function toggleMobileMenu() {
@@ -939,80 +934,7 @@
             mobileMenu.classList.toggle('active');
             document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
         }
-
-        function setupSlider() {
-            const slider = document.getElementById('imageSlider');
-            if (!slider) return;
-
-            const wrapper = slider.querySelector('.slider-wrapper');
-            const slides = slider.querySelectorAll('.slide');
-            const prevBtn = document.getElementById('sliderPrev');
-            const nextBtn = document.getElementById('sliderNext');
-            const dotsContainer = document.getElementById('sliderDots');
-            
-            let currentIndex = 0;
-            let slideInterval;
-
-            if (slides.length <= 1) {
-                if(prevBtn) prevBtn.style.display = 'none';
-                if(nextBtn) nextBtn.style.display = 'none';
-                if(dotsContainer) dotsContainer.style.display = 'none';
-                if (slides.length === 1) slides[0].classList.add('active');
-                return;
-            }
-
-            slides.forEach((_, index) => {
-                const dot = document.createElement('div');
-                dot.classList.add('slider-dot');
-                dot.addEventListener('click', () => {
-                    goToSlide(index);
-                    resetInterval();
-                });
-                dotsContainer.appendChild(dot);
-            });
-            const dots = dotsContainer.querySelectorAll('.slider-dot');
-
-            function goToSlide(index) {
-                if (slides.length === 0) return;
-                if (index === currentIndex && slides[currentIndex].classList.contains('active')) return;
-                
-                slides[currentIndex].classList.remove('active');
-                currentIndex = (index + slides.length) % slides.length;
-                slides[currentIndex].classList.add('active');
-                
-                wrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
-                
-                if (dots.length > 0) {
-                    dots.forEach((dot, i) => {
-                        dot.classList.toggle('active', i === currentIndex);
-                    });
-                }
-            }
-
-            function nextSlide() { goToSlide(currentIndex + 1); }
-            function prevSlide() { goToSlide(currentIndex - 1); }
-            
-            function startInterval() {
-                slideInterval = setInterval(nextSlide, 7000); 
-            }
-
-            function resetInterval() {
-                clearInterval(slideInterval);
-                startInterval();
-            }
-
-            if (prevBtn && nextBtn) {
-                nextBtn.addEventListener('click', () => { nextSlide(); resetInterval(); });
-                prevBtn.addEventListener('click', () => { prevSlide(); resetInterval(); });
-            }
-            
-            if (slides.length > 0 && dots.length > 0) {
-                slides[0].classList.add('active');
-                dots[0].classList.add('active');
-                startInterval();
-            }
-        }
-
+        
         function populateMobileNav() {
             const desktopNav = document.querySelector('.nav-desktop .nav-menu');
             const mobileNavContainer = document.querySelector('.mobile-menu .mobile-nav-items');
@@ -1020,7 +942,7 @@
 
             mobileNavContainer.innerHTML = ''; 
 
-            const homeLink = desktopNav.querySelector('a[href="dashboard.html"]');
+            const homeLink = desktopNav.querySelector('a[href="index.html"]');
             if (homeLink) {
                  const newNavItem = document.createElement('a');
                 newNavItem.href = homeLink.href;
@@ -1091,7 +1013,6 @@
             });
             
             populateMobileNav();
-            setupSlider();
         });
     </script>
 </body>
