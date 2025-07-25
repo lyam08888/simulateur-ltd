@@ -568,6 +568,39 @@
             background-color: var(--primary-dark);
             transform: scale(1.05);
         }
+
+        /* --- Profile Form Styles --- */
+        .profile-form-group {
+            margin-bottom: var(--spacing-md);
+        }
+        .profile-form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: var(--spacing-xs);
+        }
+        .profile-form-group input,
+        .profile-form-group textarea {
+            width: 100%;
+            background-color: var(--surface-elevated);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            border-radius: var(--radius);
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        .profile-form-group input:focus,
+        .profile-form-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-dark);
+            outline: none;
+        }
+        .profile-form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
         
         .toast-notification { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-xl); transform: translateX(calc(100% + var(--spacing-lg))); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1100; backdrop-filter: blur(20px); max-width: 350px; }
         .toast-notification.show { transform: translateX(0); }
@@ -823,17 +856,61 @@
 
         // --- Authentication Logic ---
 
-        function renderDashboard(session) {
+        async function renderDashboard(session) {
+            const user = session.user;
             const dashboardContent = document.getElementById('dashboard-content');
             if (!dashboardContent) return;
+
+            // 1. Create a profile if it doesn't exist (Upsert)
+            const { error: upsertError } = await supabaseClient
+                .from('profiles')
+                .upsert({
+                    id: user.id,
+                    full_name: user.user_metadata?.full_name || user.email, // Fallback to email if name isn't available
+                    updated_at: new Date(),
+                }, {
+                    onConflict: 'id' // Specify the conflict target
+                });
+
+            if (upsertError) {
+                console.error("Erreur lors de la création/mise à jour du profil:", upsertError);
+            }
+
+            // 2. Read the user's profile
+            const { data: profile, error: profileError } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+
+            if (profileError) {
+                console.error("Erreur lors de la lecture du profil:", profileError);
+                // Handle case where profile might not be found, though upsert should prevent this
+            }
             
-            // If the user is connected, display the full dashboard.
+            // 3. Render the dashboard with profile information
             dashboardContent.innerHTML = `
                 <div class="dashboard-header">
-                    <h1>Bienvenue sur votre tableau de bord</h1>
-                    <p id="user-email">Connecté en tant que : ${session.user.email}</p>
+                    <h1 id="welcome">Bienvenue, ${profile?.full_name || user.email}</h1>
+                    <p id="user-email">Connecté en tant que : ${user.email}</p>
                 </div>
                 <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-icon"><i class="fas fa-user-cog"></i></div>
+                            <h3>Mon Profil</h3>
+                        </div>
+                        <div class="profile-form-group">
+                            <label for="fullName">Nom complet</label>
+                            <input type="text" id="fullName" value="${profile?.full_name || ''}">
+                        </div>
+                         <div class="profile-form-group">
+                            <label for="bio">Biographie</label>
+                            <textarea id="bio">${profile?.bio || ''}</textarea>
+                        </div>
+                        <button class="btn" onclick="updateProfile()">Sauvegarder</button>
+                    </div>
+
                     <div class="dashboard-card">
                         <div class="dashboard-card-header">
                             <div class="dashboard-card-icon"><i class="fas fa-chart-line"></i></div>
@@ -850,25 +927,37 @@
                         <p>Suivez les challenges auxquels vous participez et découvrez de nouvelles opportunités pour tester vos compétences.</p>
                         <a href="challenges.html" class="btn">Voir les challenges</a>
                     </div>
-                    <div class="dashboard-card">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-play-circle"></i></div>
-                            <h3>Reprendre</h3>
-                        </div>
-                        <p>Continuez le dernier simulateur ou test que vous avez commencé pour ne pas perdre votre progression.</p>
-                        <a href="simulateur1.html" class="btn">Reprendre</a>
-                    </div>
-                    <div class="dashboard-card">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-user-cog"></i></div>
-                            <h3>Mon Profil</h3>
-                        </div>
-                        <p>Mettez à jour vos informations personnelles, votre CV et gérez les paramètres de votre compte.</p>
-                        <a href="#" class="btn">Gérer mon profil</a>
-                    </div>
                 </div>
             `;
         }
+
+        async function updateProfile() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (!user) {
+                showToastNotification('Utilisateur non trouvé.', 'error');
+                return;
+            }
+
+            const fullName = document.getElementById("fullName").value;
+            const bio = document.getElementById("bio").value;
+
+            const { error } = await supabaseClient
+                .from('profiles')
+                .update({
+                    full_name: fullName,
+                    bio: bio,
+                    updated_at: new Date()
+                })
+                .eq('id', user.id);
+
+            if (error) {
+                showToastNotification('Erreur de sauvegarde: ' + error.message, 'error');
+            } else {
+                showToastNotification('Profil mis à jour !', 'success');
+                document.getElementById('welcome').innerText = `Bienvenue, ${fullName}`;
+            }
+        }
+        window.updateProfile = updateProfile;
 
         function redirectToLogin() {
             const newPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) + 'connexion.html';
@@ -881,31 +970,32 @@
                 overlay.classList.add('show');
             }
 
-            // Add a small delay to ensure the animation is visible before signing out
-            setTimeout(async () => {
-                 await supabaseClient.auth.signOut();
-                 // The onAuthStateChange listener will handle the redirect automatically.
-            }, 500); // 500ms delay
+            const { error } = await supabaseClient.auth.signOut();
+
+            if (error) {
+                console.error('Erreur lors de la déconnexion:', error);
+                showToastNotification('Une erreur est survenue lors de la déconnexion.', 'error');
+                if (overlay) {
+                    overlay.classList.remove('show');
+                }
+            }
+            // If successful, the onAuthStateChange listener will automatically
+            // detect the signed-out state and redirect to the login page.
         }
         
-        // --- Main Auth Listener ---
         supabaseClient.auth.onAuthStateChange((event, session) => {
           if (session) {
-            // A session exists (user is logged in).
             if (window.location.hash.includes('access_token')) {
                 window.history.replaceState(null, '', window.location.pathname);
             }
             renderDashboard(session);
           } else {
-            // No session (user is logged out or not yet logged in).
             if (!window.location.hash.includes('access_token')) {
               redirectToLogin();
             }
           }
         });
 
-
-        // --- UI Logic from Template ---
         let currentTheme = localStorage.getItem('theme') || 'dark';
 
         function showToastNotification(message, type = 'info', duration = 3000) {
@@ -985,8 +1075,6 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // The onAuthStateChange listener handles authentication, so we only
-            // need to set up the UI components here.
             updateThemeUI();
             populateMobileNav();
         });
