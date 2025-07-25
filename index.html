@@ -118,7 +118,7 @@
             100% { background-position: 0% 50%; }
         }
         
-        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn, .notification-bell {
+        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn, .notification-bell, .footer-link {
             cursor: pointer;
         }
 
@@ -265,6 +265,7 @@
             max-width: 1400px; 
             margin-left: auto; 
             margin-right: auto; 
+            min-height: calc(100vh - 4.5rem - 150px); /* Assure que le contenu pousse le footer vers le bas */
         }
         
         .hero { text-align: center; padding: var(--spacing-lg) 0; }
@@ -421,6 +422,109 @@
         .progress-bar.show { opacity: 1; }
         .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.3s ease; box-shadow: 0 0 10px var(--primary), 0 0 5px var(--secondary); }
         
+        /* --- Footer --- */
+        .site-footer {
+            padding: var(--spacing-lg) var(--spacing-sm);
+            background: var(--surface);
+            border-top: 1px solid var(--glass-border);
+            margin-top: var(--spacing-xl);
+        }
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        .footer-copyright {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .footer-nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: var(--spacing-sm) var(--spacing-md);
+        }
+        .footer-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        .footer-link:hover {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        /* --- Modal --- */
+        .modal {
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(10px);
+            display: none; /* Caché par défaut */
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity var(--transition-slow);
+        }
+        .modal.show {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-content {
+            background: var(--surface-elevated);
+            margin: auto;
+            padding: var(--spacing-lg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            width: 90%;
+            max-width: 600px;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            transform: scale(0.95);
+            transition: transform var(--transition-slow);
+        }
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+        .modal-close {
+            color: var(--text-muted);
+            position: absolute;
+            top: var(--spacing-sm);
+            right: var(--spacing-md);
+            font-size: 2rem;
+            font-weight: bold;
+            border: none;
+            background: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .modal-close:hover,
+        .modal-close:focus {
+            color: var(--text-primary);
+            transform: scale(1.2);
+        }
+        .modal-content h2 {
+            margin-top: 0;
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+            font-size: 1.5rem;
+        }
+        .modal-content p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        body.light-mode .modal {
+            background-color: rgba(241, 245, 249, 0.7);
+        }
 
         /* --- Media Queries pour la réactivité --- */
 
@@ -446,6 +550,10 @@
              .slider-nav {
                 width: 3rem;
                 height: 3rem;
+            }
+            .footer-container {
+                flex-direction: row;
+                justify-content: space-between;
             }
         }
 
@@ -571,6 +679,35 @@
 
     </main>
     
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-copyright">
+                © 2025 LTD Simulator, Inc.
+            </div>
+            <nav class="footer-nav">
+                <a href="#" class="footer-link" data-content-key="terms">Conditions</a>
+                <a href="#" class="footer-link" data-content-key="privacy">Confidentialité</a>
+                <a href="#" class="footer-link" data-content-key="security">Sécurité</a>
+                <a href="#" class="footer-link" data-content-key="status">Statut</a>
+                <a href="#" class="footer-link" data-content-key="docs">Docs</a>
+                <a href="#" class="footer-link" data-content-key="contact">Contact</a>
+                <a href="#" class="footer-link" data-content-key="cookies">Gérer les cookies</a>
+                <a href="#" class="footer-link" data-content-key="personal-info">Ne pas partager mes informations personnelles</a>
+            </nav>
+        </div>
+    </footer>
+
+    <!-- Modal pour les informations du footer -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" title="Fermer">&times;</button>
+            <h2 id="modalTitle"></h2>
+            <p id="modalText"></p>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
     <div class="toast-notification" id="toastNotification">
         <div class="toast-notification-content">
             <i class="fas fa-info-circle toast-notification-icon" id="toastNotificationIcon"></i>
@@ -779,6 +916,93 @@
                 observer.observe(el);
             });
         }
+        
+        /**
+         * Gère l'ouverture et la fermeture de la fenêtre modale du footer.
+         */
+        function setupModal() {
+            const modal = document.getElementById('infoModal');
+            if (!modal) return;
+
+            const closeBtn = modal.querySelector('.modal-close');
+            const footerLinks = document.querySelectorAll('.footer-link');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalText = document.getElementById('modalText');
+
+            const modalContentData = {
+                terms: {
+                    title: "Conditions d'Utilisation",
+                    text: "Bienvenue sur LTD Simulator. En utilisant nos services, vous acceptez ces conditions. Veuillez les lire attentivement. L'utilisation de nos simulateurs est à des fins éducatives et de formation. Toute reproduction ou distribution du contenu sans autorisation est interdite."
+                },
+                privacy: {
+                    title: "Politique de Confidentialité",
+                    text: "Nous respectons votre vie privée. Cette politique explique quelles données nous collectons et pourquoi. Nous collectons des informations pour améliorer nos services, comme votre progression dans les simulateurs. Nous ne partageons pas vos informations personnelles avec des tiers sans votre consentement."
+                },
+                security: {
+                    title: "Sécurité",
+                    text: "La sécurité de vos données est notre priorité. Nous utilisons des mesures de sécurité standard de l'industrie, y compris le cryptage, pour protéger vos informations. En cas de faille de sécurité, nous vous informerons dans les plus brefs délais."
+                },
+                status: {
+                    title: "Statut des Services",
+                    text: "Tous les systèmes sont actuellement opérationnels. Pour des informations en temps réel sur la performance de nos serveurs et les maintenances prévues, veuillez consulter notre page de statut dédiée."
+                },
+                docs: {
+                    title: "Documentation",
+                    text: "Notre documentation complète fournit des guides détaillés sur l'utilisation de nos simulateurs, des tutoriels pour les débutants et des références pour les fonctionnalités avancées. Elle est conçue pour vous aider à tirer le meilleur parti de notre plateforme."
+                },
+                contact: {
+                    title: "Nous Contacter",
+                    text: "Pour toute question, support technique ou partenariat, n'hésitez pas à nous contacter. Vous pouvez nous joindre par email à contact@ltd-simulator.fr ou via le formulaire de contact sur notre site."
+                },
+                cookies: {
+                    title: "Gestion des Cookies",
+                    text: "Nous utilisons des cookies pour améliorer votre expérience utilisateur, analyser le trafic et personnaliser le contenu. Vous pouvez gérer vos préférences de cookies à tout moment dans les paramètres de votre navigateur."
+                },
+                'personal-info': {
+                    title: "Ne pas partager mes informations personnelles",
+                    text: "Nous vous offrons le contrôle sur vos données. Conformément à la réglementation, vous pouvez demander l'accès, la modification ou la suppression de vos informations personnelles en nous contactant directement."
+                }
+            };
+
+            function openModal(contentKey) {
+                const content = modalContentData[contentKey];
+                if (!content || !modalTitle || !modalText) return;
+
+                modalTitle.textContent = content.title;
+                modalText.textContent = content.text;
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden'; // Empêche le défilement de l'arrière-plan
+            }
+
+            function closeModal() {
+                modal.classList.remove('show');
+                document.body.style.overflow = ''; // Restaure le défilement
+            }
+
+            footerLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const contentKey = e.target.dataset.contentKey;
+                    openModal(contentKey);
+                });
+            });
+
+            closeBtn.addEventListener('click', closeModal);
+
+            // Ferme la modale si l'utilisateur clique en dehors du contenu
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+            
+            // Ferme la modale avec la touche "Echap"
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('show')) {
+                    closeModal();
+                }
+            });
+        }
 
         // --- Fonctions globales ---
         window.navigateTo = function(pageFile) {
@@ -820,6 +1044,7 @@
             initAnimations();
             populateMobileNav();
             setupSlider();
+            setupModal(); // Ajout de l'initialisation de la modale
         });
     </script>
 </body>
