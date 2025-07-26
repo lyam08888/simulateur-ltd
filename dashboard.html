@@ -15,7 +15,7 @@
             --primary: #818cf8;
             --primary-dark: #6366f1;
             --primary-light: #a5b4fc;
-            --primary-rgb: 129, 140, 248;ac
+            --primary-rgb: 129, 140, 248;
             --secondary: #34d399;
             --secondary-dark: #10b981;
             --accent: #f59e0b;
@@ -1251,33 +1251,41 @@
             // 4. Render main content
             dashboardContent.innerHTML = `
                 <div class="dashboard-header">
-                    <h1>Votre Tableau de Bord</h1>
-                    <p>Un aperçu de votre activité et des raccourcis utiles.</p>
+                    <h1>Bienvenue, ${username}</h1>
+                    <p>Prêt à commencer ? Lancez une simulation ou testez vos connaissances.</p>
                 </div>
                 <div class="dashboard-grid">
-                    <a href="#" class="dashboard-card">
+                    <a href="simulateur1.html" class="dashboard-card">
                         <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-chart-line"></i></div>
-                            <h3>Mes Statistiques</h3>
+                            <div class="dashboard-card-icon"><i class="fas fa-cubes"></i></div>
+                            <h3>Simulateurs</h3>
                         </div>
-                        <p>Consultez vos performances, vos scores aux quiz et votre progression générale sur la plateforme.</p>
-                        <span class="btn">Voir mes stats</span>
+                        <p>Accédez à nos simulateurs interactifs pour vous entraîner sur des équipements de chantier.</p>
+                        <span class="btn">Lancer une simulation</span>
                     </a>
-                    <a href="challenges.html" class="dashboard-card">
+                    <a href="test1.html" class="dashboard-card">
                         <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-trophy"></i></div>
-                            <h3>Mes Challenges</h3>
+                            <div class="dashboard-card-icon"><i class="fas fa-brain"></i></div>
+                            <h3>Tests</h3>
                         </div>
-                        <p>Suivez les challenges auxquels vous participez et découvrez de nouvelles opportunités pour tester vos compétences.</p>
-                        <span class="btn">Voir les challenges</span>
+                        <p>Évaluez vos connaissances théoriques et pratiques avec nos différents tests de compétence.</p>
+                        <span class="btn">Commencer un test</span>
                     </a>
-                     <a href="#" class="dashboard-card">
+                     <a href="quiz1.html" class="dashboard-card">
                         <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-cog"></i></div>
-                            <h3>Paramètres</h3>
+                            <div class="dashboard-card-icon"><i class="fas fa-question-circle"></i></div>
+                            <h3>Quiz</h3>
                         </div>
-                        <p>Gérez les paramètres de votre compte, les notifications et les préférences de la plateforme.</p>
-                        <span class="btn">Accéder aux paramètres</span>
+                        <p>Testez vos connaissances de manière ludique avec nos quiz sur le monde du BTP.</p>
+                        <span class="btn">Faire un quiz</span>
+                    </a>
+                     <a href="outils1.html" class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-icon"><i class="fas fa-wrench"></i></div>
+                            <h3>Outils</h3>
+                        </div>
+                        <p>Découvrez une sélection d'outils et de ressources pour vous aider dans vos projets.</p>
+                        <span class="btn">Découvrir les outils</span>
                     </a>
                 </div>
             `;
