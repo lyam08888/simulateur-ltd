@@ -543,7 +543,7 @@
     <div id="tutorialOverlay" class="tutorial-overlay">
         <div id="tutorialHighlight" class="tutorial-highlight"></div>
         <div id="tutorialBox" class="tutorial-box">
-            <h3>Bienvenue !</h3>
+            <h3>Premiers pas</h3>
             <p>Utilisez ce formulaire pour vous connecter ou créer un nouveau compte. Vous pouvez aussi utiliser votre compte Google.</p>
             <button onclick="hideTutorial()">J'ai compris</button>
         </div>
@@ -852,13 +852,20 @@
             if (!overlay || !highlight || !box || !loginContainer) return;
 
             const rect = loginContainer.getBoundingClientRect();
+            const boxHeight = box.offsetHeight;
 
             highlight.style.top = `${rect.top - 10}px`;
             highlight.style.left = `${rect.left - 10}px`;
             highlight.style.width = `${rect.width + 20}px`;
             highlight.style.height = `${rect.height + 20}px`;
 
-            box.style.top = `${rect.bottom + 15}px`;
+            // Positionne la boîte au-dessus si pas assez de place en dessous
+            if (rect.bottom + 15 + boxHeight > window.innerHeight && rect.top - boxHeight - 15 > 0) {
+                box.style.top = `${rect.top - boxHeight - 15}px`;
+            } else {
+                box.style.top = `${rect.bottom + 15}px`;
+            }
+            
             box.style.left = `50%`;
             box.style.transform = 'translateX(-50%)';
 
@@ -880,7 +887,7 @@
 
             // --- Gère l'état d'authentification ---
             supabaseClient.auth.onAuthStateChange(async (event, session) => {
-                if (event === 'SIGNED_IN' && session) {
+                if (session && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
                     showLoadingOverlay();
                     window.history.replaceState({}, document.title, window.location.pathname);
                     
