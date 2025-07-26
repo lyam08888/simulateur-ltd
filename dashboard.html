@@ -294,7 +294,7 @@
             transform: rotate(15deg);
         }
 
-        /* --- Profile Dropdown in Header --- */
+        /* --- Profile Dropdown in Header (New Design) --- */
         .profile-dropdown {
             position: relative;
         }
@@ -347,7 +347,7 @@
             position: absolute;
             top: calc(100% + 10px);
             right: 0;
-            width: 380px;
+            width: 360px;
             background: var(--surface);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
@@ -372,25 +372,28 @@
         }
         
         .profile-user-info {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            padding: var(--spacing-md);
-            background: var(--glass);
+            text-align: center;
+            padding: var(--spacing-lg) var(--spacing-md);
+            background: linear-gradient(45deg, rgba(var(--primary-rgb), 0.1), transparent), var(--glass);
+            border-bottom: 1px solid var(--glass-border);
         }
         
         .profile-avatar-wrapper {
             position: relative;
             cursor: pointer;
+            width: 5rem;
+            height: 5rem;
+            margin: 0 auto var(--spacing-sm);
         }
 
         .profile-avatar-wrapper img {
-            width: 4rem;
-            height: 4rem;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid var(--glass-border);
+            border: 3px solid var(--primary);
             background-color: var(--surface-elevated);
+            box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.5);
         }
 
         .profile-avatar-wrapper .edit-overlay {
@@ -407,15 +410,16 @@
             border-radius: 50%;
             opacity: 0;
             transition: var(--transition);
-            font-size: 1.2rem;
+            font-size: 1.5rem;
         }
         .profile-avatar-wrapper:hover .edit-overlay {
             opacity: 1;
         }
         
         .profile-edit-menu .profile-user-details h4 {
-            margin: 0;
-            font-weight: 600;
+            margin: 0 0 0.25rem 0;
+            font-weight: 700;
+            font-size: 1.1rem;
             color: var(--text-primary);
         }
         .profile-edit-menu .profile-user-details p {
@@ -425,70 +429,80 @@
             word-break: break-all;
         }
         
-        .profile-tabs {
-            display: flex;
-            background-color: var(--surface-elevated);
-        }
-        .tab-link {
-            flex: 1;
-            padding: 0.8rem;
-            text-align: center;
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-weight: 600;
-            font-size: 0.9rem;
-            position: relative;
-            transition: var(--transition);
-        }
-        .tab-link:hover {
-            color: var(--text-primary);
-        }
-        .tab-link.active {
-            color: var(--text-primary);
-            background: var(--surface);
-        }
-        
-        .profile-tab-content {
+        .profile-form-container {
             padding: var(--spacing-md);
-            display: none;
-        }
-        .profile-tab-content.active {
-            display: block;
         }
 
-        .form-row {
-            display: flex;
-            gap: var(--spacing-md);
+        .input-group {
+            position: relative;
+            margin-bottom: var(--spacing-md);
         }
-        .form-row > .profile-form-group {
-            flex: 1;
+
+        .input-group i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
         }
-        
-        .profile-edit-menu .btn {
+
+        .input-group input,
+        .input-group textarea {
             width: 100%;
-            justify-content: center;
-            margin-top: var(--spacing-xs);
-        }
-        
-        #tab-account .logout-btn {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            width: 100%;
-            padding: 0.75rem;
-            background: var(--glass);
+            background-color: var(--surface-elevated);
             border: 1px solid var(--glass-border);
-            color: var(--text-secondary);
+            color: var(--text-primary);
             border-radius: var(--radius);
-            text-align: left;
+            padding: 0.75rem 1rem 0.75rem 2.75rem;
             font-size: 0.95rem;
-            font-weight: 500;
+            transition: var(--transition);
         }
-        #tab-account .logout-btn:hover {
-            background: var(--error);
-            border-color: var(--error-dark);
+        .input-group input::placeholder,
+        .input-group textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-dark);
+            outline: none;
+        }
+
+        .input-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            padding: 0 var(--spacing-md) var(--spacing-md);
+        }
+        .profile-actions .btn {
+            flex: 1;
+            padding: 0.75rem;
+            font-weight: 600;
+            border-radius: var(--radius);
+            border: none;
+        }
+        .profile-actions .btn-primary {
+            background: var(--primary);
             color: white;
+            transition: var(--transition);
+        }
+        .profile-actions .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        .profile-actions .btn-secondary {
+            background: var(--surface-elevated);
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+        .profile-actions .btn-secondary:hover {
+            background: var(--surface-hover);
+            color: var(--error);
         }
         
         /* --- Avatar Selection Modal --- */
@@ -574,7 +588,7 @@
             background-color: var(--glass-border);
             margin: var(--spacing-md) 0;
         }
-        .avatar-modal-content .btn-secondary {
+        .avatar-modal-content .btn-upload {
             width: 100%;
             background-color: var(--surface-elevated);
             color: var(--text-primary);
@@ -585,8 +599,9 @@
             justify-content: center;
             gap: var(--spacing-sm);
             font-weight: 600;
+            border-radius: var(--radius);
         }
-        .avatar-modal-content .btn-secondary:hover {
+        .avatar-modal-content .btn-upload:hover {
             background-color: var(--surface-hover);
         }
 
@@ -826,39 +841,6 @@
         .dashboard-card .btn:hover {
             background-color: var(--primary-dark);
             transform: scale(1.05);
-        }
-
-        /* --- Profile Form Styles (reused in dropdown) --- */
-        .profile-form-group {
-            margin-bottom: var(--spacing-md);
-        }
-        .profile-form-group label {
-            display: block;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text-muted);
-            margin-bottom: var(--spacing-xs);
-        }
-        .profile-form-group input,
-        .profile-form-group textarea {
-            width: 100%;
-            background-color: var(--surface-elevated);
-            border: 1px solid var(--glass-border);
-            color: var(--text-primary);
-            border-radius: var(--radius);
-            padding: 0.75rem 1rem;
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-        .profile-form-group input:focus,
-        .profile-form-group textarea:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px var(--primary-dark);
-            outline: none;
-        }
-        .profile-form-group textarea {
-            min-height: 80px;
-            resize: vertical;
         }
         
         .toast-notification { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-xl); transform: translateX(calc(100% + var(--spacing-lg))); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1100; backdrop-filter: blur(20px); max-width: 350px; }
@@ -1567,4 +1549,4 @@
         });
     </script>
 </body>
-</html>
+</ht
