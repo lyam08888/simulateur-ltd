@@ -525,21 +525,24 @@
             color: var(--error);
         }
         
-        /* --- Avatar Selection Modal --- */
-        #avatarModal .modal-content {
+        /* --- Avatar & Explorer Modal --- */
+        #avatarModal .modal-content, #explorerModal .modal-content {
             max-width: 500px;
         }
-        #avatarModal h3 {
+        #explorerModal .modal-content {
+             max-width: 800px;
+        }
+        .modal-content h3 {
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--text-primary);
             margin-bottom: var(--spacing-xs);
         }
-        #avatarModal > p {
+        .modal-content > p {
             color: var(--text-secondary);
             margin-bottom: var(--spacing-md);
         }
-        #avatarModal hr {
+        .modal-content hr {
             border: none;
             height: 1px;
             background-color: var(--glass-border);
@@ -588,52 +591,7 @@
             border-radius: 50%;
         }
 
-
-        /* --- Mega Menu --- */
-        .nav-item.has-mega-menu > .nav-link::after {
-            content: '\f078'; /* Font Awesome chevron-down */
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            font-size: 0.6rem;
-            margin-left: 0.5rem;
-            transition: transform 0.2s ease;
-        }
-
-        .nav-item.has-mega-menu:hover > .nav-link::after {
-            transform: rotate(180deg);
-        }
-
-        .mega-menu {
-            position: absolute;
-            top: calc(100% + 10px);
-            left: 50%;
-            width: clamp(700px, 80vw, 950px); 
-            background: rgba(30, 41, 59, 0.9);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-xl);
-            padding: var(--spacing-lg);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateX(-50%) translateY(20px);
-            pointer-events: none;
-            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s;
-            z-index: 1001;
-        }
-        
-        body.light-mode .mega-menu {
-            background: rgba(241, 245, 249, 0.9);
-        }
-
-        .nav-item.has-mega-menu:hover .mega-menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-50%) translateY(0);
-            pointer-events: auto;
-        }
-
+        /* --- Explorer Modal Grid --- */
         .mega-menu-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -934,52 +892,8 @@
                  </form>
                  <ul class="nav-menu">
                      <li class="nav-item"><a href="dashboard.html" class="nav-link active"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
-                     <li class="nav-item has-mega-menu">
-                         <a href="#" class="nav-link" onclick="event.preventDefault();"><i class="fas fa-compass"></i>&nbsp;Explorer</a>
-                         <div class="mega-menu">
-                             <div class="mega-menu-grid">
-                                 <div class="mega-menu-column">
-                                     <h3 class="mega-menu-heading">Pratique</h3>
-                                     <a href="simulateur1.html" class="mega-menu-item">
-                                         <i class="fas fa-cubes fa-fw item-icon"></i>
-                                         <div class="mega-menu-item-text"><h4>Simulateurs</h4></div>
-                                     </a>
-                                     <a href="outils1.html" class="mega-menu-item">
-                                         <i class="fas fa-wrench fa-fw item-icon"></i>
-                                         <div class="mega-menu-item-text"><h4>Outils</h4></div>
-                                     </a>
-                                 </div>
-                                 <div class="mega-menu-column">
-                                     <h3 class="mega-menu-heading">Évaluation</h3>
-                                     <a href="test1.html" class="mega-menu-item">
-                                         <i class="fas fa-brain fa-fw item-icon"></i>
-                                         <div class="mega-menu-item-text"><h4>Tests</h4></div>
-                                     </a>
-                                     <a href="quiz1.html" class="mega-menu-item">
-                                         <i class="fas fa-question-circle fa-fw item-icon"></i>
-                                         <div class="mega-menu-item-text"><h4>Quiz</h4></div>
-                                     </a>
-                                 </div>
-                                 <div class="mega-menu-column">
-                                     <h3 class="mega-menu-heading">Carrière</h3>
-                                     <a href="challenges1.html" class="mega-menu-item">
-                                         <i class="fas fa-trophy fa-fw item-icon"></i>
-                                         <div class="mega-menu-item-text"><h4>Challenges</h4></div>
-                                     </a>
-                                     <a href="emploi1.html" class="mega-menu-item">
-                                         <i class="fas fa-briefcase fa-fw item-icon"></i>
-                                         <div class="mega-menu-item-text"><h4>Nos offres d'emploi</h4></div>
-                                     </a>
-                                 </div>
-                                 <div class="mega-menu-column">
-                                     <h3 class="mega-menu-heading">Culture</h3>
-                                     <a href="histoire1.html" class="mega-menu-item">
-                                         <i class="fas fa-scroll fa-fw item-icon"></i>
-                                         <div class="mega-menu-item-text"><h4>Histoire du BTP</h4></div>
-                                     </a>
-                                 </div>
-                             </div>
-                         </div>
+                     <li class="nav-item">
+                         <a href="#" class="nav-link" onclick="openExplorerModal()"><i class="fas fa-compass"></i>&nbsp;Explorer</a>
                      </li>
                  </ul>
                  <div class="nav-actions">
@@ -1103,6 +1017,59 @@
                 <i class="fas fa-upload"></i> Téléverser une image
             </button>
             <input type="file" id="avatarUpload" accept="image/png, image/jpeg" style="display: none;">
+        </div>
+    </div>
+
+    <!-- Explorer Modal -->
+    <div id="explorerModal" class="modal">
+        <div class="modal-overlay" onclick="closeExplorerModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeExplorerModal()" title="Fermer"><i class="fas fa-times"></i></button>
+            <h3>Explorer les Applications</h3>
+            <p>Choisissez une application ou un outil à lancer.</p>
+            <hr>
+            <div class="mega-menu-grid">
+                <div class="mega-menu-column">
+                    <h3 class="mega-menu-heading">Pratique</h3>
+                    <a href="simulateur1.html" class="mega-menu-item">
+                        <i class="fas fa-cubes fa-fw item-icon"></i>
+                        <div class="mega-menu-item-text"><h4>Simulateurs</h4></div>
+                    </a>
+                    <a href="outils1.html" class="mega-menu-item">
+                        <i class="fas fa-wrench fa-fw item-icon"></i>
+                        <div class="mega-menu-item-text"><h4>Outils</h4></div>
+                    </a>
+                </div>
+                <div class="mega-menu-column">
+                    <h3 class="mega-menu-heading">Évaluation</h3>
+                    <a href="test1.html" class="mega-menu-item">
+                        <i class="fas fa-brain fa-fw item-icon"></i>
+                        <div class="mega-menu-item-text"><h4>Tests</h4></div>
+                    </a>
+                    <a href="quiz1.html" class="mega-menu-item">
+                        <i class="fas fa-question-circle fa-fw item-icon"></i>
+                        <div class="mega-menu-item-text"><h4>Quiz</h4></div>
+                    </a>
+                </div>
+                <div class="mega-menu-column">
+                    <h3 class="mega-menu-heading">Carrière</h3>
+                    <a href="challenges1.html" class="mega-menu-item">
+                        <i class="fas fa-trophy fa-fw item-icon"></i>
+                        <div class="mega-menu-item-text"><h4>Challenges</h4></div>
+                    </a>
+                    <a href="emploi1.html" class="mega-menu-item">
+                        <i class="fas fa-briefcase fa-fw item-icon"></i>
+                        <div class="mega-menu-item-text"><h4>Nos offres d'emploi</h4></div>
+                    </a>
+                </div>
+                <div class="mega-menu-column">
+                    <h3 class="mega-menu-heading">Culture</h3>
+                    <a href="histoire1.html" class="mega-menu-item">
+                        <i class="fas fa-scroll fa-fw item-icon"></i>
+                        <div class="mega-menu-item-text"><h4>Histoire du BTP</h4></div>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1449,12 +1416,21 @@
         }
         window.closeProfileModal = closeProfileModal;
         
+        function openExplorerModal() {
+            document.getElementById('explorerModal').classList.add('show');
+        }
+        window.openExplorerModal = openExplorerModal;
+
+        function closeExplorerModal() {
+            document.getElementById('explorerModal').classList.remove('show');
+        }
+        window.closeExplorerModal = closeExplorerModal;
 
         document.addEventListener('DOMContentLoaded', () => {
             updateThemeUI();
             populateMobileNav();
 
-            // --- Profile Dropdown Logic ---
+            // --- Profile Toggle Logic ---
             const userProfileToggle = document.getElementById('userProfileToggle');
             const avatarUploadInput = document.getElementById('avatarUpload');
 
