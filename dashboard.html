@@ -347,18 +347,18 @@
             position: absolute;
             top: calc(100% + 10px);
             right: 0;
-            width: 340px;
+            width: 380px;
             background: var(--surface);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-lg);
-            padding: var(--spacing-md);
             opacity: 0;
             visibility: hidden;
             transform: translateY(10px);
             transition: var(--transition-slow);
             z-index: 1002;
             backdrop-filter: blur(10px);
+            overflow: hidden;
         }
         
         body.light-mode .profile-edit-menu {
@@ -375,7 +375,8 @@
             display: flex;
             align-items: center;
             gap: var(--spacing-sm);
-            margin-bottom: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--glass);
         }
         
         .profile-avatar-wrapper {
@@ -423,34 +424,71 @@
             color: var(--text-muted);
             word-break: break-all;
         }
-        .profile-edit-menu hr {
-            border: none;
-            height: 1px;
-            background-color: var(--glass-border);
-            margin: var(--spacing-md) 0;
+        
+        .profile-tabs {
+            display: flex;
+            background-color: var(--surface-elevated);
         }
-        .profile-edit-menu .logout-btn {
+        .tab-link {
+            flex: 1;
+            padding: 0.8rem;
+            text-align: center;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            position: relative;
+            transition: var(--transition);
+        }
+        .tab-link:hover {
+            color: var(--text-primary);
+        }
+        .tab-link.active {
+            color: var(--text-primary);
+            background: var(--surface);
+        }
+        
+        .profile-tab-content {
+            padding: var(--spacing-md);
+            display: none;
+        }
+        .profile-tab-content.active {
+            display: block;
+        }
+
+        .form-row {
+            display: flex;
+            gap: var(--spacing-md);
+        }
+        .form-row > .profile-form-group {
+            flex: 1;
+        }
+        
+        .profile-edit-menu .btn {
+            width: 100%;
+            justify-content: center;
+            margin-top: var(--spacing-xs);
+        }
+        
+        #tab-account .logout-btn {
             display: flex;
             align-items: center;
             gap: var(--spacing-sm);
             width: 100%;
             padding: 0.75rem;
-            background: transparent;
-            border: none;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
             color: var(--text-secondary);
             border-radius: var(--radius);
             text-align: left;
             font-size: 0.95rem;
             font-weight: 500;
         }
-        .profile-edit-menu .logout-btn:hover {
-            background: var(--glass);
-            color: var(--error);
-        }
-        .profile-edit-menu .btn { /* The save button */
-            width: 100%;
-            justify-content: center;
-            margin-top: var(--spacing-xs);
+        #tab-account .logout-btn:hover {
+            background: var(--error);
+            border-color: var(--error-dark);
+            color: white;
         }
         
         /* --- Avatar Selection Modal --- */
@@ -819,7 +857,7 @@
             outline: none;
         }
         .profile-form-group textarea {
-            min-height: 100px;
+            min-height: 80px;
             resize: vertical;
         }
         
@@ -1024,29 +1062,40 @@
                                        <p id="dropdownUserEmail"></p>
                                    </div>
                               </div>
-                              <hr>
-                              <div class="profile-form-group">
-                                  <label for="fullName">Nom complet</label>
-                                  <input type="text" id="fullName" placeholder="Votre nom complet">
+                              <div class="profile-tabs">
+                                  <button class="tab-link active" onclick="openProfileTab(event, 'tab-main')">Profil</button>
+                                  <button class="tab-link" onclick="openProfileTab(event, 'tab-account')">Compte</button>
                               </div>
-                               <div class="profile-form-group">
-                                  <label for="company">Entreprise</label>
-                                  <input type="text" id="company" placeholder="Nom de votre entreprise">
+
+                              <div id="tab-main" class="profile-tab-content active">
+                                  <div class="profile-form-group">
+                                      <label for="fullName">Nom complet</label>
+                                      <input type="text" id="fullName" placeholder="Votre nom complet">
+                                  </div>
+                                  <div class="form-row">
+                                      <div class="profile-form-group">
+                                          <label for="company">Entreprise</label>
+                                          <input type="text" id="company" placeholder="Nom de votre entreprise">
+                                      </div>
+                                      <div class="profile-form-group">
+                                          <label for="website">Site Web</label>
+                                          <input type="url" id="website" placeholder="https://example.com">
+                                      </div>
+                                  </div>
+                                  <div class="profile-form-group">
+                                      <label for="bio">Biographie</label>
+                                      <textarea id="bio" placeholder="Parlez un peu de vous..."></textarea>
+                                  </div>
+                                  <button class="btn" onclick="updateProfile()">Sauvegarder</button>
                               </div>
-                               <div class="profile-form-group">
-                                  <label for="website">Site Web</label>
-                                  <input type="url" id="website" placeholder="https://example.com">
+
+                              <div id="tab-account" class="profile-tab-content">
+                                  <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: var(--spacing-md);">Gérez les options de votre compte.</p>
+                                  <button class="logout-btn" onclick="logout()">
+                                      <i class="fas fa-sign-out-alt fa-fw"></i>
+                                      <span>Déconnexion</span>
+                                  </button>
                               </div>
-                              <div class="profile-form-group">
-                                  <label for="bio">Biographie</label>
-                                  <textarea id="bio" placeholder="Parlez un peu de vous..."></textarea>
-                              </div>
-                              <button class="btn" onclick="updateProfile()">Sauvegarder les informations</button>
-                              <hr>
-                              <button class="logout-btn" onclick="logout()">
-                                  <i class="fas fa-sign-out-alt fa-fw"></i>
-                                  <span>Déconnexion</span>
-                              </button>
                           </div>
                       </div>
                      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
@@ -1460,7 +1509,7 @@
             document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
         }
         
-        // --- Modal Logic ---
+        // --- Modal & Tab Logic ---
         function openAvatarModal() {
             document.getElementById('avatarModal').classList.add('show');
         }
@@ -1470,6 +1519,18 @@
             document.getElementById('avatarModal').classList.remove('show');
         }
         window.closeAvatarModal = closeAvatarModal;
+        
+        function openProfileTab(evt, tabName) {
+            const tabcontent = document.querySelectorAll(".profile-tab-content");
+            tabcontent.forEach(tc => tc.classList.remove('active'));
+
+            const tablinks = document.querySelectorAll(".tab-link");
+            tablinks.forEach(tl => tl.classList.remove("active"));
+
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add("active");
+        }
+        window.openProfileTab = openProfileTab;
 
         document.addEventListener('DOMContentLoaded', () => {
             updateThemeUI();
