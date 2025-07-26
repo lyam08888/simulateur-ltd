@@ -295,11 +295,7 @@
             transform: rotate(15deg);
         }
 
-        /* --- Profile Dropdown in Header (New Design) --- */
-        .profile-dropdown {
-            position: relative;
-        }
-
+        /* --- Profile Toggle --- */
         .user-profile-toggle {
             display: flex;
             align-items: center;
@@ -327,15 +323,6 @@
             background-color: var(--surface-elevated);
         }
 
-        .user-profile-toggle .fa-chevron-down {
-            font-size: 0.7rem;
-            transition: var(--transition);
-        }
-
-        .user-profile-toggle.active .fa-chevron-down {
-            transform: rotate(180deg);
-        }
-
         #headerUsername {
             max-width: 150px;
             white-space: nowrap;
@@ -343,42 +330,84 @@
             text-overflow: ellipsis;
             font-weight: 600;
         }
-
-        .profile-edit-menu {
-            position: absolute;
-            top: calc(100% + 10px);
+        
+        /* --- Generic Modal Styles --- */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
             right: 0;
-            width: 360px;
+            bottom: 0;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            cursor: pointer;
+        }
+        .modal-content {
+            position: relative;
             background: var(--surface);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-lg);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(10px);
+            box-shadow: var(--shadow-xl);
+            width: 90%;
+            z-index: 2001;
+            transform: scale(0.95);
             transition: var(--transition-slow);
-            z-index: 1002;
-            backdrop-filter: blur(10px);
             overflow: hidden;
         }
-        
-        body.light-mode .profile-edit-menu {
-             background: rgba(241, 245, 249, 0.9);
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: var(--spacing-sm);
+            right: var(--spacing-sm);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        .modal-close-btn:hover {
+            background: var(--surface-hover);
+            color: var(--text-primary);
+            transform: rotate(90deg);
         }
 
-        .profile-edit-menu.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
+        /* --- Profile Modal --- */
+        #profileModal .modal-content {
+            max-width: 400px;
         }
-        
         .profile-user-info {
             text-align: center;
             padding: var(--spacing-lg) var(--spacing-md);
             background: linear-gradient(45deg, rgba(var(--primary-rgb), 0.1), transparent), var(--glass);
             border-bottom: 1px solid var(--glass-border);
         }
-        
         .profile-avatar-wrapper {
             position: relative;
             cursor: pointer;
@@ -386,7 +415,6 @@
             height: 5rem;
             margin: 0 auto var(--spacing-sm);
         }
-
         .profile-avatar-wrapper img {
             width: 100%;
             height: 100%;
@@ -396,7 +424,6 @@
             background-color: var(--surface-elevated);
             box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.5);
         }
-
         .profile-avatar-wrapper .edit-overlay {
             position: absolute;
             top: 0;
@@ -416,29 +443,25 @@
         .profile-avatar-wrapper:hover .edit-overlay {
             opacity: 1;
         }
-        
-        .profile-edit-menu .profile-user-details h4 {
+        .profile-user-details h4 {
             margin: 0 0 0.25rem 0;
             font-weight: 700;
             font-size: 1.1rem;
             color: var(--text-primary);
         }
-        .profile-edit-menu .profile-user-details p {
+        .profile-user-details p {
             margin: 0;
             font-size: 0.85rem;
             color: var(--text-muted);
             word-break: break-all;
         }
-        
         .profile-form-container {
             padding: var(--spacing-md);
         }
-
         .input-group {
             position: relative;
             margin-bottom: var(--spacing-md);
         }
-
         .input-group i {
             position: absolute;
             left: 1rem;
@@ -447,9 +470,7 @@
             color: var(--text-muted);
             pointer-events: none;
         }
-
-        .input-group input,
-        .input-group textarea {
+        .input-group input {
             width: 100%;
             background-color: var(--surface-elevated);
             border: 1px solid var(--glass-border);
@@ -459,28 +480,17 @@
             font-size: 0.95rem;
             transition: var(--transition);
         }
-        .input-group input::placeholder,
-        .input-group textarea::placeholder {
+        .input-group input::placeholder {
             color: var(--text-muted);
         }
-
-        .input-group input:focus,
-        .input-group textarea:focus {
+        .input-group input:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 2px var(--primary-dark);
             outline: none;
         }
-        
-        .input-group input:focus + i,
-        .input-group textarea:focus + i {
+        .input-group input:focus + i {
             color: var(--primary);
         }
-
-        .input-group textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
-
         .profile-actions {
             display: flex;
             gap: var(--spacing-sm);
@@ -516,89 +526,26 @@
         }
         
         /* --- Avatar Selection Modal --- */
-        .avatar-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-        .avatar-modal.show {
-            opacity: 1;
-            visibility: visible;
-        }
-        .avatar-modal-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(15, 23, 42, 0.5);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            cursor: pointer;
-        }
-        .avatar-modal-content {
-            position: relative;
-            background: var(--surface);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-xl);
-            padding: var(--spacing-lg);
-            width: 90%;
+        #avatarModal .modal-content {
             max-width: 500px;
-            z-index: 2001;
-            transform: scale(0.95);
-            transition: var(--transition-slow);
         }
-        .avatar-modal.show .avatar-modal-content {
-            transform: scale(1);
-        }
-        .avatar-modal-content h3 {
+        #avatarModal h3 {
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--text-primary);
             margin-bottom: var(--spacing-xs);
         }
-        .avatar-modal-content > p {
+        #avatarModal > p {
             color: var(--text-secondary);
             margin-bottom: var(--spacing-md);
         }
-        .modal-close-btn {
-            position: absolute;
-            top: var(--spacing-sm);
-            right: var(--spacing-sm);
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            color: var(--text-secondary);
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-        .modal-close-btn:hover {
-            background: var(--surface-hover);
-            color: var(--text-primary);
-            transform: rotate(90deg);
-        }
-        .avatar-modal-content hr {
+        #avatarModal hr {
             border: none;
             height: 1px;
             background-color: var(--glass-border);
             margin: var(--spacing-md) 0;
         }
-        .avatar-modal-content .btn-upload {
+        #avatarModal .btn-upload {
             width: 100%;
             background-color: var(--surface-elevated);
             color: var(--text-primary);
@@ -611,10 +558,9 @@
             font-weight: 600;
             border-radius: var(--radius);
         }
-        .avatar-modal-content .btn-upload:hover {
+        #avatarModal .btn-upload:hover {
             background-color: var(--surface-hover);
         }
-
         .avatar-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
@@ -1041,38 +987,7 @@
                           <button id="userProfileToggle" class="user-profile-toggle" aria-haspopup="true" aria-expanded="false" title="Menu du profil">
                               <img id="headerAvatar" src="https://placehold.co/40x40/1e293b/f8fafc?text=LTD" alt="Avatar de l'utilisateur">
                               <span id="headerUsername">Chargement...</span>
-                              <i class="fas fa-chevron-down"></i>
                           </button>
-                          <div id="profileEditMenu" class="profile-edit-menu" role="menu">
-                                <div class="profile-user-info">
-                                   <div class="profile-avatar-wrapper" onclick="openAvatarModal()" title="Changer d'avatar">
-                                       <img id="dropdownAvatar" src="https://placehold.co/64x64/334155/f8fafc?text=LTD" alt="Avatar de l'utilisateur">
-                                       <div class="edit-overlay"><i class="fas fa-camera"></i></div>
-                                   </div>
-                                   <div class="profile-user-details">
-                                       <h4 id="dropdownUsername"></h4>
-                                       <p id="dropdownUserEmail"></p>
-                                   </div>
-                                </div>
-                                <div class="profile-form-container">
-                                    <div class="input-group">
-                                        <input type="text" id="fullName" placeholder="Nom complet">
-                                        <i class="fas fa-user"></i>
-                                    </div>
-                                    <div class="input-group">
-                                        <input type="text" id="company" placeholder="Entreprise">
-                                        <i class="fas fa-building"></i>
-                                    </div>
-                                    <div class="input-group">
-                                        <input type="url" id="website" placeholder="Site Web">
-                                        <i class="fas fa-globe"></i>
-                                    </div>
-                                </div>
-                                <div class="profile-actions">
-                                    <button class="btn btn-secondary" onclick="logout()" title="Déconnexion"><i class="fas fa-sign-out-alt"></i></button>
-                                    <button class="btn btn-primary" onclick="updateProfile()">Sauvegarder</button>
-                                </div>
-                          </div>
                       </div>
                      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
                          <i class="fas fa-moon" id="themeIcon"></i>
@@ -1113,10 +1028,46 @@
         </div>
     </main>
     
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal">
+        <div class="modal-overlay" onclick="closeProfileModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeProfileModal()" title="Fermer"><i class="fas fa-times"></i></button>
+            <div class="profile-user-info">
+               <div class="profile-avatar-wrapper" onclick="openAvatarModal()" title="Changer d'avatar">
+                   <img id="dropdownAvatar" src="https://placehold.co/80x80/334155/f8fafc?text=LTD" alt="Avatar de l'utilisateur">
+                   <div class="edit-overlay"><i class="fas fa-camera"></i></div>
+               </div>
+               <div class="profile-user-details">
+                   <h4 id="dropdownUsername"></h4>
+                   <p id="dropdownUserEmail"></p>
+               </div>
+            </div>
+            <div class="profile-form-container">
+                <div class="input-group">
+                    <input type="text" id="fullName" placeholder="Nom complet">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="company" placeholder="Entreprise">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="input-group">
+                    <input type="url" id="website" placeholder="Site Web">
+                    <i class="fas fa-globe"></i>
+                </div>
+            </div>
+            <div class="profile-actions">
+                <button class="btn btn-secondary" onclick="logout()" title="Déconnexion"><i class="fas fa-sign-out-alt"></i></button>
+                <button class="btn btn-primary" onclick="updateProfile()">Sauvegarder</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Avatar Selection Modal -->
-    <div id="avatarModal" class="avatar-modal">
-        <div class="avatar-modal-overlay" onclick="closeAvatarModal()"></div>
-        <div class="avatar-modal-content">
+    <div id="avatarModal" class="modal">
+        <div class="modal-overlay" onclick="closeAvatarModal()"></div>
+        <div class="modal-content">
             <button class="modal-close-btn" onclick="closeAvatarModal()" title="Fermer"><i class="fas fa-times"></i></button>
             <h3>Choisir votre Avatar</h3>
             <p>Sélectionnez un avatar prédéfini ou téléversez votre propre image.</p>
@@ -1203,12 +1154,7 @@
                 showToastNotification('Profil mis à jour !', 'success');
                 document.getElementById('headerUsername').textContent = fullName;
                 document.getElementById('dropdownUsername').textContent = fullName;
-                // Close dropdown
-                const profileEditMenu = document.getElementById('profileEditMenu');
-                const userProfileToggle = document.getElementById('userProfileToggle');
-                profileEditMenu.classList.remove('show');
-                userProfileToggle.classList.remove('active');
-                userProfileToggle.setAttribute('aria-expanded', 'false');
+                closeProfileModal();
             }
         }
         window.updateProfile = updateProfile;
@@ -1482,7 +1428,7 @@
             document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
         }
         
-        // --- Modal & Tab Logic ---
+        // --- Modal Logic ---
         function openAvatarModal() {
             document.getElementById('avatarModal').classList.add('show');
         }
@@ -1492,18 +1438,17 @@
             document.getElementById('avatarModal').classList.remove('show');
         }
         window.closeAvatarModal = closeAvatarModal;
-        
-        function openProfileTab(evt, tabName) {
-            const tabcontent = document.querySelectorAll(".profile-tab-content");
-            tabcontent.forEach(tc => tc.classList.remove('active'));
 
-            const tablinks = document.querySelectorAll(".tab-link");
-            tablinks.forEach(tl => tl.classList.remove("active"));
-
-            document.getElementById(tabName).classList.add('active');
-            evt.currentTarget.classList.add("active");
+        function openProfileModal() {
+            document.getElementById('profileModal').classList.add('show');
         }
-        window.openProfileTab = openProfileTab;
+        window.openProfileModal = openProfileModal;
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.remove('show');
+        }
+        window.closeProfileModal = closeProfileModal;
+        
 
         document.addEventListener('DOMContentLoaded', () => {
             updateThemeUI();
@@ -1511,32 +1456,18 @@
 
             // --- Profile Dropdown Logic ---
             const userProfileToggle = document.getElementById('userProfileToggle');
-            const profileEditMenu = document.getElementById('profileEditMenu');
             const avatarUploadInput = document.getElementById('avatarUpload');
 
-            if (userProfileToggle && profileEditMenu) {
+            if (userProfileToggle) {
                 userProfileToggle.addEventListener('click', (event) => {
                     event.stopPropagation();
-                    const isExpanded = profileEditMenu.classList.toggle('show');
-                    userProfileToggle.classList.toggle('active');
-                    userProfileToggle.setAttribute('aria-expanded', isExpanded);
+                    openProfileModal();
                 });
             }
             
             if (avatarUploadInput) {
                 avatarUploadInput.addEventListener('change', uploadAvatar);
             }
-
-            // Close dropdown when clicking outside
-            window.addEventListener('click', (event) => {
-                if (profileEditMenu && profileEditMenu.classList.contains('show')) {
-                    if (!profileEditMenu.contains(event.target) && !userProfileToggle.contains(event.target)) {
-                        profileEditMenu.classList.remove('show');
-                        userProfileToggle.classList.remove('active');
-                        userProfileToggle.setAttribute('aria-expanded', 'false');
-                    }
-                }
-            });
         });
     </script>
 </body>
