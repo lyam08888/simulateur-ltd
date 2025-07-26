@@ -662,6 +662,73 @@
         body.welcome-active {
             overflow: hidden;
         }
+        
+        /* --- Tutorial Overlay --- */
+        .tutorial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 9000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity var(--transition-slow), visibility var(--transition-slow);
+        }
+        .tutorial-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .tutorial-highlight {
+            position: absolute;
+            border-radius: var(--radius);
+            box-shadow: 0 0 0 4px var(--primary), 0 0 25px 10px var(--primary-dark);
+            pointer-events: none;
+            transition: all var(--transition-slow);
+        }
+        .tutorial-box {
+            position: absolute;
+            background: var(--surface-elevated);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-xl);
+            width: clamp(280px, 80vw, 320px);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity var(--transition-slow), transform var(--transition-slow);
+        }
+        .tutorial-overlay.show .tutorial-box {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .tutorial-box h3 {
+            margin-top: 0;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-primary);
+        }
+        .tutorial-box p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
+        }
+        .tutorial-box button {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            background: var(--primary);
+            color: white;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .tutorial-box button:hover {
+            background: var(--primary-dark);
+        }
+
 
         /* --- Media Queries pour la réactivité --- */
 
@@ -729,6 +796,16 @@
         </div>
     </div>
 
+    <!-- Tutorial Overlay -->
+    <div id="tutorialOverlay" class="tutorial-overlay">
+        <div id="tutorialHighlight" class="tutorial-highlight"></div>
+        <div id="tutorialBox" class="tutorial-box">
+            <h3>Premiers pas</h3>
+            <p>Cliquez ici pour vous connecter ou créer un compte et accéder à toutes nos fonctionnalités.</p>
+            <button onclick="hideTutorial()">Compris !</button>
+        </div>
+    </div>
+
     <div class="progress-bar" id="progressBar">
         <div class="progress-fill" id="progressFill"></div>
     </div>
@@ -758,7 +835,7 @@
             <!-- Navigation pour ordinateur -->
             <div class="nav-desktop">
                  <div class="nav-actions">
-                     <a href="connexion.html" class="login-btn" onclick="event.preventDefault(); showLoginOverlay()">
+                     <a href="connexion.html" id="loginBtn" class="login-btn" onclick="event.preventDefault(); showLoginOverlay()">
                          <span class="text-initial">
                             <i class="fas fa-sign-in-alt"></i>
                             <span>Connexion</span>
@@ -1214,6 +1291,35 @@
             document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
         }
 
+        function showTutorial() {
+            const overlay = document.getElementById('tutorialOverlay');
+            const highlight = document.getElementById('tutorialHighlight');
+            const box = document.getElementById('tutorialBox');
+            const loginBtn = document.getElementById('loginBtn');
+
+            if (!overlay || !highlight || !box || !loginBtn) return;
+
+            const rect = loginBtn.getBoundingClientRect();
+
+            highlight.style.top = `${rect.top - 5}px`;
+            highlight.style.left = `${rect.left - 5}px`;
+            highlight.style.width = `${rect.width + 10}px`;
+            highlight.style.height = `${rect.height + 10}px`;
+
+            box.style.top = `${rect.bottom + 15}px`;
+            box.style.left = `${rect.right - box.offsetWidth}px`;
+
+            overlay.classList.add('show');
+        }
+
+        window.hideTutorial = function() {
+            const overlay = document.getElementById('tutorialOverlay');
+            if (overlay) {
+                overlay.classList.remove('show');
+            }
+            localStorage.setItem('tutorialSeen', 'true');
+        }
+
 
         // --- Initialisation au chargement du DOM ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -1227,9 +1333,17 @@
                 // Completely remove the element and allow scrolling after fade-out is complete
                 setTimeout(() => {
                     document.body.classList.remove('welcome-active'); // Allow scroll
+                    
+                    // Check if tutorial should be shown
+                    if (localStorage.getItem('tutorialSeen') !== 'true') {
+                        showTutorial();
+                    }
                 }, 3300); // 2500ms delay + 800ms transition
             } else {
                  document.body.classList.remove('welcome-active');
+                 if (localStorage.getItem('tutorialSeen') !== 'true') {
+                    showTutorial();
+                 }
             }
 
             updateThemeUI();
