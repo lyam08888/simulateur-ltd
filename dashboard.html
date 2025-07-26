@@ -411,10 +411,6 @@
         .profile-avatar-wrapper:hover .edit-overlay {
             opacity: 1;
         }
-
-        #avatarUpload {
-            display: none;
-        }
         
         .profile-edit-menu .profile-user-details h4 {
             margin: 0;
@@ -457,26 +453,120 @@
             margin-top: var(--spacing-xs);
         }
         
-        .avatar-selection-container h5 {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-bottom: var(--spacing-sm);
+        /* --- Avatar Selection Modal --- */
+        .avatar-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
         }
+        .avatar-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .avatar-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            cursor: pointer;
+        }
+        .avatar-modal-content {
+            position: relative;
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            padding: var(--spacing-lg);
+            width: 90%;
+            max-width: 500px;
+            z-index: 2001;
+            transform: scale(0.95);
+            transition: var(--transition-slow);
+        }
+        .avatar-modal.show .avatar-modal-content {
+            transform: scale(1);
+        }
+        .avatar-modal-content h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+        .avatar-modal-content > p {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: var(--spacing-sm);
+            right: var(--spacing-sm);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        .modal-close-btn:hover {
+            background: var(--surface-hover);
+            color: var(--text-primary);
+            transform: rotate(90deg);
+        }
+        .avatar-modal-content hr {
+            border: none;
+            height: 1px;
+            background-color: var(--glass-border);
+            margin: var(--spacing-md) 0;
+        }
+        .avatar-modal-content .btn-secondary {
+            width: 100%;
+            background-color: var(--surface-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--glass-border);
+            padding: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            font-weight: 600;
+        }
+        .avatar-modal-content .btn-secondary:hover {
+            background-color: var(--surface-hover);
+        }
+
         .avatar-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
             gap: var(--spacing-sm);
         }
         .avatar-choice {
             border-radius: 50%;
-            border: 2px solid transparent;
-            padding: 4px;
+            border: 3px solid transparent;
+            padding: 2px;
             transition: var(--transition);
             cursor: pointer;
         }
         .avatar-choice:hover {
             border-color: var(--primary-light);
+            transform: scale(1.05);
         }
         .avatar-choice.selected {
             border-color: var(--primary);
@@ -925,45 +1015,14 @@
                           </button>
                           <div id="profileEditMenu" class="profile-edit-menu" role="menu">
                               <div class="profile-user-info">
-                                   <div class="profile-avatar-wrapper" onclick="document.getElementById('avatarUpload').click()" title="Changer d'avatar">
+                                   <div class="profile-avatar-wrapper" onclick="openAvatarModal()" title="Changer d'avatar">
                                        <img id="dropdownAvatar" src="https://placehold.co/64x64/334155/f8fafc?text=LTD" alt="Avatar de l'utilisateur">
                                        <div class="edit-overlay"><i class="fas fa-camera"></i></div>
-                                       <input type="file" id="avatarUpload" accept="image/png, image/jpeg">
                                    </div>
                                    <div class="profile-user-details">
                                        <h4 id="dropdownUsername"></h4>
                                        <p id="dropdownUserEmail"></p>
                                    </div>
-                              </div>
-                              <hr>
-                               <div class="avatar-selection-container">
-                                  <h5>Ou choisissez un avatar</h5>
-                                  <div class="avatar-grid" id="avatarGrid">
-                                      <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
-                                           <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--primary-light)"/><stop offset="100%" stop-color="var(--primary)"/></linearGradient></defs><circle cx="50" cy="50" r="50" fill="url(#g1)"/><path d="M30 70 Q 50 50, 70 70" stroke="var(--text-primary)" stroke-width="5" fill="none"/><circle cx="40" cy="45" r="5" fill="var(--text-primary)"/><circle cx="60" cy="45" r="5" fill="var(--text-primary)"/></svg>
-                                      </div>
-                                      <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
-                                          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="50" fill="var(--accent)"/><path d="M25 35 L 75 35 M 25 50 L 75 50 M 25 65 L 75 65" stroke="var(--background)" stroke-width="8" stroke-linecap="round"/></svg>
-                                      </div>
-                                      <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
-                                          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="50" fill="var(--surface-elevated)"/><path d="M50,20 L75,70 L25,70 Z" fill="var(--secondary)"/><circle cx="50" cy="75" r="10" fill="var(--secondary-dark)"/></svg>
-                                      </div>
-                                      <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
-                                           <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="50" fill="var(--background)" stroke="var(--primary)" stroke-width="4"/><path d="M30 30 L 70 70 M 70 30 L 30 70" stroke="var(--primary-light)" stroke-width="10" stroke-linecap="round"/></svg>
-                                      </div>
-                                      <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
-                                          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="50" fill="var(--secondary-dark)"/><circle cx="50" cy="50" r="40" stroke="var(--secondary)" stroke-width="4" fill="none"/><circle cx="50" cy="50" r="30" stroke="var(--primary-light)" stroke-width="4" fill="none"/><circle cx="50" cy="50" r="20" stroke="var(--secondary)" stroke-width="4" fill="none"/><circle cx="50" cy="50" r="10" fill="var(--text-primary)"/></svg>
-                                      </div>
-                                      <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
-                                          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="50" fill="#292D3E"/><path d="M40 30 L25 50 L40 70" stroke="var(--accent)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M60 30 L75 50 L60 70" stroke="var(--accent)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                      </div>
-                                      <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
-                                           <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g2" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="var(--primary-dark)"/><stop offset="100%" stop-color="var(--background)"/></linearGradient></defs><rect width="100" height="100" rx="50" fill="url(#g2)"/><path d="M0 50 C 25 25, 75 75, 100 50" stroke="var(--primary-light)" stroke-width="5" fill="none"/><path d="M0 65 C 25 40, 75 90, 100 65" stroke="var(--primary)" stroke-width="5" fill="none"/></svg>
-                                      </div>
-                                      <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
-                                          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="50" fill="var(--surface-hover)"/><text x="50" y="68" font-family="JetBrains Mono, monospace" font-size="50" fill="var(--text-primary)" text-anchor="middle" font-weight="bold">U</text></svg>
-                                      </div>
-                                  </div>
                               </div>
                               <hr>
                               <div class="profile-form-group">
@@ -1029,6 +1088,48 @@
         </div>
     </main>
     
+    <!-- Avatar Selection Modal -->
+    <div id="avatarModal" class="avatar-modal">
+        <div class="avatar-modal-overlay" onclick="closeAvatarModal()"></div>
+        <div class="avatar-modal-content">
+            <button class="modal-close-btn" onclick="closeAvatarModal()" title="Fermer"><i class="fas fa-times"></i></button>
+            <h3>Choisir votre Avatar</h3>
+            <p>Sélectionnez un avatar prédéfini ou téléversez votre propre image.</p>
+            <hr>
+            <div class="avatar-grid" id="modalAvatarGrid">
+                <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--primary-light)"/><stop offset="100%" stop-color="var(--primary)"/></linearGradient></defs><circle cx="50" cy="50" r="50" fill="url(#g1)"/><path d="M30 70 Q 50 50, 70 70" stroke="var(--text-primary)" stroke-width="5" fill="none"/><circle cx="40" cy="45" r="5" fill="var(--text-primary)"/><circle cx="60" cy="45" r="5" fill="var(--text-primary)"/></svg>
+                </div>
+                <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="50" fill="var(--accent)"/><path d="M25 35 L 75 35 M 25 50 L 75 50 M 25 65 L 75 65" stroke="var(--background)" stroke-width="8" stroke-linecap="round"/></svg>
+                </div>
+                <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="50" fill="var(--surface-elevated)"/><path d="M50,20 L75,70 L25,70 Z" fill="var(--secondary)"/><circle cx="50" cy="75" r="10" fill="var(--secondary-dark)"/></svg>
+                </div>
+                <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="50" fill="var(--background)" stroke="var(--primary)" stroke-width="4"/><path d="M30 30 L 70 70 M 70 30 L 30 70" stroke="var(--primary-light)" stroke-width="10" stroke-linecap="round"/></svg>
+                </div>
+                <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="50" fill="var(--secondary-dark)"/><circle cx="50" cy="50" r="40" stroke="var(--secondary)" stroke-width="4" fill="none"/><circle cx="50" cy="50" r="30" stroke="var(--primary-light)" stroke-width="4" fill="none"/><circle cx="50" cy="50" r="20" stroke="var(--secondary)" stroke-width="4" fill="none"/><circle cx="50" cy="50" r="10" fill="var(--text-primary)"/></svg>
+                </div>
+                <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="50" fill="#292D3E"/><path d="M40 30 L25 50 L40 70" stroke="var(--accent)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M60 30 L75 50 L60 70" stroke="var(--accent)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g2" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="var(--primary-dark)"/><stop offset="100%" stop-color="var(--background)"/></linearGradient></defs><rect width="100" height="100" rx="50" fill="url(#g2)"/><path d="M0 50 C 25 25, 75 75, 100 50" stroke="var(--primary-light)" stroke-width="5" fill="none"/><path d="M0 65 C 25 40, 75 90, 100 65" stroke="var(--primary)" stroke-width="5" fill="none"/></svg>
+                </div>
+                <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="50" fill="var(--surface-hover)"/><text x="50" y="68" font-family="JetBrains Mono, monospace" font-size="50" fill="var(--text-primary)" text-anchor="middle" font-weight="bold">U</text></svg>
+                </div>
+            </div>
+            <hr>
+            <button class="btn btn-secondary" onclick="document.getElementById('avatarUpload').click()">
+                <i class="fas fa-upload"></i> Téléverser une image
+            </button>
+            <input type="file" id="avatarUpload" accept="image/png, image/jpeg" style="display: none;">
+        </div>
+    </div>
+
     <div class="toast-notification" id="toastNotification">
         <div class="toast-notification-content">
             <i class="fas fa-info-circle toast-notification-icon" id="toastNotificationIcon"></i>
@@ -1133,11 +1234,13 @@
 
             if (uploadError) {
                 showToastNotification(`Erreur de téléversement : ${uploadError.message}`, 'error');
+                closeAvatarModal();
                 return;
             }
 
             const { data } = supabaseClient.storage.from('avatars').getPublicUrl(filePath);
             await updateAvatarUrl(data.publicUrl);
+            closeAvatarModal();
         }
 
         async function selectPredefinedAvatar(element) {
@@ -1146,6 +1249,7 @@
             const svgHtml = svgElement.outerHTML;
             const dataUrl = 'data:image/svg+xml;base64,' + btoa(svgHtml);
             await updateAvatarUrl(dataUrl);
+            closeAvatarModal();
         }
         window.selectPredefinedAvatar = selectPredefinedAvatar;
 
@@ -1355,6 +1459,17 @@
             mobileMenu.classList.toggle('active');
             document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
         }
+        
+        // --- Modal Logic ---
+        function openAvatarModal() {
+            document.getElementById('avatarModal').classList.add('show');
+        }
+        window.openAvatarModal = openAvatarModal;
+
+        function closeAvatarModal() {
+            document.getElementById('avatarModal').classList.remove('show');
+        }
+        window.closeAvatarModal = closeAvatarModal;
 
         document.addEventListener('DOMContentLoaded', () => {
             updateThemeUI();
