@@ -543,7 +543,7 @@
     <div id="tutorialOverlay" class="tutorial-overlay">
         <div id="tutorialHighlight" class="tutorial-highlight"></div>
         <div id="tutorialBox" class="tutorial-box">
-            <h3>Premiers pas</h3>
+            <h3>Accès à la plateforme</h3>
             <p>Utilisez ce formulaire pour vous connecter ou créer un nouveau compte. Vous pouvez aussi utiliser votre compte Google.</p>
             <button onclick="hideTutorial()">J'ai compris</button>
         </div>
@@ -843,13 +843,15 @@
             document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
         }
 
-        function showTutorial() {
-            const overlay = document.getElementById('tutorialOverlay');
+        // --- Tutorial Logic ---
+        let tutorialResizeHandler = null;
+
+        function positionTutorial() {
             const highlight = document.getElementById('tutorialHighlight');
             const box = document.getElementById('tutorialBox');
             const loginContainer = document.getElementById('loginContainer');
 
-            if (!overlay || !highlight || !box || !loginContainer) return;
+            if (!highlight || !box || !loginContainer) return;
 
             const rect = loginContainer.getBoundingClientRect();
             const boxHeight = box.offsetHeight;
@@ -859,17 +861,28 @@
             highlight.style.width = `${rect.width + 20}px`;
             highlight.style.height = `${rect.height + 20}px`;
 
+            box.style.left = `50%`;
+            box.style.transform = 'translateX(-50%)';
+
             // Positionne la boîte au-dessus si pas assez de place en dessous
             if (rect.bottom + 15 + boxHeight > window.innerHeight && rect.top - boxHeight - 15 > 0) {
                 box.style.top = `${rect.top - boxHeight - 15}px`;
             } else {
                 box.style.top = `${rect.bottom + 15}px`;
             }
-            
-            box.style.left = `50%`;
-            box.style.transform = 'translateX(-50%)';
+        }
+
+        function showTutorial() {
+            const overlay = document.getElementById('tutorialOverlay');
+            if (!overlay) return;
 
             overlay.classList.add('show');
+            
+            setTimeout(() => {
+                positionTutorial();
+                tutorialResizeHandler = () => positionTutorial();
+                window.addEventListener('resize', tutorialResizeHandler);
+            }, 10);
         }
 
         window.hideTutorial = function() {
@@ -878,6 +891,10 @@
                 overlay.classList.remove('show');
             }
             localStorage.setItem('tutorialLoginSeen', 'true');
+            if (tutorialResizeHandler) {
+                window.removeEventListener('resize', tutorialResizeHandler);
+                tutorialResizeHandler = null;
+            }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
