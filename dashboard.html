@@ -22,6 +22,7 @@
             --accent-dark: #d97706;
             --error: #f472b6;
             --error-dark: #ec4899;
+            --error-rgb: 244, 114, 182; /* Ajout pour le hover */
             
             /* Surfaces */
             --background: #0b1120;
@@ -392,6 +393,7 @@
             justify-content: center;
             font-size: 1rem;
             transition: var(--transition);
+            z-index: 10; /* Ensure it's on top */
         }
         .modal-close-btn:hover {
             background: var(--surface-hover);
@@ -399,14 +401,15 @@
             transform: rotate(90deg);
         }
 
-        /* --- Profile Modal --- */
+        /* --- Profile Modal Redesign --- */
         #profileModal .modal-content {
             max-width: 400px;
+            box-shadow: var(--shadow-xl), 0 0 50px -20px rgba(var(--primary-rgb), 0.2);
         }
         .profile-user-info {
             text-align: center;
-            padding: var(--spacing-lg) var(--spacing-md);
-            background: linear-gradient(45deg, rgba(var(--primary-rgb), 0.1), transparent), var(--glass);
+            padding: var(--spacing-xl) var(--spacing-md);
+            background: linear-gradient(160deg, rgba(var(--primary-rgb), 0.1), transparent), var(--surface);
             border-bottom: 1px solid var(--glass-border);
         }
         .profile-avatar-wrapper {
@@ -421,9 +424,9 @@
             height: 100%;
             border-radius: 50%;
             object-fit: cover;
-            border: 3px solid var(--primary);
+            border: 3px solid var(--surface);
             background-color: var(--surface-elevated);
-            box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.5);
+            box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.5), 0 4px 8px rgba(0,0,0,0.3);
         }
         .profile-avatar-wrapper .edit-overlay {
             position: absolute;
@@ -447,17 +450,17 @@
         .profile-user-details h4 {
             margin: 0 0 0.25rem 0;
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 1.25rem;
             color: var(--text-primary);
         }
         .profile-user-details p {
             margin: 0;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             color: var(--text-muted);
             word-break: break-all;
         }
         .profile-form-container {
-            padding: var(--spacing-md);
+            padding: var(--spacing-lg) var(--spacing-md);
         }
         .input-group {
             position: relative;
@@ -465,19 +468,20 @@
         }
         .input-group i {
             position: absolute;
-            left: 1rem;
+            left: 1.1rem;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted);
             pointer-events: none;
+            transition: var(--transition);
         }
         .input-group input {
             width: 100%;
             background-color: var(--surface-elevated);
             border: 1px solid var(--glass-border);
             color: var(--text-primary);
-            border-radius: var(--radius);
-            padding: 0.75rem 1rem 0.75rem 2.75rem;
+            border-radius: var(--radius-md);
+            padding: 0.85rem 1rem 0.85rem 3rem;
             font-size: 0.95rem;
             transition: var(--transition);
         }
@@ -495,7 +499,11 @@
         .profile-actions {
             display: flex;
             gap: var(--spacing-sm);
-            padding: 0 var(--spacing-md) var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--surface-elevated);
+            border-top: 1px solid var(--glass-border);
+            border-bottom-left-radius: var(--radius-xl);
+            border-bottom-right-radius: var(--radius-xl);
         }
         .profile-actions .btn {
             flex: 1;
@@ -507,31 +515,32 @@
             align-items: center;
             justify-content: center;
             gap: var(--spacing-xs);
+            transition: var(--transition);
         }
         .profile-actions .btn-primary {
             background: var(--primary);
             color: white;
-            transition: var(--transition);
+            box-shadow: 0 4px 15px -5px rgba(var(--primary-rgb), 0.4);
         }
         .profile-actions .btn-primary:hover {
             background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px -5px rgba(var(--primary-rgb), 0.5);
         }
         .profile-actions .btn-secondary {
-            background: var(--surface-elevated);
-            color: var(--text-secondary);
-            transition: var(--transition);
+            background: var(--glass);
+            color: var(--error);
+            border: 1px solid var(--glass-border);
         }
         .profile-actions .btn-secondary:hover {
-            background: var(--surface-hover);
+            background: rgba(var(--error-rgb), 0.1);
             color: var(--error);
+            border-color: var(--error);
         }
         
-        /* --- Avatar & Explorer Modal --- */
-        #avatarModal .modal-content, #explorerModal .modal-content {
+        /* --- Avatar Modal --- */
+        #avatarModal .modal-content {
             max-width: 500px;
-        }
-        #explorerModal .modal-content {
-             max-width: 800px;
         }
         .modal-content h3 {
             font-size: 1.5rem;
@@ -592,49 +601,141 @@
             border-radius: 50%;
         }
 
-        /* --- Explorer Modal Grid --- */
+        /* --- Explorer Modal Redesign --- */
+        #explorerModal .modal-content {
+            max-width: 850px;
+            display: flex;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .explorer-sidebar {
+            flex: 0 0 250px;
+            background: linear-gradient(160deg, rgba(var(--primary-rgb), 0.1), rgba(var(--primary-rgb), 0.02)), var(--surface-elevated);
+            padding: var(--spacing-xl);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-right: 1px solid var(--glass-border);
+            position: relative;
+        }
+
+        .explorer-sidebar .explorer-icon-bg {
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: var(--spacing-md);
+            text-shadow: 0 0 20px rgba(var(--primary-rgb), 0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        .explorer-sidebar h3 {
+            font-size: 1.75rem;
+            margin-bottom: var(--spacing-sm);
+            position: relative;
+            z-index: 1;
+        }
+
+        .explorer-sidebar p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .explorer-main {
+            flex: 1;
+            padding: var(--spacing-xl);
+            position: relative;
+            overflow-y: auto;
+        }
+
         .explorer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: var(--spacing-md);
-            padding-top: var(--spacing-md);
         }
+
         .explorer-item {
-            background: var(--surface-elevated);
+            background: var(--glass);
             border-radius: var(--radius-lg);
-            padding: var(--spacing-lg);
+            padding: var(--spacing-md);
             text-decoration: none;
             color: var(--text-secondary);
             transition: var(--transition-slow);
-            border: 1px solid transparent;
-            text-align: center;
+            border: 1px solid var(--glass-border);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
         }
+
+        .explorer-item::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(var(--primary-rgb), 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            transition: width 0.4s ease, height 0.4s ease, opacity 0.4s ease;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+        }
+
         .explorer-item:hover {
-            transform: translateY(-8px);
+            transform: translateY(-5px);
             background: var(--surface-hover);
             border-color: var(--primary);
             box-shadow: var(--shadow-glow);
         }
+
+        .explorer-item:hover::before {
+            width: 200%;
+            padding-bottom: 200%;
+            opacity: 1;
+        }
+
         .explorer-item-icon {
-            font-size: 2.5rem;
+            font-size: 1.5rem;
             color: var(--primary);
-            margin-bottom: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+            background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.2), rgba(var(--primary-rgb), 0.1));
+            width: 3rem;
+            height: 3rem;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-md);
             transition: var(--transition);
+            z-index: 1;
         }
+
         .explorer-item:hover .explorer-item-icon {
-            transform: scale(1.1);
+            transform: scale(1.1) rotate(-10deg);
             color: var(--primary-light);
+            box-shadow: 0 4px 10px rgba(var(--primary-rgb), 0.2);
         }
+
+        .explorer-item-text {
+            z-index: 1;
+        }
+        
         .explorer-item-text h4 {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             color: var(--text-primary);
             margin: 0 0 0.25rem 0;
         }
+
         .explorer-item-text p {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
             margin: 0;
+            line-height: 1.4;
         }
 
         /* --- Contenu Principal --- */
@@ -999,52 +1100,57 @@
     <div id="explorerModal" class="modal">
         <div class="modal-overlay" onclick="closeExplorerModal()"></div>
         <div class="modal-content">
-            <button class="modal-close-btn" onclick="closeExplorerModal()" title="Fermer"><i class="fas fa-times"></i></button>
-            <h3>Explorer</h3>
-            <p>Lancez directement une de nos applications.</p>
-            <div class="explorer-grid">
-                <a href="simulateur1.html" class="explorer-item">
-                    <div class="explorer-item-icon"><i class="fas fa-cubes fa-fw"></i></div>
-                    <div class="explorer-item-text">
-                        <h4>Simulateurs</h4>
-                        <p>Entraînement pratique.</p>
-                    </div>
-                </a>
-                <a href="test1.html" class="explorer-item">
-                    <div class="explorer-item-icon"><i class="fas fa-brain fa-fw"></i></div>
-                    <div class="explorer-item-text">
-                        <h4>Tests</h4>
-                        <p>Évaluez vos compétences.</p>
-                    </div>
-                </a>
-                <a href="quiz1.html" class="explorer-item">
-                    <div class="explorer-item-icon"><i class="fas fa-question-circle fa-fw"></i></div>
-                    <div class="explorer-item-text">
-                        <h4>Quiz</h4>
-                        <p>Testez vos connaissances.</p>
-                    </div>
-                </a>
-                <a href="outils1.html" class="explorer-item">
-                    <div class="explorer-item-icon"><i class="fas fa-wrench fa-fw"></i></div>
-                    <div class="explorer-item-text">
-                        <h4>Outils</h4>
-                        <p>Ressources utiles.</p>
-                    </div>
-                </a>
-                <a href="challenges1.html" class="explorer-item">
-                    <div class="explorer-item-icon"><i class="fas fa-trophy fa-fw"></i></div>
-                    <div class="explorer-item-text">
-                        <h4>Challenges</h4>
-                        <p>Relevez des défis.</p>
-                    </div>
-                </a>
-                <a href="emploi1.html" class="explorer-item">
-                    <div class="explorer-item-icon"><i class="fas fa-briefcase fa-fw"></i></div>
-                    <div class="explorer-item-text">
-                        <h4>Offres d'emploi</h4>
-                        <p>Votre future carrière.</p>
-                    </div>
-                </a>
+            <div class="explorer-sidebar">
+                <div class="explorer-icon-bg"><i class="fas fa-compass"></i></div>
+                <h3>Explorer</h3>
+                <p>Lancez directement une de nos applications et ressources.</p>
+            </div>
+            <div class="explorer-main">
+                <button class="modal-close-btn" onclick="closeExplorerModal()" title="Fermer"><i class="fas fa-times"></i></button>
+                <div class="explorer-grid">
+                    <a href="simulateur1.html" class="explorer-item">
+                        <div class="explorer-item-icon"><i class="fas fa-cubes fa-fw"></i></div>
+                        <div class="explorer-item-text">
+                            <h4>Simulateurs</h4>
+                            <p>Entraînement pratique.</p>
+                        </div>
+                    </a>
+                    <a href="test1.html" class="explorer-item">
+                        <div class="explorer-item-icon"><i class="fas fa-brain fa-fw"></i></div>
+                        <div class="explorer-item-text">
+                            <h4>Tests</h4>
+                            <p>Évaluez vos compétences.</p>
+                        </div>
+                    </a>
+                    <a href="quiz1.html" class="explorer-item">
+                        <div class="explorer-item-icon"><i class="fas fa-question-circle fa-fw"></i></div>
+                        <div class="explorer-item-text">
+                            <h4>Quiz</h4>
+                            <p>Testez vos connaissances.</p>
+                        </div>
+                    </a>
+                    <a href="outils1.html" class="explorer-item">
+                        <div class="explorer-item-icon"><i class="fas fa-wrench fa-fw"></i></div>
+                        <div class="explorer-item-text">
+                            <h4>Outils</h4>
+                            <p>Ressources utiles.</p>
+                        </div>
+                    </a>
+                    <a href="challenges1.html" class="explorer-item">
+                        <div class="explorer-item-icon"><i class="fas fa-trophy fa-fw"></i></div>
+                        <div class="explorer-item-text">
+                            <h4>Challenges</h4>
+                            <p>Relevez des défis.</p>
+                        </div>
+                    </a>
+                    <a href="emploi1.html" class="explorer-item">
+                        <div class="explorer-item-icon"><i class="fas fa-briefcase fa-fw"></i></div>
+                        <div class="explorer-item-text">
+                            <h4>Offres d'emploi</h4>
+                            <p>Votre future carrière.</p>
+                        </div>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -1247,21 +1353,21 @@
                         <span class="btn">Commencer un test</span>
                     </a>
                      <a href="quiz1.html" class="dashboard-card">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-question-circle"></i></div>
-                            <h3>Quiz</h3>
-                        </div>
-                        <p>Testez vos connaissances de manière ludique avec nos quiz sur le monde du BTP.</p>
-                        <span class="btn">Faire un quiz</span>
-                    </a>
+                         <div class="dashboard-card-header">
+                             <div class="dashboard-card-icon"><i class="fas fa-question-circle"></i></div>
+                             <h3>Quiz</h3>
+                         </div>
+                         <p>Testez vos connaissances de manière ludique avec nos quiz sur le monde du BTP.</p>
+                         <span class="btn">Faire un quiz</span>
+                     </a>
                      <a href="outils1.html" class="dashboard-card">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-wrench"></i></div>
-                            <h3>Outils</h3>
-                        </div>
-                        <p>Découvrez une sélection d'outils et de ressources pour vous aider dans vos projets.</p>
-                        <span class="btn">Découvrir les outils</span>
-                    </a>
+                         <div class="dashboard-card-header">
+                             <div class="dashboard-card-icon"><i class="fas fa-wrench"></i></div>
+                             <h3>Outils</h3>
+                         </div>
+                         <p>Découvrez une sélection d'outils et de ressources pour vous aider dans vos projets.</p>
+                         <span class="btn">Découvrir les outils</span>
+                     </a>
                 </div>
             `;
         }
@@ -1290,14 +1396,14 @@
         
         supabaseClient.auth.onAuthStateChange((event, session) => {
          if (session) {
-            if (window.location.hash.includes('access_token')) {
-                window.history.replaceState(null, '', window.location.pathname);
-            }
-            renderDashboard(session);
+             if (window.location.hash.includes('access_token')) {
+                 window.history.replaceState(null, '', window.location.pathname);
+             }
+             renderDashboard(session);
          } else {
-            if (!window.location.hash.includes('access_token')) {
-              redirectToLogin();
-            }
+             if (!window.location.hash.includes('access_token')) {
+               redirectToLogin();
+             }
          }
         });
 
