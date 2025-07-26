@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Tableau de bord de l'utilisateur pour le LTD Simulator.">
+    <meta name="description" content="Tableau de bord de l'utilisateur pour acle LTD Simulator.">
     <title>LTD Simulator - Tableau de bord</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -118,7 +118,7 @@
             100% { background-position: 0% 50%; }
         }
         
-        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn, .notification-bell, .logout-btn {
+        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn, .notification-bell, .logout-btn, .user-profile-toggle {
             cursor: pointer;
         }
 
@@ -294,6 +294,125 @@
             transform: rotate(15deg);
         }
 
+        /* --- Profile Dropdown in Header --- */
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .user-profile-toggle {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-full);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .user-profile-toggle:hover {
+            background: var(--surface-elevated);
+            color: var(--text-primary);
+        }
+
+        .user-profile-toggle .fa-chevron-down {
+            font-size: 0.7rem;
+            transition: var(--transition);
+        }
+
+        .user-profile-toggle.active .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+
+        #headerUsername {
+            max-width: 150px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 600;
+        }
+
+        .profile-edit-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: 320px;
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: var(--spacing-md);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: var(--transition-slow);
+            z-index: 1002;
+            backdrop-filter: blur(10px);
+        }
+        
+        body.light-mode .profile-edit-menu {
+             background: rgba(241, 245, 249, 0.9);
+        }
+
+        .profile-edit-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .profile-edit-menu .profile-user-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+        .profile-edit-menu .profile-user-info .fa-user-circle {
+            font-size: 2.5rem;
+            color: var(--text-muted);
+        }
+        .profile-edit-menu .profile-user-info h4 {
+            margin: 0;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .profile-edit-menu .profile-user-info p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            word-break: break-all;
+        }
+        .profile-edit-menu hr {
+            border: none;
+            height: 1px;
+            background-color: var(--glass-border);
+            margin: var(--spacing-md) 0;
+        }
+        .profile-edit-menu .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            width: 100%;
+            padding: 0.75rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            border-radius: var(--radius);
+            text-align: left;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        .profile-edit-menu .logout-btn:hover {
+            background: var(--glass);
+            color: var(--error);
+        }
+        .profile-edit-menu .btn { /* The save button */
+            width: 100%;
+            justify-content: center;
+            margin-top: var(--spacing-xs);
+        }
+
         /* --- Mega Menu --- */
         .nav-item.has-mega-menu > .nav-link::after {
             content: '\f078'; /* Font Awesome chevron-down */
@@ -408,57 +527,6 @@
         .mega-menu-item:hover .mega-menu-item-text h4 {
             color: var(--primary-light);
         }
-        
-        .btn-connect {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-            padding: 0.5rem 1rem;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            color: var(--text-secondary);
-            border-radius: var(--radius);
-            font-weight: 500;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-            min-width: 140px; /* Pour éviter le redimensionnement */
-            justify-content: center;
-        }
-        .btn-connect .text-connect, .btn-connect .text-disconnect {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-        .btn-connect .text-disconnect {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, 150%);
-            opacity: 0;
-        }
-        .btn-connect:hover {
-            background: var(--error);
-            border-color: var(--error-dark);
-            color: white;
-        }
-        .btn-connect:hover .text-connect {
-            transform: translateY(-150%);
-            opacity: 0;
-        }
-        .btn-connect:hover .text-disconnect {
-            transform: translate(-50%, -50%);
-            opacity: 1;
-        }
-
-        .connection-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--secondary);
-            border-radius: 50%;
-            box-shadow: 0 0 6px var(--secondary);
-        }
 
         /* --- Contenu Principal --- */
         .main-content { 
@@ -480,28 +548,13 @@
             margin-bottom: var(--spacing-sm);
             color: var(--text-primary);
         }
-        #user-email {
+        .dashboard-header p {
             color: var(--text-secondary);
             font-size: 1.1rem;
-            word-break: break-all;
+            max-width: 600px;
+            margin: 0 auto;
         }
-        .login-link-btn {
-            width: auto;
-            padding: 0.8rem 2rem;
-            border: none;
-            border-radius: var(--radius);
-            font-weight: 600;
-            font-size: 1rem;
-            transition: var(--transition);
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            background-color: var(--primary);
-            color: white;
-        }
-        .login-link-btn:hover {
-            background-color: var(--primary-dark);
-        }
+        
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -563,13 +616,14 @@
             transition: var(--transition-slow);
             text-decoration: none;
             align-self: flex-start;
+            border: none;
         }
         .dashboard-card .btn:hover {
             background-color: var(--primary-dark);
             transform: scale(1.05);
         }
 
-        /* --- Profile Form Styles --- */
+        /* --- Profile Form Styles (reused in dropdown) --- */
         .profile-form-group {
             margin-bottom: var(--spacing-md);
         }
@@ -786,16 +840,36 @@
                      </li>
                  </ul>
                  <div class="nav-actions">
-                    <button class="btn-connect" onclick="logout()" title="Déconnexion">
-                        <span class="text-connect">
-                            <span class="connection-dot"></span>
-                            <span>Connecté</span>
-                        </span>
-                        <span class="text-disconnect">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Déconnexion</span>
-                        </span>
-                    </button>
+                      <div class="profile-dropdown">
+                          <button id="userProfileToggle" class="user-profile-toggle" aria-haspopup="true" aria-expanded="false" title="Menu du profil">
+                              <span id="headerUsername">Chargement...</span>
+                              <i class="fas fa-chevron-down"></i>
+                          </button>
+                          <div id="profileEditMenu" class="profile-edit-menu" role="menu">
+                              <div class="profile-user-info">
+                                   <i class="fas fa-user-circle"></i>
+                                   <div>
+                                       <h4 id="dropdownUsername"></h4>
+                                       <p id="dropdownUserEmail"></p>
+                                   </div>
+                              </div>
+                              <hr>
+                              <div class="profile-form-group">
+                                  <label for="fullName">Nom complet</label>
+                                  <input type="text" id="fullName" placeholder="Votre nom complet">
+                              </div>
+                              <div class="profile-form-group">
+                                  <label for="bio">Biographie</label>
+                                  <textarea id="bio" placeholder="Parlez un peu de vous..."></textarea>
+                              </div>
+                              <button class="btn" onclick="updateProfile()">Sauvegarder</button>
+                              <hr>
+                              <button class="logout-btn" onclick="logout()">
+                                  <i class="fas fa-sign-out-alt fa-fw"></i>
+                                  <span>Déconnexion</span>
+                              </button>
+                          </div>
+                      </div>
                      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
                          <i class="fas fa-moon" id="themeIcon"></i>
                      </button>
@@ -854,82 +928,7 @@
         const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdWplZXR1YWh5YWJ0b2NqempsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNTA3NjcsImV4cCI6MjA2ODkyNjc2N30.tnkkUUzl7T5EKD-DJ5fuElwAzBFEUr7shQuLtdACdcY";
         const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-        // --- Authentication Logic ---
-
-        async function renderDashboard(session) {
-            const user = session.user;
-            const dashboardContent = document.getElementById('dashboard-content');
-            if (!dashboardContent) return;
-
-            // 1. Create a profile if it doesn't exist (Upsert)
-            const { error: upsertError } = await supabaseClient
-                .from('profiles')
-                .upsert({
-                    id: user.id,
-                    full_name: user.user_metadata?.full_name || user.email, // Fallback to email if name isn't available
-                    updated_at: new Date(),
-                }, {
-                    onConflict: 'id' // Specify the conflict target
-                });
-
-            if (upsertError) {
-                console.error("Erreur lors de la création/mise à jour du profil:", upsertError);
-            }
-
-            // 2. Read the user's profile
-            const { data: profile, error: profileError } = await supabaseClient
-                .from('profiles')
-                .select('*')
-                .eq('id', user.id)
-                .single();
-
-            if (profileError) {
-                console.error("Erreur lors de la lecture du profil:", profileError);
-                // Handle case where profile might not be found, though upsert should prevent this
-            }
-            
-            // 3. Render the dashboard with profile information
-            dashboardContent.innerHTML = `
-                <div class="dashboard-header">
-                    <h1 id="welcome">Bienvenue, ${profile?.full_name || user.email}</h1>
-                    <p id="user-email">Connecté en tant que : ${user.email}</p>
-                </div>
-                <div class="dashboard-grid">
-                    <div class="dashboard-card">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-user-cog"></i></div>
-                            <h3>Mon Profil</h3>
-                        </div>
-                        <div class="profile-form-group">
-                            <label for="fullName">Nom complet</label>
-                            <input type="text" id="fullName" value="${profile?.full_name || ''}">
-                        </div>
-                         <div class="profile-form-group">
-                            <label for="bio">Biographie</label>
-                            <textarea id="bio">${profile?.bio || ''}</textarea>
-                        </div>
-                        <button class="btn" onclick="updateProfile()">Sauvegarder</button>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-chart-line"></i></div>
-                            <h3>Mes Statistiques</h3>
-                        </div>
-                        <p>Consultez vos performances, vos scores aux quiz et votre progression générale sur la plateforme.</p>
-                        <a href="#" class="btn">Voir mes stats</a>
-                    </div>
-                    <div class="dashboard-card">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-trophy"></i></div>
-                            <h3>Mes Challenges</h3>
-                        </div>
-                        <p>Suivez les challenges auxquels vous participez et découvrez de nouvelles opportunités pour tester vos compétences.</p>
-                        <a href="challenges.html" class="btn">Voir les challenges</a>
-                    </div>
-                </div>
-            `;
-        }
+        // --- Authentication & Profile Logic ---
 
         async function updateProfile() {
             const { data: { user } } = await supabaseClient.auth.getUser();
@@ -954,10 +953,93 @@
                 showToastNotification('Erreur de sauvegarde: ' + error.message, 'error');
             } else {
                 showToastNotification('Profil mis à jour !', 'success');
-                document.getElementById('welcome').innerText = `Bienvenue, ${fullName}`;
+                // Update header and dropdown usernames
+                document.getElementById('headerUsername').textContent = fullName;
+                document.getElementById('dropdownUsername').textContent = fullName;
+                // Close dropdown
+                const profileEditMenu = document.getElementById('profileEditMenu');
+                const userProfileToggle = document.getElementById('userProfileToggle');
+                profileEditMenu.classList.remove('show');
+                userProfileToggle.classList.remove('active');
+                userProfileToggle.setAttribute('aria-expanded', 'false');
             }
         }
         window.updateProfile = updateProfile;
+
+
+        async function renderDashboard(session) {
+            const user = session.user;
+            const dashboardContent = document.getElementById('dashboard-content');
+            if (!dashboardContent) return;
+
+            // 1. Create a profile if it doesn't exist (Upsert)
+            const { error: upsertError } = await supabaseClient
+                .from('profiles')
+                .upsert({
+                    id: user.id,
+                    full_name: user.user_metadata?.full_name || user.email, // Fallback to email
+                    updated_at: new Date(),
+                }, {
+                    onConflict: 'id' // Specify the conflict target
+                });
+
+            if (upsertError) {
+                console.error("Erreur lors de la création/mise à jour du profil:", upsertError);
+            }
+
+            // 2. Read the user's profile
+            const { data: profile, error: profileError } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+
+            if (profileError) {
+                console.error("Erreur lors de la lecture du profil:", profileError);
+            }
+            
+            // 3. Populate Profile Dropdown and Form
+            const username = profile?.full_name || user.email;
+            document.getElementById('headerUsername').textContent = username;
+            document.getElementById('dropdownUsername').textContent = username;
+            document.getElementById('dropdownUserEmail').textContent = user.email;
+            document.getElementById('fullName').value = profile?.full_name || '';
+            document.getElementById('bio').value = profile?.bio || '';
+
+            // 4. Render the main dashboard content
+            dashboardContent.innerHTML = `
+                <div class="dashboard-header">
+                    <h1>Votre Tableau de Bord</h1>
+                    <p>Un aperçu de votre activité et des raccourcis utiles.</p>
+                </div>
+                <div class="dashboard-grid">
+                    <a href="#" class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-icon"><i class="fas fa-chart-line"></i></div>
+                            <h3>Mes Statistiques</h3>
+                        </div>
+                        <p>Consultez vos performances, vos scores aux quiz et votre progression générale sur la plateforme.</p>
+                        <span class="btn">Voir mes stats</span>
+                    </a>
+                    <a href="challenges.html" class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-icon"><i class="fas fa-trophy"></i></div>
+                            <h3>Mes Challenges</h3>
+                        </div>
+                        <p>Suivez les challenges auxquels vous participez et découvrez de nouvelles opportunités pour tester vos compétences.</p>
+                        <span class="btn">Voir les challenges</span>
+                    </a>
+                     <a href="#" class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-icon"><i class="fas fa-cog"></i></div>
+                            <h3>Paramètres</h3>
+                        </div>
+                        <p>Gérez les paramètres de votre compte, les notifications et les préférences de la plateforme.</p>
+                        <span class="btn">Accéder aux paramètres</span>
+                    </a>
+                </div>
+            `;
+        }
 
         function redirectToLogin() {
             const newPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) + 'connexion.html';
@@ -971,7 +1053,6 @@
             }
 
             try {
-                // Use { scope: 'global' } to invalidate the refresh token on the server
                 const { error } = await supabaseClient.auth.signOut({ scope: 'global' });
                 if (error) {
                     throw error;
@@ -979,27 +1060,24 @@
             } catch (e) {
                 console.warn("Erreur lors de la déconnexion (sera ignorée):", e);
             } finally {
-                // Clear all storage to be absolutely sure
                 localStorage.clear();
                 sessionStorage.clear();
-                // Redirect to the login page regardless of the outcome
                 redirectToLogin();
             }
         }
-        // Make it globally accessible
         window.logout = logout;
         
         supabaseClient.auth.onAuthStateChange((event, session) => {
-          if (session) {
+         if (session) {
             if (window.location.hash.includes('access_token')) {
                 window.history.replaceState(null, '', window.location.pathname);
             }
             renderDashboard(session);
-          } else {
+         } else {
             if (!window.location.hash.includes('access_token')) {
               redirectToLogin();
             }
-          }
+         }
         });
 
         let currentTheme = localStorage.getItem('theme') || 'dark';
@@ -1083,6 +1161,30 @@
         document.addEventListener('DOMContentLoaded', () => {
             updateThemeUI();
             populateMobileNav();
+
+            // --- Profile Dropdown Logic ---
+            const userProfileToggle = document.getElementById('userProfileToggle');
+            const profileEditMenu = document.getElementById('profileEditMenu');
+
+            if (userProfileToggle && profileEditMenu) {
+                userProfileToggle.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Prevent the window click listener from closing it immediately
+                    const isExpanded = profileEditMenu.classList.toggle('show');
+                    userProfileToggle.classList.toggle('active');
+                    userProfileToggle.setAttribute('aria-expanded', isExpanded);
+                });
+            }
+
+            // Close dropdown when clicking outside
+            window.addEventListener('click', (event) => {
+                if (profileEditMenu && profileEditMenu.classList.contains('show')) {
+                    if (!profileEditMenu.contains(event.target) && !userProfileToggle.contains(event.target)) {
+                        profileEditMenu.classList.remove('show');
+                        userProfileToggle.classList.remove('active');
+                        userProfileToggle.setAttribute('aria-expanded', 'false');
+                    }
+                }
+            });
         });
     </script>
 </body>
