@@ -323,6 +323,7 @@
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid var(--glass-border);
+            background-color: var(--surface-elevated);
         }
 
         .user-profile-toggle .fa-chevron-down {
@@ -388,6 +389,7 @@
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid var(--glass-border);
+            background-color: var(--surface-elevated);
         }
 
         .profile-avatar-wrapper .edit-overlay {
@@ -454,6 +456,39 @@
             justify-content: center;
             margin-top: var(--spacing-xs);
         }
+        
+        .avatar-selection-container h5 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: var(--spacing-sm);
+        }
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-sm);
+        }
+        .avatar-choice {
+            border-radius: 50%;
+            border: 2px solid transparent;
+            padding: 4px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        .avatar-choice:hover {
+            border-color: var(--primary-light);
+        }
+        .avatar-choice.selected {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary-light);
+        }
+        .avatar-choice svg {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 50%;
+        }
+
 
         /* --- Mega Menu --- */
         .nav-item.has-mega-menu > .nav-link::after {
@@ -901,6 +936,24 @@
                                    </div>
                               </div>
                               <hr>
+                               <div class="avatar-selection-container">
+                                  <h5>Ou choisissez un avatar</h5>
+                                  <div class="avatar-grid" id="avatarGrid">
+                                      <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
+                                           <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--primary-light)"/><stop offset="100%" stop-color="var(--primary)"/></linearGradient></defs><circle cx="50" cy="50" r="50" fill="url(#g1)"/><path d="M30 70 Q 50 50, 70 70" stroke="var(--text-primary)" stroke-width="5" fill="none"/><circle cx="40" cy="45" r="5" fill="var(--text-primary)"/><circle cx="60" cy="45" r="5" fill="var(--text-primary)"/></svg>
+                                      </div>
+                                      <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
+                                          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="50" fill="var(--accent)"/><path d="M25 35 L 75 35 M 25 50 L 75 50 M 25 65 L 75 65" stroke="var(--background)" stroke-width="8" stroke-linecap="round"/></svg>
+                                      </div>
+                                      <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
+                                          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="50" fill="var(--surface-elevated)"/><path d="M50,20 L75,70 L25,70 Z" fill="var(--secondary)"/><circle cx="50" cy="75" r="10" fill="var(--secondary-dark)"/></svg>
+                                      </div>
+                                      <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
+                                           <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="50" fill="var(--background)" stroke="var(--primary)" stroke-width="4"/><path d="M30 30 L 70 70 M 70 30 L 30 70" stroke="var(--primary-light)" stroke-width="10" stroke-linecap="round"/></svg>
+                                      </div>
+                                  </div>
+                              </div>
+                              <hr>
                               <div class="profile-form-group">
                                   <label for="fullName">Nom complet</label>
                                   <input type="text" id="fullName" placeholder="Votre nom complet">
@@ -1024,15 +1077,34 @@
         }
         window.updateProfile = updateProfile;
         
-        async function uploadAvatar(event) {
+        async function updateAvatarUrl(avatarUrl) {
             const { data: { user } } = await supabaseClient.auth.getUser();
             if (!user) {
-                showToastNotification('Vous devez être connecté pour téléverser un avatar.', 'error');
+                showToastNotification('Utilisateur non trouvé.', 'error');
                 return;
             }
-            
+
+            const { error } = await supabaseClient
+                .from('profiles')
+                .update({ avatar_url: avatarUrl, updated_at: new Date() })
+                .eq('id', user.id);
+
+            if (error) {
+                showToastNotification(`Erreur de mise à jour du profil : ${error.message}`, 'error');
+            } else {
+                document.getElementById('headerAvatar').src = avatarUrl;
+                document.getElementById('dropdownAvatar').src = avatarUrl;
+                showToastNotification('Avatar mis à jour !', 'success');
+                updateSelectedAvatar(avatarUrl);
+            }
+        }
+
+        async function uploadAvatar(event) {
             const file = event.target.files[0];
             if (!file) return;
+            
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (!user) return;
 
             const fileExt = file.name.split('.').pop();
             const fileName = `${user.id}-${Date.now()}.${fileExt}`;
@@ -1044,7 +1116,7 @@
                 .from('avatars')
                 .upload(filePath, file, {
                     cacheControl: '3600',
-                    upsert: true // Overwrite existing file for the same user
+                    upsert: true
                 });
 
             if (uploadError) {
@@ -1052,59 +1124,60 @@
                 return;
             }
 
-            // Get public URL
             const { data } = supabaseClient.storage.from('avatars').getPublicUrl(filePath);
-            const publicUrl = data.publicUrl;
-
-            // Update profile table
-            const { error: updateError } = await supabaseClient
-                .from('profiles')
-                .update({ avatar_url: publicUrl, updated_at: new Date() })
-                .eq('id', user.id);
-
-            if (updateError) {
-                showToastNotification(`Erreur de mise à jour du profil : ${updateError.message}`, 'error');
-            } else {
-                // Update images on the page
-                document.getElementById('headerAvatar').src = publicUrl;
-                document.getElementById('dropdownAvatar').src = publicUrl;
-                showToastNotification('Avatar mis à jour !', 'success');
-            }
+            await updateAvatarUrl(data.publicUrl);
         }
 
+        async function selectPredefinedAvatar(element) {
+            const svgElement = element.querySelector('svg');
+            if (!svgElement) return;
+            const svgHtml = svgElement.outerHTML;
+            const dataUrl = 'data:image/svg+xml;base64,' + btoa(svgHtml);
+            await updateAvatarUrl(dataUrl);
+        }
+        window.selectPredefinedAvatar = selectPredefinedAvatar;
+
+        function updateSelectedAvatar(currentAvatarUrl) {
+            const avatarChoices = document.querySelectorAll('.avatar-choice');
+            avatarChoices.forEach(choice => {
+                choice.classList.remove('selected');
+                const svgElement = choice.querySelector('svg');
+                if (svgElement) {
+                    const svgHtml = svgElement.outerHTML;
+                    const dataUrl = 'data:image/svg+xml;base64,' + btoa(svgHtml);
+                    if (dataUrl === currentAvatarUrl) {
+                        choice.classList.add('selected');
+                    }
+                }
+            });
+        }
 
         async function renderDashboard(session) {
             const user = session.user;
             const dashboardContent = document.getElementById('dashboard-content');
             if (!dashboardContent) return;
 
-            // 1. Create a profile if it doesn't exist (Upsert)
+            // 1. Create/Update profile
             const { error: upsertError } = await supabaseClient
                 .from('profiles')
                 .upsert({
                     id: user.id,
-                    full_name: user.user_metadata?.full_name || user.email, // Fallback to email
+                    full_name: user.user_metadata?.full_name || user.email,
                     updated_at: new Date(),
-                }, {
-                    onConflict: 'id' // Specify the conflict target
-                });
+                }, { onConflict: 'id' });
 
-            if (upsertError) {
-                console.error("Erreur lors de la création/mise à jour du profil:", upsertError);
-            }
+            if (upsertError) console.error("Erreur upsert profil:", upsertError);
 
-            // 2. Read the user's profile
+            // 2. Read profile
             const { data: profile, error: profileError } = await supabaseClient
                 .from('profiles')
                 .select('*')
                 .eq('id', user.id)
                 .single();
 
-            if (profileError) {
-                console.error("Erreur lors de la lecture du profil:", profileError);
-            }
+            if (profileError) console.error("Erreur lecture profil:", profileError);
             
-            // 3. Populate Profile Dropdown and Form
+            // 3. Populate UI
             const username = profile?.full_name || user.email;
             const avatarUrl = profile?.avatar_url;
             
@@ -1115,6 +1188,7 @@
             if(avatarUrl) {
                 document.getElementById('headerAvatar').src = avatarUrl;
                 document.getElementById('dropdownAvatar').src = avatarUrl;
+                updateSelectedAvatar(avatarUrl);
             }
 
             document.getElementById('fullName').value = profile?.full_name || '';
@@ -1122,7 +1196,7 @@
             document.getElementById('company').value = profile?.company || '';
             document.getElementById('website').value = profile?.website || '';
 
-            // 4. Render the main dashboard content
+            // 4. Render main content
             dashboardContent.innerHTML = `
                 <div class="dashboard-header">
                     <h1>Votre Tableau de Bord</h1>
@@ -1164,17 +1238,13 @@
 
         async function logout() {
             const overlay = document.getElementById('logoutOverlay');
-            if (overlay) {
-                overlay.classList.add('show');
-            }
+            if (overlay) overlay.classList.add('show');
 
             try {
                 const { error } = await supabaseClient.auth.signOut({ scope: 'global' });
-                if (error) {
-                    throw error;
-                }
+                if (error) throw error;
             } catch (e) {
-                console.warn("Erreur lors de la déconnexion (sera ignorée):", e);
+                console.warn("Erreur déconnexion:", e);
             } finally {
                 localStorage.clear();
                 sessionStorage.clear();
