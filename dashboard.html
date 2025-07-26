@@ -15,6 +15,7 @@
             --primary: #6366f1;
             --primary-dark: #4f46e5;
             --primary-light: #a5b4fc;
+            --primary-rgb: 99, 102, 241;
             --secondary: #10b981;
             --secondary-dark: #059669;
             --accent: #f59e0b;
@@ -41,7 +42,7 @@
             --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
             --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-            --shadow-glow: 0 0 15px 0px rgba(99, 102, 241, 0.3);
+            --shadow-glow: 0 0 15px 0px rgba(var(--primary-rgb), 0.3);
 
             /* Animation */
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -74,7 +75,7 @@
             --text-primary: #1e293b;
             --text-secondary: #475569;
             --text-muted: #64748b;
-            --shadow-glow: 0 0 15px 0px rgba(99, 102, 241, 0.2);
+            --shadow-glow: 0 0 15px 0px rgba(var(--primary-rgb), 0.2);
         }
 
         * {
@@ -104,7 +105,7 @@
             right: 0;
             bottom: 0;
             background: 
-                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 15% 50%, rgba(var(--primary-rgb), 0.15) 0%, transparent 40%),
                 radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 40%),
                 radial-gradient(circle at 50% 85%, rgba(245, 158, 11, 0.1) 0%, transparent 40%);
             pointer-events: none;
@@ -240,7 +241,7 @@
         }
         .nav-link.active {
             color: var(--text-primary);
-            background: linear-gradient(45deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.2));
+            background: linear-gradient(45deg, rgba(var(--primary-rgb), 0.1), rgba(var(--primary-rgb), 0.2));
             font-weight: 600;
         }
         .header-search {
@@ -350,7 +351,7 @@
             width: 360px;
             background: var(--surface);
             border: 1px solid var(--glass-border);
-            border-radius: var(--radius-lg);
+            border-radius: var(--radius-xl);
             box-shadow: var(--shadow-lg);
             opacity: 0;
             visibility: hidden;
@@ -469,6 +470,11 @@
             box-shadow: 0 0 0 2px var(--primary-dark);
             outline: none;
         }
+        
+        .input-group input:focus + i,
+        .input-group textarea:focus + i {
+            color: var(--primary);
+        }
 
         .input-group textarea {
             min-height: 80px;
@@ -486,6 +492,10 @@
             font-weight: 600;
             border-radius: var(--radius);
             border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-xs);
         }
         .profile-actions .btn-primary {
             background: var(--primary);
@@ -1034,7 +1044,7 @@
                               <i class="fas fa-chevron-down"></i>
                           </button>
                           <div id="profileEditMenu" class="profile-edit-menu" role="menu">
-                              <div class="profile-user-info">
+                                <div class="profile-user-info">
                                    <div class="profile-avatar-wrapper" onclick="openAvatarModal()" title="Changer d'avatar">
                                        <img id="dropdownAvatar" src="https://placehold.co/64x64/334155/f8fafc?text=LTD" alt="Avatar de l'utilisateur">
                                        <div class="edit-overlay"><i class="fas fa-camera"></i></div>
@@ -1043,41 +1053,25 @@
                                        <h4 id="dropdownUsername"></h4>
                                        <p id="dropdownUserEmail"></p>
                                    </div>
-                              </div>
-                              <div class="profile-tabs">
-                                  <button class="tab-link active" onclick="openProfileTab(event, 'tab-main')">Profil</button>
-                                  <button class="tab-link" onclick="openProfileTab(event, 'tab-account')">Compte</button>
-                              </div>
-
-                              <div id="tab-main" class="profile-tab-content active">
-                                  <div class="profile-form-group">
-                                      <label for="fullName">Nom complet</label>
-                                      <input type="text" id="fullName" placeholder="Votre nom complet">
-                                  </div>
-                                  <div class="form-row">
-                                      <div class="profile-form-group">
-                                          <label for="company">Entreprise</label>
-                                          <input type="text" id="company" placeholder="Nom de votre entreprise">
-                                      </div>
-                                      <div class="profile-form-group">
-                                          <label for="website">Site Web</label>
-                                          <input type="url" id="website" placeholder="https://example.com">
-                                      </div>
-                                  </div>
-                                  <div class="profile-form-group">
-                                      <label for="bio">Biographie</label>
-                                      <textarea id="bio" placeholder="Parlez un peu de vous..."></textarea>
-                                  </div>
-                                  <button class="btn" onclick="updateProfile()">Sauvegarder</button>
-                              </div>
-
-                              <div id="tab-account" class="profile-tab-content">
-                                  <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: var(--spacing-md);">Gérez les options de votre compte.</p>
-                                  <button class="logout-btn" onclick="logout()">
-                                      <i class="fas fa-sign-out-alt fa-fw"></i>
-                                      <span>Déconnexion</span>
-                                  </button>
-                              </div>
+                                </div>
+                                <div class="profile-form-container">
+                                    <div class="input-group">
+                                        <input type="text" id="fullName" placeholder="Nom complet">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="input-group">
+                                        <input type="text" id="company" placeholder="Entreprise">
+                                        <i class="fas fa-building"></i>
+                                    </div>
+                                    <div class="input-group">
+                                        <input type="url" id="website" placeholder="Site Web">
+                                        <i class="fas fa-globe"></i>
+                                    </div>
+                                </div>
+                                <div class="profile-actions">
+                                    <button class="btn btn-secondary" onclick="logout()" title="Déconnexion"><i class="fas fa-sign-out-alt"></i></button>
+                                    <button class="btn btn-primary" onclick="updateProfile()">Sauvegarder</button>
+                                </div>
                           </div>
                       </div>
                      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
@@ -1154,7 +1148,7 @@
                 </div>
             </div>
             <hr>
-            <button class="btn btn-secondary" onclick="document.getElementById('avatarUpload').click()">
+            <button class="btn-upload" onclick="document.getElementById('avatarUpload').click()">
                 <i class="fas fa-upload"></i> Téléverser une image
             </button>
             <input type="file" id="avatarUpload" accept="image/png, image/jpeg" style="display: none;">
@@ -1190,7 +1184,6 @@
             }
 
             const fullName = document.getElementById("fullName").value;
-            const bio = document.getElementById("bio").value;
             const company = document.getElementById("company").value;
             const website = document.getElementById("website").value;
 
@@ -1198,7 +1191,6 @@
                 .from('profiles')
                 .update({
                     full_name: fullName,
-                    bio: bio,
                     company: company,
                     website: website,
                     updated_at: new Date()
@@ -1339,7 +1331,6 @@
             }
 
             document.getElementById('fullName').value = profile?.full_name || '';
-            document.getElementById('bio').value = profile?.bio || '';
             document.getElementById('company').value = profile?.company || '';
             document.getElementById('website').value = profile?.website || '';
 
@@ -1549,4 +1540,4 @@
         });
     </script>
 </body>
-</ht
+</html>
