@@ -432,6 +432,72 @@
                 transform: rotate(360deg);
             }
         }
+        
+        /* --- Tutorial Overlay --- */
+        .tutorial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 9000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity var(--transition-slow), visibility var(--transition-slow);
+        }
+        .tutorial-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .tutorial-highlight {
+            position: absolute;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 0 0 4px var(--primary), 0 0 25px 10px var(--primary-dark);
+            pointer-events: none;
+            transition: all var(--transition-slow);
+        }
+        .tutorial-box {
+            position: absolute;
+            background: var(--surface-elevated);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-xl);
+            width: clamp(280px, 80vw, 320px);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity var(--transition-slow), transform var(--transition-slow);
+        }
+        .tutorial-overlay.show .tutorial-box {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .tutorial-box h3 {
+            margin-top: 0;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-primary);
+        }
+        .tutorial-box p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
+        }
+        .tutorial-box button {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            background: var(--primary);
+            color: white;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .tutorial-box button:hover {
+            background: var(--primary-dark);
+        }
 
         /* --- Media Queries pour la réactivité --- */
         @media (min-width: 768px) {
@@ -472,6 +538,16 @@
     <div class="progress-bar" id="progressBar">
         <div class="progress-fill" id="progressFill"></div>
     </div>
+    
+    <!-- Tutorial Overlay -->
+    <div id="tutorialOverlay" class="tutorial-overlay">
+        <div id="tutorialHighlight" class="tutorial-highlight"></div>
+        <div id="tutorialBox" class="tutorial-box">
+            <h3>Bienvenue !</h3>
+            <p>Utilisez ce formulaire pour vous connecter ou créer un nouveau compte. Vous pouvez aussi utiliser votre compte Google.</p>
+            <button onclick="hideTutorial()">J'ai compris</button>
+        </div>
+    </div>
 
     <!-- Header -->
     <header class="header" id="header">
@@ -487,9 +563,9 @@
             <!-- Navigation pour ordinateur -->
             <div class="nav-desktop">
                  <div class="nav-actions">
-                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
-                         <i class="fas fa-moon" id="themeIcon"></i>
-                     </button>
+                      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
+                           <i class="fas fa-moon" id="themeIcon"></i>
+                      </button>
                  </div>
             </div>
 
@@ -521,7 +597,7 @@
 
     <!-- Contenu Principal -->
     <main class="main-content">
-        <div class="login-container animate-in">
+        <div class="login-container animate-in" id="loginContainer">
             <h2>Connexion / Inscription</h2>
             <div class="login-form">
                 <input type="email" id="email" placeholder="Email" required />
@@ -767,6 +843,36 @@
             document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
         }
 
+        function showTutorial() {
+            const overlay = document.getElementById('tutorialOverlay');
+            const highlight = document.getElementById('tutorialHighlight');
+            const box = document.getElementById('tutorialBox');
+            const loginContainer = document.getElementById('loginContainer');
+
+            if (!overlay || !highlight || !box || !loginContainer) return;
+
+            const rect = loginContainer.getBoundingClientRect();
+
+            highlight.style.top = `${rect.top - 10}px`;
+            highlight.style.left = `${rect.left - 10}px`;
+            highlight.style.width = `${rect.width + 20}px`;
+            highlight.style.height = `${rect.height + 20}px`;
+
+            box.style.top = `${rect.bottom + 15}px`;
+            box.style.left = `50%`;
+            box.style.transform = 'translateX(-50%)';
+
+            overlay.classList.add('show');
+        }
+
+        window.hideTutorial = function() {
+            const overlay = document.getElementById('tutorialOverlay');
+            if (overlay) {
+                overlay.classList.remove('show');
+            }
+            localStorage.setItem('tutorialLoginSeen', 'true');
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             updateThemeUI();
             initAnimations();
@@ -783,6 +889,13 @@
                     }, 1500);
                 }
             });
+
+            // Show tutorial if not seen before
+            setTimeout(() => {
+                if (localStorage.getItem('tutorialLoginSeen') !== 'true') {
+                    showTutorial();
+                }
+            }, 1000); // Delay to allow page animation to finish
         });
     </script>
 </body>
