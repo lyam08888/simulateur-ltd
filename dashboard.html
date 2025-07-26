@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Tableau de bord de l'utilisateur pour acle LTD Simulator.">
+    <meta name="description" content="Tableau de bord de l'utilisateur pour le LTD Simulator.">
     <title>LTD Simulator - Tableau de bord</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -302,11 +302,11 @@
         .user-profile-toggle {
             display: flex;
             align-items: center;
-            gap: var(--spacing-xs);
+            gap: var(--spacing-sm);
             background: var(--glass);
             border: 1px solid var(--glass-border);
             color: var(--text-secondary);
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 1rem 0.4rem 0.4rem;
             border-radius: var(--radius-full);
             font-weight: 500;
             transition: var(--transition);
@@ -315,6 +315,14 @@
         .user-profile-toggle:hover {
             background: var(--surface-elevated);
             color: var(--text-primary);
+        }
+        
+        .user-profile-toggle img {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--glass-border);
         }
 
         .user-profile-toggle .fa-chevron-down {
@@ -338,7 +346,7 @@
             position: absolute;
             top: calc(100% + 10px);
             right: 0;
-            width: 320px;
+            width: 340px;
             background: var(--surface);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
@@ -362,22 +370,56 @@
             transform: translateY(0);
         }
         
-        .profile-edit-menu .profile-user-info {
+        .profile-user-info {
             display: flex;
             align-items: center;
             gap: var(--spacing-sm);
             margin-bottom: var(--spacing-md);
         }
-        .profile-edit-menu .profile-user-info .fa-user-circle {
-            font-size: 2.5rem;
-            color: var(--text-muted);
+        
+        .profile-avatar-wrapper {
+            position: relative;
+            cursor: pointer;
         }
-        .profile-edit-menu .profile-user-info h4 {
+
+        .profile-avatar-wrapper img {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--glass-border);
+        }
+
+        .profile-avatar-wrapper .edit-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            opacity: 0;
+            transition: var(--transition);
+            font-size: 1.2rem;
+        }
+        .profile-avatar-wrapper:hover .edit-overlay {
+            opacity: 1;
+        }
+
+        #avatarUpload {
+            display: none;
+        }
+        
+        .profile-edit-menu .profile-user-details h4 {
             margin: 0;
             font-weight: 600;
             color: var(--text-primary);
         }
-        .profile-edit-menu .profile-user-info p {
+        .profile-edit-menu .profile-user-details p {
             margin: 0;
             font-size: 0.85rem;
             color: var(--text-muted);
@@ -842,13 +884,18 @@
                  <div class="nav-actions">
                       <div class="profile-dropdown">
                           <button id="userProfileToggle" class="user-profile-toggle" aria-haspopup="true" aria-expanded="false" title="Menu du profil">
+                              <img id="headerAvatar" src="https://placehold.co/40x40/1e293b/f8fafc?text=LTD" alt="Avatar de l'utilisateur">
                               <span id="headerUsername">Chargement...</span>
                               <i class="fas fa-chevron-down"></i>
                           </button>
                           <div id="profileEditMenu" class="profile-edit-menu" role="menu">
                               <div class="profile-user-info">
-                                   <i class="fas fa-user-circle"></i>
-                                   <div>
+                                   <div class="profile-avatar-wrapper" onclick="document.getElementById('avatarUpload').click()" title="Changer d'avatar">
+                                       <img id="dropdownAvatar" src="https://placehold.co/64x64/334155/f8fafc?text=LTD" alt="Avatar de l'utilisateur">
+                                       <div class="edit-overlay"><i class="fas fa-camera"></i></div>
+                                       <input type="file" id="avatarUpload" accept="image/png, image/jpeg">
+                                   </div>
+                                   <div class="profile-user-details">
                                        <h4 id="dropdownUsername"></h4>
                                        <p id="dropdownUserEmail"></p>
                                    </div>
@@ -858,11 +905,19 @@
                                   <label for="fullName">Nom complet</label>
                                   <input type="text" id="fullName" placeholder="Votre nom complet">
                               </div>
+                               <div class="profile-form-group">
+                                  <label for="company">Entreprise</label>
+                                  <input type="text" id="company" placeholder="Nom de votre entreprise">
+                              </div>
+                               <div class="profile-form-group">
+                                  <label for="website">Site Web</label>
+                                  <input type="url" id="website" placeholder="https://example.com">
+                              </div>
                               <div class="profile-form-group">
                                   <label for="bio">Biographie</label>
                                   <textarea id="bio" placeholder="Parlez un peu de vous..."></textarea>
                               </div>
-                              <button class="btn" onclick="updateProfile()">Sauvegarder</button>
+                              <button class="btn" onclick="updateProfile()">Sauvegarder les informations</button>
                               <hr>
                               <button class="logout-btn" onclick="logout()">
                                   <i class="fas fa-sign-out-alt fa-fw"></i>
@@ -939,12 +994,16 @@
 
             const fullName = document.getElementById("fullName").value;
             const bio = document.getElementById("bio").value;
+            const company = document.getElementById("company").value;
+            const website = document.getElementById("website").value;
 
             const { error } = await supabaseClient
                 .from('profiles')
                 .update({
                     full_name: fullName,
                     bio: bio,
+                    company: company,
+                    website: website,
                     updated_at: new Date()
                 })
                 .eq('id', user.id);
@@ -953,7 +1012,6 @@
                 showToastNotification('Erreur de sauvegarde: ' + error.message, 'error');
             } else {
                 showToastNotification('Profil mis à jour !', 'success');
-                // Update header and dropdown usernames
                 document.getElementById('headerUsername').textContent = fullName;
                 document.getElementById('dropdownUsername').textContent = fullName;
                 // Close dropdown
@@ -965,6 +1023,54 @@
             }
         }
         window.updateProfile = updateProfile;
+        
+        async function uploadAvatar(event) {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (!user) {
+                showToastNotification('Vous devez être connecté pour téléverser un avatar.', 'error');
+                return;
+            }
+            
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+            const filePath = `${fileName}`;
+
+            showToastNotification('Téléversement de l\'avatar...', 'info');
+
+            const { error: uploadError } = await supabaseClient.storage
+                .from('avatars')
+                .upload(filePath, file, {
+                    cacheControl: '3600',
+                    upsert: true // Overwrite existing file for the same user
+                });
+
+            if (uploadError) {
+                showToastNotification(`Erreur de téléversement : ${uploadError.message}`, 'error');
+                return;
+            }
+
+            // Get public URL
+            const { data } = supabaseClient.storage.from('avatars').getPublicUrl(filePath);
+            const publicUrl = data.publicUrl;
+
+            // Update profile table
+            const { error: updateError } = await supabaseClient
+                .from('profiles')
+                .update({ avatar_url: publicUrl, updated_at: new Date() })
+                .eq('id', user.id);
+
+            if (updateError) {
+                showToastNotification(`Erreur de mise à jour du profil : ${updateError.message}`, 'error');
+            } else {
+                // Update images on the page
+                document.getElementById('headerAvatar').src = publicUrl;
+                document.getElementById('dropdownAvatar').src = publicUrl;
+                showToastNotification('Avatar mis à jour !', 'success');
+            }
+        }
 
 
         async function renderDashboard(session) {
@@ -1000,11 +1106,21 @@
             
             // 3. Populate Profile Dropdown and Form
             const username = profile?.full_name || user.email;
+            const avatarUrl = profile?.avatar_url;
+            
             document.getElementById('headerUsername').textContent = username;
             document.getElementById('dropdownUsername').textContent = username;
             document.getElementById('dropdownUserEmail').textContent = user.email;
+            
+            if(avatarUrl) {
+                document.getElementById('headerAvatar').src = avatarUrl;
+                document.getElementById('dropdownAvatar').src = avatarUrl;
+            }
+
             document.getElementById('fullName').value = profile?.full_name || '';
             document.getElementById('bio').value = profile?.bio || '';
+            document.getElementById('company').value = profile?.company || '';
+            document.getElementById('website').value = profile?.website || '';
 
             // 4. Render the main dashboard content
             dashboardContent.innerHTML = `
@@ -1165,14 +1281,19 @@
             // --- Profile Dropdown Logic ---
             const userProfileToggle = document.getElementById('userProfileToggle');
             const profileEditMenu = document.getElementById('profileEditMenu');
+            const avatarUploadInput = document.getElementById('avatarUpload');
 
             if (userProfileToggle && profileEditMenu) {
                 userProfileToggle.addEventListener('click', (event) => {
-                    event.stopPropagation(); // Prevent the window click listener from closing it immediately
+                    event.stopPropagation();
                     const isExpanded = profileEditMenu.classList.toggle('show');
                     userProfileToggle.classList.toggle('active');
                     userProfileToggle.setAttribute('aria-expanded', isExpanded);
                 });
+            }
+            
+            if (avatarUploadInput) {
+                avatarUploadInput.addEventListener('change', uploadAvatar);
             }
 
             // Close dropdown when clicking outside
