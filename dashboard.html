@@ -593,74 +593,48 @@
         }
 
         /* --- Explorer Modal Grid --- */
-        .mega-menu-grid {
+        .explorer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: var(--spacing-lg);
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            padding-top: var(--spacing-md);
         }
-
-        .mega-menu-column {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-sm);
-        }
-
-        .mega-menu-heading {
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: var(--spacing-xs);
-            padding: 0 var(--spacing-xs);
-        }
-
-        .mega-menu-item {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            padding: var(--spacing-sm);
-            border-radius: var(--radius-md);
+        .explorer-item {
+            background: var(--surface-elevated);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
             text-decoration: none;
-            transition: var(--transition);
-            background: transparent;
+            color: var(--text-secondary);
+            transition: var(--transition-slow);
+            border: 1px solid transparent;
+            text-align: center;
         }
-
-        .mega-menu-item:hover {
-            background: var(--glass);
-            transform: translateX(5px);
+        .explorer-item:hover {
+            transform: translateY(-8px);
+            background: var(--surface-hover);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
         }
-
-        .mega-menu-item .item-icon {
-            font-size: 1.25rem;
-            width: 2.25rem;
-            height: 2.25rem;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .explorer-item-icon {
+            font-size: 2.5rem;
             color: var(--primary);
-            background: var(--glass);
-            border-radius: var(--radius);
+            margin-bottom: var(--spacing-sm);
             transition: var(--transition);
         }
-        
-        .mega-menu-item:hover .item-icon {
-            transform: scale(1.1) rotate(-10deg);
-            box-shadow: 0 0 10px var(--primary-light);
+        .explorer-item:hover .explorer-item-icon {
+            transform: scale(1.1);
             color: var(--primary-light);
         }
-
-        .mega-menu-item-text h4 {
-            font-size: 0.95rem;
+        .explorer-item-text h4 {
+            font-size: 1.1rem;
             font-weight: 600;
             color: var(--text-primary);
-            margin: 0;
-            transition: var(--transition);
+            margin: 0 0 0.25rem 0;
         }
-        
-        .mega-menu-item:hover .mega-menu-item-text h4 {
-            color: var(--primary-light);
+        .explorer-item-text p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin: 0;
         }
 
         /* --- Contenu Principal --- */
@@ -1026,50 +1000,51 @@
         <div class="modal-overlay" onclick="closeExplorerModal()"></div>
         <div class="modal-content">
             <button class="modal-close-btn" onclick="closeExplorerModal()" title="Fermer"><i class="fas fa-times"></i></button>
-            <h3>Explorer les Applications</h3>
-            <p>Choisissez une application ou un outil à lancer.</p>
-            <hr>
-            <div class="mega-menu-grid">
-                <div class="mega-menu-column">
-                    <h3 class="mega-menu-heading">Pratique</h3>
-                    <a href="simulateur1.html" class="mega-menu-item">
-                        <i class="fas fa-cubes fa-fw item-icon"></i>
-                        <div class="mega-menu-item-text"><h4>Simulateurs</h4></div>
-                    </a>
-                    <a href="outils1.html" class="mega-menu-item">
-                        <i class="fas fa-wrench fa-fw item-icon"></i>
-                        <div class="mega-menu-item-text"><h4>Outils</h4></div>
-                    </a>
-                </div>
-                <div class="mega-menu-column">
-                    <h3 class="mega-menu-heading">Évaluation</h3>
-                    <a href="test1.html" class="mega-menu-item">
-                        <i class="fas fa-brain fa-fw item-icon"></i>
-                        <div class="mega-menu-item-text"><h4>Tests</h4></div>
-                    </a>
-                    <a href="quiz1.html" class="mega-menu-item">
-                        <i class="fas fa-question-circle fa-fw item-icon"></i>
-                        <div class="mega-menu-item-text"><h4>Quiz</h4></div>
-                    </a>
-                </div>
-                <div class="mega-menu-column">
-                    <h3 class="mega-menu-heading">Carrière</h3>
-                    <a href="challenges1.html" class="mega-menu-item">
-                        <i class="fas fa-trophy fa-fw item-icon"></i>
-                        <div class="mega-menu-item-text"><h4>Challenges</h4></div>
-                    </a>
-                    <a href="emploi1.html" class="mega-menu-item">
-                        <i class="fas fa-briefcase fa-fw item-icon"></i>
-                        <div class="mega-menu-item-text"><h4>Nos offres d'emploi</h4></div>
-                    </a>
-                </div>
-                <div class="mega-menu-column">
-                    <h3 class="mega-menu-heading">Culture</h3>
-                    <a href="histoire1.html" class="mega-menu-item">
-                        <i class="fas fa-scroll fa-fw item-icon"></i>
-                        <div class="mega-menu-item-text"><h4>Histoire du BTP</h4></div>
-                    </a>
-                </div>
+            <h3>Explorer</h3>
+            <p>Lancez directement une de nos applications.</p>
+            <div class="explorer-grid">
+                <a href="simulateur1.html" class="explorer-item">
+                    <div class="explorer-item-icon"><i class="fas fa-cubes fa-fw"></i></div>
+                    <div class="explorer-item-text">
+                        <h4>Simulateurs</h4>
+                        <p>Entraînement pratique.</p>
+                    </div>
+                </a>
+                <a href="test1.html" class="explorer-item">
+                    <div class="explorer-item-icon"><i class="fas fa-brain fa-fw"></i></div>
+                    <div class="explorer-item-text">
+                        <h4>Tests</h4>
+                        <p>Évaluez vos compétences.</p>
+                    </div>
+                </a>
+                <a href="quiz1.html" class="explorer-item">
+                    <div class="explorer-item-icon"><i class="fas fa-question-circle fa-fw"></i></div>
+                    <div class="explorer-item-text">
+                        <h4>Quiz</h4>
+                        <p>Testez vos connaissances.</p>
+                    </div>
+                </a>
+                <a href="outils1.html" class="explorer-item">
+                    <div class="explorer-item-icon"><i class="fas fa-wrench fa-fw"></i></div>
+                    <div class="explorer-item-text">
+                        <h4>Outils</h4>
+                        <p>Ressources utiles.</p>
+                    </div>
+                </a>
+                <a href="challenges1.html" class="explorer-item">
+                    <div class="explorer-item-icon"><i class="fas fa-trophy fa-fw"></i></div>
+                    <div class="explorer-item-text">
+                        <h4>Challenges</h4>
+                        <p>Relevez des défis.</p>
+                    </div>
+                </a>
+                <a href="emploi1.html" class="explorer-item">
+                    <div class="explorer-item-icon"><i class="fas fa-briefcase fa-fw"></i></div>
+                    <div class="explorer-item-text">
+                        <h4>Offres d'emploi</h4>
+                        <p>Votre future carrière.</p>
+                    </div>
+                </a>
             </div>
         </div>
     </div>
