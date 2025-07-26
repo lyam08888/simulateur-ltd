@@ -12,37 +12,37 @@
     <style>
         :root {
             /* Colors */
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
+            --primary: #818cf8;
+            --primary-dark: #6366f1;
             --primary-light: #a5b4fc;
-            --primary-rgb: 99, 102, 241;
-            --secondary: #10b981;
-            --secondary-dark: #059669;
+            --primary-rgb: 129, 140, 248;ac
+            --secondary: #34d399;
+            --secondary-dark: #10b981;
             --accent: #f59e0b;
             --accent-dark: #d97706;
-            --error: #ef4444;
-            --error-dark: #b91c1c;
+            --error: #f472b6;
+            --error-dark: #ec4899;
             
             /* Surfaces */
-            --background: #0f172a;
-            --surface: #1e293b;
-            --surface-elevated: #334155;
-            --surface-hover: #475569;
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.15);
+            --background: #0b1120;
+            --surface: #1a2035;
+            --surface-elevated: #2c324b;
+            --surface-hover: #383e5a;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
             
             /* Text */
             --text-primary: #f8fafc;
-            --text-secondary: #cbd5e1;
-            --text-muted: #94a3b8;
+            --text-secondary: #a7acc2;
+            --text-muted: #7f89a9;
             
             /* Shadows */
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-            --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-            --shadow-glow: 0 0 15px 0px rgba(var(--primary-rgb), 0.3);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.1);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.15), 0 2px 4px -2px rgb(0 0 0 / 0.15);
+            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.2);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.25), 0 8px 10px -6px rgb(0 0 0 / 0.25);
+            --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.4);
+            --shadow-glow: 0 0 25px 0px rgba(var(--primary-rgb), 0.25);
 
             /* Animation */
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -66,16 +66,18 @@
 
         /* Light mode */
         body.light-mode {
-            --background: #f1f5f9;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --background: #f0f4fa;
             --surface: #ffffff;
-            --surface-elevated: #e2e8f0;
-            --surface-hover: #cbd5e1;
-            --glass: rgba(0, 0, 0, 0.05);
-            --glass-border: rgba(0, 0, 0, 0.1);
+            --surface-elevated: #f8fafc;
+            --surface-hover: #eef2f9;
+            --glass: rgba(0, 0, 0, 0.02);
+            --glass-border: rgba(0, 0, 0, 0.08);
             --text-primary: #1e293b;
             --text-secondary: #475569;
             --text-muted: #64748b;
-            --shadow-glow: 0 0 15px 0px rgba(var(--primary-rgb), 0.2);
+            --shadow-glow: 0 0 25px 0px rgba(var(--primary-rgb), 0.15);
         }
 
         * {
@@ -100,23 +102,22 @@
         body::before {
             content: '';
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
             background: 
-                radial-gradient(circle at 15% 50%, rgba(var(--primary-rgb), 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 50% 85%, rgba(245, 158, 11, 0.1) 0%, transparent 40%);
+                radial-gradient(circle at 15% 50%, rgba(var(--primary-rgb), 0.1) 0%, transparent 30%),
+                radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.1) 0%, transparent 30%),
+                radial-gradient(circle at 50% 85%, rgba(245, 158, 11, 0.05) 0%, transparent 30%);
             pointer-events: none;
             z-index: -1;
-            animation: background-pan 30s linear infinite;
+            animation: background-pan 40s linear infinite;
         }
         
         @keyframes background-pan {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn, .notification-bell, .logout-btn, .user-profile-toggle {
@@ -131,13 +132,13 @@
             right: 0;
             z-index: 1000;
             backdrop-filter: blur(20px) saturate(180%);
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(11, 17, 32, 0.75);
             border-bottom: 1px solid var(--glass-border);
             transition: var(--transition);
         }
 
         body.light-mode .header {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.75);
         }
 
         .nav-container {
@@ -290,7 +291,7 @@
             transition: var(--transition);
         }
         .theme-toggle:hover {
-            background: var(--surface-elevated);
+            background: var(--surface-hover);
             color: var(--text-primary);
             transform: rotate(15deg);
         }
@@ -310,7 +311,7 @@
         }
 
         .user-profile-toggle:hover {
-            background: var(--surface-elevated);
+            background: var(--surface-hover);
             color: var(--text-primary);
         }
         
@@ -356,7 +357,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(15, 23, 42, 0.5);
+            background-color: rgba(11, 17, 32, 0.5);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             cursor: pointer;
