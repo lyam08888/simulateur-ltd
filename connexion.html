@@ -472,7 +472,7 @@
         }
         .tutorial-overlay.show .tutorial-box {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) translateX(0);
         }
         .tutorial-box h3 {
             margin-top: 0;
@@ -854,20 +854,44 @@
             if (!highlight || !box || !loginContainer) return;
 
             const rect = loginContainer.getBoundingClientRect();
-            const boxHeight = box.offsetHeight;
+            const boxRect = box.getBoundingClientRect(); // Get dimensions
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
 
+            // Highlight position is always the same
             highlight.style.top = `${rect.top - 10}px`;
             highlight.style.left = `${rect.left - 10}px`;
             highlight.style.width = `${rect.width + 20}px`;
             highlight.style.height = `${rect.height + 20}px`;
 
+            // --- Box Positioning Logic ---
+            box.style.transform = ''; // Reset transform before calculating
+
+            // Desktop: Try to place on the side
+            if (viewportWidth > 768) { 
+                // Check for space on the right
+                if (rect.right + boxRect.width + 30 < viewportWidth) {
+                    box.style.left = `${rect.right + 15}px`;
+                    box.style.top = `${rect.top}px`;
+                    return;
+                }
+                // Check for space on the left
+                if (rect.left - boxRect.width - 30 > 0) {
+                    box.style.left = `${rect.left - boxRect.width - 15}px`;
+                    box.style.top = `${rect.top}px`;
+                    return;
+                }
+            }
+
+            // Mobile or no space on sides: Place above or below
             box.style.left = `50%`;
             box.style.transform = 'translateX(-50%)';
-
-            // Positionne la boîte au-dessus si pas assez de place en dessous
-            if (rect.bottom + 15 + boxHeight > window.innerHeight && rect.top - boxHeight - 15 > 0) {
-                box.style.top = `${rect.top - boxHeight - 15}px`;
+            
+            // Place above if not enough space below AND there is enough space above
+            if (rect.bottom + 15 + boxRect.height > viewportHeight && rect.top - boxRect.height - 15 > 0) {
+                box.style.top = `${rect.top - boxRect.height - 15}px`;
             } else {
+                // Default to below
                 box.style.top = `${rect.bottom + 15}px`;
             }
         }
@@ -878,11 +902,12 @@
 
             overlay.classList.add('show');
             
+            // Allow the browser to render the now-visible box before we measure and position it.
             setTimeout(() => {
                 positionTutorial();
                 tutorialResizeHandler = () => positionTutorial();
                 window.addEventListener('resize', tutorialResizeHandler);
-            }, 10);
+            }, 50); // A small delay
         }
 
         window.hideTutorial = function() {
