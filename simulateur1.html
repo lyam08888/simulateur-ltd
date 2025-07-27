@@ -1425,18 +1425,15 @@
         }
         window.logout = logout;
 
-        async function renderDashboard(session) {
+        async function loadUserData(session) {
             const user = session.user;
-            const dashboardContent = document.getElementById('dashboard-content');
-            if (!dashboardContent) return;
-
             const { data: profile, error: profileError } = await supabaseClient
                 .from('profiles')
                 .select('*')
                 .eq('id', user.id)
                 .single();
 
-            if (profileError && profileError.code !== 'PGRST116') { // Ignore "exact one row expected" error if profile is new
+            if (profileError && profileError.code !== 'PGRST116') {
                 console.error("Erreur lecture profil:", profileError);
             }
             
@@ -1456,90 +1453,6 @@
             document.getElementById('fullName').value = profile?.full_name || '';
             document.getElementById('company').value = profile?.company || '';
             document.getElementById('website').value = profile?.website || '';
-
-            dashboardContent.innerHTML = `
-                <div class="dashboard-header">
-                    <h1>Bienvenue, ${username}</h1>
-                    <p>Prêt à commencer ? Lancez une simulation ou explorez les nouvelles fonctionnalités.</p>
-                </div>
-                <div class="dashboard-grid">
-                    <a href="simulateur.html" class="dashboard-card card-large" onclick="event.preventDefault(); navigateTo('simulateur.html')">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-cubes"></i></div>
-                            <h3>Simulateurs</h3>
-                        </div>
-                        <p>Accédez à nos simulateurs interactifs pour vous entraîner sur des équipements de chantier.</p>
-                        <span class="btn">Lancer une simulation</span>
-                    </a>
-                    <a href="test.html" class="dashboard-card card-large" onclick="event.preventDefault(); navigateTo('test.html')">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-brain"></i></div>
-                            <h3>Tests</h3>
-                        </div>
-                        <p>Évaluez vos connaissances théoriques et pratiques avec nos différents tests de compétence.</p>
-                        <span class="btn">Commencer un test</span>
-                    </a>
-                    <a href="challenges.html" class="dashboard-card card-large" onclick="event.preventDefault(); navigateTo('challenges.html')">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-trophy"></i></div>
-                            <h3>Challenges</h3>
-                        </div>
-                        <p>Relevez des défis pour gagner des points et améliorer votre classement.</p>
-                        <span class="btn">Voir les challenges</span>
-                    </a>
-                    <div class="dashboard-card card-stats">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-chart-line"></i></div>
-                            <h3>Mes Statistiques</h3>
-                        </div>
-                        <ul class="stats-list">
-                            <li class="stats-item">
-                                <span class="stats-label">Simulations terminées</span>
-                                <span class="stats-value">8 / 20</span>
-                            </li>
-                            <li class="progress-bar"><div class="progress-bar-inner" style="width: 40%;"></div></li>
-                             <li class="stats-item">
-                                <span class="stats-label">Score moyen aux tests</span>
-                                <span class="stats-value">85%</span>
-                            </li>
-                            <li class="progress-bar"><div class="progress-bar-inner" style="width: 85%; background-color: var(--secondary);"></div></li>
-                             <li class="stats-item">
-                                <span class="stats-label">Temps total</span>
-                                <span class="stats-value">12h 45m</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="dashboard-card card-activity">
-                         <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-history"></i></div>
-                            <h3>Fil d'Activité</h3>
-                        </div>
-                        <ul class="activity-feed">
-                            <li class="activity-item">
-                                <div class="activity-icon"><i class="fas fa-check"></i></div>
-                                <div>
-                                    <p class="activity-text">Vous avez terminé le <strong>Test de sécurité N°1</strong>.</p>
-                                    <p class="activity-time">Il y a 2 heures</p>
-                                </div>
-                            </li>
-                             <li class="activity-item">
-                                <div class="activity-icon"><i class="fas fa-trophy"></i></div>
-                                <div>
-                                    <p class="activity-text">Nouveau badge débloqué : <strong>As du Volant</strong>.</p>
-                                    <p class="activity-time">Hier</p>
-                                </div>
-                            </li>
-                             <li class="activity-item">
-                                <div class="activity-icon"><i class="fas fa-user-edit"></i></div>
-                                <div>
-                                    <p class="activity-text">Votre profil a été mis à jour.</p>
-                                    <p class="activity-time">Il y a 3 jours</p>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            `;
         }
         
         document.addEventListener('DOMContentLoaded', () => {
@@ -1548,7 +1461,7 @@
             
             supabaseClient.auth.onAuthStateChange((event, session) => {
                 if (session) {
-                    renderDashboard(session);
+                    loadUserData(session);
                 } else {
                     redirectToLogin();
                 }
@@ -1569,4 +1482,4 @@
         });
     </script>
 </body>
-</html>
+</ht
