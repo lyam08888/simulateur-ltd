@@ -121,7 +121,7 @@
             100% { transform: rotate(360deg); }
         }
         
-        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn, .notification-bell, .logout-btn, .user-profile-toggle {
+        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn, .notification-bell, .logout-btn, .user-profile-toggle, .command-palette-item {
             cursor: pointer;
         }
 
@@ -279,7 +279,7 @@
             align-items: center;
             gap: var(--spacing-sm);
         }
-        .theme-toggle {
+        .action-btn {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -290,11 +290,118 @@
             border-radius: var(--radius);
             color: var(--text-secondary);
             transition: var(--transition);
+            position: relative;
         }
-        .theme-toggle:hover {
+        .action-btn:hover {
             background: var(--surface-hover);
             color: var(--text-primary);
+        }
+        .theme-toggle:hover {
             transform: rotate(15deg);
+        }
+
+        /* --- Notification Bell --- */
+        .notification-bell .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--error);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--surface);
+        }
+        .notification-panel {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: 360px;
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: var(--transition-slow);
+            z-index: 1100;
+            overflow: hidden;
+        }
+        .notification-panel.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .notification-header {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notification-header h4 {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .notification-header a {
+            font-size: 0.8rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        .notification-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .notification-item {
+            display: flex;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            transition: var(--transition);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        .notification-item:hover {
+            background-color: var(--surface-hover);
+        }
+        .notification-item-icon {
+            width: 2rem;
+            height: 2rem;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: var(--glass);
+        }
+        .notification-item-icon.icon-success { color: var(--secondary); }
+        .notification-item-icon.icon-warning { color: var(--accent); }
+        .notification-item-icon.icon-info { color: var(--primary); }
+        .notification-item-content p {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        .notification-item-content span {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .notification-footer {
+            padding: var(--spacing-sm);
+            text-align: center;
+            background-color: var(--surface-elevated);
+        }
+        .notification-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
         }
 
         /* --- Profile Toggle --- */
@@ -541,6 +648,7 @@
         /* --- Avatar Modal --- */
         #avatarModal .modal-content {
             max-width: 500px;
+            padding: var(--spacing-lg);
         }
         .modal-content h3 {
             font-size: 1.5rem;
@@ -607,6 +715,7 @@
             display: flex;
             padding: 0;
             overflow: hidden;
+            height: 500px;
         }
 
         .explorer-sidebar {
@@ -738,6 +847,61 @@
             line-height: 1.4;
         }
 
+        /* --- Command Palette Modal --- */
+        #commandPaletteModal .modal-content {
+            max-width: 640px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 450px;
+        }
+        .command-palette-search {
+            padding: var(--spacing-sm);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .command-palette-search input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            padding: var(--spacing-sm);
+            outline: none;
+        }
+        .command-palette-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--spacing-xs);
+        }
+        .command-palette-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm);
+            border-radius: var(--radius);
+            text-decoration: none;
+        }
+        .command-palette-item:hover, .command-palette-item.selected {
+            background-color: var(--surface-hover);
+        }
+        .command-palette-item-icon {
+            width: 1.5rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+        .command-palette-item-text {
+            color: var(--text-secondary);
+        }
+        .command-palette-item:hover .command-palette-item-text, .command-palette-item.selected .command-palette-item-text {
+            color: var(--text-primary);
+        }
+        .command-palette-empty {
+            text-align: center;
+            padding: var(--spacing-xl);
+            color: var(--text-muted);
+        }
+
+
         /* --- Contenu Principal --- */
         .main-content { 
             margin-top: 4.5rem; 
@@ -767,7 +931,7 @@
         
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(12, 1fr);
             gap: var(--spacing-lg);
         }
         .dashboard-card {
@@ -782,6 +946,7 @@
             text-decoration: none;
             color: inherit;
             padding: var(--spacing-lg);
+            grid-column: span 12;
         }
         .dashboard-card:hover { 
             transform: translateY(-10px); 
@@ -833,7 +998,26 @@
             transform: scale(1.05);
         }
         
-        .toast-notification { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-xl); transform: translateX(calc(100% + var(--spacing-lg))); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1100; backdrop-filter: blur(20px); max-width: 350px; }
+        /* --- Stats Card --- */
+        .stats-list { list-style: none; padding: 0; margin: 0; }
+        .stats-item { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-md); }
+        .stats-item:last-child { margin-bottom: 0; }
+        .stats-label { color: var(--text-secondary); }
+        .stats-value { font-weight: 600; color: var(--text-primary); }
+        .progress-bar { height: 8px; background-color: var(--surface-elevated); border-radius: var(--radius-full); overflow: hidden; margin-top: var(--spacing-xs); }
+        .progress-bar-inner { height: 100%; background-color: var(--primary); border-radius: var(--radius-full); transition: width 0.5s ease-out; }
+
+        /* --- Activity Feed Card --- */
+        .activity-feed { list-style: none; padding: 0; margin: 0; }
+        .activity-item { display: flex; gap: var(--spacing-sm); align-items: flex-start; padding: var(--spacing-sm) 0; border-bottom: 1px solid var(--glass-border); }
+        .activity-item:first-child { padding-top: 0; }
+        .activity-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .activity-icon { width: 2rem; height: 2rem; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%; background-color: var(--glass); color: var(--text-muted); }
+        .activity-text { font-size: 0.9rem; color: var(--text-secondary); }
+        .activity-text strong { color: var(--text-primary); font-weight: 500; }
+        .activity-time { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+        .toast-notification { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-xl); transform: translateX(calc(100% + var(--spacing-lg))); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2100; backdrop-filter: blur(20px); max-width: 350px; }
         .toast-notification.show { transform: translateX(0); }
         .toast-notification-content { display: flex; align-items: flex-start; gap: var(--spacing-sm); }
         .toast-notification-icon { font-size: 1.25rem; color: var(--primary); margin-top: 2px; }
@@ -853,7 +1037,7 @@
             background-color: rgba(15, 23, 42, 0.5);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
-            z-index: 2000;
+            z-index: 3000;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -904,6 +1088,8 @@
             .main-content {
                 padding: var(--spacing-xl) var(--spacing-md);
             }
+            .dashboard-card.card-large { grid-column: span 12; }
+            .dashboard-card.card-medium { grid-column: span 6; }
         }
 
         @media (min-width: 1024px) {
@@ -927,12 +1113,20 @@
             .nav-actions {
                 margin-left: auto;
             }
+            .dashboard-card.card-large { grid-column: span 6; }
+            .dashboard-card.card-medium { grid-column: span 3; }
+            .card-activity { grid-column: span 6; }
+            .card-stats { grid-column: span 6; }
         }
 
         @media (min-width: 1280px) {
             .logo-text-extended {
                 display: inline;
             }
+            .dashboard-card.card-large { grid-column: span 4; }
+            .dashboard-card.card-medium { grid-column: span 4; }
+            .card-activity { grid-column: span 5; }
+            .card-stats { grid-column: span 7; }
         }
     </style>
 </head>
@@ -962,10 +1156,10 @@
             
             <!-- Navigation pour ordinateur -->
             <div class="nav-desktop">
-                 <form action="recherche.html" method="GET" class="header-search">
+                 <div class="header-search" onclick="openCommandPalette()">
                      <i class="fas fa-search"></i>
-                     <input type="search" name="query" placeholder="Rechercher..." aria-label="Rechercher">
-                 </form>
+                     <input type="search" name="query" placeholder="Rechercher (Ctrl+K)..." aria-label="Rechercher" readonly>
+                 </div>
                  <ul class="nav-menu">
                      <li class="nav-item"><a href="dashboard.html" class="nav-link active"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
                      <li class="nav-item">
@@ -973,13 +1167,31 @@
                      </li>
                  </ul>
                  <div class="nav-actions">
+                      <div class="notification-wrapper" style="position: relative;">
+                         <button class="action-btn notification-bell" id="notificationToggle" title="Notifications">
+                             <i class="fas fa-bell"></i>
+                             <span class="badge" id="notificationBadge">3</span>
+                         </button>
+                         <div class="notification-panel" id="notificationPanel">
+                             <div class="notification-header">
+                                 <h4>Notifications</h4>
+                                 <a href="#">Marquer comme lu</a>
+                             </div>
+                             <div class="notification-list" id="notificationList">
+                                 <!-- Notifications injectées par JS -->
+                             </div>
+                             <div class="notification-footer">
+                                 <a href="#">Voir toutes les notifications</a>
+                             </div>
+                         </div>
+                      </div>
                       <div class="profile-dropdown">
                           <button id="userProfileToggle" class="user-profile-toggle" aria-haspopup="true" aria-expanded="false" title="Menu du profil">
                               <img id="headerAvatar" src="https://placehold.co/40x40/1e293b/f8fafc?text=LTD" alt="Avatar de l'utilisateur">
                               <span id="headerUsername">Chargement...</span>
                           </button>
                       </div>
-                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
+                     <button class="action-btn theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
                          <i class="fas fa-moon" id="themeIcon"></i>
                      </button>
                  </div>
@@ -1151,6 +1363,19 @@
                         </div>
                     </a>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Command Palette Modal -->
+    <div id="commandPaletteModal" class="modal">
+        <div class="modal-overlay" onclick="closeCommandPalette()"></div>
+        <div class="modal-content">
+            <div class="command-palette-search">
+                <input type="text" id="commandPaletteInput" placeholder="Tapez une commande ou une recherche...">
+            </div>
+            <div class="command-palette-list" id="commandPaletteList">
+                <!-- Results injected by JS -->
             </div>
         </div>
     </div>
@@ -1333,10 +1558,10 @@
             dashboardContent.innerHTML = `
                 <div class="dashboard-header">
                     <h1>Bienvenue, ${username}</h1>
-                    <p>Prêt à commencer ? Lancez une simulation ou testez vos connaissances.</p>
+                    <p>Prêt à commencer ? Lancez une simulation ou explorez les nouvelles fonctionnalités.</p>
                 </div>
                 <div class="dashboard-grid">
-                    <a href="simulateur1.html" class="dashboard-card">
+                    <a href="simulateur1.html" class="dashboard-card card-large">
                         <div class="dashboard-card-header">
                             <div class="dashboard-card-icon"><i class="fas fa-cubes"></i></div>
                             <h3>Simulateurs</h3>
@@ -1344,7 +1569,7 @@
                         <p>Accédez à nos simulateurs interactifs pour vous entraîner sur des équipements de chantier.</p>
                         <span class="btn">Lancer une simulation</span>
                     </a>
-                    <a href="test1.html" class="dashboard-card">
+                    <a href="test1.html" class="dashboard-card card-large">
                         <div class="dashboard-card-header">
                             <div class="dashboard-card-icon"><i class="fas fa-brain"></i></div>
                             <h3>Tests</h3>
@@ -1352,22 +1577,65 @@
                         <p>Évaluez vos connaissances théoriques et pratiques avec nos différents tests de compétence.</p>
                         <span class="btn">Commencer un test</span>
                     </a>
-                     <a href="quiz1.html" class="dashboard-card">
+                    <a href="challenges1.html" class="dashboard-card card-large">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-icon"><i class="fas fa-trophy"></i></div>
+                            <h3>Challenges</h3>
+                        </div>
+                        <p>Relevez des défis pour gagner des points et améliorer votre classement.</p>
+                        <span class="btn">Voir les challenges</span>
+                    </a>
+                    <div class="dashboard-card card-stats">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-icon"><i class="fas fa-chart-line"></i></div>
+                            <h3>Mes Statistiques</h3>
+                        </div>
+                        <ul class="stats-list">
+                            <li class="stats-item">
+                                <span class="stats-label">Simulations terminées</span>
+                                <span class="stats-value">8 / 20</span>
+                            </li>
+                            <li class="progress-bar"><div class="progress-bar-inner" style="width: 40%;"></div></li>
+                             <li class="stats-item">
+                                <span class="stats-label">Score moyen aux tests</span>
+                                <span class="stats-value">85%</span>
+                            </li>
+                            <li class="progress-bar"><div class="progress-bar-inner" style="width: 85%; background-color: var(--secondary);"></div></li>
+                             <li class="stats-item">
+                                <span class="stats-label">Temps total</span>
+                                <span class="stats-value">12h 45m</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="dashboard-card card-activity">
                          <div class="dashboard-card-header">
-                             <div class="dashboard-card-icon"><i class="fas fa-question-circle"></i></div>
-                             <h3>Quiz</h3>
-                         </div>
-                         <p>Testez vos connaissances de manière ludique avec nos quiz sur le monde du BTP.</p>
-                         <span class="btn">Faire un quiz</span>
-                     </a>
-                     <a href="outils1.html" class="dashboard-card">
-                         <div class="dashboard-card-header">
-                             <div class="dashboard-card-icon"><i class="fas fa-wrench"></i></div>
-                             <h3>Outils</h3>
-                         </div>
-                         <p>Découvrez une sélection d'outils et de ressources pour vous aider dans vos projets.</p>
-                         <span class="btn">Découvrir les outils</span>
-                     </a>
+                            <div class="dashboard-card-icon"><i class="fas fa-history"></i></div>
+                            <h3>Fil d'Activité</h3>
+                        </div>
+                        <ul class="activity-feed">
+                            <li class="activity-item">
+                                <div class="activity-icon"><i class="fas fa-check"></i></div>
+                                <div>
+                                    <p class="activity-text">Vous avez terminé le <strong>Test de sécurité N°1</strong>.</p>
+                                    <p class="activity-time">Il y a 2 heures</p>
+                                </div>
+                            </li>
+                             <li class="activity-item">
+                                <div class="activity-icon"><i class="fas fa-trophy"></i></div>
+                                <div>
+                                    <p class="activity-text">Nouveau badge débloqué : <strong>As du Volant</strong>.</p>
+                                    <p class="activity-time">Hier</p>
+                                </div>
+                            </li>
+                             <li class="activity-item">
+                                <div class="activity-icon"><i class="fas fa-user-edit"></i></div>
+                                <div>
+                                    <p class="activity-text">Votre profil a été mis à jour.</p>
+                                    <p class="activity-time">Il y a 3 jours</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             `;
         }
@@ -1396,14 +1664,14 @@
         
         supabaseClient.auth.onAuthStateChange((event, session) => {
          if (session) {
-             if (window.location.hash.includes('access_token')) {
-                 window.history.replaceState(null, '', window.location.pathname);
-             }
-             renderDashboard(session);
+              if (window.location.hash.includes('access_token')) {
+                  window.history.replaceState(null, '', window.location.pathname);
+              }
+              renderDashboard(session);
          } else {
-             if (!window.location.hash.includes('access_token')) {
-               redirectToLogin();
-             }
+              if (!window.location.hash.includes('access_token')) {
+                redirectToLogin();
+              }
          }
         });
 
@@ -1458,7 +1726,13 @@
                 <a href="dashboard.html" class="mobile-nav-item">
                     <div class="mobile-nav-item-icon"><i class="fas fa-home"></i></div><h4>Accueil</h4>
                 </a>
+                <a href="#" class="mobile-nav-item" onclick="openExplorerModal(); toggleMobileMenu();">
+                    <div class="mobile-nav-item-icon"><i class="fas fa-compass"></i></div><h4>Explorer</h4>
+                </a>
                 <h3 class="mobile-nav-section-title">Actions</h3>
+                <a href="#" class="mobile-nav-item" onclick="openProfileModal(); toggleMobileMenu();">
+                     <div class="mobile-nav-item-icon"><i class="fas fa-user"></i></div><h4>Mon Profil</h4>
+                </a>
                 <a href="#" class="mobile-nav-item" onclick="handleMobileLogout(event)">
                     <div class="mobile-nav-item-icon"><i class="fas fa-sign-out-alt"></i></div><h4>Déconnexion</h4>
                 </a>
@@ -1486,43 +1760,105 @@
         }
         
         // --- Modal Logic ---
-        function openAvatarModal() {
-            document.getElementById('avatarModal').classList.add('show');
-        }
+        function openAvatarModal() { document.getElementById('avatarModal').classList.add('show'); }
         window.openAvatarModal = openAvatarModal;
-
-        function closeAvatarModal() {
-            document.getElementById('avatarModal').classList.remove('show');
-        }
+        function closeAvatarModal() { document.getElementById('avatarModal').classList.remove('show'); }
         window.closeAvatarModal = closeAvatarModal;
-
-        function openProfileModal() {
-            document.getElementById('profileModal').classList.add('show');
-        }
+        function openProfileModal() { document.getElementById('profileModal').classList.add('show'); }
         window.openProfileModal = openProfileModal;
-
-        function closeProfileModal() {
-            document.getElementById('profileModal').classList.remove('show');
-        }
+        function closeProfileModal() { document.getElementById('profileModal').classList.remove('show'); }
         window.closeProfileModal = closeProfileModal;
-        
-        function openExplorerModal() {
-            document.getElementById('explorerModal').classList.add('show');
-        }
+        function openExplorerModal() { document.getElementById('explorerModal').classList.add('show'); }
         window.openExplorerModal = openExplorerModal;
-
-        function closeExplorerModal() {
-            document.getElementById('explorerModal').classList.remove('show');
-        }
+        function closeExplorerModal() { document.getElementById('explorerModal').classList.remove('show'); }
         window.closeExplorerModal = closeExplorerModal;
+
+        // --- Notification Panel Logic ---
+        function toggleNotificationPanel() {
+            document.getElementById('notificationPanel').classList.toggle('show');
+        }
+        function renderNotifications() {
+            const list = document.getElementById('notificationList');
+            const notifications = [
+                { icon: 'fa-check', type: 'success', text: 'Le Test de sécurité N°1 a été complété.', time: 'Il y a 15m' },
+                { icon: 'fa-trophy', type: 'warning', text: 'Nouveau challenge disponible : Maîtrise de la grue.', time: 'Il y a 1h' },
+                { icon: 'fa-info-circle', type: 'info', text: 'Une maintenance est prévue ce soir à 23h.', time: 'Il y a 4h' }
+            ];
+            list.innerHTML = notifications.map(n => `
+                <a href="#" class="notification-item">
+                    <div class="notification-item-icon icon-${n.type}"><i class="fas ${n.icon}"></i></div>
+                    <div class="notification-item-content">
+                        <p>${n.text}</p>
+                        <span>${n.time}</span>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        // --- Command Palette Logic ---
+        const commandPaletteCommands = [
+            { name: 'Accueil', icon: 'fa-home', href: 'dashboard.html' },
+            { name: 'Simulateurs', icon: 'fa-cubes', href: 'simulateur1.html' },
+            { name: 'Tests', icon: 'fa-brain', href: 'test1.html' },
+            { name: 'Quiz', icon: 'fa-question-circle', href: 'quiz1.html' },
+            { name: 'Outils', icon: 'fa-wrench', href: 'outils1.html' },
+            { name: 'Challenges', icon: 'fa-trophy', href: 'challenges1.html' },
+            { name: 'Offres d\'emploi', icon: 'fa-briefcase', href: 'emploi1.html' },
+            { name: 'Mon Profil', icon: 'fa-user', action: openProfileModal },
+            { name: 'Changer de thème', icon: 'fa-palette', action: toggleTheme },
+            { name: 'Déconnexion', icon: 'fa-sign-out-alt', action: logout },
+        ];
+
+        function openCommandPalette() {
+            const modal = document.getElementById('commandPaletteModal');
+            modal.classList.add('show');
+            document.getElementById('commandPaletteInput').focus();
+            renderCommandPaletteResults('');
+        }
+        window.openCommandPalette = openCommandPalette;
+
+        function closeCommandPalette() {
+            document.getElementById('commandPaletteModal').classList.remove('show');
+        }
+
+        function renderCommandPaletteResults(query) {
+            const list = document.getElementById('commandPaletteList');
+            const lowerQuery = query.toLowerCase();
+            const results = commandPaletteCommands.filter(cmd => cmd.name.toLowerCase().includes(lowerQuery));
+
+            if (results.length === 0) {
+                list.innerHTML = '<div class="command-palette-empty">Aucun résultat trouvé.</div>';
+                return;
+            }
+
+            list.innerHTML = results.map((cmd, index) => `
+                <a href="${cmd.href || '#'}" class="command-palette-item ${index === 0 ? 'selected' : ''}" data-action="${cmd.action ? cmd.name : ''}" ${cmd.href ? '' : 'onclick="executeCommandAction(this, event)"'}>
+                    <i class="fas ${cmd.icon} command-palette-item-icon"></i>
+                    <span class="command-palette-item-text">${cmd.name}</span>
+                </a>
+            `).join('');
+        }
+        
+        function executeCommandAction(element, event) {
+            event.preventDefault();
+            const actionName = element.dataset.action;
+            const command = commandPaletteCommands.find(cmd => cmd.name === actionName);
+            if (command && command.action) {
+                closeCommandPalette();
+                command.action();
+            }
+        }
+        window.executeCommandAction = executeCommandAction;
 
         document.addEventListener('DOMContentLoaded', () => {
             updateThemeUI();
             populateMobileNav();
+            renderNotifications();
 
-            // --- Profile Toggle Logic ---
             const userProfileToggle = document.getElementById('userProfileToggle');
             const avatarUploadInput = document.getElementById('avatarUpload');
+            const notificationToggle = document.getElementById('notificationToggle');
+            const commandPaletteInput = document.getElementById('commandPaletteInput');
 
             if (userProfileToggle) {
                 userProfileToggle.addEventListener('click', (event) => {
@@ -1534,6 +1870,35 @@
             if (avatarUploadInput) {
                 avatarUploadInput.addEventListener('change', uploadAvatar);
             }
+
+            if (notificationToggle) {
+                notificationToggle.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    toggleNotificationPanel();
+                });
+            }
+
+            if(commandPaletteInput) {
+                commandPaletteInput.addEventListener('input', (e) => renderCommandPaletteResults(e.target.value));
+            }
+
+            // Close dropdowns when clicking outside
+            window.addEventListener('click', (event) => {
+                if (!event.target.closest('.notification-wrapper')) {
+                    document.getElementById('notificationPanel').classList.remove('show');
+                }
+            });
+
+            // Keyboard shortcut for command palette
+            window.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    openCommandPalette();
+                }
+                if (e.key === 'Escape' && document.getElementById('commandPaletteModal').classList.contains('show')) {
+                    closeCommandPalette();
+                }
+            });
         });
     </script>
 </body>
