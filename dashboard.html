@@ -715,7 +715,8 @@
             display: flex;
             padding: 0;
             overflow: hidden;
-            height: 500px;
+            height: auto;
+            max-height: 90vh;
         }
 
         .explorer-sidebar {
@@ -763,14 +764,14 @@
 
         .explorer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: var(--spacing-md);
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-sm);
         }
 
         .explorer-item {
             background: var(--glass);
             border-radius: var(--radius-lg);
-            padding: var(--spacing-md);
+            padding: var(--spacing-sm);
             text-decoration: none;
             color: var(--text-secondary);
             transition: var(--transition-slow);
@@ -808,12 +809,12 @@
         }
 
         .explorer-item-icon {
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             color: var(--primary);
-            margin-bottom: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
             background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.2), rgba(var(--primary-rgb), 0.1));
-            width: 3rem;
-            height: 3rem;
+            width: 2.5rem;
+            height: 2.5rem;
             flex-shrink: 0;
             display: flex;
             align-items: center;
@@ -834,7 +835,7 @@
         }
         
         .explorer-item-text h4 {
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: var(--text-primary);
             margin: 0 0 0.25rem 0;
