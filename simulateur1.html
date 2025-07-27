@@ -998,10 +998,6 @@
                     </li>
                 </ul>
                 <div class="nav-actions">
-                    <button class="action-btn" id="notificationBell" title="Notifications">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge" id="notificationBadge"></span>
-                    </button>
                     <div class="profile-dropdown">
                         <button id="userProfileToggle" class="user-profile-toggle" aria-haspopup="true" aria-expanded="false" title="Menu du profil">
                             <img id="headerAvatar" src="https://placehold.co/40x40/1e293b/f8fafc?text=LTD" alt="Avatar de l'utilisateur">
@@ -1279,16 +1275,6 @@
             </div>
         </div>
     </div>
-    
-    <!-- Notification Panel (Hidden by default) -->
-    <div class="notification-panel" id="notificationPanel">
-       <div class="notification-panel-header">
-           <h3>Notifications</h3>
-           <button id="markAllReadBtn">Tout marquer comme lu</button>
-       </div>
-       <div class="notification-list" id="notificationList"></div>
-    </div>
-
 
     <div class="toast-notification" id="toastNotification">
         <div class="toast-notification-content">
@@ -1310,14 +1296,6 @@
         const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
         let currentTheme = localStorage.getItem('theme') || 'dark';
-        
-        let notificationsData = [
-            { id: 1, icon: 'fa-trophy', text: 'Nouveau challenge "Ingénieur Prix" disponible !', time: 'il y a 5 minutes', unread: true, type: 'info' },
-            { id: 2, icon: 'fa-check-circle', text: 'Votre CV a été téléchargé avec succès.', time: 'il y a 1 heure', unread: true, type: 'success' },
-            { id: 3, icon: 'fa-user-plus', text: 'Jean Dupont vous a envoyé une invitation.', time: 'hier', unread: true, type: 'info' },
-            { id: 4, icon: 'fa-triangle-exclamation', text: 'Votre session expirera bientôt.', time: 'hier', unread: false, type: 'warning' },
-        ];
-
 
         function showProgress() {
             const progressBar = document.getElementById('progressBar');
@@ -1344,9 +1322,6 @@
         
         function navigateTo(pageFile) {
             showProgress();
-            // Since this is a single page app now, we just ensure the view is correct.
-            // If we were loading different content dynamically, the logic would go here.
-            // For now, we just simulate a page load for external links.
             if (!window.location.href.endsWith('dashboard.html') && pageFile !== 'dashboard.html') {
                  setTimeout(() => {
                     window.location.href = pageFile;
@@ -1701,78 +1676,12 @@
             goToSlide(0);
             startInterval();
         }
-
-        function setupNotifications() {
-            const bell = document.getElementById('notificationBell');
-            const panel = document.getElementById('notificationPanel');
-            const list = document.getElementById('notificationList');
-            const badge = document.getElementById('notificationBadge');
-            const markAllReadBtn = document.getElementById('markAllReadBtn');
-
-            if (!bell || !panel || !list || !badge || !markAllReadBtn) return;
-
-            function updateBadge() {
-                const unreadCount = notificationsData.filter(n => n.unread).length;
-                badge.textContent = unreadCount;
-                badge.classList.toggle('show', unreadCount > 0);
-            }
-
-            function renderNotifications() {
-                list.innerHTML = '';
-                if (notificationsData.length === 0) {
-                    list.innerHTML = `<div class="notification-list-empty"><i class="fas fa-inbox"></i><p>Vous n'avez aucune notification</p></div>`;
-                    return;
-                }
-
-                notificationsData.forEach(notif => {
-                    const item = document.createElement('div');
-                    item.className = `notification-item ${notif.type} ${notif.unread ? 'unread' : ''}`;
-                    item.dataset.id = notif.id;
-                    item.innerHTML = `
-                        <div class="notification-item-icon"><i class="fas ${notif.icon}"></i></div>
-                        <div class="notification-item-content">
-                            <p class="notification-item-text">${notif.text}</p>
-                            <span class="notification-item-time">${notif.time}</span>
-                        </div>`;
-                    item.addEventListener('click', () => {
-                        const clickedNotif = notificationsData.find(n => n.id == notif.id);
-                        if (clickedNotif) {
-                            clickedNotif.unread = false;
-                            renderNotifications();
-                            updateBadge();
-                        }
-                    });
-                    list.appendChild(item);
-                });
-            }
-
-            bell.addEventListener('click', (e) => {
-                e.stopPropagation();
-                panel.classList.toggle('show');
-            });
-
-            markAllReadBtn.addEventListener('click', () => {
-                notificationsData.forEach(n => n.unread = false);
-                renderNotifications();
-                updateBadge();
-            });
-
-            document.addEventListener('click', (e) => {
-                if (panel && !panel.contains(e.target) && !bell.contains(e.target)) {
-                    panel.classList.remove('show');
-                }
-            });
-
-            renderNotifications();
-            updateBadge();
-        }
         
         document.addEventListener('DOMContentLoaded', () => {
             updateThemeUI();
             populateMobileNav();
             initAnimations();
             setupSlider();
-            setupNotifications();
             
             supabaseClient.auth.onAuthStateChange((event, session) => {
                 if (session) {
