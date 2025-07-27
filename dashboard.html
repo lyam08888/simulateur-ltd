@@ -947,7 +947,6 @@
             text-decoration: none;
             color: inherit;
             padding: var(--spacing-lg);
-            grid-column: span 12;
         }
         .dashboard-card:hover { 
             transform: translateY(-10px); 
@@ -993,30 +992,88 @@
             text-decoration: none;
             align-self: flex-start;
             border: none;
+            margin-top: auto;
         }
         .dashboard-card .btn:hover {
             background-color: var(--primary-dark);
             transform: scale(1.05);
         }
         
-        /* --- Stats Card --- */
-        .stats-list { list-style: none; padding: 0; margin: 0; }
-        .stats-item { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-md); }
-        .stats-item:last-child { margin-bottom: 0; }
-        .stats-label { color: var(--text-secondary); }
-        .stats-value { font-weight: 600; color: var(--text-primary); }
-        .progress-bar { height: 8px; background-color: var(--surface-elevated); border-radius: var(--radius-full); overflow: hidden; margin-top: var(--spacing-xs); }
-        .progress-bar-inner { height: 100%; background-color: var(--primary); border-radius: var(--radius-full); transition: width 0.5s ease-out; }
+        .card-main {
+            background: linear-gradient(45deg, rgba(var(--primary-rgb), 0.15), transparent);
+        }
+        .training-progress {
+            margin-bottom: var(--spacing-lg);
+            background: var(--glass);
+            padding: var(--spacing-sm);
+            border-radius: var(--radius);
+            border: 1px solid var(--glass-border);
+        }
+        .training-module {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-secondary);
+            flex-wrap: wrap;
+            gap: var(--spacing-xs);
+        }
+        .training-module strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        .progress-bar-container {
+            height: 20px;
+            background-color: var(--surface-elevated);
+            border-radius: var(--radius-full);
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .progress-bar-container .progress-bar-inner {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-dark), var(--primary-light));
+            border-radius: var(--radius-full);
+            transition: width 0.5s ease-out;
+        }
+        .progress-bar-container span {
+            position: absolute;
+            right: 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
 
-        /* --- Activity Feed Card --- */
-        .activity-feed { list-style: none; padding: 0; margin: 0; }
-        .activity-item { display: flex; gap: var(--spacing-sm); align-items: flex-start; padding: var(--spacing-sm) 0; border-bottom: 1px solid var(--glass-border); }
-        .activity-item:first-child { padding-top: 0; }
-        .activity-item:last-child { border-bottom: none; padding-bottom: 0; }
-        .activity-icon { width: 2rem; height: 2rem; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%; background-color: var(--glass); color: var(--text-muted); }
-        .activity-text { font-size: 0.9rem; color: var(--text-secondary); }
-        .activity-text strong { color: var(--text-primary); font-weight: 500; }
-        .activity-time { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+        .certifications-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 var(--spacing-md) 0;
+            flex-grow: 1;
+        }
+        .certifications-list li {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-xs) 0;
+            color: var(--text-secondary);
+        }
+        .certifications-list li i {
+            color: var(--secondary);
+        }
+
+        .btn-link {
+            color: var(--primary-light);
+            text-decoration: none;
+            font-weight: 600;
+            align-self: flex-start;
+            transition: var(--transition);
+            margin-top: auto;
+        }
+        .btn-link:hover {
+            color: var(--text-primary);
+            text-decoration: underline;
+        }
 
         .toast-notification { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-xl); transform: translateX(calc(100% + var(--spacing-lg))); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2100; backdrop-filter: blur(20px); max-width: 350px; }
         .toast-notification.show { transform: translateX(0); }
@@ -1077,26 +1134,20 @@
 
         /* --- Media Queries pour la réactivité --- */
         @media (min-width: 768px) {
-            .nav-container {
-                padding: 0 var(--spacing-md);
-            }
-            .logo {
-                font-size: 1.2rem;
-            }
-            .logo-icon {
-                height: 2rem;
-            }
-            .main-content {
-                padding: var(--spacing-xl) var(--spacing-md);
-            }
-            .dashboard-card.card-large { grid-column: span 12; }
-            .dashboard-card.card-medium { grid-column: span 6; }
+            .nav-container { padding: 0 var(--spacing-md); }
+            .logo { font-size: 1.2rem; }
+            .logo-icon { height: 2rem; }
+            .main-content { padding: var(--spacing-xl) var(--spacing-md); }
+            
+            .card-main { grid-column: span 12; }
+            .card-certifs { grid-column: span 12; }
+            .card-catalog { grid-column: span 6; }
+            .card-resources { grid-column: span 6; }
+            .card-leaderboard { grid-column: span 12; }
         }
 
         @media (min-width: 1024px) {
-            .mobile-toggle {
-                display: none;
-            }
+            .mobile-toggle { display: none; }
             .nav-desktop {
                 display: flex;
                 align-items: center;
@@ -1104,30 +1155,23 @@
                 justify-content: flex-start; 
                 gap: var(--spacing-sm); 
             }
-            .header-search {
-                width: 280px;
-            }
+            .header-search { width: 280px; }
             .nav-menu {
                 gap: var(--spacing-xs); 
                 margin-left: var(--spacing-md);
             }
-            .nav-actions {
-                margin-left: auto;
-            }
-            .dashboard-card.card-large { grid-column: span 6; }
-            .dashboard-card.card-medium { grid-column: span 3; }
-            .card-activity { grid-column: span 6; }
-            .card-stats { grid-column: span 6; }
+            .nav-actions { margin-left: auto; }
+
+            .card-main { grid-column: span 7; }
+            .card-certifs { grid-column: span 5; }
+            .card-leaderboard { grid-column: span 12; }
         }
 
         @media (min-width: 1280px) {
-            .logo-text-extended {
-                display: inline;
-            }
-            .dashboard-card.card-large { grid-column: span 4; }
-            .dashboard-card.card-medium { grid-column: span 4; }
-            .card-activity { grid-column: span 5; }
-            .card-stats { grid-column: span 7; }
+            .logo-text-extended { display: inline; }
+            .card-catalog { grid-column: span 4; }
+            .card-resources { grid-column: span 4; }
+            .card-leaderboard { grid-column: span 4; }
         }
     </style>
 </head>
@@ -1558,83 +1602,61 @@
             dashboardContent.innerHTML = `
                 <div class="dashboard-header">
                     <h1>Bienvenue, ${username}</h1>
-                    <p>Prêt à commencer ? Lancez une simulation ou explorez les nouvelles fonctionnalités.</p>
+                    <p>Votre espace de formation pour l'excellence opérationnelle sur les chantiers.</p>
                 </div>
                 <div class="dashboard-grid">
-                    <a href="simulateur1.html" class="dashboard-card card-large">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-cubes"></i></div>
-                            <h3>Simulateurs</h3>
+                    <div class="dashboard-card card-main">
+                        <h3>Mon Parcours de Formation</h3>
+                        <p>Continuez votre progression pour devenir un opérateur certifié.</p>
+                        <div class="training-progress">
+                            <div class="training-module">
+                                <span>Module Actuel :</span>
+                                <strong>Conduite de Pelle Hydraulique - Niveau 2</strong>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-inner" style="width: 60%;"></div>
+                                <span>60%</span>
+                            </div>
                         </div>
-                        <p>Accédez à nos simulateurs interactifs pour vous entraîner sur des équipements de chantier.</p>
-                        <span class="btn">Lancer une simulation</span>
-                    </a>
-                    <a href="test1.html" class="dashboard-card card-large">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-brain"></i></div>
-                            <h3>Tests</h3>
-                        </div>
-                        <p>Évaluez vos connaissances théoriques et pratiques avec nos différents tests de compétence.</p>
-                        <span class="btn">Commencer un test</span>
-                    </a>
-                    <a href="challenges1.html" class="dashboard-card card-large">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-trophy"></i></div>
-                            <h3>Challenges</h3>
-                        </div>
-                        <p>Relevez des défis pour gagner des points et améliorer votre classement.</p>
-                        <span class="btn">Voir les challenges</span>
-                    </a>
-                    <div class="dashboard-card card-stats">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-chart-line"></i></div>
-                            <h3>Mes Statistiques</h3>
-                        </div>
-                        <ul class="stats-list">
-                            <li class="stats-item">
-                                <span class="stats-label">Simulations terminées</span>
-                                <span class="stats-value">8 / 20</span>
-                            </li>
-                            <li class="progress-bar"><div class="progress-bar-inner" style="width: 40%;"></div></li>
-                             <li class="stats-item">
-                                <span class="stats-label">Score moyen aux tests</span>
-                                <span class="stats-value">85%</span>
-                            </li>
-                            <li class="progress-bar"><div class="progress-bar-inner" style="width: 85%; background-color: var(--secondary);"></div></li>
-                             <li class="stats-item">
-                                <span class="stats-label">Temps total</span>
-                                <span class="stats-value">12h 45m</span>
-                            </li>
-                        </ul>
+                        <a href="simulateur1.html" class="btn">Reprendre la simulation</a>
                     </div>
-                    <div class="dashboard-card card-activity">
-                         <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-history"></i></div>
-                            <h3>Fil d'Activité</h3>
-                        </div>
-                        <ul class="activity-feed">
-                            <li class="activity-item">
-                                <div class="activity-icon"><i class="fas fa-check"></i></div>
-                                <div>
-                                    <p class="activity-text">Vous avez terminé le <strong>Test de sécurité N°1</strong>.</p>
-                                    <p class="activity-time">Il y a 2 heures</p>
-                                </div>
-                            </li>
-                             <li class="activity-item">
-                                <div class="activity-icon"><i class="fas fa-trophy"></i></div>
-                                <div>
-                                    <p class="activity-text">Nouveau badge débloqué : <strong>As du Volant</strong>.</p>
-                                    <p class="activity-time">Hier</p>
-                                </div>
-                            </li>
-                             <li class="activity-item">
-                                <div class="activity-icon"><i class="fas fa-user-edit"></i></div>
-                                <div>
-                                    <p class="activity-text">Votre profil a été mis à jour.</p>
-                                    <p class="activity-time">Il y a 3 jours</p>
-                                </div>
-                            </li>
+
+                    <div class="dashboard-card card-certifs">
+                        <h3>Certifications & Compétences</h3>
+                        <ul class="certifications-list">
+                            <li><i class="fas fa-award"></i> CACES R482 - Cat. A</li>
+                            <li><i class="fas fa-award"></i> AIPR - Opérateur</li>
+                            <li><i class="fas fa-check-circle"></i> Conduite sécuritaire</li>
+                            <li><i class="fas fa-check-circle"></i> Maintenance de premier niveau</li>
                         </ul>
+                        <a href="#" class="btn-link">Voir tous les certificats</a>
+                    </div>
+
+                    <div class="dashboard-card card-catalog">
+                         <div class="dashboard-card-header">
+                            <div class="dashboard-card-icon"><i class="fas fa-tractor"></i></div>
+                            <h3>Catalogue Simulateurs</h3>
+                        </div>
+                        <p>Entraînez-vous sur une large gamme d'engins de chantier.</p>
+                        <a href="#" class="btn" onclick="openExplorerModal()">Explorer les engins</a>
+                    </div>
+
+                    <div class="dashboard-card card-resources">
+                         <div class="dashboard-card-header">
+                            <div class="dashboard-card-icon"><i class="fas fa-book"></i></div>
+                            <h3>Ressources</h3>
+                        </div>
+                        <p>Consultez les manuels techniques et fiches de sécurité.</p>
+                        <a href="#" class="btn">Accéder aux documents</a>
+                    </div>
+
+                    <div class="dashboard-card card-leaderboard">
+                         <div class="dashboard-card-header">
+                            <div class="dashboard-card-icon"><i class="fas fa-trophy"></i></div>
+                            <h3>Classement</h3>
+                        </div>
+                        <p>Comparez vos scores avec les autres opérateurs.</p>
+                        <a href="#" class="btn">Voir le classement</a>
                     </div>
                 </div>
             `;
