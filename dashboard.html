@@ -1162,9 +1162,8 @@
                      <input type="search" name="query" placeholder="Rechercher (Ctrl+K)..." aria-label="Rechercher" readonly>
                  </div>
                  <ul class="nav-menu">
-                     <li class="nav-item"><a href="dashboard.html" class="nav-link active"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
                      <li class="nav-item">
-                         <a href="#" class="nav-link" onclick="openExplorerModal()"><i class="fas fa-compass"></i>&nbsp;Explorer</a>
+                         <a href="#" class="nav-link active" onclick="openExplorerModal()"><i class="fas fa-compass"></i>&nbsp;Explorer</a>
                      </li>
                  </ul>
                  <div class="nav-actions">
@@ -1724,9 +1723,6 @@
             if(!mobileNavContainer) return;
 
             mobileNavContainer.innerHTML = `
-                <a href="dashboard.html" class="mobile-nav-item">
-                    <div class="mobile-nav-item-icon"><i class="fas fa-home"></i></div><h4>Accueil</h4>
-                </a>
                 <a href="#" class="mobile-nav-item" onclick="openExplorerModal(); toggleMobileMenu();">
                     <div class="mobile-nav-item-icon"><i class="fas fa-compass"></i></div><h4>Explorer</h4>
                 </a>
@@ -1798,7 +1794,6 @@
 
         // --- Command Palette Logic ---
         const commandPaletteCommands = [
-            { name: 'Accueil', icon: 'fa-home', href: 'dashboard.html' },
             { name: 'Simulateurs', icon: 'fa-cubes', href: 'simulateur1.html' },
             { name: 'Tests', icon: 'fa-brain', href: 'test1.html' },
             { name: 'Quiz', icon: 'fa-question-circle', href: 'quiz1.html' },
