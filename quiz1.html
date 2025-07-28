@@ -117,12 +117,12 @@
         }
         
         @keyframes background-pan {
-            0% { background-position: 0% 50%; }
+            0% { transform: rotate(0deg); }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
         
-        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn, .notification-bell, .quiz-card-button {
+        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn, .notification-bell, .quiz-card-button, .logout-btn, .user-profile-toggle, .command-palette-item {
             cursor: pointer;
         }
 
@@ -134,13 +134,13 @@
             right: 0;
             z-index: 1000;
             backdrop-filter: blur(20px) saturate(180%);
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(11, 17, 32, 0.75);
             border-bottom: 1px solid var(--glass-border);
             transition: var(--transition);
         }
 
         body.light-mode .header {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.75);
         }
 
         .nav-container {
@@ -913,343 +913,168 @@
             margin-right: auto; 
         }
 
-        /* --- Dashboard Styles --- */
-        .dashboard-header {
-            text-align: center;
-            margin-bottom: var(--spacing-xl);
+        /* --- QUIZ LIST STYLES --- */
+        .hero { text-align: center; padding: var(--spacing-lg) 0; }
+        .hero h1 { 
+            font-size: clamp(2.2rem, 8vw, 4rem); 
+            font-weight: 800; 
+            margin-bottom: var(--spacing-lg); 
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary) 50%, var(--accent) 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: text-gradient-pan 5s ease infinite;
         }
-        .dashboard-header h1 {
-            font-size: clamp(2rem, 6vw, 3rem);
-            font-weight: 800;
-            margin-bottom: var(--spacing-sm);
-            color: var(--text-primary);
+        @keyframes text-gradient-pan {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
-        .dashboard-header p {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            max-width: 600px;
-            margin: 0 auto;
-        }
+        .hero p { font-size: 1.1rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.7; }
         
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: var(--spacing-lg);
-        }
-        .dashboard-card {
-            background: var(--surface); 
-            border-radius: var(--radius-lg); 
-            border: 1px solid var(--glass-border); 
-            transition: var(--transition-slow);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            text-decoration: none;
-            color: inherit;
-            padding: var(--spacing-lg);
-        }
-        .dashboard-card:hover { 
-            transform: translateY(-10px); 
-            box-shadow: var(--shadow-glow); 
-            border-color: var(--primary);
-        }
-        .dashboard-card-header {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-            margin-bottom: var(--spacing-md);
-        }
-        .dashboard-card-icon {
-            font-size: 1.75rem;
-            color: var(--primary-light);
-            width: 3.5rem;
-            height: 3.5rem;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--glass);
-            border-radius: var(--radius-full);
-        }
-        .dashboard-card h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        .dashboard-card p {
-            color: var(--text-secondary);
-            flex-grow: 1;
-            margin-bottom: var(--spacing-lg);
-        }
-        .dashboard-card .btn {
-            background: var(--primary); 
-            color: white; 
-            padding: 0.75rem 1.5rem; 
-            border-radius: var(--radius); 
-            display: inline-block; 
-            font-weight: 600;
-            transition: var(--transition-slow);
-            text-decoration: none;
-            align-self: flex-start;
-            border: none;
-            margin-top: auto;
-        }
-        .dashboard-card .btn:hover {
-            background-color: var(--primary-dark);
-            transform: scale(1.05);
-        }
+        /* --- SLIDER STYLES --- */
+        .slider-container { position: relative; width: 100%; border-radius: var(--radius-xl); overflow: hidden; margin-bottom: var(--spacing-xl); background-color: var(--surface); box-shadow: var(--shadow-lg); border: 1px solid var(--glass-border); }
+        .slider-wrapper { display: flex; transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+        .slide { min-width: 100%; position: relative; overflow: hidden; }
+        .slide .slide-background { width: 100%; display: block; aspect-ratio: 16 / 6; object-fit: cover; transition: transform 8s ease-out; background-color: var(--surface-elevated); }
+        .slide.active .slide-background { transform: scale(1.1); }
+        .slide-content { position: absolute; bottom: 0; left: 0; right: 0; padding: var(--spacing-lg); background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 10%, transparent); color: var(--text-primary); transform: translateY(100%); transition: transform 0.6s ease-out; }
+        .slide.active .slide-content { transform: translateY(0); }
+        body.light-mode .slide-content { background: linear-gradient(to top, rgba(241, 245, 249, 0.9) 10%, transparent); }
+        .slide-content h3 { font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 700; text-shadow: 0 2px 5px rgba(0,0,0,0.5); margin-bottom: 0.5rem; }
+        .slide-content p { font-size: clamp(0.9rem, 1.5vw, 1.1rem); color: var(--text-secondary); text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+        .slider-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 3rem; height: 3rem; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius-full); color: var(--text-primary); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition-slow); opacity: 0.7; }
+        .slider-nav:hover { background-color: var(--primary); transform: translateY(-50%) scale(1.1); opacity: 1; }
+        .slider-nav.prev { left: var(--spacing-md); }
+        .slider-nav.next { right: var(--spacing-md); }
+        .slider-dots { position: absolute; bottom: var(--spacing-md); left: 50%; transform: translateX(-50%); display: flex; gap: 1rem; }
+        .slider-dot { width: 0.75rem; height: 0.75rem; border-radius: var(--radius-full); background: var(--glass); border: 1px solid var(--glass-border); cursor: pointer; transition: var(--transition-slow); }
+        .slider-dot.active { background: var(--primary); transform: scale(1.3); box-shadow: 0 0 10px var(--primary); }
+
+        /* --- QUIZ LIST STYLES --- */
+        .quiz-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 370px)); justify-content: center; gap: 2.5rem; margin-top: 4rem; }
+        .quiz-card { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--glass-border); display: flex; flex-direction: column; transition: var(--transition-slow); box-shadow: var(--shadow-md); overflow: hidden; }
+        .quiz-card:hover { transform: translateY(-10px); box-shadow: var(--shadow-glow); border-color: var(--primary); }
+        .quiz-card-image { width: 100%; aspect-ratio: 16 / 10; overflow: hidden; background-color: var(--surface-elevated); }
+        .quiz-card-image svg { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease-out; }
+        .quiz-card:hover .quiz-card-image svg { transform: scale(1.05); }
+        .quiz-card-content { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
+        .quiz-card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+        .quiz-card-icon { font-size: 2.5rem; width: 4rem; height: 4rem; display: flex; align-items: center; justify-content: center; background: var(--background); border-radius: var(--radius-full); color: var(--primary); margin-top: -4rem; border: 4px solid var(--surface); box-shadow: var(--shadow-md); }
+        .quiz-card-title { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); }
+        .quiz-card-description { color: var(--text-secondary); flex-grow: 1; margin-bottom: 1.5rem; }
+        .quiz-card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; font-size: 0.875rem; color: var(--text-muted); }
+        .meta-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; background: var(--surface-elevated); border-radius: var(--radius-full); }
+        .meta-item .fas { color: var(--accent); }
+        .quiz-card-button { display: inline-block; background: var(--primary); color: white; padding: 0.75rem 2rem; border-radius: var(--radius); text-align: center; text-decoration: none; font-weight: 600; transition: var(--transition-slow); margin-top: auto; }
+        .quiz-card-button:hover { background: var(--primary-dark); transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         
-        .card-main {
-            background: linear-gradient(45deg, rgba(var(--primary-rgb), 0.15), transparent);
-        }
-        .training-progress {
-            margin-bottom: var(--spacing-lg);
-            background: var(--glass);
-            padding: var(--spacing-sm);
-            border-radius: var(--radius);
-            border: 1px solid var(--glass-border);
-        }
-        .training-module {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--spacing-sm);
-            color: var(--text-secondary);
-            flex-wrap: wrap;
-            gap: var(--spacing-xs);
-        }
-        .training-module strong {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-        .progress-bar-container {
-            height: 20px;
-            background-color: var(--surface-elevated);
-            border-radius: var(--radius-full);
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-        .progress-bar-container .progress-bar-inner {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary-dark), var(--primary-light));
-            border-radius: var(--radius-full);
-            transition: width 0.5s ease-out;
-        }
-        .progress-bar-container span {
-            position: absolute;
-            right: 1rem;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: white;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-        }
-
-        .certifications-list {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 var(--spacing-md) 0;
-            flex-grow: 1;
-        }
-        .certifications-list li {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            padding: var(--spacing-xs) 0;
-            color: var(--text-secondary);
-        }
-        .certifications-list li i {
-            color: var(--secondary);
-        }
-
-        .btn-link {
-            color: var(--primary-light);
-            text-decoration: none;
-            font-weight: 600;
-            align-self: flex-start;
-            transition: var(--transition);
-            margin-top: auto;
-        }
-        .btn-link:hover {
-            color: var(--text-primary);
-            text-decoration: underline;
-        }
-
-        .toast-notification { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-xl); transform: translateX(calc(100% + var(--spacing-lg))); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2100; backdrop-filter: blur(20px); max-width: 350px; }
+        .toast-notification { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-xl); transform: translateX(calc(100% + var(--spacing-lg))); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1100; backdrop-filter: blur(20px); max-width: 350px; }
         .toast-notification.show { transform: translateX(0); }
         .toast-notification-content { display: flex; align-items: flex-start; gap: var(--spacing-sm); }
         .toast-notification-icon { font-size: 1.25rem; color: var(--primary); margin-top: 2px; }
         .toast-notification-text { color: var(--text-primary); font-weight: 500; flex: 1; }
-        .toast-notification-close { background: none; border: none; color: var(--text-muted); padding: 0; font-size: 1rem; }
+        .toast-notification-close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0; font-size: 1rem; }
         .toast-notification.success .toast-notification-icon { color: var(--secondary); }
         .toast-notification.warning .toast-notification-icon { color: var(--accent); }
         .toast-notification.error .toast-notification-icon { color: #ef4444; }
 
-        /* --- Logout Overlay --- */
-        .logout-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(15, 23, 42, 0.5);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            z-index: 3000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .progress-bar { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: transparent; z-index: 1001; opacity: 0; transition: opacity 0.3s ease; }
+        .progress-bar.show { opacity: 1; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.3s ease; box-shadow: 0 0 10px var(--primary), 0 0 5px var(--secondary); }
+
+        .animate-in {
             opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
+            transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
-
-        .logout-overlay.show {
+        .animate-in.is-visible {
             opacity: 1;
-            visibility: visible;
+            transform: translateY(0);
         }
 
-        .logout-content {
-            text-align: center;
-            color: var(--text-primary);
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .hero p { font-size: 1.1rem; }
+            .nav-desktop { display: none; }
+            .mobile-toggle { display: flex; }
         }
-
-        .logout-content .logo-icon {
-            height: 5rem;
-            width: auto;
-            margin-bottom: var(--spacing-lg);
-            animation: spin 1.5s linear infinite;
-        }
-
-        .logout-content p {
-            font-size: 1.1rem;
-            font-weight: 500;
-            letter-spacing: 0.05em;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* --- Media Queries pour la réactivité --- */
-        @media (min-width: 768px) {
-            .nav-container { padding: 0 var(--spacing-md); }
-            .logo { font-size: 1.2rem; }
-            .logo-icon { height: 2rem; }
-            .main-content { padding: var(--spacing-xl) var(--spacing-md); }
-            
-            .card-main { grid-column: span 12; }
-            .card-certifs { grid-column: span 12; }
-            .card-catalog { grid-column: span 6; }
-            .card-resources { grid-column: span 6; }
-            .card-leaderboard { grid-column: span 12; }
-        }
-
         @media (min-width: 1024px) {
             .mobile-toggle { display: none; }
-            .nav-desktop {
-                display: flex;
-                align-items: center;
-                flex-grow: 1;
-                justify-content: flex-start; 
-                gap: var(--spacing-sm); 
-            }
+            .nav-desktop { display: flex; align-items: center; flex-grow: 1; justify-content: flex-start; gap: var(--spacing-sm); }
             .header-search { width: 280px; }
-            .nav-menu {
-                gap: var(--spacing-xs); 
-                margin-left: var(--spacing-md);
-            }
+            .nav-menu { margin-left: var(--spacing-md); }
             .nav-actions { margin-left: auto; }
-
-            .card-main { grid-column: span 7; }
-            .card-certifs { grid-column: span 5; }
-            .card-leaderboard { grid-column: span 12; }
         }
-
         @media (min-width: 1280px) {
             .logo-text-extended { display: inline; }
-            .card-catalog { grid-column: span 4; }
-            .card-resources { grid-column: span 4; }
-            .card-leaderboard { grid-column: span 4; }
         }
     </style>
 </head>
 <body>
-    
-    <!-- Logout Loading Overlay -->
-    <div id="logoutOverlay" class="logout-overlay">
-        <div class="logout-content">
-            <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
-                <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
-                <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
-            </svg>
-            <p>Déconnexion en cours...</p>
-        </div>
+    <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
     </div>
 
     <!-- Header -->
     <header class="header" id="header">
         <nav class="nav-container">
-            <a href="dashboard.html" class="logo">
+            <a href="dashboard.html" class="logo" onclick="event.preventDefault(); navigateTo('dashboard.html');">
                 <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
                     <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
                     <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
                 </svg>
                 <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
             </a>
-            
-            <!-- Navigation pour ordinateur -->
             <div class="nav-desktop">
-                 <div class="header-search" onclick="openCommandPalette()">
-                     <i class="fas fa-search"></i>
-                     <input type="search" name="query" placeholder="Rechercher (Ctrl+K)..." aria-label="Rechercher" readonly>
-                 </div>
-                 <ul class="nav-menu">
-                     <li class="nav-item">
-                         <a href="#" class="nav-link active" onclick="openExplorerModal()"><i class="fas fa-compass"></i>&nbsp;Explorer</a>
-                     </li>
-                 </ul>
-                 <div class="nav-actions">
-                      <div class="notification-wrapper" style="position: relative;">
-                         <button class="action-btn notification-bell" id="notificationToggle" title="Notifications">
-                             <i class="fas fa-bell"></i>
-                             <span class="badge" id="notificationBadge">3</span>
-                         </button>
-                         <div class="notification-panel" id="notificationPanel">
-                             <div class="notification-header">
-                                 <h4>Notifications</h4>
-                                 <a href="#">Marquer comme lu</a>
-                             </div>
-                             <div class="notification-list" id="notificationList">
-                                 <!-- Notifications injectées par JS -->
-                             </div>
-                             <div class="notification-footer">
-                                 <a href="#">Voir toutes les notifications</a>
-                             </div>
-                         </div>
-                      </div>
-                      <div class="profile-dropdown">
-                          <button id="userProfileToggle" class="user-profile-toggle" aria-haspopup="true" aria-expanded="false" title="Menu du profil">
-                              <img id="headerAvatar" src="https://placehold.co/40x40/1e293b/f8fafc?text=LTD" alt="Avatar de l'utilisateur">
-                              <span id="headerUsername">Chargement...</span>
-                          </button>
-                      </div>
-                     <button class="action-btn theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
-                         <i class="fas fa-moon" id="themeIcon"></i>
-                     </button>
-                 </div>
+                <div class="header-search" onclick="openCommandPalette()">
+                    <i class="fas fa-search"></i>
+                    <input type="search" name="query" placeholder="Rechercher (Ctrl+K)..." aria-label="Rechercher" readonly>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active" onclick="openExplorerModal()"><i class="fas fa-compass"></i>&nbsp;Explorer</a>
+                    </li>
+                </ul>
+                <div class="nav-actions">
+                    <div class="notification-wrapper" style="position: relative;">
+                        <button class="action-btn notification-bell" id="notificationToggle" title="Notifications">
+                            <i class="fas fa-bell"></i>
+                            <span class="badge" id="notificationBadge">3</span>
+                        </button>
+                        <div class="notification-panel" id="notificationPanel">
+                            <div class="notification-header">
+                                <h4>Notifications</h4>
+                                <a href="#">Marquer comme lu</a>
+                            </div>
+                            <div class="notification-list" id="notificationList">
+                                <!-- Notifications injectées par JS -->
+                            </div>
+                            <div class="notification-footer">
+                                <a href="#">Voir toutes les notifications</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-dropdown">
+                        <button id="userProfileToggle" class="user-profile-toggle" aria-haspopup="true" aria-expanded="false" title="Menu du profil">
+                            <img id="headerAvatar" src="https://placehold.co/40x40/1e293b/f8fafc?text=LTD" alt="Avatar de l'utilisateur">
+                            <span id="headerUsername">Chargement...</span>
+                        </button>
+                    </div>
+                    <button class="action-btn theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
+                </div>
             </div>
-
-            <!-- Bouton pour le menu mobile -->
             <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
                 <span class="hamburger"><span></span><span></span><span></span></span>
             </button>
         </nav>
     </header>
 
-    <!-- Menu Mobile -->
+    <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
         <div class="mobile-menu-header">
             <a href="dashboard.html" class="logo">
@@ -1270,10 +1095,127 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <div id="dashboard-content">
-            <!-- Le contenu sera injecté ici par JS en fonction de l'état de connexion -->
-        </div>
+        
+        <section class="slider-container animate-in" id="imageSlider">
+            <div class="slider-wrapper">
+                <div class="slide">
+                    <div class="slide-background">
+                        <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M 100 150 L 250 150 L 300 100 L 350 200 L 400 120 L 450 180 L 500 100 L 550 150 L 700 150" opacity="0.8" stroke-width="3"/>
+                            <path d="M 150 100 L 200 200 M 600 100 L 650 200" opacity="0.5" stroke-dasharray="4"/>
+                        </svg>
+                    </div>
+                    <div class="slide-content">
+                        <h3>Testez vos Connaissances</h3>
+                        <p>Nos quiz sont conçus pour évaluer et renforcer vos compétences techniques.</p>
+                    </div>
+                </div>
+                <div class="slide">
+                    <div class="slide-background">
+                        <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--secondary)" stroke-width="1.5">
+                            <rect x="150" y="50" width="500" height="200" rx="10" opacity="0.3" />
+                            <path d="M 150 100 h 500 M 150 150 h 500 M 150 200 h 500" opacity="0.5" />
+                            <path d="M 250 50 v 200 M 350 50 v 200 M 450 50 v 200 M 550 50 v 200" opacity="0.3" stroke-dasharray="5"/>
+                        </svg>
+                    </div>
+                    <div class="slide-content">
+                        <h3>Des Sujets Variés</h3>
+                        <p>Du BTP aux télécoms, trouvez le quiz qui correspond à votre domaine d'expertise.</p>
+                    </div>
+                </div>
+                <div class="slide">
+                    <div class="slide-background">
+                         <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--accent)" stroke-width="2">
+                            <path d="M 200 250 L 400 50 L 600 250 Z" stroke-width="4" opacity="0.8" />
+                            <path d="M 200 250 h 400" stroke-width="4" opacity="0.8"/>
+                            <path d="M 300 150 h 200" stroke-dasharray="5" opacity="0.6"/>
+                         </svg>
+                    </div>
+                    <div class="slide-content">
+                        <h3>Validez vos Acquis</h3>
+                        <p>Obtenez un feedback instantané et identifiez vos points forts et axes d'amélioration.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slider-nav prev" id="sliderPrev"><i class="fas fa-chevron-left"></i></div>
+            <div class="slider-nav next" id="sliderNext"><i class="fas fa-chevron-right"></i></div>
+            <div class="slider-dots" id="sliderDots"></div>
+        </section>
+        
+        <section class="hero animate-in">
+            <h1>Nos Quiz Interactifs</h1>
+            <p>Testez vos connaissances et apprenez-en plus sur les différents métiers techniques. Choisissez un quiz et mettez vos compétences à l'épreuve !</p>
+        </section>
+
+        <section class="quiz-grid animate-in">
+            <!-- Quiz Card 1 -->
+            <div class="quiz-card">
+                <div class="quiz-card-image">
+                    <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--primary-light)" opacity="0.7">
+                            <path d="M 40 100 C 60 40, 140 40, 160 100" stroke-width="3" />
+                            <path d="M 100 20 V 110" stroke-width="3" />
+                            <path d="M 60 60 H 140" />
+                            <circle cx="100" cy="70" r="30" stroke-dasharray="4" />
+                        </g>
+                    </svg>
+                </div>
+                <div class="quiz-card-content">
+                    <div class="quiz-card-header">
+                        <div class="quiz-card-icon"><i class="fas fa-network-wired"></i></div>
+                        <h2 class="quiz-card-title">Quiz Télécom : Fibre Optique</h2>
+                    </div>
+                    <p class="quiz-card-description">
+                        Évaluez vos connaissances sur les fondamentaux de la fibre optique, de la technologie FTTH aux équipements de mesure.
+                    </p>
+                    <div class="quiz-card-meta">
+                        <span class="meta-item"><i class="fas fa-layer-group"></i>Télécom</span>
+                        <span class="meta-item"><i class="fas fa-brain"></i>Intermédiaire</span>
+                    </div>
+                    <a href="quiztelecom.html" class="quiz-card-button" onclick="event.preventDefault(); navigateTo('quiztelecom.html')">Commencer le Quiz</a>
+                </div>
+            </div>
+
+            <!-- D'autres cartes de quiz peuvent être ajoutées ici -->
+            <div class="quiz-card" style="opacity: 0.5; pointer-events: none;">
+                <div class="quiz-card-image">
+                     <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--secondary)" opacity="0.7">
+                            <rect x="30" y="30" width="140" height="70" rx="5" />
+                            <path d="M 30 50 h 140" />
+                            <path d="M 70 30 v 70" />
+                            <path d="M 130 30 v 70" />
+                        </g>
+                     </svg>
+                </div>
+                <div class="quiz-card-content">
+                    <div class="quiz-card-header">
+                        <div class="quiz-card-icon"><i class="fas fa-hard-hat"></i></div>
+                        <h2 class="quiz-card-title">Quiz BTP : Sécurité Chantier</h2>
+                    </div>
+                    <p class="quiz-card-description">
+                        Les règles de sécurité sur un chantier n'ont aucun secret pour vous ? Prouvez-le !
+                    </p>
+                    <div class="quiz-card-meta">
+                        <span class="meta-item"><i class="fas fa-layer-group"></i>BTP</span>
+                        <span class="meta-item"><i class="fas fa-brain"></i>Facile</span>
+                    </div>
+                    <a href="#" class="quiz-card-button">Bientôt disponible</a>
+                </div>
+            </div>
+
+        </section>
+
     </main>
+
+    <!-- Notification System -->
+    <div class="toast-notification" id="toastNotification">
+        <div class="toast-notification-content">
+            <i class="fas fa-info-circle toast-notification-icon" id="toastNotificationIcon"></i>
+            <span class="toast-notification-text" id="toastNotificationText"></span>
+            <button class="toast-notification-close" onclick="this.parentElement.parentElement.classList.remove('show')"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
     
     <!-- Profile Modal -->
     <div id="profileModal" class="modal">
@@ -1331,18 +1273,6 @@
                 </div>
                 <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
                     <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="50" fill="var(--background)" stroke="var(--primary)" stroke-width="4"/><path d="M30 30 L 70 70 M 70 30 L 30 70" stroke="var(--primary-light)" stroke-width="10" stroke-linecap="round"/></svg>
-                </div>
-                <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
-                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="50" fill="var(--secondary-dark)"/><circle cx="50" cy="50" r="40" stroke="var(--secondary)" stroke-width="4" fill="none"/><circle cx="50" cy="50" r="30" stroke="var(--primary-light)" stroke-width="4" fill="none"/><circle cx="50" cy="50" r="20" stroke="var(--secondary)" stroke-width="4" fill="none"/><circle cx="50" cy="50" r="10" fill="var(--text-primary)"/></svg>
-                </div>
-                <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
-                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="50" fill="#292D3E"/><path d="M40 30 L25 50 L40 70" stroke="var(--accent)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M60 30 L75 50 L60 70" stroke="var(--accent)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </div>
-                <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
-                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g2" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="var(--primary-dark)"/><stop offset="100%" stop-color="var(--background)"/></linearGradient></defs><rect width="100" height="100" rx="50" fill="url(#g2)"/><path d="M0 50 C 25 25, 75 75, 100 50" stroke="var(--primary-light)" stroke-width="5" fill="none"/><path d="M0 65 C 25 40, 75 90, 100 65" stroke="var(--primary)" stroke-width="5" fill="none"/></svg>
-                </div>
-                <div class="avatar-choice" onclick="selectPredefinedAvatar(this)">
-                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="50" fill="var(--surface-hover)"/><text x="50" y="68" font-family="JetBrains Mono, monospace" font-size="50" fill="var(--text-primary)" text-anchor="middle" font-weight="bold">U</text></svg>
                 </div>
             </div>
             <hr>
@@ -1411,7 +1341,7 @@
             </div>
         </div>
     </div>
-
+    
     <!-- Command Palette Modal -->
     <div id="commandPaletteModal" class="modal">
         <div class="modal-overlay" onclick="closeCommandPalette()"></div>
@@ -1425,16 +1355,6 @@
         </div>
     </div>
 
-    <div class="toast-notification" id="toastNotification">
-        <div class="toast-notification-content">
-            <i class="fas fa-info-circle toast-notification-icon" id="toastNotificationIcon"></i>
-            <span class="toast-notification-text" id="toastNotificationText"></span>
-            <button class="toast-notification-close" onclick="this.parentElement.parentElement.classList.remove('show')"><i class="fas fa-times"></i></button>
-        </div>
-    </div>
-
-    <!-- Supabase JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         "use strict";
 
@@ -1444,8 +1364,140 @@
         const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdWplZXR1YWh5YWJ0b2NqempsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNTA3NjcsImV4cCI6MjA2ODkyNjc2N30.tnkkUUzl7T5EKD-DJ5fuElwAzBFEUr7shQuLtdACdcY";
         const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-        // --- Authentication & Profile Logic ---
+        let currentTheme = localStorage.getItem('theme') || 'dark';
 
+        function showProgress() {
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            if (!progressBar || !progressFill) return;
+            progressBar.classList.add('show');
+            progressFill.style.width = '0%';
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        progressBar.classList.remove('show');
+                        setTimeout(() => {
+                            progressFill.style.width = '0%';
+                        }, 300);
+                    }, 500);
+                }
+                progressFill.style.width = progress + '%';
+            }, 100);
+        }
+        
+        function navigateTo(pageFile) {
+            showProgress();
+            showToastNotification(`Chargement de la page...`, 'info');
+            setTimeout(() => {
+                window.location.href = pageFile;
+            }, 1000);
+        }
+
+        function launchGame(url) {
+            showProgress();
+            showToastNotification(`Lancement de la simulation...`, 'success');
+            setTimeout(() => {
+                window.location.href = url;
+            }, 1500);
+        }
+        
+        function updateThemeUI() {
+            const themeIcon = document.getElementById('themeIcon');
+            if (!themeIcon) return;
+            document.body.classList.toggle('light-mode', currentTheme === 'light');
+            themeIcon.className = currentTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            updateThemeUI();
+            showToastNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
+        }
+        
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileToggle = document.getElementById('mobileToggle');
+            if (!mobileMenu || !mobileToggle) return;
+            mobileMenu.classList.toggle('active');
+            mobileToggle.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        }
+
+        function populateMobileNav() {
+            const mobileNavContainer = document.querySelector('.mobile-menu .mobile-nav-items');
+            if(!mobileNavContainer) return;
+
+            mobileNavContainer.innerHTML = `
+                <a href="#" class="mobile-nav-item" onclick="openExplorerModal(); toggleMobileMenu();">
+                    <div class="mobile-nav-item-icon"><i class="fas fa-compass"></i></div><h4>Explorer</h4>
+                </a>
+                <h3 class="mobile-nav-section-title">Actions</h3>
+                <a href="#" class="mobile-nav-item" onclick="openProfileModal(); toggleMobileMenu();">
+                     <div class="mobile-nav-item-icon"><i class="fas fa-user"></i></div><h4>Mon Profil</h4>
+                </a>
+                <a href="#" class="mobile-nav-item" onclick="handleMobileLogout(event)">
+                    <div class="mobile-nav-item-icon"><i class="fas fa-sign-out-alt"></i></div><h4>Déconnexion</h4>
+                </a>
+                <a href="#" class="mobile-nav-item" onclick="handleMobileThemeToggle(event)">
+                    <div class="mobile-nav-item-icon"><i class="fas fa-sun"></i></div><h4>Changer de thème</h4>
+                </a>
+            `;
+        }
+        
+        function handleMobileLogout(event) {
+            event.preventDefault();
+            toggleMobileMenu();
+            logout();
+        }
+
+        function handleMobileThemeToggle(event) {
+            event.preventDefault();
+            toggleMobileMenu();
+            toggleTheme();
+        }
+
+        // --- Modal Logic ---
+        function openAvatarModal() { document.getElementById('avatarModal').classList.add('show'); }
+        window.openAvatarModal = openAvatarModal;
+        function closeAvatarModal() { document.getElementById('avatarModal').classList.remove('show'); }
+        window.closeAvatarModal = closeAvatarModal;
+        function openProfileModal() { document.getElementById('profileModal').classList.add('show'); }
+        window.openProfileModal = openProfileModal;
+        function closeProfileModal() { document.getElementById('profileModal').classList.remove('show'); }
+        window.closeProfileModal = closeProfileModal;
+        function openExplorerModal() { document.getElementById('explorerModal').classList.add('show'); }
+        window.openExplorerModal = openExplorerModal;
+        function closeExplorerModal() { document.getElementById('explorerModal').classList.remove('show'); }
+        window.closeExplorerModal = closeExplorerModal;
+
+        function showToastNotification(message, type = 'info', duration = 3000) {
+            const notification = document.getElementById('toastNotification');
+            if (!notification) return;
+            const notificationText = notification.querySelector('.toast-notification-text');
+            const notificationIcon = notification.querySelector('.toast-notification-icon');
+            
+            notification.className = 'toast-notification';
+            notificationIcon.className = 'toast-notification-icon fas';
+
+            switch(type) {
+                case 'success': notificationIcon.classList.add('fa-check-circle'); notification.classList.add('success'); break;
+                case 'warning': notificationIcon.classList.add('fa-exclamation-triangle'); notification.classList.add('warning'); break;
+                case 'error': notificationIcon.classList.add('fa-exclamation-circle'); notification.classList.add('error'); break;
+                default: notificationIcon.classList.add('fa-info-circle');
+            }
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
+
+        // --- Authentication & Profile Logic ---
         async function updateProfile() {
             const { data: { user } } = await supabaseClient.auth.getUser();
             if (!user) {
@@ -1556,113 +1608,6 @@
             });
         }
 
-        async function renderDashboard(session) {
-            const user = session.user;
-            const dashboardContent = document.getElementById('dashboard-content');
-            if (!dashboardContent) return;
-
-            // 1. Create/Update profile
-            const { error: upsertError } = await supabaseClient
-                .from('profiles')
-                .upsert({
-                    id: user.id,
-                    full_name: user.user_metadata?.full_name || user.email,
-                    updated_at: new Date(),
-                }, { onConflict: 'id' });
-
-            if (upsertError) console.error("Erreur upsert profil:", upsertError);
-
-            // 2. Read profile
-            const { data: profile, error: profileError } = await supabaseClient
-                .from('profiles')
-                .select('*')
-                .eq('id', user.id)
-                .single();
-
-            if (profileError) console.error("Erreur lecture profil:", profileError);
-            
-            // 3. Populate UI
-            const username = profile?.full_name || user.email;
-            const avatarUrl = profile?.avatar_url;
-            
-            document.getElementById('headerUsername').textContent = username;
-            document.getElementById('dropdownUsername').textContent = username;
-            document.getElementById('dropdownUserEmail').textContent = user.email;
-            
-            if(avatarUrl) {
-                document.getElementById('headerAvatar').src = avatarUrl;
-                document.getElementById('dropdownAvatar').src = avatarUrl;
-                updateSelectedAvatar(avatarUrl);
-            }
-
-            document.getElementById('fullName').value = profile?.full_name || '';
-            document.getElementById('company').value = profile?.company || '';
-            document.getElementById('website').value = profile?.website || '';
-
-            // 4. Render main content
-            dashboardContent.innerHTML = `
-                <div class="dashboard-header">
-                    <h1>Bienvenue, ${username}</h1>
-                    <p>Votre espace de formation pour l'excellence opérationnelle sur les chantiers.</p>
-                </div>
-                <div class="dashboard-grid">
-                    <div class="dashboard-card card-main">
-                        <h3>Mon Parcours de Formation</h3>
-                        <p>Continuez votre progression pour devenir un opérateur certifié.</p>
-                        <div class="training-progress">
-                            <div class="training-module">
-                                <span>Module Actuel :</span>
-                                <strong>Conduite de Pelle Hydraulique - Niveau 2</strong>
-                            </div>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar-inner" style="width: 60%;"></div>
-                                <span>60%</span>
-                            </div>
-                        </div>
-                        <a href="simulateur1.html" class="btn">Reprendre la simulation</a>
-                    </div>
-
-                    <div class="dashboard-card card-certifs">
-                        <h3>Certifications & Compétences</h3>
-                        <ul class="certifications-list">
-                            <li><i class="fas fa-award"></i> CACES R482 - Cat. A</li>
-                            <li><i class="fas fa-award"></i> AIPR - Opérateur</li>
-                            <li><i class="fas fa-check-circle"></i> Conduite sécuritaire</li>
-                            <li><i class="fas fa-check-circle"></i> Maintenance de premier niveau</li>
-                        </ul>
-                        <a href="#" class="btn-link">Voir tous les certificats</a>
-                    </div>
-
-                    <div class="dashboard-card card-catalog">
-                         <div class="dashboard-card-header">
-                             <div class="dashboard-card-icon"><i class="fas fa-tractor"></i></div>
-                             <h3>Catalogue Simulateurs</h3>
-                         </div>
-                        <p>Entraînez-vous sur une large gamme d'engins de chantier.</p>
-                        <a href="#" class="btn" onclick="openExplorerModal()">Explorer les engins</a>
-                    </div>
-
-                    <div class="dashboard-card card-resources">
-                         <div class="dashboard-card-header">
-                             <div class="dashboard-card-icon"><i class="fas fa-book"></i></div>
-                             <h3>Ressources</h3>
-                         </div>
-                        <p>Consultez les manuels techniques et fiches de sécurité.</p>
-                        <a href="#" class="btn">Accéder aux documents</a>
-                    </div>
-
-                    <div class="dashboard-card card-leaderboard">
-                         <div class="dashboard-card-header">
-                             <div class="dashboard-card-icon"><i class="fas fa-trophy"></i></div>
-                             <h3>Classement</h3>
-                         </div>
-                        <p>Comparez vos scores avec les autres opérateurs.</p>
-                        <a href="#" class="btn">Voir le classement</a>
-                    </div>
-                </div>
-            `;
-        }
-
         function redirectToLogin() {
             const newPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) + 'connexion.html';
             window.location.href = newPath;
@@ -1690,108 +1635,14 @@
              if (window.location.hash.includes('access_token')) {
                   window.history.replaceState(null, '', window.location.pathname);
              }
-             renderDashboard(session);
+             // This is not the dashboard, so we just load user data
+             // renderDashboard(session); 
          } else {
              if (!window.location.hash.includes('access_token')) {
                 redirectToLogin();
              }
          }
         });
-
-        let currentTheme = localStorage.getItem('theme') || 'dark';
-
-        function showToastNotification(message, type = 'info', duration = 3000) {
-            const notification = document.getElementById('toastNotification');
-            if (!notification) return;
-            const notificationText = notification.querySelector('.toast-notification-text');
-            const notificationIcon = notification.querySelector('.toast-notification-icon');
-            
-            notification.className = 'toast-notification';
-            notificationIcon.className = 'toast-notification-icon fas';
-
-            switch(type) {
-                case 'success': notificationIcon.classList.add('fa-check-circle'); notification.classList.add('success'); break;
-                case 'warning': notificationIcon.classList.add('fa-exclamation-triangle'); notification.classList.add('warning'); break;
-                case 'error': notificationIcon.classList.add('fa-exclamation-circle'); notification.classList.add('error'); break;
-                default: notificationIcon.classList.add('fa-info-circle');
-            }
-            notificationText.textContent = message;
-            notification.classList.add('show');
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, duration);
-        }
-
-        function updateThemeUI() {
-            const themeIcon = document.getElementById('themeIcon');
-            if (!themeIcon) return;
-            document.body.classList.toggle('light-mode', currentTheme === 'light');
-            themeIcon.className = currentTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
-        }
-        
-        function handleMobileLogout(event) {
-            event.preventDefault();
-            toggleMobileMenu();
-            logout();
-        }
-
-        function handleMobileThemeToggle(event) {
-            event.preventDefault();
-            toggleMobileMenu();
-            toggleTheme();
-        }
-
-        function populateMobileNav() {
-            const mobileNavContainer = document.querySelector('.mobile-menu .mobile-nav-items');
-            if(!mobileNavContainer) return;
-
-            mobileNavContainer.innerHTML = `
-                <a href="#" class="mobile-nav-item" onclick="openExplorerModal(); toggleMobileMenu();">
-                    <div class="mobile-nav-item-icon"><i class="fas fa-compass"></i></div><h4>Explorer</h4>
-                </a>
-                <h3 class="mobile-nav-section-title">Actions</h3>
-                <a href="#" class="mobile-nav-item" onclick="openProfileModal(); toggleMobileMenu();">
-                     <div class="mobile-nav-item-icon"><i class="fas fa-user"></i></div><h4>Mon Profil</h4>
-                </a>
-                <a href="#" class="mobile-nav-item" onclick="handleMobileLogout(event)">
-                    <div class="mobile-nav-item-icon"><i class="fas fa-sign-out-alt"></i></div><h4>Déconnexion</h4>
-                </a>
-                <a href="#" class="mobile-nav-item" onclick="handleMobileThemeToggle(event)">
-                    <div class="mobile-nav-item-icon"><i class="fas fa-sun"></i></div><h4>Changer de thème</h4>
-                </a>
-            `;
-        }
-        
-        window.toggleTheme = function() {
-            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-            localStorage.setItem('theme', currentTheme);
-            updateThemeUI();
-            showToastNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
-        }
-        
-        window.toggleMobileMenu = function() {
-            const mobileToggle = document.getElementById('mobileToggle');
-            const mobileMenu = document.getElementById('mobileMenu');
-            if (!mobileToggle || !mobileMenu) return;
-
-            mobileToggle.classList.toggle('active');
-            mobileMenu.classList.toggle('active');
-            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
-        }
-        
-        // --- Modal Logic ---
-        function openAvatarModal() { document.getElementById('avatarModal').classList.add('show'); }
-        window.openAvatarModal = openAvatarModal;
-        function closeAvatarModal() { document.getElementById('avatarModal').classList.remove('show'); }
-        window.closeAvatarModal = closeAvatarModal;
-        function openProfileModal() { document.getElementById('profileModal').classList.add('show'); }
-        window.openProfileModal = openProfileModal;
-        function closeProfileModal() { document.getElementById('profileModal').classList.remove('show'); }
-        window.closeProfileModal = closeProfileModal;
-        function openExplorerModal() { document.getElementById('explorerModal').classList.add('show'); }
-        window.openExplorerModal = openExplorerModal;
-        function closeExplorerModal() { document.getElementById('explorerModal').classList.remove('show'); }
-        window.closeExplorerModal = closeExplorerModal;
 
         // --- Notification Panel Logic ---
         function toggleNotificationPanel() {
@@ -1869,10 +1720,27 @@
         }
         window.executeCommandAction = executeCommandAction;
 
+        function initAnimations() {
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.animate-in').forEach(el => {
+                observer.observe(el);
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             updateThemeUI();
             populateMobileNav();
             renderNotifications();
+            initAnimations();
+            setupSlider();
 
             const userProfileToggle = document.getElementById('userProfileToggle');
             const avatarUploadInput = document.getElementById('avatarUpload');
@@ -1903,8 +1771,9 @@
 
             // Close dropdowns when clicking outside
             window.addEventListener('click', (event) => {
-                if (!event.target.closest('.notification-wrapper')) {
-                    document.getElementById('notificationPanel').classList.remove('show');
+                const notificationPanel = document.getElementById('notificationPanel');
+                if (notificationPanel && !event.target.closest('.notification-wrapper')) {
+                    notificationPanel.classList.remove('show');
                 }
             });
 
@@ -1914,7 +1783,8 @@
                     e.preventDefault();
                     openCommandPalette();
                 }
-                if (e.key === 'Escape' && document.getElementById('commandPaletteModal').classList.contains('show')) {
+                const commandPaletteModal = document.getElementById('commandPaletteModal');
+                if (e.key === 'Escape' && commandPaletteModal && commandPaletteModal.classList.contains('show')) {
                     closeCommandPalette();
                 }
             });
