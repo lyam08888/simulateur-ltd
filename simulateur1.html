@@ -544,28 +544,58 @@
     <!-- Header -->
     <header class="header" id="header">
         <nav class="nav-container">
-            <a href="#" class="logo" onclick="event.preventDefault(); navigateTo('dashboard.html');">
+            <a href="dashboard.html" class="logo">
                 <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
                     <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
                     <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
                 </svg>
                 <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
             </a>
+            
+            <!-- Navigation pour ordinateur -->
             <div class="nav-desktop">
                  <div class="header-search" onclick="openCommandPalette()">
                      <i class="fas fa-search"></i>
                      <input type="search" name="query" placeholder="Rechercher (Ctrl+K)..." aria-label="Rechercher" readonly>
                  </div>
-                <ul class="nav-menu">
-                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('dashboard.html')"><i class="fas fa-th-large"></i>&nbsp;Dashboard</a></li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link active" onclick="openExplorerModal()"><i class="fas fa-compass"></i>&nbsp;Explorer</a>
-                    </li>
-                </ul>
-                <div class="nav-actions" id="navActions">
-                    <!-- Auth-dependent buttons here -->
-                </div>
+                 <ul class="nav-menu">
+                     <li class="nav-item"><a href="dashboard.html" class="nav-link"><i class="fas fa-th-large"></i>&nbsp;Dashboard</a></li>
+                     <li class="nav-item">
+                         <a href="#" class="nav-link active" onclick="openExplorerModal()"><i class="fas fa-compass"></i>&nbsp;Explorer</a>
+                     </li>
+                 </ul>
+                 <div class="nav-actions">
+                      <div class="notification-wrapper" style="position: relative;">
+                         <button class="action-btn notification-bell" id="notificationToggle" title="Notifications">
+                             <i class="fas fa-bell"></i>
+                             <span class="badge" id="notificationBadge">3</span>
+                         </button>
+                         <div class="notification-panel" id="notificationPanel">
+                             <div class="notification-header">
+                                 <h4>Notifications</h4>
+                                 <a href="#">Marquer comme lu</a>
+                             </div>
+                             <div class="notification-list" id="notificationList">
+                                 <!-- Notifications injectées par JS -->
+                             </div>
+                             <div class="notification-footer">
+                                 <a href="#">Voir toutes les notifications</a>
+                             </div>
+                         </div>
+                      </div>
+                      <div class="profile-dropdown">
+                          <button id="userProfileToggle" class="user-profile-toggle" aria-haspopup="true" aria-expanded="false" title="Menu du profil">
+                              <img id="headerAvatar" src="https://placehold.co/40x40/1e293b/f8fafc?text=LTD" alt="Avatar de l'utilisateur">
+                              <span id="headerUsername">Chargement...</span>
+                          </button>
+                      </div>
+                     <button class="action-btn theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
+                         <i class="fas fa-moon" id="themeIcon"></i>
+                     </button>
+                 </div>
             </div>
+
+            <!-- Bouton pour le menu mobile -->
             <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
                 <span class="hamburger"><span></span><span></span><span></span></span>
             </button>
@@ -575,11 +605,11 @@
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
         <div class="mobile-menu-header">
-            <a href="#" class="logo" onclick="event.preventDefault(); toggleMobileMenu(); navigateTo('dashboard.html');">
-                <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
-                    <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
-                    <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
-                </svg>
+            <a href="dashboard.html" class="logo">
+                 <svg class="logo-icon" viewBox="20 10 60 75" xmlns="http://www.w3.org/2000/svg" fill="none">
+                     <path d="M20 85V40C20 34.4772 24.4772 30 30 30H40C45.5228 30 50 34.4772 50 40V85H20Z" fill="var(--primary-light)" fill-opacity="0.7"></path>
+                     <path d="M50 85V20C50 14.4772 54.4772 10 60 10H70C75.5228 10 80 14.4772 80 20V85H50Z" fill="var(--primary)"></path>
+                 </svg>
                 <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
             </a>
             <button class="mobile-menu-close" onclick="toggleMobileMenu()"><i class="fas fa-times"></i></button>
@@ -829,6 +859,19 @@
                         </div>
                     </a>
                 </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Command Palette Modal -->
+    <div id="commandPaletteModal" class="modal">
+        <div class="modal-overlay" onclick="closeCommandPalette()"></div>
+        <div class="modal-content">
+            <div class="command-palette-search">
+                <input type="text" id="commandPaletteInput" placeholder="Tapez une commande ou une recherche...">
+            </div>
+            <div class="command-palette-list" id="commandPaletteList">
+                <!-- Results injected by JS -->
             </div>
         </div>
     </div>
