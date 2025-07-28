@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Tableau de bord et sélection de simulateurs de gestion de chantier pour le BTP.">
-    <title>LTD Simulator - Dashboard</title>
+    <title>LTD Simulator - Simulateurs</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -609,7 +609,8 @@
             display: flex;
             padding: 0;
             overflow: hidden;
-            height: 500px;
+            height: auto;
+            max-height: 90vh;
         }
 
         .explorer-sidebar {
@@ -657,14 +658,14 @@
 
         .explorer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: var(--spacing-md);
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-sm);
         }
 
         .explorer-item {
             background: var(--glass);
             border-radius: var(--radius-lg);
-            padding: var(--spacing-md);
+            padding: var(--spacing-sm);
             text-decoration: none;
             color: var(--text-secondary);
             transition: var(--transition-slow);
@@ -702,12 +703,12 @@
         }
 
         .explorer-item-icon {
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             color: var(--primary);
-            margin-bottom: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
             background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.2), rgba(var(--primary-rgb), 0.1));
-            width: 3rem;
-            height: 3rem;
+            width: 2.5rem;
+            height: 2.5rem;
             flex-shrink: 0;
             display: flex;
             align-items: center;
@@ -728,7 +729,7 @@
         }
         
         .explorer-item-text h4 {
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: var(--text-primary);
             margin: 0 0 0.25rem 0;
@@ -987,26 +988,18 @@
                 <span class="logo-text">LTD<span class="logo-text-extended">&nbsp;Simulator</span></span>
             </a>
             <div class="nav-desktop">
-                 <form action="recherche.html" method="GET" class="header-search">
+                 <div class="header-search" onclick="openCommandPalette()">
                      <i class="fas fa-search"></i>
-                     <input type="search" name="query" placeholder="Rechercher..." aria-label="Rechercher">
-                 </form>
+                     <input type="search" name="query" placeholder="Rechercher (Ctrl+K)..." aria-label="Rechercher" readonly>
+                 </div>
                 <ul class="nav-menu">
                     <li class="nav-item"><a href="#" class="nav-link active" onclick="event.preventDefault(); navigateTo('dashboard.html')"><i class="fas fa-th-large"></i>&nbsp;Dashboard</a></li>
                     <li class="nav-item">
                         <a href="#" class="nav-link" onclick="openExplorerModal()"><i class="fas fa-compass"></i>&nbsp;Explorer</a>
                     </li>
                 </ul>
-                <div class="nav-actions">
-                    <div class="profile-dropdown">
-                        <button id="userProfileToggle" class="user-profile-toggle" aria-haspopup="true" aria-expanded="false" title="Menu du profil">
-                            <img id="headerAvatar" src="https://placehold.co/40x40/1e293b/f8fafc?text=LTD" alt="Avatar de l'utilisateur">
-                            <span id="headerUsername">Chargement...</span>
-                        </button>
-                    </div>
-                    <button class="action-btn theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
-                        <i class="fas fa-moon" id="themeIcon"></i>
-                    </button>
+                <div class="nav-actions" id="navActions">
+                    <!-- Auth-dependent buttons here -->
                 </div>
             </div>
             <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
@@ -1028,7 +1021,7 @@
             <button class="mobile-menu-close" onclick="toggleMobileMenu()"><i class="fas fa-times"></i></button>
         </div>
         <div class="mobile-menu-content">
-            <div class="mobile-nav-items">
+            <div class="mobile-nav-items" id="mobileNavItems">
                 <!-- Mobile nav items will be populated by JavaScript -->
             </div>
         </div>
@@ -1322,11 +1315,10 @@
         
         function navigateTo(pageFile) {
             showProgress();
-            if (!window.location.href.endsWith('dashboard.html') && pageFile !== 'dashboard.html') {
-                 setTimeout(() => {
-                    window.location.href = pageFile;
-                }, 1000);
-            }
+            showToastNotification(`Chargement de la page...`, 'info');
+            setTimeout(() => {
+                window.location.href = pageFile;
+            }, 1000);
         }
 
         function launchGame(url) {
@@ -1706,4 +1698,4 @@
         });
     </script>
 </body>
-</html>
+</ht
