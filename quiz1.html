@@ -1355,15 +1355,12 @@
         </div>
     </div>
 
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         "use strict";
 
-        // --- Supabase Client Setup ---
-        const { createClient } = supabase;
-        const supabaseUrl = "https://llujeetuahyabtocjzjl.supabase.co";
-        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdWplZXR1YWh5YWJ0b2NqempsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNTA3NjcsImV4cCI6MjA2ODkyNjc2N30.tnkkUUzl7T5EKD-DJ5fuElwAzBFEUr7shQuLtdACdcY";
-        const supabaseClient = createClient(supabaseUrl, supabaseKey);
-
+        let supabaseClient;
         let currentTheme = localStorage.getItem('theme') || 'dark';
 
         function showProgress() {
@@ -1630,19 +1627,36 @@
         }
         window.logout = logout;
         
-        supabaseClient.auth.onAuthStateChange((event, session) => {
-         if (session) {
-             if (window.location.hash.includes('access_token')) {
-                  window.history.replaceState(null, '', window.location.pathname);
-             }
-             // This is not the dashboard, so we just load user data
-             // renderDashboard(session); 
-         } else {
-             if (!window.location.hash.includes('access_token')) {
-                redirectToLogin();
-             }
-         }
-        });
+        async function loadUserData(session) {
+            const user = session.user;
+            
+            const { data: profile, error: profileError } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+
+            if (profileError && profileError.code !== 'PGRST116') { 
+                console.error("Erreur lecture profil:", profileError);
+            }
+            
+            const username = profile?.full_name || user.email;
+            const avatarUrl = profile?.avatar_url;
+            
+            document.getElementById('headerUsername').textContent = username;
+            document.getElementById('dropdownUsername').textContent = username;
+            document.getElementById('dropdownUserEmail').textContent = user.email;
+            
+            if(avatarUrl) {
+                document.getElementById('headerAvatar').src = avatarUrl;
+                document.getElementById('dropdownAvatar').src = avatarUrl;
+                updateSelectedAvatar(avatarUrl);
+            }
+
+            document.getElementById('fullName').value = profile?.full_name || '';
+            document.getElementById('company').value = profile?.company || '';
+            document.getElementById('website').value = profile?.website || '';
+        }
 
         // --- Notification Panel Logic ---
         function toggleNotificationPanel() {
@@ -1734,8 +1748,92 @@
                 observer.observe(el);
             });
         }
+        
+        function setupSlider() {
+            const slider = document.getElementById('imageSlider');
+            if (!slider) return;
+
+            const wrapper = slider.querySelector('.slider-wrapper');
+            const slides = slider.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('sliderPrev');
+            const nextBtn = document.getElementById('sliderNext');
+            const dotsContainer = document.getElementById('sliderDots');
+            
+            if (!wrapper || slides.length === 0 || !prevBtn || !nextBtn || !dotsContainer) return;
+
+            let currentIndex = 0;
+            let slideInterval;
+
+            if (slides.length <= 1) {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+                dotsContainer.style.display = 'none';
+                if (slides.length === 1) slides[0].classList.add('active');
+                return;
+            }
+
+            slides.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.classList.add('slider-dot');
+                dot.addEventListener('click', () => {
+                    goToSlide(index);
+                    resetInterval();
+                });
+                dotsContainer.appendChild(dot);
+            });
+            const dots = dotsContainer.querySelectorAll('.slider-dot');
+
+            function goToSlide(index) {
+                if (slides[currentIndex]) slides[currentIndex].classList.remove('active');
+                if (dots[currentIndex]) dots[currentIndex].classList.remove('active');
+                
+                currentIndex = (index + slides.length) % slides.length;
+                
+                if (slides[currentIndex]) slides[currentIndex].classList.add('active');
+                if (dots[currentIndex]) dots[currentIndex].classList.add('active');
+                
+                wrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+            }
+
+            function nextSlide() { goToSlide(currentIndex + 1); }
+            function prevSlide() { goToSlide(currentIndex - 1); }
+            
+            function startInterval() {
+                slideInterval = setInterval(nextSlide, 7000); 
+            }
+
+            function resetInterval() {
+                clearInterval(slideInterval);
+                startInterval();
+            }
+
+            nextBtn.addEventListener('click', () => { nextSlide(); resetInterval(); });
+            prevBtn.addEventListener('click', () => { prevSlide(); resetInterval(); });
+            
+            goToSlide(0);
+            startInterval();
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
+            // --- Supabase Client Setup ---
+            const { createClient } = supabase;
+            const supabaseUrl = "https://llujeetuahyabtocjzjl.supabase.co";
+            const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdWplZXR1YWh5YWJ0b2NqempsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNTA3NjcsImV4cCI6MjA2ODkyNjc2N30.tnkkUUzl7T5EKD-DJ5fuElwAzBFEUr7shQuLtdACdcY";
+            supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+            supabaseClient.auth.onAuthStateChange((event, session) => {
+                if (session) {
+                    if (window.location.hash.includes('access_token')) {
+                        window.history.replaceState(null, '', window.location.pathname);
+                    }
+                    loadUserData(session);
+                } else {
+                    if (!window.location.hash.includes('access_token')) {
+                        redirectToLogin();
+                    }
+                }
+            });
+
             updateThemeUI();
             populateMobileNav();
             renderNotifications();
