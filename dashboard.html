@@ -1132,6 +1132,40 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* --- Styles for "Under Construction" --- */
+        .in-construction {
+            position: relative;
+            overflow: hidden;
+            pointer-events: none; /* Disable interaction with the card */
+        }
+        .in-construction > * {
+            filter: grayscale(80%);
+            opacity: 0.5;
+        }
+        .in-construction::after {
+            content: 'En Construction';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-5deg);
+            background: var(--accent);
+            color: var(--background);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-weight: 700;
+            font-size: 1.1rem;
+            z-index: 10;
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .menu-item-wip {
+            opacity: 0.5;
+            cursor: not-allowed !important;
+            pointer-events: none;
+        }
+
         /* --- Media Queries pour la réactivité --- */
         @media (min-width: 768px) {
             .nav-container { padding: 0 var(--spacing-md); }
@@ -1211,7 +1245,7 @@
                      </li>
                  </ul>
                  <div class="nav-actions">
-                      <div class="notification-wrapper" style="position: relative;">
+                     <div class="notification-wrapper" style="position: relative;">
                          <button class="action-btn notification-bell" id="notificationToggle" title="Notifications">
                              <i class="fas fa-bell"></i>
                              <span class="badge" id="notificationBadge">3</span>
@@ -1219,25 +1253,25 @@
                          <div class="notification-panel" id="notificationPanel">
                              <div class="notification-header">
                                  <h4>Notifications</h4>
-                                 <a href="#">Marquer comme lu</a>
+                                 <a href="#" class="menu-item-wip">Marquer comme lu</a>
                              </div>
                              <div class="notification-list" id="notificationList">
                                  <!-- Notifications injectées par JS -->
                              </div>
                              <div class="notification-footer">
-                                 <a href="#">Voir toutes les notifications</a>
+                                 <a href="#" class="menu-item-wip">Voir toutes les notifications</a>
                              </div>
                          </div>
-                      </div>
-                      <div class="profile-dropdown">
-                          <button id="userProfileToggle" class="user-profile-toggle" aria-haspopup="true" aria-expanded="false" title="Menu du profil">
-                              <img id="headerAvatar" src="https://placehold.co/40x40/1e293b/f8fafc?text=LTD" alt="Avatar de l'utilisateur">
-                              <span id="headerUsername">Chargement...</span>
-                          </button>
-                      </div>
-                     <button class="action-btn theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
-                         <i class="fas fa-moon" id="themeIcon"></i>
-                     </button>
+                     </div>
+                     <div class="profile-dropdown">
+                         <button id="userProfileToggle" class="user-profile-toggle" aria-haspopup="true" aria-expanded="false" title="Menu du profil">
+                             <img id="headerAvatar" src="https://placehold.co/40x40/1e293b/f8fafc?text=LTD" alt="Avatar de l'utilisateur">
+                             <span id="headerUsername">Chargement...</span>
+                         </button>
+                     </div>
+                    <button class="action-btn theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
                  </div>
             </div>
 
@@ -1605,7 +1639,7 @@
                     <p>Votre espace de formation pour l'excellence opérationnelle sur les chantiers.</p>
                 </div>
                 <div class="dashboard-grid">
-                    <div class="dashboard-card card-main">
+                    <div class="dashboard-card card-main in-construction">
                         <h3>Mon Parcours de Formation</h3>
                         <p>Continuez votre progression pour devenir un opérateur certifié.</p>
                         <div class="training-progress">
@@ -1621,7 +1655,7 @@
                         <a href="simulateur1.html" class="btn">Reprendre la simulation</a>
                     </div>
 
-                    <div class="dashboard-card card-certifs">
+                    <div class="dashboard-card card-certifs in-construction">
                         <h3>Certifications & Compétences</h3>
                         <ul class="certifications-list">
                             <li><i class="fas fa-award"></i> CACES R482 - Cat. A</li>
@@ -1629,32 +1663,32 @@
                             <li><i class="fas fa-check-circle"></i> Conduite sécuritaire</li>
                             <li><i class="fas fa-check-circle"></i> Maintenance de premier niveau</li>
                         </ul>
-                        <a href="#" class="btn-link">Voir tous les certificats</a>
+                        <a href="#" class="btn-link menu-item-wip">Voir tous les certificats</a>
                     </div>
 
-                    <div class="dashboard-card card-catalog">
+                    <div class="dashboard-card card-catalog in-construction">
                          <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-tractor"></i></div>
-                            <h3>Catalogue Simulateurs</h3>
-                        </div>
+                             <div class="dashboard-card-icon"><i class="fas fa-tractor"></i></div>
+                             <h3>Catalogue Simulateurs</h3>
+                         </div>
                         <p>Entraînez-vous sur une large gamme d'engins de chantier.</p>
                         <a href="#" class="btn" onclick="openExplorerModal()">Explorer les engins</a>
                     </div>
 
-                    <div class="dashboard-card card-resources">
+                    <div class="dashboard-card card-resources in-construction">
                          <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-book"></i></div>
-                            <h3>Ressources</h3>
-                        </div>
+                             <div class="dashboard-card-icon"><i class="fas fa-book"></i></div>
+                             <h3>Ressources</h3>
+                         </div>
                         <p>Consultez les manuels techniques et fiches de sécurité.</p>
                         <a href="#" class="btn">Accéder aux documents</a>
                     </div>
 
-                    <div class="dashboard-card card-leaderboard">
+                    <div class="dashboard-card card-leaderboard in-construction">
                          <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon"><i class="fas fa-trophy"></i></div>
-                            <h3>Classement</h3>
-                        </div>
+                             <div class="dashboard-card-icon"><i class="fas fa-trophy"></i></div>
+                             <h3>Classement</h3>
+                         </div>
                         <p>Comparez vos scores avec les autres opérateurs.</p>
                         <a href="#" class="btn">Voir le classement</a>
                     </div>
@@ -1686,14 +1720,14 @@
         
         supabaseClient.auth.onAuthStateChange((event, session) => {
          if (session) {
-              if (window.location.hash.includes('access_token')) {
-                  window.history.replaceState(null, '', window.location.pathname);
-              }
-              renderDashboard(session);
+             if (window.location.hash.includes('access_token')) {
+                 window.history.replaceState(null, '', window.location.pathname);
+             }
+             renderDashboard(session);
          } else {
-              if (!window.location.hash.includes('access_token')) {
+             if (!window.location.hash.includes('access_token')) {
                 redirectToLogin();
-              }
+             }
          }
         });
 
@@ -1804,7 +1838,7 @@
                 { icon: 'fa-info-circle', type: 'info', text: 'Une maintenance est prévue ce soir à 23h.', time: 'Il y a 4h' }
             ];
             list.innerHTML = notifications.map(n => `
-                <a href="#" class="notification-item">
+                <a href="#" class="notification-item menu-item-wip">
                     <div class="notification-item-icon icon-${n.type}"><i class="fas ${n.icon}"></i></div>
                     <div class="notification-item-content">
                         <p>${n.text}</p>
