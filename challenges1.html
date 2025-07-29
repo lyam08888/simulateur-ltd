@@ -224,7 +224,7 @@
         .hero h1 { font-size: clamp(2.2rem, 8vw, 4rem); font-weight: 800; margin-bottom: var(--spacing-lg); background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; background-size: 200% 200%; animation: text-gradient-pan 5s ease infinite; }
         @keyframes text-gradient-pan { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         .hero p { font-size: 1.1rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto; line-height: 1.7; }
-        .challenge-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 380px)); justify-content: center; gap: 2.5rem; margin-top: 4rem; }
+        .challenge-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); justify-content: center; gap: 2.5rem; margin-top: 4rem; }
         .challenge-card { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--glass-border); display: flex; flex-direction: column; transition: var(--transition-slow); box-shadow: var(--shadow-md); overflow: hidden; }
         .challenge-card:hover { transform: translateY(-10px); box-shadow: var(--shadow-glow); border-color: var(--accent); }
         .challenge-card-image { width: 100%; aspect-ratio: 16 / 10; overflow: hidden; background-color: var(--surface-elevated); }
@@ -401,125 +401,123 @@
         </section>
         
         <section class="challenge-grid animate-in" style="margin: 4rem 0;">
-            <div class="grid-container">
-                <div class="challenge-card">
-                    <div class="challenge-card-image">
-                        <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <g stroke="var(--primary-light)" opacity="0.6">
-                                <rect x="20" y="80" width="160" height="30" rx="3" fill="var(--primary-light)" fill-opacity="0.2" />
-                                <path d="M 20 80 h 160" stroke-dasharray="5" />
-                                <path d="M 30 60 h 20 v 20 h -20 z" />
-                                <path d="M 90 60 h 20 v 20 h -20 z" />
-                                <path d="M 150 60 h 20 v 20 h -20 z" />
-                            </g>
-                            <g stroke="var(--accent)" opacity="0.9">
-                                <path d="M 100 20 l 20 30 h -40 z" stroke-width="3"/>
-                            </g>
-                        </svg>
-                    </div>
-                    <div class="challenge-card-content">
-                        <div class="challenge-card-header">
-                            <div class="challenge-card-icon"><i class="fas fa-road"></i></div>
-                            <h2 class="challenge-card-title">Challenge Maçonnerie VRD</h2>
-                        </div>
-                        <p class="challenge-card-description">
-                            Un affaissement de terrain a été détecté sur une route départementale. Vous devez proposer une solution de reprise en sous-œuvre, planifier les travaux et estimer les coûts.
-                        </p>
-                        <div class="challenge-card-meta">
-                            <span class="meta-item"><i class="fas fa-layer-group"></i>Technique</span>
-                            <span class="meta-item"><i class="fas fa-brain"></i>Difficile</span>
-                        </div>
-                        <a href="#" class="challenge-card-button" onclick="event.preventDefault(); showToastNotification('Challenge en cours de préparation !', 'info')">Participer</a>
-                    </div>
+            <div class="challenge-card">
+                <div class="challenge-card-image">
+                    <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--primary-light)" opacity="0.6">
+                            <rect x="20" y="80" width="160" height="30" rx="3" fill="var(--primary-light)" fill-opacity="0.2" />
+                            <path d="M 20 80 h 160" stroke-dasharray="5" />
+                            <path d="M 30 60 h 20 v 20 h -20 z" />
+                            <path d="M 90 60 h 20 v 20 h -20 z" />
+                            <path d="M 150 60 h 20 v 20 h -20 z" />
+                        </g>
+                        <g stroke="var(--accent)" opacity="0.9">
+                            <path d="M 100 20 l 20 30 h -40 z" stroke-width="3"/>
+                        </g>
+                    </svg>
                 </div>
-
-                <!-- Challenge Card 2 -->
-                <div class="challenge-card">
-                    <div class="challenge-card-image">
-                        <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <g stroke="var(--primary-light)" opacity="0.7">
-                                <rect x="20" y="20" width="160" height="90" rx="5" stroke-dasharray="4" />
-                                <path d="M 20 50 h 160 M 20 85 h 160 M 70 20 v 90 M 130 20 v 90" />
-                            </g>
-                            <g stroke="var(--secondary)" opacity="0.9">
-                                <rect x="30" y="60" width="30" height="15" stroke-width="3" />
-                                <rect x="80" y="30" width="40" height="45" stroke-width="3" />
-                            </g>
-                        </svg>
+                <div class="challenge-card-content">
+                    <div class="challenge-card-header">
+                        <div class="challenge-card-icon"><i class="fas fa-road"></i></div>
+                        <h2 class="challenge-card-title">Challenge Maçonnerie VRD</h2>
                     </div>
-                    <div class="challenge-card-content">
-                        <div class="challenge-card-header">
-                            <div class="challenge-card-icon"><i class="fas fa-ruler-combined"></i></div>
-                            <h2 class="challenge-card-title">Optimisation de Plan de Coffrage</h2>
-                        </div>
-                        <p class="challenge-card-description">
-                            À partir des plans d'architecte d'un petit immeuble, réalisez le plan de coffrage du premier étage en optimisant l'utilisation du matériel et le temps de main-d'œuvre.
-                        </p>
-                        <div class="challenge-card-meta">
-                            <span class="meta-item"><i class="fas fa-layer-group"></i>Conception</span>
-                            <span class="meta-item"><i class="fas fa-brain"></i>Intermédiaire</span>
-                        </div>
-                        <a href="#" class="challenge-card-button" onclick="event.preventDefault(); showToastNotification('Challenge en cours de préparation !', 'info')">Participer</a>
+                    <p class="challenge-card-description">
+                        Un affaissement de terrain a été détecté sur une route départementale. Vous devez proposer une solution de reprise en sous-œuvre, planifier les travaux et estimer les coûts.
+                    </p>
+                    <div class="challenge-card-meta">
+                        <span class="meta-item"><i class="fas fa-layer-group"></i>Technique</span>
+                        <span class="meta-item"><i class="fas fa-brain"></i>Difficile</span>
                     </div>
+                    <a href="#" class="challenge-card-button" onclick="event.preventDefault(); showToastNotification('Challenge en cours de préparation !', 'info')">Participer</a>
                 </div>
+            </div>
 
-                <!-- Challenge Card 3 -->
-                <div class="challenge-card">
-                     <div class="challenge-card-image">
-                        <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                            <g stroke="var(--accent)" opacity="0.8">
-                               <path d="M 100 70 l -40 40 M 100 70 l 40 40 M 100 70 l -40 -40 M 100 70 l 40 -40" />
-                               <path d="M 100 70 l 0 -50" stroke-dasharray="5" />
-                            </g>
-                            <g stroke="var(--primary-light)" opacity="0.9">
-                                <circle cx="100" cy="70" r="25" stroke-width="2" />
-                                <circle cx="100" cy="70" r="35" stroke-width="1" stroke-dasharray="2" />
-                            </g>
-                        </svg>
-                    </div>
-                    <div class="challenge-card-content">
-                        <div class="challenge-card-header">
-                            <div class="challenge-card-icon"><i class="fas fa-fire-extinguisher"></i></div>
-                            <h2 class="challenge-card-title">Gestion de Crise sur Chantier</h2>
-                        </div>
-                        <p class="challenge-card-description">
-                            Une grève surprise des livreurs de béton menace d'arrêter votre chantier. Gérez la communication avec les équipes, le client et trouvez une solution alternative en urgence.
-                        </p>
-                        <div class="challenge-card-meta">
-                            <span class="meta-item"><i class="fas fa-layer-group"></i>Management</span>
-                            <span class="meta-item"><i class="fas fa-brain"></i>Intermédiaire</span>
-                        </div>
-                        <a href="#" class="challenge-card-button" onclick="event.preventDefault(); showToastNotification('Challenge en cours de préparation !', 'info')">Participer</a>
-                    </div>
+            <!-- Challenge Card 2 -->
+            <div class="challenge-card">
+                <div class="challenge-card-image">
+                    <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--primary-light)" opacity="0.7">
+                            <rect x="20" y="20" width="160" height="90" rx="5" stroke-dasharray="4" />
+                            <path d="M 20 50 h 160 M 20 85 h 160 M 70 20 v 90 M 130 20 v 90" />
+                        </g>
+                        <g stroke="var(--secondary)" opacity="0.9">
+                            <rect x="30" y="60" width="30" height="15" stroke-width="3" />
+                            <rect x="80" y="30" width="40" height="45" stroke-width="3" />
+                        </g>
+                    </svg>
                 </div>
+                <div class="challenge-card-content">
+                    <div class="challenge-card-header">
+                        <div class="challenge-card-icon"><i class="fas fa-ruler-combined"></i></div>
+                        <h2 class="challenge-card-title">Optimisation de Plan de Coffrage</h2>
+                    </div>
+                    <p class="challenge-card-description">
+                        À partir des plans d'architecte d'un petit immeuble, réalisez le plan de coffrage du premier étage en optimisant l'utilisation du matériel et le temps de main-d'œuvre.
+                    </p>
+                    <div class="challenge-card-meta">
+                        <span class="meta-item"><i class="fas fa-layer-group"></i>Conception</span>
+                        <span class="meta-item"><i class="fas fa-brain"></i>Intermédiaire</span>
+                    </div>
+                    <a href="#" class="challenge-card-button" onclick="event.preventDefault(); showToastNotification('Challenge en cours de préparation !', 'info')">Participer</a>
+                </div>
+            </div>
 
-                <!-- Challenge Card 4 -->
-                <div class="challenge-card">
-                    <div class="challenge-card-image">
-                        <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <g stroke="var(--secondary)" opacity="0.7">
-                                <rect x="40" y="30" width="120" height="70" rx="5" />
-                                <path d="M 50 45 h 100 M 50 60 h 100 M 50 75 h 100 M 50 90 h 100" />
-                            </g>
-                            <g stroke="var(--primary)" opacity="0.9">
-                                <path d="M 60 70 l 20 -20 l 20 30 l 20 -40 l 20 15" stroke-width="3" />
-                            </g>
-                        </svg>
+            <!-- Challenge Card 3 -->
+            <div class="challenge-card">
+                 <div class="challenge-card-image">
+                    <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--accent)" opacity="0.8">
+                           <path d="M 100 70 l -40 40 M 100 70 l 40 40 M 100 70 l -40 -40 M 100 70 l 40 -40" />
+                           <path d="M 100 70 l 0 -50" stroke-dasharray="5" />
+                        </g>
+                        <g stroke="var(--primary-light)" opacity="0.9">
+                            <circle cx="100" cy="70" r="25" stroke-width="2" />
+                            <circle cx="100" cy="70" r="35" stroke-width="1" stroke-dasharray="2" />
+                        </g>
+                    </svg>
+                </div>
+                <div class="challenge-card-content">
+                    <div class="challenge-card-header">
+                        <div class="challenge-card-icon"><i class="fas fa-fire-extinguisher"></i></div>
+                        <h2 class="challenge-card-title">Gestion de Crise sur Chantier</h2>
                     </div>
-                    <div class="challenge-card-content">
-                        <div class="challenge-card-header">
-                            <div class="challenge-card-icon"><i class="fas fa-file-invoice-dollar"></i></div>
-                            <h2 class="challenge-card-title">Challenge Étude de Prix TCE</h2>
-                        </div>
-                        <p class="challenge-card-description">
-                            À partir d'un dossier de consultation (DCE) pour un petit collectif, réalisez le chiffrage complet tous corps d'état et rédigez le mémoire technique.
-                        </p>
-                        <div class="challenge-card-meta">
-                            <span class="meta-item"><i class="fas fa-layer-group"></i>Chiffrage</span>
-                            <span class="meta-item"><i class="fas fa-brain"></i>Expert</span>
-                        </div>
-                        <a href="#" class="challenge-card-button" onclick="event.preventDefault(); launchGame('prixtce.html')">Participer</a>
+                    <p class="challenge-card-description">
+                        Une grève surprise des livreurs de béton menace d'arrêter votre chantier. Gérez la communication avec les équipes, le client et trouvez une solution alternative en urgence.
+                    </p>
+                    <div class="challenge-card-meta">
+                        <span class="meta-item"><i class="fas fa-layer-group"></i>Management</span>
+                        <span class="meta-item"><i class="fas fa-brain"></i>Intermédiaire</span>
                     </div>
+                    <a href="#" class="challenge-card-button" onclick="event.preventDefault(); showToastNotification('Challenge en cours de préparation !', 'info')">Participer</a>
+                </div>
+            </div>
+
+            <!-- Challenge Card 4 -->
+            <div class="challenge-card">
+                <div class="challenge-card-image">
+                    <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--secondary)" opacity="0.7">
+                            <rect x="40" y="30" width="120" height="70" rx="5" />
+                            <path d="M 50 45 h 100 M 50 60 h 100 M 50 75 h 100 M 50 90 h 100" />
+                        </g>
+                        <g stroke="var(--primary)" opacity="0.9">
+                            <path d="M 60 70 l 20 -20 l 20 30 l 20 -40 l 20 15" stroke-width="3" />
+                        </g>
+                    </svg>
+                </div>
+                <div class="challenge-card-content">
+                    <div class="challenge-card-header">
+                        <div class="challenge-card-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                        <h2 class="challenge-card-title">Challenge Étude de Prix TCE</h2>
+                    </div>
+                    <p class="challenge-card-description">
+                        À partir d'un dossier de consultation (DCE) pour un petit collectif, réalisez le chiffrage complet tous corps d'état et rédigez le mémoire technique.
+                    </p>
+                    <div class="challenge-card-meta">
+                        <span class="meta-item"><i class="fas fa-layer-group"></i>Chiffrage</span>
+                        <span class="meta-item"><i class="fas fa-brain"></i>Expert</span>
+                    </div>
+                    <a href="#" class="challenge-card-button" onclick="event.preventDefault(); launchGame('prixtce.html')">Participer</a>
                 </div>
             </div>
         </section>
