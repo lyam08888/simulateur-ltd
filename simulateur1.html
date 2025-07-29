@@ -559,13 +559,12 @@
                      <input type="search" name="query" placeholder="Rechercher (Ctrl+K)..." aria-label="Rechercher" readonly>
                  </div>
                  <ul class="nav-menu">
-                     <li class="nav-item"><a href="dashboard.html" class="nav-link"><i class="fas fa-th-large"></i>&nbsp;Dashboard</a></li>
                      <li class="nav-item">
                          <a href="#" class="nav-link active" onclick="openExplorerModal()"><i class="fas fa-compass"></i>&nbsp;Explorer</a>
                      </li>
                  </ul>
                  <div class="nav-actions">
-                      <div class="notification-wrapper" style="position: relative;">
+                     <div class="notification-wrapper" style="position: relative;">
                          <button class="action-btn notification-bell" id="notificationToggle" title="Notifications">
                              <i class="fas fa-bell"></i>
                              <span class="badge" id="notificationBadge">3</span>
@@ -582,16 +581,16 @@
                                  <a href="#">Voir toutes les notifications</a>
                              </div>
                          </div>
-                      </div>
-                      <div class="profile-dropdown">
-                          <button id="userProfileToggle" class="user-profile-toggle" aria-haspopup="true" aria-expanded="false" title="Menu du profil">
-                              <img id="headerAvatar" src="https://placehold.co/40x40/1e293b/f8fafc?text=LTD" alt="Avatar de l'utilisateur">
-                              <span id="headerUsername">Chargement...</span>
-                          </button>
-                      </div>
-                     <button class="action-btn theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
-                         <i class="fas fa-moon" id="themeIcon"></i>
-                     </button>
+                     </div>
+                     <div class="profile-dropdown">
+                         <button id="userProfileToggle" class="user-profile-toggle" aria-haspopup="true" aria-expanded="false" title="Menu du profil">
+                             <img id="headerAvatar" src="https://placehold.co/40x40/1e293b/f8fafc?text=LTD" alt="Avatar de l'utilisateur">
+                             <span id="headerUsername">Chargement...</span>
+                         </button>
+                     </div>
+                    <button class="action-btn theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
                  </div>
             </div>
 
@@ -693,7 +692,7 @@
                         <div class="simulator-card-image">
                             <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g stroke="var(--secondary)" opacity="0.7"><path d="M 10 110 C 60 110, 80 40, 140 40 S 190 110, 190 110"/><path d="M 10 115 C 60 115, 80 45, 140 45 S 190 115, 190 115"/></g><g stroke="var(--primary-light)" stroke-width="1.5" stroke-dasharray="4"><path d="M 10 90 h 180"/><path d="M 10 70 h 180"/></g></svg>
                         </div>
-                         <div class="simulator-card-content">
+                          <div class="simulator-card-content">
                             <div class="simulator-icon"><i class="fas fa-drafting-compass"></i></div>
                             <h3>Projeteur VRD</h3>
                             <p>Concevez les infrastructures de demain, des routes aux réseaux.</p>
@@ -704,7 +703,7 @@
                         <div class="simulator-card-image">
                             <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g stroke="var(--primary-light)" opacity="0.7"><path d="M 150 110 v -60 l -20 -20 h -60 l -20 20 v 60 h 100 z"/><rect x="85" y="80" width="30" height="30"/></g><g stroke="var(--secondary)"><path d="M 10 110 h 180"/><path d="M 180 30 l -20 -20 h -10 v 60"/></g></svg>
                         </div>
-                         <div class="simulator-card-content">
+                          <div class="simulator-card-content">
                             <div class="simulator-icon"><i class="fas fa-hard-hat"></i></div>
                             <h3>Chef de Chantier</h3>
                             <p>Supervisez les équipes et la progression du chantier au quotidien.</p>
@@ -715,7 +714,7 @@
                         <div class="simulator-card-image">
                            <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g stroke="var(--primary-light)" opacity="0.7"><path d="M 10 110 L 100 20 L 190 110 Z"/><path d="M 55 110 L 100 65 L 145 110"/><path d="M 77.5 87.5 h 45"/></g><g stroke="var(--secondary)" stroke-width="1.5"><path d="M 10 110 h 180"/></g></svg>
                         </div>
-                         <div class="simulator-card-content">
+                          <div class="simulator-card-content">
                             <div class="simulator-icon"><i class="fas fa-building"></i></div>
                             <h3>Ingénieur Structure</h3>
                             <p>Calculez et concevez des structures solides, sûres et durables.</p>
@@ -726,7 +725,7 @@
                         <div class="simulator-card-image">
                             <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g stroke="var(--primary-light)" opacity="0.7"><rect x="40" y="30" width="120" height="70" rx="5"/><path d="M 50 45 h 100 M 50 60 h 100 M 50 75 h 100 M 50 90 h 100"/></g><g stroke="var(--secondary)" stroke-width="3"><path d="M 60 70 l 20 -20 l 20 30 l 20 -40 l 20 15"/></g></svg>
                         </div>
-                         <div class="simulator-card-content">
+                          <div class="simulator-card-content">
                             <div class="simulator-icon"><i class="fas fa-calculator"></i></div>
                             <h3>Économiste de la Construction</h3>
                             <p>Maîtrisez les coûts et établissez des devis précis pour vos projets.</p>
@@ -816,11 +815,11 @@
             <div class="explorer-main">
                 <button class="modal-close-btn" onclick="closeExplorerModal()" title="Fermer"><i class="fas fa-times"></i></button>
                 <div class="explorer-grid">
-                    <a href="simulateur.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('dashboard.html')">
-                        <div class="explorer-item-icon"><i class="fas fa-cubes fa-fw"></i></div>
+                    <a href="dashboard.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('dashboard.html')">
+                        <div class="explorer-item-icon"><i class="fas fa-th-large fa-fw"></i></div>
                         <div class="explorer-item-text">
-                            <h4>Simulateurs</h4>
-                            <p>Entraînement pratique.</p>
+                            <h4>Dashboard</h4>
+                            <p>Vue d'ensemble et simulateurs.</p>
                         </div>
                     </a>
                     <a href="test.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('test.html')">
@@ -964,9 +963,6 @@
             if(!mobileNavContainer) return;
 
             mobileNavContainer.innerHTML = `
-                <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); toggleMobileMenu(); navigateTo('dashboard.html')">
-                    <div class="mobile-nav-item-icon"><i class="fas fa-th-large"></i></div><h4>Dashboard</h4>
-                </a>
                 <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); openExplorerModal(); toggleMobileMenu();">
                     <div class="mobile-nav-item-icon"><i class="fas fa-compass"></i></div><h4>Explorer</h4>
                 </a>
