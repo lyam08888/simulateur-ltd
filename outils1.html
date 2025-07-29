@@ -1412,6 +1412,43 @@
 
         let currentTheme = localStorage.getItem('theme') || 'dark';
 
+        // --- [FIX] Added missing notification function ---
+        function showToastNotification(message, type = 'info') {
+            const toast = document.getElementById('toastNotification');
+            const icon = document.getElementById('toastNotificationIcon');
+            const text = document.getElementById('toastNotificationText');
+
+            if (!toast || !icon || !text) {
+                console.error('Toast notification elements not found!');
+                return;
+            }
+
+            text.textContent = message;
+
+            // Reset classes
+            toast.className = 'toast-notification';
+            icon.className = 'toast-notification-icon';
+
+            // Add type class to the main toast element for CSS to handle icon color
+            toast.classList.add(type);
+
+            // Update icon class based on type
+            const icons = {
+                success: 'fas fa-check-circle',
+                warning: 'fas fa-exclamation-triangle',
+                error: 'fas fa-times-circle',
+                info: 'fas fa-info-circle'
+            };
+            icon.classList.add(...(icons[type] || icons.info).split(' '));
+            
+            toast.classList.add('show');
+
+            // Auto-hide the notification
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
         function showProgress() {
             const progressBar = document.getElementById('progressBar');
             const progressFill = document.getElementById('progressFill');
