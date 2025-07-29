@@ -22,7 +22,7 @@
             --accent-dark: #d97706;
             --error: #f472b6;
             --error-dark: #ec4899;
-            --error-rgb: 244, 114, 182; /* Ajout pour le hover */
+            --error-rgb: 244, 114, 182;
             
             /* Surfaces */
             --background: #0b1120;
@@ -1172,34 +1172,8 @@
                         <a href="#" class="nav-link active" onclick="openExplorerModal()"><i class="fas fa-compass"></i>&nbsp;Explorer</a>
                     </li>
                 </ul>
-                <div class="nav-actions">
-                    <div class="notification-wrapper" style="position: relative;">
-                        <button class="action-btn notification-bell" id="notificationToggle" title="Notifications">
-                            <i class="fas fa-bell"></i>
-                            <span class="badge" id="notificationBadge">3</span>
-                        </button>
-                        <div class="notification-panel" id="notificationPanel">
-                            <div class="notification-header">
-                                <h4>Notifications</h4>
-                                <a href="#">Marquer comme lu</a>
-                            </div>
-                            <div class="notification-list" id="notificationList">
-                                <!-- Notifications injectées par JS -->
-                            </div>
-                            <div class="notification-footer">
-                                <a href="#">Voir toutes les notifications</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="profile-dropdown">
-                        <button id="userProfileToggle" class="user-profile-toggle" aria-haspopup="true" aria-expanded="false" title="Menu du profil">
-                            <img id="headerAvatar" src="https://placehold.co/40x40/1e293b/f8fafc?text=LTD" alt="Avatar de l'utilisateur">
-                            <span id="headerUsername">Chargement...</span>
-                        </button>
-                    </div>
-                    <button class="action-btn theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
-                        <i class="fas fa-moon" id="themeIcon"></i>
-                    </button>
+                <div class="nav-actions" id="navActions">
+                    <!-- This section will be populated by JS based on auth state -->
                 </div>
             </div>
             <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
@@ -1234,29 +1208,40 @@
             <div class="slider-wrapper">
                 <div class="slide">
                     <div class="slide-background">
-                        <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--primary-light)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M 0,150 C 200,50 300,250 500,150 S 700,250 800,150" opacity="0.3"/><path d="M 0,170 C 150,90 350,270 550,170 S 750,270 800,170" opacity="0.3"/><path d="M 0,190 C 100,130 400,290 600,190 S 700,290 800,190" opacity="0.3"/></svg>
+                        <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M 100 150 L 250 150 L 300 100 L 350 200 L 400 120 L 450 180 L 500 100 L 550 150 L 700 150" opacity="0.8" stroke-width="3"/>
+                            <path d="M 150 100 L 200 200 M 600 100 L 650 200" opacity="0.5" stroke-dasharray="4"/>
+                        </svg>
                     </div>
                     <div class="slide-content">
-                        <h3>Des Outils Intelligents</h3>
-                        <p>Des outils innovants pour booster votre carrière professionnelle.</p>
+                        <h3>Testez vos Connaissances</h3>
+                        <p>Nos quiz sont conçus pour évaluer et renforcer vos compétences techniques.</p>
                     </div>
                 </div>
                 <div class="slide">
                     <div class="slide-background">
-                        <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--secondary)" stroke-width="1"><circle cx="400" cy="150" r="120" opacity="0.2"/><circle cx="400" cy="150" r="100" opacity="0.3"/><circle cx="400" cy="150" r="80" opacity="0.4"/><path d="M 400 30 L 400 270 M 280 150 L 520 150 M 310 60 L 490 240 M 310 240 L 490 60" opacity="0.5"/></svg>
+                        <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--secondary)" stroke-width="1.5">
+                            <rect x="150" y="50" width="500" height="200" rx="10" opacity="0.3" />
+                            <path d="M 150 100 h 500 M 150 150 h 500 M 150 200 h 500" opacity="0.5" />
+                            <path d="M 250 50 v 200 M 350 50 v 200 M 450 50 v 200 M 550 50 v 200" opacity="0.3" stroke-dasharray="5"/>
+                        </svg>
                     </div>
                     <div class="slide-content">
-                        <h3>Optimisez Votre Profil</h3>
-                        <p>Créez un CV percutant et professionnel avec notre aide.</p>
+                        <h3>Des Sujets Variés</h3>
+                        <p>Du BTP aux télécoms, trouvez le quiz qui correspond à votre domaine d'expertise.</p>
                     </div>
                 </div>
                 <div class="slide">
                     <div class="slide-background">
-                        <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="var(--accent)" stroke="var(--accent-dark)" stroke-width="0.5"><path d="M 0 300 L 200 100 L 400 250 L 600 50 L 800 200 L 800 300 Z" opacity="0.3"/><path d="M 0 300 L 150 150 L 350 280 L 550 80 L 750 230 L 800 300 Z" opacity="0.4"/></svg>
+                         <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--accent)" stroke-width="2">
+                            <path d="M 200 250 L 400 50 L 600 250 Z" stroke-width="4" opacity="0.8" />
+                            <path d="M 200 250 h 400" stroke-width="4" opacity="0.8"/>
+                            <path d="M 300 150 h 200" stroke-dasharray="5" opacity="0.6"/>
+                         </svg>
                     </div>
                     <div class="slide-content">
-                        <h3>Simplifiez vos Tâches</h3>
-                        <p>Des assistants conçus pour vous accompagner au quotidien.</p>
+                        <h3>Validez vos Acquis</h3>
+                        <p>Obtenez un feedback instantané et identifiez vos points forts et axes d'amélioration.</p>
                     </div>
                 </div>
             </div>
@@ -1264,56 +1249,74 @@
             <div class="slider-nav next" id="sliderNext"><i class="fas fa-chevron-right"></i></div>
             <div class="slider-dots" id="sliderDots"></div>
         </section>
-
-        <section class="hero animate-in">
-            <h1>Nos Outils Professionnels</h1>
-            <p>Découvrez notre sélection d'outils conçus pour vous aider dans votre carrière. Commencez par notre générateur de CV intelligent pour créer un profil percutant.</p>
-        </section>
         
-        <!-- Tools Grid Section -->
-        <section class="tools-grid animate-in" style="margin: 4rem 0;">
-            <div class="grid-container">
-                <!-- Card 1: Générateur de CV -->
-                <div class="tool-card">
-                    <div class="tool-card-image">
-                        <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g stroke="var(--primary-light)" opacity="0.7"><path d="M 60 20 h 80 a 5 5 0 0 1 5 5 v 80 a 5 5 0 0 1 -5 5 h -80 a 5 5 0 0 1 -5 -5 v -80 a 5 5 0 0 1 5 -5 z"/><path d="M 75 40 h 50 M 75 55 h 50 M 75 70 h 30 M 75 85 h 40"/></g><g stroke="var(--secondary)"><circle cx="85" cy="40" r="10"/><path d="M 105 55 h 20"/></g></svg>
-                    </div>
-                    <div class="tool-card-content">
-                        <div class="tool-icon"><i class="fas fa-file-alt"></i></div>
-                        <h3>Générateur de CV Personnalisé</h3>
-                        <p>Utilisez l'intelligence artificielle pour créer un CV professionnel et attractif en quelques minutes.</p>
-                        <button class="launch-button" onclick="launchTool('outilscv.html')">Lancer</button>
-                    </div>
+        <section class="hero animate-in">
+            <h1>Nos Quiz Interactifs</h1>
+            <p>Testez vos connaissances et apprenez-en plus sur les différents métiers techniques. Choisissez un quiz et mettez vos compétences à l'épreuve !</p>
+        </section>
+
+        <section class="quiz-grid animate-in">
+            <!-- Quiz Card 1 -->
+            <div class="quiz-card">
+                <div class="quiz-card-image">
+                    <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--primary-light)" opacity="0.7">
+                            <path d="M 40 100 C 60 40, 140 40, 160 100" stroke-width="3" />
+                            <path d="M 100 20 V 110" stroke-width="3" />
+                            <path d="M 60 60 H 140" />
+                            <circle cx="100" cy="70" r="30" stroke-dasharray="4" />
+                        </g>
+                    </svg>
                 </div>
-                <!-- Card 2: Placeholder -->
-                <div class="tool-card">
-                    <div class="tool-card-image">
-                        <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g stroke="var(--primary-light)" opacity="0.5"><rect x="40" y="30" width="120" height="70" rx="10" stroke-dasharray="8"/><circle cx="100" cy="65" r="20" stroke-dasharray="8"/></g></svg>
+                <div class="quiz-card-content">
+                    <div class="quiz-card-header">
+                        <div class="quiz-card-icon"><i class="fas fa-network-wired"></i></div>
+                        <h2 class="quiz-card-title">Quiz Télécom : Fibre Optique</h2>
                     </div>
-                    <div class="tool-card-content">
-                        <div class="tool-icon"><i class="fas fa-cogs"></i></div>
-                        <h3>Outil à venir</h3>
-                        <p>De nouveaux outils professionnels seront bientôt disponibles ici.</p>
-                        <button class="launch-button" disabled style="background-color: var(--surface-elevated); cursor: not-allowed;">Bientôt</button>
+                    <p class="quiz-card-description">
+                        Évaluez vos connaissances sur les fondamentaux de la fibre optique, de la technologie FTTH aux équipements de mesure.
+                    </p>
+                    <div class="quiz-card-meta">
+                        <span class="meta-item"><i class="fas fa-layer-group"></i>Télécom</span>
+                        <span class="meta-item"><i class="fas fa-brain"></i>Intermédiaire</span>
                     </div>
-                </div>
-                <!-- Card 3: Placeholder -->
-                <div class="tool-card">
-                    <div class="tool-card-image">
-                         <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g stroke="var(--primary-light)" opacity="0.5"><rect x="40" y="30" width="120" height="70" rx="10" stroke-dasharray="8"/><circle cx="100" cy="65" r="20" stroke-dasharray="8"/></g></svg>
-                    </div>
-                    <div class="tool-card-content">
-                        <div class="tool-icon"><i class="fas fa-cogs"></i></div>
-                        <h3>Outil à venir</h3>
-                        <p>De nouveaux outils professionnels seront bientôt disponibles ici.</p>
-                        <button class="launch-button" disabled style="background-color: var(--surface-elevated); cursor: not-allowed;">Bientôt</button>
-                    </div>
+                    <a href="quiztelecom.html" class="quiz-card-button" onclick="event.preventDefault(); navigateTo('quiztelecom.html')">Commencer le Quiz</a>
                 </div>
             </div>
+
+            <!-- D'autres cartes de quiz peuvent être ajoutées ici -->
+            <div class="quiz-card" style="opacity: 0.5; pointer-events: none;">
+                <div class="quiz-card-image">
+                     <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <g stroke="var(--secondary)" opacity="0.7">
+                            <rect x="30" y="30" width="140" height="70" rx="5" />
+                            <path d="M 30 50 h 140" />
+                            <path d="M 70 30 v 70" />
+                            <path d="M 130 30 v 70" />
+                        </g>
+                     </svg>
+                </div>
+                <div class="quiz-card-content">
+                    <div class="quiz-card-header">
+                        <div class="quiz-card-icon"><i class="fas fa-hard-hat"></i></div>
+                        <h2 class="quiz-card-title">Quiz BTP : Sécurité Chantier</h2>
+                    </div>
+                    <p class="quiz-card-description">
+                        Les règles de sécurité sur un chantier n'ont aucun secret pour vous ? Prouvez-le !
+                    </p>
+                    <div class="quiz-card-meta">
+                        <span class="meta-item"><i class="fas fa-layer-group"></i>BTP</span>
+                        <span class="meta-item"><i class="fas fa-brain"></i>Facile</span>
+                    </div>
+                    <a href="#" class="quiz-card-button">Bientôt disponible</a>
+                </div>
+            </div>
+
         </section>
 
     </main>
-    
+
+    <!-- Notification System -->
     <div class="toast-notification" id="toastNotification">
         <div class="toast-notification-content">
             <i class="fas fa-info-circle toast-notification-icon" id="toastNotificationIcon"></i>
@@ -1321,7 +1324,7 @@
             <button class="toast-notification-close" onclick="this.parentElement.parentElement.classList.remove('show')"><i class="fas fa-times"></i></button>
         </div>
     </div>
-
+    
     <!-- Profile Modal -->
     <div id="profileModal" class="modal">
         <div class="modal-overlay" onclick="closeProfileModal()"></div>
@@ -1401,11 +1404,11 @@
                 <button class="modal-close-btn" onclick="closeExplorerModal()" title="Fermer"><i class="fas fa-times"></i></button>
                 <div class="explorer-grid">
                     <a href="dashboard.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('dashboard.html')"><div class="explorer-item-icon"><i class="fas fa-th-large fa-fw"></i></div><div class="explorer-item-text"><h4>Dashboard</h4><p>Vue d'ensemble.</p></div></a>
-                    <a href="simulateur1.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('simulateur1.html')"><div class="explorer-item-icon"><i class="fas fa-cubes fa-fw"></i></div><div class="explorer-item-text"><h4>Simulateurs</h4><p>Entraînement pratique.</p></div></a>
-                    <a href="test1.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('test1.html')"><div class="explorer-item-icon"><i class="fas fa-brain fa-fw"></i></div><div class="explorer-item-text"><h4>Tests</h4><p>Évaluez vos compétences.</p></div></a>
-                    <a href="quiz1.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('quiz1.html')"><div class="explorer-item-icon"><i class="fas fa-question-circle fa-fw"></i></div><div class="explorer-item-text"><h4>Quiz</h4><p>Testez vos connaissances.</p></div></a>
-                    <a href="challenges1.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('challenges1.html')"><div class="explorer-item-icon"><i class="fas fa-trophy fa-fw"></i></div><div class="explorer-item-text"><h4>Challenges</h4><p>Relevez des défis.</p></div></a>
-                    <a href="emploi1.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('emploi1.html')"><div class="explorer-item-icon"><i class="fas fa-briefcase fa-fw"></i></div><div class="explorer-item-text"><h4>Offres d'emploi</h4><p>Votre future carrière.</p></div></a>
+                    <a href="simulateur.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('simulateur.html')"><div class="explorer-item-icon"><i class="fas fa-cubes fa-fw"></i></div><div class="explorer-item-text"><h4>Simulateurs</h4><p>Entraînement pratique.</p></div></a>
+                    <a href="test.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('test.html')"><div class="explorer-item-icon"><i class="fas fa-brain fa-fw"></i></div><div class="explorer-item-text"><h4>Tests</h4><p>Évaluez vos compétences.</p></div></a>
+                    <a href="outils.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('outils.html')"><div class="explorer-item-icon"><i class="fas fa-wrench fa-fw"></i></div><div class="explorer-item-text"><h4>Outils</h4><p>Ressources utiles.</p></div></a>
+                    <a href="challenges.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('challenges.html')"><div class="explorer-item-icon"><i class="fas fa-trophy fa-fw"></i></div><div class="explorer-item-text"><h4>Challenges</h4><p>Relevez des défis.</p></div></a>
+                    <a href="emploi.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('emploi.html')"><div class="explorer-item-icon"><i class="fas fa-briefcase fa-fw"></i></div><div class="explorer-item-text"><h4>Offres d'emploi</h4><p>Votre future carrière.</p></div></a>
                 </div>
             </div>
         </div>
@@ -1454,7 +1457,7 @@
                 progressFill.style.width = progress + '%';
             }, 100);
         }
-
+        
         function navigateTo(pageFile) {
             showProgress();
             showToastNotification(`Chargement de la page...`, 'info');
@@ -1494,302 +1497,77 @@
             document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
         }
 
-        function populateMobileNav() {
-            const mobileNavContainer = document.querySelector('.mobile-menu .mobile-nav-items');
-            if(!mobileNavContainer) return;
-
-            mobileNavContainer.innerHTML = `
+        function populateMobileNav(session) {
+            const container = document.querySelector('.mobile-menu .mobile-nav-items');
+            if(!container) return;
+            const loggedIn = !!session;
+            
+            let navItemsHTML = `
                 <a href="#" class="mobile-nav-item" onclick="openExplorerModal(); toggleMobileMenu();">
                     <div class="mobile-nav-item-icon"><i class="fas fa-compass"></i></div><h4>Explorer</h4>
                 </a>
                 <h3 class="mobile-nav-section-title">Actions</h3>
-                <a href="#" class="mobile-nav-item" onclick="openProfileModal(); toggleMobileMenu();">
-                     <div class="mobile-nav-item-icon"><i class="fas fa-user"></i></div><h4>Mon Profil</h4>
-                </a>
-                <a href="#" class="mobile-nav-item" onclick="handleMobileLogout(event)">
-                    <div class="mobile-nav-item-icon"><i class="fas fa-sign-out-alt"></i></div><h4>Déconnexion</h4>
-                </a>
-                <a href="#" class="mobile-nav-item" onclick="handleMobileThemeToggle(event)">
-                    <div class="mobile-nav-item-icon"><i class="fas fa-sun"></i></div><h4>Changer de thème</h4>
-                </a>
             `;
-        }
-        
-        function handleMobileLogout(event) {
-            event.preventDefault();
-            toggleMobileMenu();
-            logout();
-        }
 
-        function handleMobileThemeToggle(event) {
-            event.preventDefault();
-            toggleMobileMenu();
-            toggleTheme();
-        }
-
-        // --- Modal Logic ---
-        function openAvatarModal() { document.getElementById('avatarModal').classList.add('show'); }
-        window.openAvatarModal = openAvatarModal;
-        function closeAvatarModal() { document.getElementById('avatarModal').classList.remove('show'); }
-        window.closeAvatarModal = closeAvatarModal;
-        function openProfileModal() { document.getElementById('profileModal').classList.add('show'); }
-        window.openProfileModal = openProfileModal;
-        function closeProfileModal() { document.getElementById('profileModal').classList.remove('show'); }
-        window.closeProfileModal = closeProfileModal;
-        function openExplorerModal() { document.getElementById('explorerModal').classList.add('show'); }
-        window.openExplorerModal = openExplorerModal;
-        function closeExplorerModal() { document.getElementById('explorerModal').classList.remove('show'); }
-        window.closeExplorerModal = closeExplorerModal;
-
-        function showToastNotification(message, type = 'info', duration = 3000) {
-            const notification = document.getElementById('toastNotification');
-            if (!notification) return;
-            const notificationText = notification.querySelector('.toast-notification-text');
-            const notificationIcon = notification.querySelector('.toast-notification-icon');
-            
-            notification.className = 'toast-notification';
-            notificationIcon.className = 'toast-notification-icon fas';
-
-            switch(type) {
-                case 'success': notificationIcon.classList.add('fa-check-circle'); notification.classList.add('success'); break;
-                case 'warning': notificationIcon.classList.add('fa-exclamation-triangle'); notification.classList.add('warning'); break;
-                case 'error': notificationIcon.classList.add('fa-exclamation-circle'); notification.classList.add('error'); break;
-                default: notificationIcon.classList.add('fa-info-circle');
-            }
-            notificationText.textContent = message;
-            notification.classList.add('show');
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, duration);
-        }
-
-        // --- Authentication & Profile Logic ---
-        async function updateProfile() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            if (!user) {
-                showToastNotification('Utilisateur non trouvé.', 'error');
-                return;
-            }
-
-            const fullName = document.getElementById("fullName").value;
-            const company = document.getElementById("company").value;
-            const website = document.getElementById("website").value;
-
-            const { error } = await supabaseClient
-                .from('profiles')
-                .update({
-                    full_name: fullName,
-                    company: company,
-                    website: website,
-                    updated_at: new Date()
-                })
-                .eq('id', user.id);
-
-            if (error) {
-                showToastNotification('Erreur de sauvegarde: ' + error.message, 'error');
+            if (loggedIn) {
+                navItemsHTML += `
+                    <a href="#" class="mobile-nav-item" onclick="openProfileModal(); toggleMobileMenu();"><div class="mobile-nav-item-icon"><i class="fas fa-user"></i></div><h4>Mon Profil</h4></a>
+                    <a href="#" class="mobile-nav-item" onclick="logout(); toggleMobileMenu();"><div class="mobile-nav-item-icon"><i class="fas fa-sign-out-alt"></i></div><h4>Déconnexion</h4></a>
+                `;
             } else {
-                showToastNotification('Profil mis à jour !', 'success');
-                document.getElementById('headerUsername').textContent = fullName;
-                document.getElementById('dropdownUsername').textContent = fullName;
-                closeProfileModal();
+                 navItemsHTML += `<a href="connexion.html" class="mobile-nav-item"><div class="mobile-nav-item-icon"><i class="fas fa-sign-in-alt"></i></div><h4>Connexion</h4></a>`;
             }
+
+            navItemsHTML += `<a href="#" class="mobile-nav-item" onclick="toggleTheme(); toggleMobileMenu();"><div class="mobile-nav-item-icon"><i class="fas fa-palette"></i></div><h4>Changer de thème</h4></a>`;
+            container.innerHTML = navItemsHTML;
         }
-        window.updateProfile = updateProfile;
         
-        async function updateAvatarUrl(avatarUrl) {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            if (!user) {
-                showToastNotification('Utilisateur non trouvé.', 'error');
-                return;
-            }
-
-            const { error } = await supabaseClient
-                .from('profiles')
-                .update({ avatar_url: avatarUrl, updated_at: new Date() })
-                .eq('id', user.id);
-
-            if (error) {
-                showToastNotification(`Erreur de mise à jour du profil : ${error.message}`, 'error');
-            } else {
-                document.getElementById('headerAvatar').src = avatarUrl;
-                document.getElementById('dropdownAvatar').src = avatarUrl;
-                showToastNotification('Avatar mis à jour !', 'success');
-                updateSelectedAvatar(avatarUrl);
-            }
-        }
-
-        async function uploadAvatar(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            if (!user) return;
-
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${user.id}-${Date.now()}.${fileExt}`;
-            const filePath = `${fileName}`;
-
-            showToastNotification('Téléversement de l\'avatar...', 'info');
-
-            const { error: uploadError } = await supabaseClient.storage
-                .from('avatars')
-                .upload(filePath, file, {
-                    cacheControl: '3600',
-                    upsert: true
-                });
-
-            if (uploadError) {
-                showToastNotification(`Erreur de téléversement : ${uploadError.message}`, 'error');
-                closeAvatarModal();
-                return;
-            }
-
-            const { data } = supabaseClient.storage.from('avatars').getPublicUrl(filePath);
-            await updateAvatarUrl(data.publicUrl);
-            closeAvatarModal();
-        }
-
-        async function selectPredefinedAvatar(element) {
-            const svgElement = element.querySelector('svg');
-            if (!svgElement) return;
-            const svgHtml = svgElement.outerHTML;
-            const dataUrl = 'data:image/svg+xml;base64,' + btoa(svgHtml);
-            await updateAvatarUrl(dataUrl);
-            closeAvatarModal();
-        }
-        window.selectPredefinedAvatar = selectPredefinedAvatar;
-
-        function updateSelectedAvatar(currentAvatarUrl) {
-            const avatarChoices = document.querySelectorAll('.avatar-choice');
-            avatarChoices.forEach(choice => {
-                choice.classList.remove('selected');
-                const svgElement = choice.querySelector('svg');
-                if (svgElement) {
-                    const svgHtml = svgElement.outerHTML;
-                    const dataUrl = 'data:image/svg+xml;base64,' + btoa(svgHtml);
-                    if (dataUrl === currentAvatarUrl) {
-                        choice.classList.add('selected');
-                    }
-                }
-            });
-        }
-
-        function redirectToLogin() {
-            const newPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) + 'connexion.html';
-            window.location.href = newPath;
-        }
-
-        async function logout() {
-            const overlay = document.getElementById('logoutOverlay');
-            if (overlay) overlay.classList.add('show');
-
-            try {
-                const { error } = await supabaseClient.auth.signOut({ scope: 'global' });
-                if (error) throw error;
-            } catch (e) {
-                console.warn("Erreur déconnexion:", e);
-            } finally {
-                localStorage.clear();
-                sessionStorage.clear();
-                redirectToLogin();
-            }
-        }
-        window.logout = logout;
+        function openModal(id) { document.getElementById(id)?.classList.add('show'); }
+        function closeModal(id) { document.getElementById(id)?.classList.remove('show'); }
         
-        async function loadUserData(session) {
-            const user = session.user;
-            
-            const { data: profile, error: profileError } = await supabaseClient
-                .from('profiles')
-                .select('*')
-                .eq('id', user.id)
-                .single();
+        window.openAvatarModal = () => openModal('avatarModal');
+        window.closeAvatarModal = () => closeModal('avatarModal');
+        window.openProfileModal = () => openModal('profileModal');
+        window.closeProfileModal = () => closeModal('profileModal');
+        window.openExplorerModal = () => openModal('explorerModal');
+        window.closeExplorerModal = () => closeModal('explorerModal');
+        window.openCommandPalette = () => { openModal('commandPaletteModal'); document.getElementById('commandPaletteInput').focus(); renderCommandPaletteResults(''); };
+        window.closeCommandPalette = () => closeModal('commandPaletteModal');
 
-            if (profileError && profileError.code !== 'PGRST116') { 
-                console.error("Erreur lecture profil:", profileError);
-            }
-            
-            const username = profile?.full_name || user.email;
-            const avatarUrl = profile?.avatar_url;
-            
-            document.getElementById('headerUsername').textContent = username;
-            document.getElementById('dropdownUsername').textContent = username;
-            document.getElementById('dropdownUserEmail').textContent = user.email;
-            
-            if(avatarUrl) {
-                document.getElementById('headerAvatar').src = avatarUrl;
-                document.getElementById('dropdownAvatar').src = avatarUrl;
-                updateSelectedAvatar(avatarUrl);
-            }
-
-            document.getElementById('fullName').value = profile?.full_name || '';
-            document.getElementById('company').value = profile?.company || '';
-            document.getElementById('website').value = profile?.website || '';
-        }
-
-        // --- Notification Panel Logic ---
-        function toggleNotificationPanel() {
-            document.getElementById('notificationPanel').classList.toggle('show');
-        }
+        function toggleNotificationPanel() { document.getElementById('notificationPanel')?.classList.toggle('show'); }
+        
         function renderNotifications() {
             const list = document.getElementById('notificationList');
+            if (!list) return;
             const notifications = [
                 { icon: 'fa-check', type: 'success', text: 'Le Test de sécurité N°1 a été complété.', time: 'Il y a 15m' },
                 { icon: 'fa-trophy', type: 'warning', text: 'Nouveau challenge disponible : Maîtrise de la grue.', time: 'Il y a 1h' },
                 { icon: 'fa-info-circle', type: 'info', text: 'Une maintenance est prévue ce soir à 23h.', time: 'Il y a 4h' }
             ];
-            list.innerHTML = notifications.map(n => `
-                <a href="#" class="notification-item">
-                    <div class="notification-item-icon icon-${n.type}"><i class="fas ${n.icon}"></i></div>
-                    <div class="notification-item-content">
-                        <p>${n.text}</p>
-                        <span>${n.time}</span>
-                    </div>
-                </a>
-            `).join('');
+            list.innerHTML = notifications.map(n => `<a href="#" class="notification-item"><div class="notification-item-icon icon-${n.type}"><i class="fas ${n.icon}"></i></div><div class="notification-item-content"><p>${n.text}</p><span>${n.time}</span></div></a>`).join('');
         }
 
-        // --- Command Palette Logic ---
         const commandPaletteCommands = [
-            { name: 'Simulateurs', icon: 'fa-cubes', href: 'simulateur1.html' },
-            { name: 'Tests', icon: 'fa-brain', href: 'test1.html' },
-            { name: 'Quiz', icon: 'fa-question-circle', href: 'quiz1.html' },
-            { name: 'Outils', icon: 'fa-wrench', href: 'outils1.html' },
-            { name: 'Challenges', icon: 'fa-trophy', href: 'challenges1.html' },
-            { name: 'Offres d\'emploi', icon: 'fa-briefcase', href: 'emploi1.html' },
+            { name: 'Simulateurs', icon: 'fa-cubes', href: 'simulateur.html' },
+            { name: 'Tests', icon: 'fa-brain', href: 'test.html' },
+            { name: 'Quiz', icon: 'fa-question-circle', href: 'quiz.html' },
+            { name: 'Outils', icon: 'fa-wrench', href: 'outils.html' },
+            { name: 'Challenges', icon: 'fa-trophy', href: 'challenges.html' },
+            { name: 'Offres d\'emploi', icon: 'fa-briefcase', href: 'emploi.html' },
             { name: 'Mon Profil', icon: 'fa-user', action: openProfileModal },
             { name: 'Changer de thème', icon: 'fa-palette', action: toggleTheme },
             { name: 'Déconnexion', icon: 'fa-sign-out-alt', action: logout },
         ];
 
-        function openCommandPalette() {
-            const modal = document.getElementById('commandPaletteModal');
-            modal.classList.add('show');
-            document.getElementById('commandPaletteInput').focus();
-            renderCommandPaletteResults('');
-        }
-        window.openCommandPalette = openCommandPalette;
-
-        function closeCommandPalette() {
-            document.getElementById('commandPaletteModal').classList.remove('show');
-        }
-
         function renderCommandPaletteResults(query) {
             const list = document.getElementById('commandPaletteList');
             const lowerQuery = query.toLowerCase();
             const results = commandPaletteCommands.filter(cmd => cmd.name.toLowerCase().includes(lowerQuery));
-
             if (results.length === 0) {
                 list.innerHTML = '<div class="command-palette-empty">Aucun résultat trouvé.</div>';
                 return;
             }
-
-            list.innerHTML = results.map((cmd, index) => `
-                <a href="${cmd.href || '#'}" class="command-palette-item ${index === 0 ? 'selected' : ''}" data-action="${cmd.action ? cmd.name : ''}" ${cmd.href ? `onclick="navigateTo('${cmd.href}')"` : 'onclick="executeCommandAction(this, event)"'}>
-                    <i class="fas ${cmd.icon} command-palette-item-icon"></i>
-                    <span class="command-palette-item-text">${cmd.name}</span>
-                </a>
-            `).join('');
+            list.innerHTML = results.map((cmd, index) => `<a href="${cmd.href || '#'}" class="command-palette-item ${index === 0 ? 'selected' : ''}" data-action="${cmd.action ? cmd.name : ''}" ${cmd.href ? `onclick="navigateTo('${cmd.href}')"` : 'onclick="executeCommandAction(this, event)"'}><i class="fas ${cmd.icon} command-palette-item-icon"></i><span class="command-palette-item-text">${cmd.name}</span></a>`).join('');
         }
         
         function executeCommandAction(element, event) {
@@ -1892,70 +1670,18 @@
 
             supabaseClient.auth.onAuthStateChange((event, session) => {
                 if (session) {
-                    if (window.location.hash.includes('access_token')) {
-                        window.history.replaceState(null, '', window.location.pathname);
-                    }
-                    loadUserData(session);
+                    setupAuthenticatedHeader(session);
                 } else {
-                    if (!window.location.hash.includes('access_token')) {
-                        redirectToLogin();
-                    }
+                    setupGuestHeader();
                 }
+                populateMobileNav(session);
             });
 
             updateThemeUI();
-            populateMobileNav();
-            renderNotifications();
             initAnimations();
             setupSlider();
-
-            const userProfileToggle = document.getElementById('userProfileToggle');
-            const avatarUploadInput = document.getElementById('avatarUpload');
-            const notificationToggle = document.getElementById('notificationToggle');
-            const commandPaletteInput = document.getElementById('commandPaletteInput');
-
-            if (userProfileToggle) {
-                userProfileToggle.addEventListener('click', (event) => {
-                    event.stopPropagation();
-                    openProfileModal();
-                });
-            }
-            
-            if (avatarUploadInput) {
-                avatarUploadInput.addEventListener('change', uploadAvatar);
-            }
-
-            if (notificationToggle) {
-                notificationToggle.addEventListener('click', (event) => {
-                    event.stopPropagation();
-                    toggleNotificationPanel();
-                });
-            }
-
-            if(commandPaletteInput) {
-                commandPaletteInput.addEventListener('input', (e) => renderCommandPaletteResults(e.target.value));
-            }
-
-            // Close dropdowns when clicking outside
-            window.addEventListener('click', (event) => {
-                const notificationPanel = document.getElementById('notificationPanel');
-                if (notificationPanel && !event.target.closest('.notification-wrapper')) {
-                    notificationPanel.classList.remove('show');
-                }
-            });
-
-            // Keyboard shortcut for command palette
-            window.addEventListener('keydown', (e) => {
-                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-                    e.preventDefault();
-                    openCommandPalette();
-                }
-                const commandPaletteModal = document.getElementById('commandPaletteModal');
-                if (e.key === 'Escape' && commandPaletteModal && commandPaletteModal.classList.contains('show')) {
-                    closeCommandPalette();
-                }
-            });
+            setupNotifications();
         });
     </script>
 </body>
-</ht
+</html>
