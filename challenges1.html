@@ -277,6 +277,35 @@
         .slider-dots { position: absolute; bottom: var(--spacing-md); left: 50%; transform: translateX(-50%); display: flex; gap: 1rem; }
         .slider-dot { width: 0.75rem; height: 0.75rem; border-radius: var(--radius-full); background: var(--glass); border: 1px solid var(--glass-border); cursor: pointer; transition: var(--transition-slow); }
         .slider-dot.active { background: var(--accent); transform: scale(1.3); box-shadow: 0 0 10px var(--accent); }
+        
+        /* --- Styles for "Under Construction" --- */
+        .in-construction {
+            position: relative;
+            overflow: hidden;
+            pointer-events: none; /* Disable interaction with the card */
+        }
+        .in-construction > * {
+            filter: grayscale(80%);
+            opacity: 0.5;
+        }
+        .in-construction::after {
+            content: 'En Construction';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-5deg);
+            background: var(--accent);
+            color: var(--background);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-weight: 700;
+            font-size: 1.1rem;
+            z-index: 10;
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            pointer-events: none;
+        }
+
         @media (min-width: 768px) { .main-content { padding: var(--spacing-xl) var(--spacing-md); } }
         @media (min-width: 1024px) { .mobile-toggle { display: none; } .nav-desktop { display: flex; align-items: center; flex-grow: 1; justify-content: flex-start; gap: var(--spacing-sm); } .header-search { width: 280px; } .nav-menu { margin-left: var(--spacing-md); } .nav-actions { margin-left: auto; } }
         @media (min-width: 1280px) { .logo-text-extended { display: inline; } }
@@ -401,7 +430,7 @@
         </section>
         
         <section class="challenge-grid animate-in" style="margin: 4rem 0;">
-            <div class="challenge-card">
+            <div class="challenge-card in-construction">
                 <div class="challenge-card-image">
                     <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <g stroke="var(--primary-light)" opacity="0.6">
@@ -433,7 +462,7 @@
             </div>
 
             <!-- Challenge Card 2 -->
-            <div class="challenge-card">
+            <div class="challenge-card in-construction">
                 <div class="challenge-card-image">
                     <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <g stroke="var(--primary-light)" opacity="0.7">
@@ -463,7 +492,7 @@
             </div>
 
             <!-- Challenge Card 3 -->
-            <div class="challenge-card">
+            <div class="challenge-card in-construction">
                  <div class="challenge-card-image">
                     <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                         <g stroke="var(--accent)" opacity="0.8">
@@ -1085,28 +1114,28 @@
                 if (session) {
                     navActions.innerHTML = `
                         <div class="notification-wrapper" style="position: relative;">
-                           <button class="action-btn notification-bell" id="notificationToggle" title="Notifications">
-                               <i class="fas fa-bell"></i>
-                               <span class="badge" id="notificationBadge">3</span>
-                           </button>
-                           <div class="notification-panel" id="notificationPanel">
-                               <div class="notification-header">
-                                   <h4>Notifications</h4>
-                                   <a href="#">Marquer comme lu</a>
-                               </div>
-                               <div class="notification-list" id="notificationList"></div>
-                               <div class="notification-footer"><a href="#">Voir toutes les notifications</a></div>
-                           </div>
-                       </div>
-                       <div class="profile-dropdown">
-                           <button id="userProfileToggle" class="user-profile-toggle" title="Menu du profil">
-                               <img id="headerAvatar" src="https://placehold.co/40x40/1e293b/f8fafc?text=LTD" alt="Avatar">
-                               <span id="headerUsername">Chargement...</span>
-                           </button>
-                       </div>
-                       <button class="action-btn theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
-                           <i class="fas fa-moon" id="themeIcon"></i>
-                       </button>
+                            <button class="action-btn notification-bell" id="notificationToggle" title="Notifications">
+                                <i class="fas fa-bell"></i>
+                                <span class="badge" id="notificationBadge">3</span>
+                            </button>
+                            <div class="notification-panel" id="notificationPanel">
+                                <div class="notification-header">
+                                    <h4>Notifications</h4>
+                                    <a href="#">Marquer comme lu</a>
+                                </div>
+                                <div class="notification-list" id="notificationList"></div>
+                                <div class="notification-footer"><a href="#">Voir toutes les notifications</a></div>
+                            </div>
+                        </div>
+                        <div class="profile-dropdown">
+                            <button id="userProfileToggle" class="user-profile-toggle" title="Menu du profil">
+                                <img id="headerAvatar" src="https://placehold.co/40x40/1e293b/f8fafc?text=LTD" alt="Avatar">
+                                <span id="headerUsername">Chargement...</span>
+                            </button>
+                        </div>
+                        <button class="action-btn theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
+                            <i class="fas fa-moon" id="themeIcon"></i>
+                        </button>
                     `;
                     document.getElementById('notificationToggle').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('notificationPanel').classList.toggle('show'); });
                     document.getElementById('userProfileToggle').addEventListener('click', (e) => { e.stopPropagation(); openProfileModal(); });
@@ -1120,7 +1149,7 @@
                             <i class="fas fa-moon" id="themeIcon"></i>
                         </button>
                     `;
-                     updateThemeUI();
+                    updateThemeUI();
                 }
                 populateMobileNav(session);
             });
