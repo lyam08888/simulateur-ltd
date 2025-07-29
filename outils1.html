@@ -122,7 +122,7 @@
             100% { background-position: 0% 50%; }
         }
         
-        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn, .notification-bell, .quiz-card-button, .logout-btn, .user-profile-toggle, .command-palette-item, .launch-button {
+        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn, .notification-bell, .quiz-card-button, .logout-btn, .user-profile-toggle, .command-palette-item, .launch-button, .challenge-card-button {
             cursor: pointer;
         }
 
@@ -1079,7 +1079,7 @@
         .progress-bar { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: transparent; z-index: 1001; opacity: 0; transition: opacity 0.3s ease; }
         .progress-bar.show { opacity: 1; }
         .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.3s ease; box-shadow: 0 0 10px var(--primary), 0 0 5px var(--secondary); }
-
+        
         .animate-in {
             opacity: 0;
             transform: translateY(40px);
@@ -1089,6 +1089,25 @@
             opacity: 1;
             transform: translateY(0);
         }
+        
+        /* --- SLIDER STYLES --- */
+        .slider-container { position: relative; width: 100%; border-radius: var(--radius-xl); overflow: hidden; margin-bottom: var(--spacing-xl); background-color: var(--surface); box-shadow: var(--shadow-lg); border: 1px solid var(--glass-border); }
+        .slider-wrapper { display: flex; transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+        .slide { min-width: 100%; position: relative; overflow: hidden; }
+        .slide .slide-background { width: 100%; display: block; aspect-ratio: 16 / 6; object-fit: cover; transition: transform 8s ease-out; background-color: var(--surface-elevated); }
+        .slide.active .slide-background { transform: scale(1.1); }
+        .slide-content { position: absolute; bottom: 0; left: 0; right: 0; padding: var(--spacing-lg); background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 10%, transparent); color: var(--text-primary); transform: translateY(100%); transition: transform 0.6s ease-out; }
+        .slide.active .slide-content { transform: translateY(0); }
+        body.light-mode .slide-content { background: linear-gradient(to top, rgba(241, 245, 249, 0.9) 10%, transparent); }
+        .slide-content h3 { font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 700; text-shadow: 0 2px 5px rgba(0,0,0,0.5); margin-bottom: 0.5rem; }
+        .slide-content p { font-size: clamp(0.9rem, 1.5vw, 1.1rem); color: var(--text-secondary); text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+        .slider-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 3rem; height: 3rem; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius-full); color: var(--text-primary); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition-slow); opacity: 0.7; }
+        .slider-nav:hover { background-color: var(--primary); transform: translateY(-50%) scale(1.1); opacity: 1; }
+        .slider-nav.prev { left: var(--spacing-md); }
+        .slider-nav.next { right: var(--spacing-md); }
+        .slider-dots { position: absolute; bottom: var(--spacing-md); left: 50%; transform: translateX(-50%); display: flex; gap: 1rem; }
+        .slider-dot { width: 0.75rem; height: 0.75rem; border-radius: var(--radius-full); background: var(--glass); border: 1px solid var(--glass-border); cursor: pointer; transition: var(--transition-slow); }
+        .slider-dot.active { background: var(--primary); transform: scale(1.3); box-shadow: 0 0 10px var(--primary); }
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -1097,13 +1116,32 @@
             .nav-desktop { display: none; }
             .mobile-toggle { display: flex; }
         }
+        
+        /* MODIFICATION ICI */
         @media (min-width: 1024px) {
-            .mobile-toggle { display: none; }
-            .nav-desktop { display: flex; align-items: center; flex-grow: 1; justify-content: flex-start; gap: var(--spacing-sm); }
-            .header-search { width: 280px; }
-            .nav-menu { margin-left: var(--spacing-md); }
-            .nav-actions { margin-left: auto; }
+            .mobile-toggle {
+                display: none;
+            }
+            .nav-desktop {
+                display: flex;
+                align-items: center;
+                flex-grow: 1;
+                justify-content: flex-start; 
+                gap: var(--spacing-sm); 
+            }
+            .header-search {
+                width: 280px;
+            }
+            .nav-menu {
+                display: flex;
+                gap: var(--spacing-xs); 
+                margin-left: var(--spacing-md);
+            }
+            .nav-actions {
+                margin-left: auto;
+            }
         }
+
         @media (min-width: 1280px) {
             .logo-text-extended { display: inline; }
         }
@@ -1362,48 +1400,12 @@
             <div class="explorer-main">
                 <button class="modal-close-btn" onclick="closeExplorerModal()" title="Fermer"><i class="fas fa-times"></i></button>
                 <div class="explorer-grid">
-                    <a href="simulateur1.html" class="explorer-item">
-                        <div class="explorer-item-icon"><i class="fas fa-cubes fa-fw"></i></div>
-                        <div class="explorer-item-text">
-                            <h4>Simulateurs</h4>
-                            <p>Entraînement pratique.</p>
-                        </div>
-                    </a>
-                    <a href="test1.html" class="explorer-item">
-                        <div class="explorer-item-icon"><i class="fas fa-brain fa-fw"></i></div>
-                        <div class="explorer-item-text">
-                            <h4>Tests</h4>
-                            <p>Évaluez vos compétences.</p>
-                        </div>
-                    </a>
-                    <a href="quiz1.html" class="explorer-item">
-                        <div class="explorer-item-icon"><i class="fas fa-question-circle fa-fw"></i></div>
-                        <div class="explorer-item-text">
-                            <h4>Quiz</h4>
-                            <p>Testez vos connaissances.</p>
-                        </div>
-                    </a>
-                    <a href="outils1.html" class="explorer-item">
-                        <div class="explorer-item-icon"><i class="fas fa-wrench fa-fw"></i></div>
-                        <div class="explorer-item-text">
-                            <h4>Outils</h4>
-                            <p>Ressources utiles.</p>
-                        </div>
-                    </a>
-                    <a href="challenges1.html" class="explorer-item">
-                        <div class="explorer-item-icon"><i class="fas fa-trophy fa-fw"></i></div>
-                        <div class="explorer-item-text">
-                            <h4>Challenges</h4>
-                            <p>Relevez des défis.</p>
-                        </div>
-                    </a>
-                    <a href="emploi1.html" class="explorer-item">
-                        <div class="explorer-item-icon"><i class="fas fa-briefcase fa-fw"></i></div>
-                        <div class="explorer-item-text">
-                            <h4>Offres d'emploi</h4>
-                            <p>Votre future carrière.</p>
-                        </div>
-                    </a>
+                    <a href="dashboard.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('dashboard.html')"><div class="explorer-item-icon"><i class="fas fa-th-large fa-fw"></i></div><div class="explorer-item-text"><h4>Dashboard</h4><p>Vue d'ensemble.</p></div></a>
+                    <a href="simulateur.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('simulateur.html')"><div class="explorer-item-icon"><i class="fas fa-cubes fa-fw"></i></div><div class="explorer-item-text"><h4>Simulateurs</h4><p>Entraînement pratique.</p></div></a>
+                    <a href="test.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('test.html')"><div class="explorer-item-icon"><i class="fas fa-brain fa-fw"></i></div><div class="explorer-item-text"><h4>Tests</h4><p>Évaluez vos compétences.</p></div></a>
+                    <a href="quiz.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('quiz.html')"><div class="explorer-item-icon"><i class="fas fa-question-circle fa-fw"></i></div><div class="explorer-item-text"><h4>Quiz</h4><p>Testez vos connaissances.</p></div></a>
+                    <a href="challenges.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('challenges.html')"><div class="explorer-item-icon"><i class="fas fa-trophy fa-fw"></i></div><div class="explorer-item-text"><h4>Challenges</h4><p>Relevez des défis.</p></div></a>
+                    <a href="emploi.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('emploi.html')"><div class="explorer-item-icon"><i class="fas fa-briefcase fa-fw"></i></div><div class="explorer-item-text"><h4>Offres d'emploi</h4><p>Votre future carrière.</p></div></a>
                 </div>
             </div>
         </div>
@@ -1452,7 +1454,7 @@
                 progressFill.style.width = progress + '%';
             }, 100);
         }
-        
+
         function navigateTo(pageFile) {
             showProgress();
             showToastNotification(`Chargement de la page...`, 'info');
@@ -1749,12 +1751,12 @@
 
         // --- Command Palette Logic ---
         const commandPaletteCommands = [
-            { name: 'Simulateurs', icon: 'fa-cubes', href: 'simulateur1.html' },
-            { name: 'Tests', icon: 'fa-brain', href: 'test1.html' },
-            { name: 'Quiz', icon: 'fa-question-circle', href: 'quiz1.html' },
-            { name: 'Outils', icon: 'fa-wrench', href: 'outils1.html' },
-            { name: 'Challenges', icon: 'fa-trophy', href: 'challenges1.html' },
-            { name: 'Offres d\'emploi', icon: 'fa-briefcase', href: 'emploi1.html' },
+            { name: 'Simulateurs', icon: 'fa-cubes', href: 'simulateur.html' },
+            { name: 'Tests', icon: 'fa-brain', href: 'test.html' },
+            { name: 'Quiz', icon: 'fa-question-circle', href: 'quiz.html' },
+            { name: 'Outils', icon: 'fa-wrench', href: 'outils.html' },
+            { name: 'Challenges', icon: 'fa-trophy', href: 'challenges.html' },
+            { name: 'Offres d\'emploi', icon: 'fa-briefcase', href: 'emploi.html' },
             { name: 'Mon Profil', icon: 'fa-user', action: openProfileModal },
             { name: 'Changer de thème', icon: 'fa-palette', action: toggleTheme },
             { name: 'Déconnexion', icon: 'fa-sign-out-alt', action: logout },
@@ -1956,4 +1958,4 @@
         });
     </script>
 </body>
-</html>
+</ht
