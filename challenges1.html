@@ -1265,7 +1265,7 @@
                         <span class="meta-item"><i class="fas fa-layer-group"></i>Chiffrage</span>
                         <span class="meta-item"><i class="fas fa-brain"></i>Expert</span>
                     </div>
-                    <a href="#" class="challenge-card-button" onclick="event.preventDefault(); launchGame('prixtce.html')">Participer</a>
+                    <a href="#" class="challenge-card-button" onclick="event.preventDefault(); navigateTo('prixtce.html')">Participer</a>
                 </div>
             </div>
 
@@ -1359,48 +1359,12 @@
             <div class="explorer-main">
                 <button class="modal-close-btn" onclick="closeExplorerModal()" title="Fermer"><i class="fas fa-times"></i></button>
                 <div class="explorer-grid">
-                    <a href="simulateur1.html" class="explorer-item">
-                        <div class="explorer-item-icon"><i class="fas fa-cubes fa-fw"></i></div>
-                        <div class="explorer-item-text">
-                            <h4>Simulateurs</h4>
-                            <p>Entraînement pratique.</p>
-                        </div>
-                    </a>
-                    <a href="test1.html" class="explorer-item">
-                        <div class="explorer-item-icon"><i class="fas fa-brain fa-fw"></i></div>
-                        <div class="explorer-item-text">
-                            <h4>Tests</h4>
-                            <p>Évaluez vos compétences.</p>
-                        </div>
-                    </a>
-                    <a href="quiz1.html" class="explorer-item">
-                        <div class="explorer-item-icon"><i class="fas fa-question-circle fa-fw"></i></div>
-                        <div class="explorer-item-text">
-                            <h4>Quiz</h4>
-                            <p>Testez vos connaissances.</p>
-                        </div>
-                    </a>
-                    <a href="outils1.html" class="explorer-item">
-                        <div class="explorer-item-icon"><i class="fas fa-wrench fa-fw"></i></div>
-                        <div class="explorer-item-text">
-                            <h4>Outils</h4>
-                            <p>Ressources utiles.</p>
-                        </div>
-                    </a>
-                    <a href="challenges1.html" class="explorer-item">
-                        <div class="explorer-item-icon"><i class="fas fa-trophy fa-fw"></i></div>
-                        <div class="explorer-item-text">
-                            <h4>Challenges</h4>
-                            <p>Relevez des défis.</p>
-                        </div>
-                    </a>
-                    <a href="emploi1.html" class="explorer-item">
-                        <div class="explorer-item-icon"><i class="fas fa-briefcase fa-fw"></i></div>
-                        <div class="explorer-item-text">
-                            <h4>Offres d'emploi</h4>
-                            <p>Votre future carrière.</p>
-                        </div>
-                    </a>
+                    <a href="dashboard.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('dashboard.html')"><div class="explorer-item-icon"><i class="fas fa-th-large fa-fw"></i></div><div class="explorer-item-text"><h4>Dashboard</h4><p>Vue d'ensemble.</p></div></a>
+                    <a href="simulateur.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('simulateur.html')"><div class="explorer-item-icon"><i class="fas fa-cubes fa-fw"></i></div><div class="explorer-item-text"><h4>Simulateurs</h4><p>Entraînement pratique.</p></div></a>
+                    <a href="test.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('test.html')"><div class="explorer-item-icon"><i class="fas fa-brain fa-fw"></i></div><div class="explorer-item-text"><h4>Tests</h4><p>Évaluez vos compétences.</p></div></a>
+                    <a href="quiz.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('quiz.html')"><div class="explorer-item-icon"><i class="fas fa-question-circle fa-fw"></i></div><div class="explorer-item-text"><h4>Quiz</h4><p>Testez vos connaissances.</p></div></a>
+                    <a href="outils.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('outils.html')"><div class="explorer-item-icon"><i class="fas fa-wrench fa-fw"></i></div><div class="explorer-item-text"><h4>Outils</h4><p>Ressources utiles.</p></div></a>
+                    <a href="emploi.html" class="explorer-item" onclick="event.preventDefault(); navigateTo('emploi.html')"><div class="explorer-item-icon"><i class="fas fa-briefcase fa-fw"></i></div><div class="explorer-item-text"><h4>Offres d'emploi</h4><p>Votre future carrière.</p></div></a>
                 </div>
             </div>
         </div>
@@ -1413,9 +1377,7 @@
             <div class="command-palette-search">
                 <input type="text" id="commandPaletteInput" placeholder="Tapez une commande ou une recherche...">
             </div>
-            <div class="command-palette-list" id="commandPaletteList">
-                <!-- Results injected by JS -->
-            </div>
+            <div class="command-palette-list" id="commandPaletteList"></div>
         </div>
     </div>
 
@@ -1424,7 +1386,12 @@
     <script>
         "use strict";
 
-        let supabaseClient;
+        // --- Supabase Client Setup ---
+        const { createClient } = supabase;
+        const supabaseUrl = "https://llujeetuahyabtocjzjl.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdWplZXR1YWh5YWJ0b2NqempsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNTA3NjcsImV4cCI6MjA2ODkyNjc2N30.tnkkUUzl7T5EKD-DJ5fuElwAzBFEUr7shQuLtdACdcY";
+        const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
         let currentTheme = localStorage.getItem('theme') || 'dark';
 
         function showProgress() {
@@ -1449,7 +1416,7 @@
                 progressFill.style.width = progress + '%';
             }, 100);
         }
-        
+
         function navigateTo(pageFile) {
             showProgress();
             showToastNotification(`Chargement de la page...`, 'info');
@@ -1458,153 +1425,118 @@
             }, 1000);
         }
 
-        function launchGame(url) {
-            showProgress();
-            showToastNotification(`Lancement du challenge...`, 'success');
-            setTimeout(() => {
-                window.location.href = url;
-            }, 1500);
-        }
-        
-        function updateThemeUI() {
-            const themeIcon = document.getElementById('themeIcon');
-            if (!themeIcon) return;
-            document.body.classList.toggle('light-mode', currentTheme === 'light');
-            themeIcon.className = currentTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
-        }
-
-        function toggleTheme() {
-            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-            localStorage.setItem('theme', currentTheme);
-            updateThemeUI();
-            showToastNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
-        }
-        
-        function toggleMobileMenu() {
-            const mobileMenu = document.getElementById('mobileMenu');
-            const mobileToggle = document.getElementById('mobileToggle');
-            if (!mobileMenu || !mobileToggle) return;
-            mobileMenu.classList.toggle('active');
-            mobileToggle.classList.toggle('active');
-            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
-        }
-
-        function populateMobileNav() {
-            const mobileNavContainer = document.querySelector('.mobile-menu .mobile-nav-items');
-            if(!mobileNavContainer) return;
-
-            mobileNavContainer.innerHTML = `
-                <a href="#" class="mobile-nav-item" onclick="openExplorerModal(); toggleMobileMenu();">
-                    <div class="mobile-nav-item-icon"><i class="fas fa-compass"></i></div><h4>Explorer</h4>
-                </a>
-                <h3 class="mobile-nav-section-title">Actions</h3>
-                <a href="#" class="mobile-nav-item" onclick="openProfileModal(); toggleMobileMenu();">
-                     <div class="mobile-nav-item-icon"><i class="fas fa-user"></i></div><h4>Mon Profil</h4>
-                </a>
-                <a href="#" class="mobile-nav-item" onclick="handleMobileLogout(event)">
-                    <div class="mobile-nav-item-icon"><i class="fas fa-sign-out-alt"></i></div><h4>Déconnexion</h4>
-                </a>
-                <a href="#" class="mobile-nav-item" onclick="handleMobileThemeToggle(event)">
-                    <div class="mobile-nav-item-icon"><i class="fas fa-sun"></i></div><h4>Changer de thème</h4>
-                </a>
+        // --- UI Update Functions ---
+        function setupAuthenticatedHeader(session) {
+            const user = session.user;
+            const navActions = document.getElementById('navActions');
+            navActions.innerHTML = `
+                <div class="notification-wrapper" style="position: relative;">
+                    <button class="action-btn notification-bell" id="notificationToggle" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge" id="notificationBadge">3</span>
+                    </button>
+                    <div class="notification-panel" id="notificationPanel">
+                        <div class="notification-header">
+                            <h4>Notifications</h4>
+                            <a href="#">Marquer comme lu</a>
+                        </div>
+                        <div class="notification-list" id="notificationList"></div>
+                        <div class="notification-footer"><a href="#">Voir toutes les notifications</a></div>
+                    </div>
+                </div>
+                <div class="profile-dropdown">
+                    <button id="userProfileToggle" class="user-profile-toggle" title="Menu du profil">
+                        <img id="headerAvatar" src="https://placehold.co/40x40/1e293b/f8fafc?text=LTD" alt="Avatar">
+                        <span id="headerUsername">Chargement...</span>
+                    </button>
+                </div>
+                <button class="action-btn theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
             `;
-        }
-        
-        function handleMobileLogout(event) {
-            event.preventDefault();
-            toggleMobileMenu();
-            logout();
-        }
-
-        function handleMobileThemeToggle(event) {
-            event.preventDefault();
-            toggleMobileMenu();
-            toggleTheme();
-        }
-
-        // --- Modal Logic ---
-        function openAvatarModal() { document.getElementById('avatarModal').classList.add('show'); }
-        window.openAvatarModal = openAvatarModal;
-        function closeAvatarModal() { document.getElementById('avatarModal').classList.remove('show'); }
-        window.closeAvatarModal = closeAvatarModal;
-        function openProfileModal() { document.getElementById('profileModal').classList.add('show'); }
-        window.openProfileModal = openProfileModal;
-        function closeProfileModal() { document.getElementById('profileModal').classList.remove('show'); }
-        window.closeProfileModal = closeProfileModal;
-        function openExplorerModal() { document.getElementById('explorerModal').classList.add('show'); }
-        window.openExplorerModal = openExplorerModal;
-        function closeExplorerModal() { document.getElementById('explorerModal').classList.remove('show'); }
-        window.closeExplorerModal = closeExplorerModal;
-
-        function showToastNotification(message, type = 'info', duration = 3000) {
-            const notification = document.getElementById('toastNotification');
-            if (!notification) return;
-            const notificationText = notification.querySelector('.toast-notification-text');
-            const notificationIcon = notification.querySelector('.toast-notification-icon');
             
-            notification.className = 'toast-notification';
-            notificationIcon.className = 'toast-notification-icon fas';
+            // Re-attach event listeners for dynamically added elements
+            document.getElementById('notificationToggle').addEventListener('click', (e) => { e.stopPropagation(); toggleNotificationPanel(); });
+            document.getElementById('userProfileToggle').addEventListener('click', (e) => { e.stopPropagation(); openProfileModal(); });
+            
+            renderNotifications();
+            updateThemeUI();
+            getProfile(user);
+        }
 
-            switch(type) {
-                case 'success': notificationIcon.classList.add('fa-check-circle'); notification.classList.add('success'); break;
-                case 'warning': notificationIcon.classList.add('fa-exclamation-triangle'); notification.classList.add('warning'); break;
-                case 'error': notificationIcon.classList.add('fa-exclamation-circle'); notification.classList.add('error'); break;
-                default: notificationIcon.classList.add('fa-info-circle');
+        function setupGuestHeader() {
+            const navActions = document.getElementById('navActions');
+            navActions.innerHTML = `
+                <a href="connexion.html" class="login-btn">Connexion</a>
+                <button class="action-btn theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
+            `;
+            updateThemeUI();
+        }
+
+        async function getProfile(user) {
+            const { data: profile, error } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+
+            if (error) {
+                console.warn('Error fetching profile:', error);
+            } else if (profile) {
+                const username = profile.full_name || user.email;
+                const avatarUrl = profile.avatar_url;
+                
+                document.getElementById('headerUsername').textContent = username;
+                document.getElementById('dropdownUsername').textContent = username;
+                document.getElementById('dropdownUserEmail').textContent = user.email;
+                
+                if (avatarUrl) {
+                    document.getElementById('headerAvatar').src = avatarUrl;
+                    document.getElementById('dropdownAvatar').src = avatarUrl;
+                    updateSelectedAvatar(avatarUrl);
+                }
+
+                document.getElementById('fullName').value = profile.full_name || '';
+                document.getElementById('company').value = profile.company || '';
+                document.getElementById('website').value = profile.website || '';
             }
-            notificationText.textContent = message;
-            notification.classList.add('show');
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, duration);
         }
 
         // --- Authentication & Profile Logic ---
         async function updateProfile() {
             const { data: { user } } = await supabaseClient.auth.getUser();
-            if (!user) {
-                showToastNotification('Utilisateur non trouvé.', 'error');
-                return;
-            }
+            if (!user) return showToastNotification('Utilisateur non trouvé.', 'error');
 
-            const fullName = document.getElementById("fullName").value;
-            const company = document.getElementById("company").value;
-            const website = document.getElementById("website").value;
+            const updates = {
+                id: user.id,
+                full_name: document.getElementById("fullName").value,
+                company: document.getElementById("company").value,
+                website: document.getElementById("website").value,
+                updated_at: new Date()
+            };
 
-            const { error } = await supabaseClient
-                .from('profiles')
-                .update({
-                    full_name: fullName,
-                    company: company,
-                    website: website,
-                    updated_at: new Date()
-                })
-                .eq('id', user.id);
+            const { error } = await supabaseClient.from('profiles').upsert(updates);
 
             if (error) {
                 showToastNotification('Erreur de sauvegarde: ' + error.message, 'error');
             } else {
                 showToastNotification('Profil mis à jour !', 'success');
-                document.getElementById('headerUsername').textContent = fullName;
-                document.getElementById('dropdownUsername').textContent = fullName;
+                document.getElementById('headerUsername').textContent = updates.full_name;
+                document.getElementById('dropdownUsername').textContent = updates.full_name;
                 closeProfileModal();
             }
         }
-        window.updateProfile = updateProfile;
-        
+
         async function updateAvatarUrl(avatarUrl) {
             const { data: { user } } = await supabaseClient.auth.getUser();
-            if (!user) {
-                showToastNotification('Utilisateur non trouvé.', 'error');
-                return;
-            }
+            if (!user) return showToastNotification('Utilisateur non trouvé.', 'error');
 
-            const { error } = await supabaseClient
-                .from('profiles')
-                .update({ avatar_url: avatarUrl, updated_at: new Date() })
-                .eq('id', user.id);
+            const { error } = await supabaseClient.from('profiles').update({ avatar_url: avatarUrl }).eq('id', user.id);
 
             if (error) {
-                showToastNotification(`Erreur de mise à jour du profil : ${error.message}`, 'error');
+                showToastNotification(`Erreur de mise à jour: ${error.message}`, 'error');
             } else {
                 document.getElementById('headerAvatar').src = avatarUrl;
                 document.getElementById('dropdownAvatar').src = avatarUrl;
@@ -1620,23 +1552,14 @@
             const { data: { user } } = await supabaseClient.auth.getUser();
             if (!user) return;
 
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${user.id}-${Date.now()}.${fileExt}`;
-            const filePath = `${fileName}`;
-
+            const filePath = `${user.id}-${Date.now()}.${file.name.split('.').pop()}`;
             showToastNotification('Téléversement de l\'avatar...', 'info');
 
-            const { error: uploadError } = await supabaseClient.storage
-                .from('avatars')
-                .upload(filePath, file, {
-                    cacheControl: '3600',
-                    upsert: true
-                });
+            const { error: uploadError } = await supabaseClient.storage.from('avatars').upload(filePath, file, { upsert: true });
 
             if (uploadError) {
-                showToastNotification(`Erreur de téléversement : ${uploadError.message}`, 'error');
-                closeAvatarModal();
-                return;
+                showToastNotification(`Erreur: ${uploadError.message}`, 'error');
+                return closeAvatarModal();
             }
 
             const { data } = supabaseClient.storage.from('avatars').getPublicUrl(filePath);
@@ -1645,160 +1568,82 @@
         }
 
         async function selectPredefinedAvatar(element) {
-            const svgElement = element.querySelector('svg');
-            if (!svgElement) return;
-            const svgHtml = svgElement.outerHTML;
+            const svgHtml = element.querySelector('svg')?.outerHTML;
+            if (!svgHtml) return;
             const dataUrl = 'data:image/svg+xml;base64,' + btoa(svgHtml);
             await updateAvatarUrl(dataUrl);
             closeAvatarModal();
         }
-        window.selectPredefinedAvatar = selectPredefinedAvatar;
 
         function updateSelectedAvatar(currentAvatarUrl) {
-            const avatarChoices = document.querySelectorAll('.avatar-choice');
-            avatarChoices.forEach(choice => {
+            document.querySelectorAll('.avatar-choice').forEach(choice => {
                 choice.classList.remove('selected');
-                const svgElement = choice.querySelector('svg');
-                if (svgElement) {
-                    const svgHtml = svgElement.outerHTML;
+                const svgHtml = choice.querySelector('svg')?.outerHTML;
+                if (svgHtml) {
                     const dataUrl = 'data:image/svg+xml;base64,' + btoa(svgHtml);
-                    if (dataUrl === currentAvatarUrl) {
-                        choice.classList.add('selected');
-                    }
+                    if (dataUrl === currentAvatarUrl) choice.classList.add('selected');
                 }
             });
         }
 
-        function redirectToLogin() {
-            const newPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) + 'connexion.html';
-            window.location.href = newPath;
-        }
-
         async function logout() {
-            const overlay = document.getElementById('logoutOverlay');
-            if (overlay) overlay.classList.add('show');
-
-            try {
-                const { error } = await supabaseClient.auth.signOut({ scope: 'global' });
-                if (error) throw error;
-            } catch (e) {
-                console.warn("Erreur déconnexion:", e);
-            } finally {
-                localStorage.clear();
-                sessionStorage.clear();
-                redirectToLogin();
-            }
-        }
-        window.logout = logout;
-        
-        async function loadUserData(session) {
-            const user = session.user;
-            
-            const { data: profile, error: profileError } = await supabaseClient
-                .from('profiles')
-                .select('*')
-                .eq('id', user.id)
-                .single();
-
-            if (profileError && profileError.code !== 'PGRST116') { 
-                console.error("Erreur lecture profil:", profileError);
-            }
-            
-            const username = profile?.full_name || user.email;
-            const avatarUrl = profile?.avatar_url;
-            
-            document.getElementById('headerUsername').textContent = username;
-            document.getElementById('dropdownUsername').textContent = username;
-            document.getElementById('dropdownUserEmail').textContent = user.email;
-            
-            if(avatarUrl) {
-                document.getElementById('headerAvatar').src = avatarUrl;
-                document.getElementById('dropdownAvatar').src = avatarUrl;
-                updateSelectedAvatar(avatarUrl);
-            }
-
-            document.getElementById('fullName').value = profile?.full_name || '';
-            document.getElementById('company').value = profile?.company || '';
-            document.getElementById('website').value = profile?.website || '';
+            document.getElementById('logoutOverlay')?.classList.add('show');
+            await supabaseClient.auth.signOut();
+            // The onAuthStateChange will handle the redirect
         }
 
-        // --- Notification Panel Logic ---
-        function toggleNotificationPanel() {
-            document.getElementById('notificationPanel').classList.toggle('show');
-        }
-        function renderNotifications() {
-            const list = document.getElementById('notificationList');
-            const notifications = [
-                { icon: 'fa-check', type: 'success', text: 'Le Test de sécurité N°1 a été complété.', time: 'Il y a 15m' },
-                { icon: 'fa-trophy', type: 'warning', text: 'Nouveau challenge disponible : Maîtrise de la grue.', time: 'Il y a 1h' },
-                { icon: 'fa-info-circle', type: 'info', text: 'Une maintenance est prévue ce soir à 23h.', time: 'Il y a 4h' }
-            ];
-            list.innerHTML = notifications.map(n => `
-                <a href="#" class="notification-item">
-                    <div class="notification-item-icon icon-${n.type}"><i class="fas ${n.icon}"></i></div>
-                    <div class="notification-item-content">
-                        <p>${n.text}</p>
-                        <span>${n.time}</span>
-                    </div>
-                </a>
-            `).join('');
+        // --- Original Page JS (Slider, Animations, etc.) ---
+        function launchTest(url) {
+            showToastNotification(`Lancement du test...`, 'success');
+            setTimeout(() => { window.location.href = url; }, 1500);
         }
 
-        // --- Command Palette Logic ---
-        const commandPaletteCommands = [
-            { name: 'Simulateurs', icon: 'fa-cubes', href: 'simulateur1.html' },
-            { name: 'Tests', icon: 'fa-brain', href: 'test1.html' },
-            { name: 'Quiz', icon: 'fa-question-circle', href: 'quiz1.html' },
-            { name: 'Outils', icon: 'fa-wrench', href: 'outils1.html' },
-            { name: 'Challenges', icon: 'fa-trophy', href: 'challenges1.html' },
-            { name: 'Offres d\'emploi', icon: 'fa-briefcase', href: 'emploi1.html' },
-            { name: 'Mon Profil', icon: 'fa-user', action: openProfileModal },
-            { name: 'Changer de thème', icon: 'fa-palette', action: toggleTheme },
-            { name: 'Déconnexion', icon: 'fa-sign-out-alt', action: logout },
-        ];
+        function setupSlider() {
+            const wrapper = document.querySelector('.slider-wrapper');
+            if (!wrapper) return;
+            const slides = wrapper.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('sliderPrev');
+            const nextBtn = document.getElementById('sliderNext');
+            const dotsContainer = document.getElementById('sliderDots');
+            let currentIndex = 0;
+            let slideInterval;
 
-        function openCommandPalette() {
-            const modal = document.getElementById('commandPaletteModal');
-            modal.classList.add('show');
-            document.getElementById('commandPaletteInput').focus();
-            renderCommandPaletteResults('');
-        }
-        window.openCommandPalette = openCommandPalette;
-
-        function closeCommandPalette() {
-            document.getElementById('commandPaletteModal').classList.remove('show');
-        }
-
-        function renderCommandPaletteResults(query) {
-            const list = document.getElementById('commandPaletteList');
-            const lowerQuery = query.toLowerCase();
-            const results = commandPaletteCommands.filter(cmd => cmd.name.toLowerCase().includes(lowerQuery));
-
-            if (results.length === 0) {
-                list.innerHTML = '<div class="command-palette-empty">Aucun résultat trouvé.</div>';
+            if (slides.length <= 1) {
+                if(prevBtn) prevBtn.style.display = 'none';
+                if(nextBtn) nextBtn.style.display = 'none';
+                if(dotsContainer) dotsContainer.style.display = 'none';
                 return;
             }
 
-            list.innerHTML = results.map((cmd, index) => `
-                <a href="${cmd.href || '#'}" class="command-palette-item ${index === 0 ? 'selected' : ''}" data-action="${cmd.action ? cmd.name : ''}" ${cmd.href ? `onclick="navigateTo('${cmd.href}')"` : 'onclick="executeCommandAction(this, event)"'}>
-                    <i class="fas ${cmd.icon} command-palette-item-icon"></i>
-                    <span class="command-palette-item-text">${cmd.name}</span>
-                </a>
-            `).join('');
-        }
-        
-        function executeCommandAction(element, event) {
-            event.preventDefault();
-            const actionName = element.dataset.action;
-            const command = commandPaletteCommands.find(cmd => cmd.name === actionName);
-            if (command && command.action) {
-                closeCommandPalette();
-                command.action();
-            }
-        }
-        window.executeCommandAction = executeCommandAction;
+            slides.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.classList.add('slider-dot');
+                dot.onclick = () => { goToSlide(index); resetInterval(); };
+                dotsContainer.appendChild(dot);
+            });
+            const dots = dotsContainer.querySelectorAll('.slider-dot');
 
-        function initAnimations() {
+            function goToSlide(index) {
+                currentIndex = (index + slides.length) % slides.length;
+                wrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+                slides.forEach(s => s.classList.remove('active'));
+                slides[currentIndex].classList.add('active');
+                dots.forEach((d, i) => d.classList.toggle('active', i === currentIndex));
+            }
+
+            function resetInterval() {
+                clearInterval(slideInterval);
+                slideInterval = setInterval(() => goToSlide(currentIndex + 1), 7000);
+            }
+
+            nextBtn.onclick = () => { goToSlide(currentIndex + 1); resetInterval(); };
+            prevBtn.onclick = () => { goToSlide(currentIndex - 1); resetInterval(); };
+            
+            goToSlide(0);
+            resetInterval();
+        }
+
+        function setupScrollAnimations() {
             const observer = new IntersectionObserver((entries, obs) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -1807,150 +1652,171 @@
                     }
                 });
             }, { threshold: 0.1 });
+            document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
+        }
 
-            document.querySelectorAll('.animate-in').forEach(el => {
-                observer.observe(el);
-            });
+        // --- New JS from Dashboard (Modals, Notifications, Palette) ---
+        function showToastNotification(message, type = 'info', duration = 3000) {
+            const notification = document.getElementById('toastNotification');
+            if (!notification) return;
+            const textEl = notification.querySelector('.toast-notification-text');
+            const iconEl = notification.querySelector('.toast-notification-icon');
+            
+            notification.className = 'toast-notification'; // Reset classes
+            iconEl.className = 'toast-notification-icon fas';
+            
+            switch(type) {
+                case 'success': iconEl.classList.add('fa-check-circle'); notification.classList.add('success'); break;
+                case 'warning': iconEl.classList.add('fa-exclamation-triangle'); notification.classList.add('warning'); break;
+                case 'error': iconEl.classList.add('fa-exclamation-circle'); notification.classList.add('error'); break;
+                default: iconEl.classList.add('fa-info-circle');
+            }
+            textEl.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => notification.classList.remove('show'), duration);
+        }
+
+        function updateThemeUI() {
+            const themeIcon = document.getElementById('themeIcon');
+            document.body.classList.toggle('light-mode', currentTheme === 'light');
+            if (themeIcon) themeIcon.className = currentTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            updateThemeUI();
+            showToastNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
         }
         
-        function setupSlider() {
-            const slider = document.getElementById('imageSlider');
-            if (!slider) return;
-
-            const wrapper = slider.querySelector('.slider-wrapper');
-            const slides = slider.querySelectorAll('.slide');
-            const prevBtn = document.getElementById('sliderPrev');
-            const nextBtn = document.getElementById('sliderNext');
-            const dotsContainer = document.getElementById('sliderDots');
-            
-            if (!wrapper || slides.length === 0 || !prevBtn || !nextBtn || !dotsContainer) return;
-
-            let currentIndex = 0;
-            let slideInterval;
-
-            if (slides.length <= 1) {
-                prevBtn.style.display = 'none';
-                nextBtn.style.display = 'none';
-                dotsContainer.style.display = 'none';
-                if (slides.length === 1) slides[0].classList.add('active');
-                return;
-            }
-
-            slides.forEach((_, index) => {
-                const dot = document.createElement('div');
-                dot.classList.add('slider-dot');
-                dot.addEventListener('click', () => {
-                    goToSlide(index);
-                    resetInterval();
-                });
-                dotsContainer.appendChild(dot);
-            });
-            const dots = dotsContainer.querySelectorAll('.slider-dot');
-
-            function goToSlide(index) {
-                if (slides[currentIndex]) slides[currentIndex].classList.remove('active');
-                if (dots[currentIndex]) dots[currentIndex].classList.remove('active');
-                
-                currentIndex = (index + slides.length) % slides.length;
-                
-                if (slides[currentIndex]) slides[currentIndex].classList.add('active');
-                if (dots[currentIndex]) dots[currentIndex].classList.add('active');
-                
-                wrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
-            }
-
-            function nextSlide() { goToSlide(currentIndex + 1); }
-            function prevSlide() { goToSlide(currentIndex - 1); }
-            
-            function startInterval() {
-                slideInterval = setInterval(nextSlide, 7000); 
-            }
-
-            function resetInterval() {
-                clearInterval(slideInterval);
-                startInterval();
-            }
-
-            nextBtn.addEventListener('click', () => { nextSlide(); resetInterval(); });
-            prevBtn.addEventListener('click', () => { prevSlide(); resetInterval(); });
-            
-            goToSlide(0);
-            startInterval();
+        function toggleMobileMenu() {
+            document.getElementById('mobileToggle')?.classList.toggle('active');
+            document.getElementById('mobileMenu')?.classList.toggle('active');
+            document.body.style.overflow = document.getElementById('mobileMenu')?.classList.contains('active') ? 'hidden' : '';
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- Supabase Client Setup ---
-            const { createClient } = supabase;
-            const supabaseUrl = "https://llujeetuahyabtocjzjl.supabase.co";
-            const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdWplZXR1YWh5YWJ0b2NqempsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNTA3NjcsImV4cCI6MjA2ODkyNjc2N30.tnkkUUzl7T5EKD-DJ5fuElwAzBFEUr7shQuLtdACdcY";
-            supabaseClient = createClient(supabaseUrl, supabaseKey);
+        function populateMobileNav(session) {
+            const container = document.querySelector('.mobile-menu .mobile-nav-items');
+            if(!container) return;
+            const loggedIn = !!session;
+            
+            let navItemsHTML = `
+                <a href="#" class="mobile-nav-item" onclick="openExplorerModal(); toggleMobileMenu();">
+                    <div class="mobile-nav-item-icon"><i class="fas fa-compass"></i></div><h4>Explorer</h4>
+                </a>
+                <h3 class="mobile-nav-section-title">Actions</h3>
+            `;
 
+            if (loggedIn) {
+                navItemsHTML += `
+                    <a href="#" class="mobile-nav-item" onclick="openProfileModal(); toggleMobileMenu();"><div class="mobile-nav-item-icon"><i class="fas fa-user"></i></div><h4>Mon Profil</h4></a>
+                    <a href="#" class="mobile-nav-item" onclick="logout(); toggleMobileMenu();"><div class="mobile-nav-item-icon"><i class="fas fa-sign-out-alt"></i></div><h4>Déconnexion</h4></a>
+                `;
+            } else {
+                 navItemsHTML += `<a href="connexion.html" class="mobile-nav-item"><div class="mobile-nav-item-icon"><i class="fas fa-sign-in-alt"></i></div><h4>Connexion</h4></a>`;
+            }
+
+            navItemsHTML += `<a href="#" class="mobile-nav-item" onclick="toggleTheme(); toggleMobileMenu();"><div class="mobile-nav-item-icon"><i class="fas fa-palette"></i></div><h4>Changer de thème</h4></a>`;
+            container.innerHTML = navItemsHTML;
+        }
+        
+        function openModal(id) { document.getElementById(id)?.classList.add('show'); }
+        function closeModal(id) { document.getElementById(id)?.classList.remove('show'); }
+        
+        window.openAvatarModal = () => openModal('avatarModal');
+        window.closeAvatarModal = () => closeModal('avatarModal');
+        window.openProfileModal = () => openModal('profileModal');
+        window.closeProfileModal = () => closeModal('profileModal');
+        window.openExplorerModal = () => openModal('explorerModal');
+        window.closeExplorerModal = () => closeModal('explorerModal');
+        window.openCommandPalette = () => { openModal('commandPaletteModal'); document.getElementById('commandPaletteInput').focus(); renderCommandPaletteResults(''); };
+        window.closeCommandPalette = () => closeModal('commandPaletteModal');
+
+        function toggleNotificationPanel() { document.getElementById('notificationPanel')?.classList.toggle('show'); }
+        
+        function renderNotifications() {
+            const list = document.getElementById('notificationList');
+            if (!list) return;
+            const notifications = [
+                { icon: 'fa-check', type: 'success', text: 'Le Test de sécurité N°1 a été complété.', time: 'Il y a 15m' },
+                { icon: 'fa-trophy', type: 'warning', text: 'Nouveau challenge disponible : Maîtrise de la grue.', time: 'Il y a 1h' },
+                { icon: 'fa-info-circle', type: 'info', text: 'Une maintenance est prévue ce soir à 23h.', time: 'Il y a 4h' }
+            ];
+            list.innerHTML = notifications.map(n => `<a href="#" class="notification-item"><div class="notification-item-icon icon-${n.type}"><i class="fas ${n.icon}"></i></div><div class="notification-item-content"><p>${n.text}</p><span>${n.time}</span></div></a>`).join('');
+        }
+
+        const commandPaletteCommands = [
+            { name: 'Simulateurs', icon: 'fa-cubes', href: 'simulateur.html' },
+            { name: 'Tests', icon: 'fa-brain', href: 'test.html' },
+            { name: 'Quiz', icon: 'fa-question-circle', href: 'quiz.html' },
+            { name: 'Outils', icon: 'fa-wrench', href: 'outils.html' },
+            { name: 'Challenges', icon: 'fa-trophy', href: 'challenges.html' },
+            { name: 'Offres d\'emploi', icon: 'fa-briefcase', href: 'emploi.html' },
+            { name: 'Mon Profil', icon: 'fa-user', action: openProfileModal },
+            { name: 'Changer de thème', icon: 'fa-palette', action: toggleTheme },
+            { name: 'Déconnexion', icon: 'fa-sign-out-alt', action: logout },
+        ];
+
+        function renderCommandPaletteResults(query) {
+            const list = document.getElementById('commandPaletteList');
+            const lowerQuery = query.toLowerCase();
+            const results = commandPaletteCommands.filter(cmd => cmd.name.toLowerCase().includes(lowerQuery));
+            if (results.length === 0) {
+                list.innerHTML = '<div class="command-palette-empty">Aucun résultat trouvé.</div>';
+                return;
+            }
+            list.innerHTML = results.map((cmd, index) => `<a href="${cmd.href || '#'}" class="command-palette-item ${index === 0 ? 'selected' : ''}" data-action="${cmd.action ? cmd.name : ''}" ${cmd.href ? '' : 'onclick="executeCommandAction(this, event)"'}><i class="fas ${cmd.icon} command-palette-item-icon"></i><span class="command-palette-item-text">${cmd.name}</span></a>`).join('');
+        }
+        
+        function executeCommandAction(element, event) {
+            event.preventDefault();
+            const actionName = element.dataset.action;
+            const command = commandPaletteCommands.find(cmd => cmd.name === actionName);
+            if (command?.action) {
+                closeCommandPalette();
+                command.action();
+            }
+        }
+
+        // --- Main Execution ---
+        document.addEventListener('DOMContentLoaded', () => {
+            updateThemeUI();
+            setupSlider();
+            setupScrollAnimations();
+            
             supabaseClient.auth.onAuthStateChange((event, session) => {
                 if (session) {
-                    if (window.location.hash.includes('access_token')) {
-                        window.history.replaceState(null, '', window.location.pathname);
-                    }
-                    loadUserData(session);
+                    setupAuthenticatedHeader(session);
                 } else {
-                    if (!window.location.hash.includes('access_token')) {
-                        redirectToLogin();
-                    }
+                    setupGuestHeader();
                 }
+                populateMobileNav(session);
             });
 
-            updateThemeUI();
-            populateMobileNav();
-            renderNotifications();
-            initAnimations();
-            setupSlider();
+            document.getElementById('avatarUpload')?.addEventListener('change', uploadAvatar);
+            document.getElementById('commandPaletteInput')?.addEventListener('input', (e) => renderCommandPaletteResults(e.target.value));
 
-            const userProfileToggle = document.getElementById('userProfileToggle');
-            const avatarUploadInput = document.getElementById('avatarUpload');
-            const notificationToggle = document.getElementById('notificationToggle');
-            const commandPaletteInput = document.getElementById('commandPaletteInput');
-
-            if (userProfileToggle) {
-                userProfileToggle.addEventListener('click', (event) => {
-                    event.stopPropagation();
-                    openProfileModal();
-                });
-            }
-            
-            if (avatarUploadInput) {
-                avatarUploadInput.addEventListener('change', uploadAvatar);
-            }
-
-            if (notificationToggle) {
-                notificationToggle.addEventListener('click', (event) => {
-                    event.stopPropagation();
-                    toggleNotificationPanel();
-                });
-            }
-
-            if(commandPaletteInput) {
-                commandPaletteInput.addEventListener('input', (e) => renderCommandPaletteResults(e.target.value));
-            }
-
-            // Close dropdowns when clicking outside
             window.addEventListener('click', (event) => {
-                const notificationPanel = document.getElementById('notificationPanel');
-                if (notificationPanel && !event.target.closest('.notification-wrapper')) {
-                    notificationPanel.classList.remove('show');
+                if (!event.target.closest('.notification-wrapper')) {
+                    document.getElementById('notificationPanel')?.classList.remove('show');
                 }
             });
 
-            // Keyboard shortcut for command palette
             window.addEventListener('keydown', (e) => {
-                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-                    e.preventDefault();
-                    openCommandPalette();
-                }
-                const commandPaletteModal = document.getElementById('commandPaletteModal');
-                if (e.key === 'Escape' && commandPaletteModal && commandPaletteModal.classList.contains('show')) {
-                    closeCommandPalette();
-                }
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openCommandPalette(); }
+                if (e.key === 'Escape' && document.getElementById('commandPaletteModal')?.classList.contains('show')) { closeCommandPalette(); }
             });
         });
+
+        // Make functions globally accessible for onclick attributes
+        window.updateProfile = updateProfile;
+        window.logout = logout;
+        window.selectPredefinedAvatar = selectPredefinedAvatar;
+        window.toggleTheme = toggleTheme;
+        window.toggleMobileMenu = toggleMobileMenu;
+        window.executeCommandAction = executeCommandAction;
+        window.navigateTo = navigateTo;
+
     </script>
 </body>
 </html>
